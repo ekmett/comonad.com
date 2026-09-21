@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Procrustean Mathematics · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Haskell</span><span>Edward Kmett · <time datetime="2013-11-08">8 November 2013</time></span></div><h1>Procrustean Mathematics</h1></header><details class="contents"><summary>On this page</summary><ol><li><a href="#generalized-abstract-nonsense">Generalized Abstract Nonsense</a></li><li><a href="#centipede-mathematics">Centipede Mathematics</a></li><li><a href="#applied-mathematics-and-computer-science">Applied Mathematics and Computer Science</a></li><li><a href="#the-view-from-the-bottom">The View from the Bottom</a></li><li><a href="#theseus-and-procrustes">Theseus and Procrustes</a></li><li><a href="#procrustean-mathematics">Procrustean Mathematics</a></li><li><a href="#the-operation-was-a-success">The Operation Was a Success</a></li><li><a href="#but-the-patient-died">... But the Patient Died</a></li><li><a href="#haskell">Haskell</a></li><li><a href="#semigroupoids">Semigroupoids</a></li><li><a href="#extensible-effects">Extensible Effects</a></li><li><a href="#lenses">Lenses</a></li><li><a href="#the-view-from-the-middle">The View from the Middle</a></li></ol></details><article class="prose"><p>This post is a bit of a divergence from my norm.</p>
+<p>I'm going to editorialize a bit about mathematics, type classes and the tension between different ways of fitting ideas together, rather than about any one algorithm or data structure.</p>
+<p>I apologize in advance for the fact that my examples are written from my perspective, and as I'm writing about them unilaterally my characterization is likely to be unfair. Something in here is likely to offend everyone.</p>
+<h2 id="generalized-abstract-nonsense">Generalized Abstract Nonsense</h2>
+<p>The term "generalized abstract nonsense" was originally coined by <a href="http://en.wikipedia.org/wiki/Norman_Steenrod">Norman Steenrod</a> as a term of endearment, rather than of denigration. <em>e.g.</em> Saying in passing "this is true by abstract nonsense" when referring to a long-winded proof that offers no insight into the domain at hand.</p>
+<p>Now, some mathematicians like to refer to category theory as <a href="http://en.wikipedia.org/wiki/Abstract_nonsense"><em>generalized abstract nonsense</em></a>, not out of endearment, but because they do not find immediate value in its application. Among category theorists this view is seen as somewhat daft, as they view category theory as a sort of <a href="http://math.ucr.edu/home/baez/rosetta.pdf">Rosetta Stone</a> for mapping ideas from one area of mathematics to another -- a <em>lingua franca</em> that lets you express commonalities and cross-cutting concerns across domains.</p>
+<p>To me category theory serves as a road map to new domains. I don't know much about <a href="http://en.wikipedia.org/wiki/Tangle_%28mathematics%29">rational tangles</a>, but if I know that with 2 dimensions of freedom, they form a braided monoidal category letting me tie myself in er.. knots, but in 3 or more dimensions they form a symmetric monoidal category, letting me untie all knots.</p>
+<p>With this, I can work with them and derive useful results without caring about irrelevant details and dealing with rope burn.</p>
+<h2 id="centipede-mathematics">Centipede Mathematics</h2>
+<p>Just as some general mathematicians look down with various degrees of seriousness upon generalized abstract nonsense, even some category theorists look down upon what the analyst Antoni Zygmund famously referred to as <a href="http://ncatlab.org/nlab/show/centipede+mathematics"><em>centipede mathematics</em></a>:</p>
+<blockquote>
+<p>You take a centipede and pull off ninety-nine of its legs and see what it can do.</p>
+</blockquote>
+<p>In this sense working with a <code>Semigroup</code> is just working with a neutered <code>Monoid</code> that has had its unit removed. The usual critique of "centipede mathematics" is that it lacks taste.</p>
+<p>With such colorful metaphors, it'd be hard to argue otherwise!</p>
+<p>The negative view of this practice seems to stem from the era of folks evaluating grant proposals to see whether or not it was likely to lead to interesting research that they could use. With fewer parts to use, it would seem that one would be unlikely to find new results that benefit those solely concerned with the larger mathematical object.</p>
+<p>But in many ways, all of <a href="http://en.wikipedia.org/wiki/Abstract_algebra#Modern_algebra">modern abstract algebra</a> can be seen as an exercise in centipede mathematics.</p>
+<p>Mathematicians started with the real numbers, which sit on a line, and, coincidentally, with suitable markers, look an awful lot like a centipede. Starting from there at the turn of the last century, mathematicians kept ripping off legs to get fields, rings, groups, monoids, etc.</p>
+<h2 id="applied-mathematics-and-computer-science">Applied Mathematics and Computer Science</h2>
+<p>Of course, all of these folks are mathematicians, and many mathematicians famously look down their noses at applied mathematicians.</p>
+<p>Consider the famous claim by G. H. Hardy:</p>
+<blockquote>
+<p>I have never done anything 'useful'. No discovery of mine has made, or is likely to make, directly or indirectly, for good or ill, the least difference to the amenity of the world.</p>
+</blockquote>
+<p>Mind you that didn't stop folks from later putting his ideas to work in thermodynamics and quantum physics, and the gap between pure mathematics and theoretical physics seems to be narrowing every year.</p>
+<p>To me the difference between a mathematician and an applied mathematician is one of focus.</p>
+<p>Often a mathematician will start with an abstraction and try to find things that fit, to help give intuition for folks for the more general concept.</p>
+<p>Conversely, an applied mathematician will typically start with a thing, and try to find abstractions that capture its essence, giving rise to insight into its behavior. Mathematics is used to provide a bit of <a href="http://en.wikipedia.org/wiki/Go_motion#Petroleum_jelly">vaseline for the lens</a>, blurring away the parts you don't want to focus on.</p>
+<p>We aren't pulling legs off a centipede and seeing if it can go. We're trying to understand the behavior of a spider without gluing an extra 92 legs onto its thorax and then wondering why it lacks the strength to climb back into its web.</p>
+<p>While not all centipede mathematicians are applied mathematicians, some really do just want to pull apart their abstractions in a Mengelean fashion and understand why they tick, but the art of applying mathematics is largely an exercise in centipede mathematics. At one extreme, roboticists often pull or <a href="http://www.washingtonpost.com/wp-dyn/content/article/2007/05/05/AR2007050501009.html">blow the legs off</a> their centipedes literally to see how they'll adjust their gait.</p>
+<h2 id="the-view-from-the-bottom">The View from the Bottom</h2>
+<p>Of course, all of these folks are mathematicians, so they can look down on the lowly computer scientist, the practitioner of an artform that is delightfully neither truly about computers nor, properly, a science.</p>
+<p>Virtually everything we touch in computer science arose from a form of centipede mathematics.</p>
+<p>Constructive logic is the natural vocabulary of computer science. You obtain it by ripping double-negation out of classical logic and watching the system hobble along. The idealized category of Haskell types <code>Hask</code> is effectively used as a constructive analogue to <code>Set</code>.</p>
+<h2 id="theseus-and-procrustes">Theseus and Procrustes</h2>
+<p>We can, however, turn this perspective around.</p>
+<p>In Greek mythology, Procrustes served as the final trial of Theseus during his travels to Athens. He would offer travelers along the road food and a night's lodging in a bed he promised would be a perfect fit.</p>
+<p>Upon their repose, he would proceed to set to work on them with a hammer to stretch them to fit, or an axe to cut off any excess length, forcing them to fit the bed.</p>
+<p>Worse, Procrustes kept two beds, so no traveler could ever measure up. While Theseus ultimately triumphed over the giant Procrustes, forcing him to fit his own bed by cutting off his head and feet, the concept lives on. In literary analysis, a <a href="http://en.wikipedia.org/wiki/Procrustes#Contemporary_usage">Procrustean bed</a> is an arbitrary standard to which exact conformity is enforced.</p>
+<h2 id="procrustean-mathematics">Procrustean Mathematics</h2>
+<p>Traditional mathematicians finds themselves often forced into the role of Procrustes with many such theoretical beds at their disposal, they can proceed by cutting off bits or adjoining pieces to satisfy the requirements of whatever mathematical construct in which they want to work.</p>
+<p>Conversely, the applied mathematician or computer scientist often finds themself in a situation where they care more about their problem patient, but can't find a bed to fit. Being a bit less psychopathic, they must set aside mathematical taste and adjust the <a href="http://www.youtube.com/watch?v=2q4JDpDSXMw">bed</a>. This is an exercise in centipede mathematics, the bed itself doesn't fit, so they rip parts off of it until it does.</p>
+<p>We don't do this because we hate the bed, but because we are concerned for the patient.</p>
+<p>The mathematician is looking out for the needs of the abstraction. The applied mathematician or computer scientist is looking out to maximize the fit for a given domain.</p>
+<h2 id="the-operation-was-a-success">The Operation Was a Success</h2>
+<p>In a <a href="http://www.reddit.com/r/haskell/comments/1ou06l/improving_applicative_donotation/">recent thread</a> on Reddit it was suggested that every <code>Semigroup</code> should be extended to a <code>Monoid</code> and then we could be done with the need for the more refined concept.</p>
+<p>We can actually often accomplish this. Consider this <code>Semigroup</code>:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">First</span> a = <span class="hljs-type">First</span> { <span class="hljs-title">getFirst</span> :: <span class="hljs-title">a</span> }</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Semigroup</span> (<span class="hljs-type">First</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  m &lt;&gt; _ = m
+</code></pre>
+<p>If you really want a <code>Monoid</code> you can lay about with Procrustes' hammer and adjoin a unit.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">First</span> a = <span class="hljs-type">First</span> { <span class="hljs-title">getFirst</span> :: <span class="hljs-type">Maybe</span> <span class="hljs-title">a</span> }</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Semigroup</span> (<span class="hljs-type">First</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  <span class="hljs-type">First</span> <span class="hljs-type">Nothing</span> &lt;&gt; m = m
+  m             &lt;&gt; _ = m
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monoid</span> (<span class="hljs-type">First</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  mempty = <span class="hljs-type">First</span> <span class="hljs-type">Nothing</span>
+
+  <span class="hljs-type">First</span> <span class="hljs-type">Nothing</span> `mappend` m = m
+  m             `mappend` _ = m
+</code></pre>
+<p>Now our object has grown a bit more complicated, but we can use it with all the usual <code>Foldable</code> machinery.</p>
+<p>Sometimes the patient may be better off for his extra parts, but you may kill other properties you want along the way, or have to consider impossible cases.</p>
+<p>Having <code>Semigroup</code> as a more fine-grained constraint does enable us to handle the empty case once and for all, and lets us fold over a <code>NonEmpty</code> container with more things and capture the non-empty nature of something via <code>Foldable1</code> and it simplifies <code>First</code>'s implementation considerably, but requires you to use something like <code>Option</code> to lift it into a <code>Monoid</code> you can use for a general purpose list.</p>
+<p>Here this is simply a matter of taste, but that isn't always the case.</p>
+<h2 id="but-the-patient-died">... But the Patient Died</h2>
+<p>If you try to stretch any particular <code>Comonad</code> to fit <code>Alternative</code>, you have to deal with the fact that</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">extract</span> empty :: a
+</code></pre>
+<p>This strongly implies no such beast can exist, and so the <code>Comonad</code> must die to make room for the <code>Alternative</code> instance.</p>
+<p>We have to give up either <code>empty</code> or <code>extract</code>.</p>
+<p>The type system has taken on the role of the serial killer <a href="http://en.wikipedia.org/wiki/Saw_%28film%29">Saw</a>, sadistically forcing us to choose which of our friends will lose a limb.</p>
+<p>Even if you want to disavow centipede mathematics, you're going to be forced to occasionally put your abstractions on the chopping block, or abandon rigor.</p>
+<h2 id="haskell">Haskell</h2>
+<p>You may be able to upgrade an <code>Applicative</code> parser to one that is a <code>Monad</code>, perhaps at the cost of parallelism.</p>
+<p>Haskell's type system is very good at expressing a few well chosen abstractions. <code>Monad</code> used to be the golden hammer of the Haskell community, until we found out that <code>Applicative</code> functors exist and are useful for capturing context-free code, where the control flow doesn't vary based on previous results.</p>
+<p><code>Arrow</code> was introduced along the way, but later had a smaller <code>Category</code> class carved out of it.</p>
+<p>Typeclasses in Haskell tend to force us into a small set of bed sizes, because it is relatively bad at code reuse across fine-grained class hierarchies.</p>
+<p>Each attempt at refining the class hierarchy carries with it a price that library implementors and users who instantiate the classes must now write more methods. Worse, they must often do so without access to the full gamut of extra laws obtained further down in the class hierarchy, because they don't have a tenable way of offering defaults for superclass methods when they write a subclass.</p>
+<p>Even with one of the superclass default proposals, you get no real code reuse for any form of transformer, and the existing default signature mechanism runs "the wrong way" in such a way that it even forces you to put everything in the same module.</p>
+<p>The initial arguments against a fine-grained class hierarchy in Haskell arose from the same place as the denigration of centipede mathematics, but they are butressed by the pragmatic concern that there is real pain in an accurate class hierarchy caused by the design of the language.</p>
+<p>These are valid concerns!</p>
+<p>Arguments in favor of a finer-grained hierarchy arise from a desire to avoid flooding the namespace with redundant operations, and to capture the relationship between things. It arises from caring about the needs of the things you want to be able to reason about, rather than capturing just the examples that happen to measure up to an arbitrary standard.</p>
+<p>These are also valid concerns!</p>
+<h2 id="semigroupoids">Semigroupoids</h2>
+<p>My <code>semigroupoids</code> package was originally written because I couldn't work with product categories in Haskell, but needed them in code.</p>
+<p>I still can't, due to the presence of <code>Any</code> as a distinguished member of every kind in Haskell.</p>
+<p>Along the way, I dug up the <a href="http://ncatlab.org/nlab/show/horizontal+categorification"><em>-oid</em>-ification</a> of a <code>Semigroup</code>, also known as a <a href="http://ncatlab.org/nlab/show/semicategory">semicategory</a> to capture the portions of the product category that we <em>can</em> write nicely in Haskell today.</p>
+<p>When we look at the Kleisli category of things that are not quite a <code>Monad</code>, or the static arrow category of things that are not quite <code>Applicative</code>, we wind up with mere a <code>Semigroupoid</code> rather than a <code>Category</code>.</p>
+<p>But where do we find such examples?</p>
+<p>Consider the lowly <code>IntMap</code>. It cannot be made an instance of <code>Applicative</code> or <code>Monad</code> directly.</p>
+<p>We have three options to proceed if we want to work with something like <code>(&lt;*&gt;)</code> or <code>(&gt;&gt;=)</code> on it.</p>
+<ol>
+<li>
+<p>We can clutter the namespace with a completely ad hoc combinator that we can't abstract over.</p>
+</li>
+<li>
+<p>We can try to adjoin a universal default. This means that you have to kill the <code>Foldable</code> and <code>Traversable</code> instances for it, or deal with the fact that they basically return nonsense. It also means that you either have to give up the ability to delete from the map, or accept the fact that you aren't really modeling <code>(Int -&gt; Maybe b)</code> any more.</p>
+</li>
+<li>
+<p>We can engage in a bit of centipede mathematics, ripping off the <code>pure</code> and <code>return</code> from <code>Applicative</code> and <code>Monad</code> respectively to get a semi-<code>Applicative</code> and a semi-<code>Monad</code>, which I unartfully called <code>Apply</code> and <code>Bind</code>, in <code>semigroupoids</code>. Now we've respected the needs of the domain object, at the expense of a finer grained class hierarchy.</p>
+</li>
+</ol>
+<p>In a perfect world, from the perspective of the centipede mathematician, <code>Apply</code> and <code>Bind</code> would occupy a place of privilege in the class hierarchy.</p>
+<p>However, to the Procrustean mathematicians who are only really concerned with <code>Applicative</code> and <code>Monad</code>, and who can't be bothered to deal with the finer grained hierarchy, such a refinement of the hierarchy merely adds cognitive overhead. They are happy to discard these examples in favor of a simpler, more teachable, meta-theory.</p>
+<p>Both of these perspectives are valid.</p>
+<h2 id="extensible-effects">Extensible Effects</h2>
+<p>To unfairly cast Oleg Kiselyov in the role of Procrustes with Edwin Brady as his understudy, we can look at the modeling of <a href="http://lambda-the-ultimate.org/node/4786">extensible effects</a> in this same light.</p>
+<p>Lawvere theories offer us too small a bed to fit many of the effects we care to model, such as continuation passing. This is why that effect is ignored by Edwin Brady's handling of effects for Idris. They just don't fit.</p>
+<p>On the other hand, Oleg offers us a second bed that is much bigger, his <code>Eff</code> monad is the result of applying <code>Codensity</code> to a Lawvere Theory. Now it's the job of the handler to deal with the impossible cases.</p>
+<p>We're forced to set about with Procrustes' hammer to embed many monads, like <code>Reader</code> into a domain that is too large.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">Codensity</span> ((-&gt;) s) a ~
+<span class="hljs-title">forall</span> r. (a -&gt; s -&gt; r) -&gt; s -&gt; r
+</code></pre>
+<p>is strong enough to implement all of CPS'd <code>State</code>. If you pass it <code>(,)</code> for its first argument you get <code>s -&gt; (a, s)</code>! It is only by convention and hiding that we can restrict such a reader down to size.</p>
+<div align="center" style="padding-bottom: 10px"><img alt="Illustration from Procrustean Mathematics" loading="lazy" src="../../../assets/imported/cd8b8abf9816-suit.jpg"></div>
+<p>This means that the compiler has really no chance of ever optimizing the code properly as it must always live in fear that you could change the environment, even though the handler never will. This forces a single thread of execution through otherwise parallelizable code.</p>
+<p>We improve the adjustability of this bed by switching from the <code>Codensity</code> construction to an arbitrary right Kan extension, like my old <code>monad-ran</code> package did. This lets the bed conform to the shape of <code>Reader</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">Ran</span> <span class="hljs-type">Identity</span> ((-&gt;) s) a ~
+<span class="hljs-type">Yoneda</span> ((-&gt;) s) a ~
+<span class="hljs-title">forall</span> r. (a -&gt; r) -&gt; s -&gt; r
+</code></pre>
+<p>This is just a CPS'd function, when passed <code>id</code> we recover <code>(s -&gt; a)</code>. It is no longer large enough to model all of <code>State</code> and properly captures the features we want.</p>
+<p>Yet even this bed is still too small for some patients. The infinite usecases of lazy writer and lazy state monads still cannot be made to fit at all. This destroys many interesting use cases of the <a href="https://hackage.haskell.org/package/tardis-0.3.0.0/docs/Control-Monad-Tardis.html">Tardis</a>. Admittedly they are the kinds of things that tie users in knots. Perhaps like an appendix removal, your patients will not miss those parts.</p>
+<p>However, many monads for syntax trees like the transformer used by <code>bound</code> cannot be adapted without an <em>asymptotic</em> performance hit, causing you to redo whole calculations every time you want to pattern match on the result.</p>
+<p>From the standpoint of the Procrustean mathematician, the extensible effects approach is fairly elegant, it provides a single bed into which many common effects can fit.</p>
+<p>The elegance of this approach makes it very appealing!</p>
+<p>However, it isn't roomy enough to hold all of the current effects we can capture with monad transformers. Without upgrading to <code>Ran</code>, many effects are forced into a model that is too big, where you have to handle many impossible conditions that are merely ruled out by convention. On the other side, the inability to handle a number of cases that we do use in practice is also somewhat of a bad sign.</p>
+<p>This is why I can bring myself to view extensible effects as a usful way to think about effects, but I can't view it as a full replacement for the monad transformer approach.</p>
+<p>Monad transformers do pay an <code>O(n^2)</code> complexity tax, describing how everything commutes over everything else, but <code>n</code> is typically not that big of a number.</p>
+<p>The abilty to handle the extra cases that don't fit the extensible effects approach means I can't bring myself to just relegate them to the waste bin of history. As an applied mathematician / computer scientist, I still need to handle those effects!</p>
+<p>Concerns about the need to write <code>lift . lift . lift</code>, seem to arise from a particularly awkward style of use that I frankly never see in real code. There are ways to handle this and the multiple-state issues using tools we have, such as lenses. I'll relegate both of these concerns to another post.</p>
+<h2 id="lenses">Lenses</h2>
+<p>The <code>lens</code> package is very much an exercise in building a very fine grained set of distinctions and trying to make it so you can say very precisely what constraints you want to impose on each operator.</p>
+<p>Alternative designs like <code>fclabels</code> capture a different trade-off between factors.</p>
+<p>I, personally, find that the ability to express a <code>Fold</code> or <code>Getter</code> is worth the added complexity of the representation. Your mileage may vary.</p>
+<p><code>fclabels</code> forces you to stretch each such thing into a form where you cannot express any laws, and then lays about with Procrustes' axe cutting of a number of abstractions we've found useful at the top end of the lens ecosystem, for Indexed traversals and the like.</p>
+<p>It is a pretty clean exercise in Procrustean mathematics, though. If you fit into the abstraction it models comfortably, you'll never feel the bite of the axe.</p>
+<p>Even <code>lens</code>, with its deep hierarchy, occasionally cuts you with Procrustes' axe. There are some constructions that just don't fit the domain. For instance <code>lens</code> offers no tool for validating input -- a <code>Lens' s a</code> must accept any such <code>a</code>.</p>
+<p>There is a tension between these design criteria as with <code>Comonad</code> and <code>Alternative</code>. Something had to give.</p>
+<p>Lens chooses a different point on the design curve than <code>fclabels</code>. The choice we made was to gain a great deal of expressive power and ability to reason about the code with laws in exchange for validation.</p>
+<h2 id="the-view-from-the-middle">The View from the Middle</h2>
+<p>It is important to realize that modifying the abstraction/bed or modifying the problem/patient are both options.</p>
+<p>Sometimes you can easily adapt the problem to the mathematical construct, and sometimes the mathematical construct can be easily adapted to the problem.</p>
+<p>When we add laws and operatons to an abstraction, we wind up with fewer examples.</p>
+<p>If we work parametrically over an abstraction, the weaker the requirements we put on our inputs, the more scenarios we can cover.</p>
+<p>Other times one or the other is up against a hard constraint. It is very important to distinguish between the normative concerns of taste and the very real concerns that some times one or the other of these things cannot give, as in the <code>Comonad/Alternative</code> case above.</p>
+<p>To argue against a straw man, giving up either one of these degrees of freedom unilaterally strikes me as absurd.</p>
+<p>A hundred years ago, nobody cared about the foundations of mathematics, then came Russell and Whitehead, but their encoding was in many ways too dense and full of incredibly fine-grained distinctions.</p>
+<p>Competing tensions like this gave us the mathematical world we inhabit today.</p>
+<p>The choice of how to balance these factors, to abstract over enough problem domans to be useful without needlessly quibbling over impossibly fine-grained distinctions is really the true role of taste in library design and in mathematics, and tastes vary over time.</p>
+<p>-<a href="mailto:ekmett@gmail.com">Edward Kmett</a></p>
+<p>October 25th, 2013</p>
+</article><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: School of Haskell. Date displayed by School of Haskell; may reflect a later revision.</p><p><a href="../../../source/articles/editorial-procrustean-mathematics.md" download>Article Markdown</a> · <a href="../../../source/articles/editorial-procrustean-mathematics.original.md" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2013/conquering-folds/">Conquering Folds →</a><a href="../../../reader/2013/oblivious-deamortized-st/">Part I: Deamortized ST →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

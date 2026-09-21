@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Part VI: A Most Significant Comparison · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Haskell</span><span>Edward Kmett · <time datetime="2013-08-25">25 August 2013</time></span></div><h1>Part VI: A Most Significant Comparison</h1></header><details class="contents"><summary>On this page</summary><ol><li><a href="#morton-order-redux">Morton Order Redux</a></li><li><a href="#one-of-these-things-is-not-like-the-others">One of these things is not like the others</a></li></ol></details><article class="prose"><p>I was going to finally get to the point, but I decided it would be good to consolidate our understanding of "the most significant difference" from the <a href="../../../reader/series/revisiting-matrix-multiplication/">previous parts</a> into a single short summary.</p>
+<p>The <a href="http://en.wikipedia.org/wiki/Punxsutawney_Phil">groundhog</a> has seen his shadow and you are in for six more weeks of winter.</p>
+<h2 id="morton-order-redux">Morton Order Redux</h2>
+<p>Recall our rather boring definition of a Morton-ordered <code>Key</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-keyword">import</span> Data.Word
+
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Key</span> = <span class="hljs-type">Key</span> <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Word</span> <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Word</span></span>
+
+  <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Show</span>, <span class="hljs-type">Read</span>, <span class="hljs-type">Eq</span>)
+
+<span class="hljs-title">main</span> = putStrLn <span class="hljs-string">"It typechecks."</span>
+</code></pre>
+<p>I want to refactor the trick for comparing in <a href="http://en.wikipedia.org/wiki/Z-order_curve">Morton order</a> from <a href="../../../reader/2013/revisiting-matrix-multiplication-part-2/">Part 2</a> that we revisited in <a href="../../../reader/2013/revisiting-matrix-multiplication-part-4/">Part 4</a> into a more reusable form.</p>
+<p>To that end, let us consider how to compare two unsigned words for how they differ in the placement of their most significant bit.</p>
+<p>Logically I want to <code>on compare msb</code>, without paying for calculating the position of the most significant bit directly.</p>
+<p>To do I first observe that we can first compare our two values <code>a</code> and <code>b</code>.</p>
+<p>If they match, then trivially they agree on the position of their most significant set bit!</p>
+<p>If they don't, then either <code>a &lt; b</code> or <code>b &lt; a</code>.</p>
+<p>Without loss of generality, let's assume <code>a &lt; b</code>. Then either <code>a</code> had the same <code>msb</code> as <code>b</code> or it doesn't.</p>
+<p>If <code>a</code> had the same <code>msb</code> as <code>b</code> then <code>xor a b</code> will not have that bit set, so <code>a &lt; xor a b</code> will be <code>False</code> as <code>a</code> as a more significant bit set than <code>xor a b</code> does.</p>
+<p>If <code>a</code> does not have the same <code>msb</code> as <code>b</code>, and <code>a &lt; b</code>, then <code>b</code> has it set, and <code>a</code> does not, so the more significant bit will be set in <code>xor a b</code>, and <code>a &lt; xor a b</code> will be <code>True</code>.</p>
+<p>Putting all of this logic together yields the following combinator:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-keyword">import</span> Data.Bits
+<span class="hljs-keyword">import</span> Data.Word
+
+
+<span class="hljs-title">compares</span> :: <span class="hljs-type">Word</span> -&gt; <span class="hljs-type">Word</span> -&gt; <span class="hljs-type">Ordering</span>
+<span class="hljs-title">compares</span> a b = <span class="hljs-keyword">case</span> compare a b <span class="hljs-keyword">of</span>
+  <span class="hljs-type">LT</span> | a &lt; xor a b -&gt; <span class="hljs-type">LT</span>
+  <span class="hljs-type">GT</span> | b &lt; xor a b -&gt; <span class="hljs-type">GT</span>
+  _ -&gt; <span class="hljs-type">EQ</span>
+
+<span class="hljs-title">main</span> = print $ compares <span class="hljs-number">4</span> <span class="hljs-number">7</span>
+
+</code></pre>
+<p>We can similarly reason through specialized scenaros to obtain <code>&lt;</code>, <code>&lt;=</code>, <code>==</code>, <code>/=</code>, <code>&gt;=</code>, <code>&gt;</code> restricted to the most significant bit.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-keyword">import</span> Data.Bits
+<span class="hljs-keyword">import</span> Data.Word
+
+
+<span class="hljs-title">lts</span>, les, eqs, nes, ges, gts :: <span class="hljs-type">Word</span> -&gt; <span class="hljs-type">Word</span> -&gt; <span class="hljs-type">Bool</span>
+<span class="hljs-title">lts</span> a b = a &lt; b &amp;&amp; a &lt; xor a b
+<span class="hljs-title">les</span> a b = a &lt;= b || xor a b &lt;= b
+
+<span class="hljs-title">eqs</span> a b = a &gt;= min b c &amp;&amp; b &gt;= max a c <span class="hljs-keyword">where</span> c = xor a b
+<span class="hljs-title">nes</span> a b = a &lt;  min b c || b &lt;  min a c <span class="hljs-keyword">where</span> c = xor a b
+<span class="hljs-comment">-- show ...</span>
+<span class="hljs-title">gts</span> a b = a &gt; b &amp;&amp; xor a b &gt; b
+<span class="hljs-title">ges</span> a b = a &gt;= b || a &gt;= xor a b
+
+<span class="hljs-title">main</span> = print $ les <span class="hljs-number">4</span> <span class="hljs-number">7</span>
+
+</code></pre>
+<p>With that we can see our earlier <code>Ord</code> instance for <code>Key</code> is just:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-keyword">import</span> Data.Bits
+<span class="hljs-keyword">import</span> Data.Word
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Key</span> = <span class="hljs-type">Key</span> <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Word</span> <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Word</span></span>
+  <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Show</span>, <span class="hljs-type">Read</span>, <span class="hljs-type">Eq</span>)
+
+<span class="hljs-title">lts</span> :: <span class="hljs-type">Word</span> -&gt; <span class="hljs-type">Word</span> -&gt; <span class="hljs-type">Bool</span>
+<span class="hljs-title">lts</span> a b = a &lt; b &amp;&amp; a &lt; xor a b
+<span class="hljs-class">
+
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Ord</span> <span class="hljs-type">Key</span> <span class="hljs-keyword">where</span></span>
+  <span class="hljs-type">Key</span> a b `compare` <span class="hljs-type">Key</span> c d
+    | xor a c `lts` xor b d = compare b d
+    | otherwise             = compare a c
+
+<span class="hljs-title">main</span> = putStrLn <span class="hljs-string">"It typechecks."</span>
+</code></pre>
+<p>Now that is much easier to read:</p>
+<p>If the most significant difference betwen <code>a</code> and <code>c</code> is less significant than the most significant difference between <code>b</code> and <code>d</code>, then we should just compare <code>b</code> and <code>d</code>, otherwise we compare <code>a</code> with <code>c</code>.</p>
+<h2 id="one-of-these-things-is-not-like-the-others"><a href="http://www.youtube.com/watch?v=FClGhto1vIg&t=11s">One of these things is not like the others</a></h2>
+<p>This makes it clear why we had three uses of <code>xor</code> in the original, the first two were to calculate the differences themselves, while the last <code>xor</code> was simply to compare by most significant bit!</p>
+<p>Switching to these internally made almost a factor of two difference in the performance of the overall multiplier relative to actually performing the masking! This bodes well for the practicality of the as-yet-still-unbenchmarked <code>IntMap</code> alternative described in <a href="../../../reader/2013/revisiting-matrix-multiplication-part-4/">part 4</a>.</p>
+<p>-<a href="mailto:ekmett@gmail.com">Edward Kmett</a></p>
+<p>August 25 2013</p>
+<p>P.S. This also means I effectively just claimed No-Prize #5 for myself. ;)</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/lens"><code>lens</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: School of Haskell. Date displayed by School of Haskell; may reflect a later revision.</p><p><a href="../../../source/articles/revisiting-matrix-multiplication-part-6.md" download>Article Markdown</a> · <a href="../../../source/articles/revisiting-matrix-multiplication-part-6.original.md" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2013/representing-applicatives/">Representing Applicatives →</a><a href="../../../reader/2013/revisiting-matrix-multiplication-part-4/">Part IV: IntMap!? →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

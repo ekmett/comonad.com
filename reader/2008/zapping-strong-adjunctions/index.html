@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zapping Adjunctions · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Category Theory · Haskell</span><span>Edward Kmett · <time datetime="2008-06-05">5 June 2008</time></span></div><h1>Zapping Adjunctions</h1></header><details class="contents"><summary>On this page</summary><ol><li><a href="#cozapping">Cozapping</a></li></ol></details><article class="prose"><span id="more-68"></span><p>As you may recall, every functor in Haskell is strong, in the sense that if you provided an instance of Monad for that functor the following definition would satisfy the requirements mentioned <a href="http://en.wikipedia.org/wiki/Strong_monad">here</a>:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">strength</span> :: <span class="hljs-type">Functor</span> f =&gt; a -&gt; f b -&gt; f (a,b)
+<span class="hljs-title">strength</span> = fmap . (,)
+</code></pre>
+<p>In an earlier post about <a href="../../../reader/2008/the-cofree-comonad-and-the-expression-problem/">the cofree comonad and the expression problem</a>, I used a typeclass defining a form of duality that enables you to let two functors annihilate each other, letting one select the path whenever the other offered up multiple options. To have a shared set of conventions with the material in <a href="../../../reader/2008/zipping-and-unzipping-functors/">Zipping and Unzipping Functors</a>, I have since remodeled that class slightly:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Zap</span> f g | f -&gt; g, g -&gt; f <span class="hljs-keyword">where</span></span>
+  zapWith :: (a -&gt; b -&gt; c) -&gt; f a -&gt; g b -&gt; c
+  zap :: f (a -&gt; b) -&gt; g a -&gt; b
+  zap = zapWith id
+</code></pre>
+<p>Interestingly, we can use the fact that every functor in Haskell is strong to derive not only one instance of <code>Zap</code>, but two, given any <code>Adjunction</code> <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo>⊣</mo><mi>g</mi></mrow><annotation encoding="application/x-tex">f \dashv g</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.1076em;">f</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">⊣</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="katex-base"><span class="katex-strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.0359em;">g</span></span></span></span>.</p>
+<p>I'll give one instance here:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">zapWithAdjunctionGF</span> :: <span class="hljs-type">Adjunction</span> g f =&gt;
+    (a -&gt; b -&gt; c) -&gt; f a -&gt; g b -&gt; c
+<span class="hljs-title">zapWithAdjunctionGF</span> f a b =
+    uncurry (flip f) . counit . fmap (uncurry (flip strength)) $
+    strength a b
+</code></pre>
+<p>And I'll leave the substantially similar derivation of the following to the reader:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">zapWithAdjunctionFG</span> :: <span class="hljs-type">Adjunction</span> f g =&gt; (a -&gt; b -&gt; c) -&gt; f a -&gt; g b -&gt; c
+</code></pre>
+<p>Now, we would like to do the same thing we did with <code>Representable</code> <a href="../../../reader/2008/representing-adjunctions/">last time</a>, and just require the user of the <code>Adjunction</code> class to provide us with more instances, something like:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> (<span class="hljs-type">Zap</span> <span class="hljs-title">f</span> <span class="hljs-title">g</span>, <span class="hljs-type">Zap</span> <span class="hljs-title">g</span> <span class="hljs-title">f</span>, <span class="hljs-type">Representable</span> <span class="hljs-title">g</span> (<span class="hljs-title">f</span> <span class="hljs-type">Void</span>), <span class="hljs-type">Functor</span> f) =&gt;
+    <span class="hljs-type">Adjunction</span> f g | f -&gt; g, g -&gt; f <span class="hljs-keyword">where</span></span>
+        ...
+</code></pre>
+<p>But there is a problem: Adjunction composition.</p>
+<p>If you will recall from before, we were able to define an instance for an <code>Adjunction</code> for a composition of two adjunctions:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">O</span> f g a = <span class="hljs-type">Compose</span> { <span class="hljs-title">decompose</span> :: <span class="hljs-title">f</span> (<span class="hljs-title">g</span> <span class="hljs-title">a</span>) }</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Functor</span> <span class="hljs-title">f</span>, <span class="hljs-type">Functor</span> <span class="hljs-title">g</span>) =&gt; <span class="hljs-type">Functor</span> (<span class="hljs-title">f</span> `<span class="hljs-type">O</span>` <span class="hljs-title">g</span>) <span class="hljs-keyword">where</span></span>
+        fmap f = <span class="hljs-type">Compose</span> . fmap (fmap f) . decompose
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Adjunction</span> <span class="hljs-title">f1</span> <span class="hljs-title">g1</span>, <span class="hljs-type">Adjunction</span> <span class="hljs-title">f2</span> <span class="hljs-title">g2</span>) =&gt;
+    <span class="hljs-type">Adjunction</span> (<span class="hljs-title">f2</span> `<span class="hljs-type">O</span>` <span class="hljs-title">f1</span>) (<span class="hljs-title">g1</span> `<span class="hljs-type">O</span>` <span class="hljs-title">g2</span>) <span class="hljs-keyword">where</span></span>
+        counit =
+               counit .
+               fmap (counit . fmap decompose) .
+               decompose
+        unit =
+               <span class="hljs-type">Compose</span> .
+               fmap (fmap <span class="hljs-type">Compose</span> . unit) .
+               unit
+</code></pre>
+<p>The problem is that we have <strong>three</strong> different ways to build an instance of <code>Zap</code> for this composition and we would need to define two of them that conflict!</p>
+<p>We would need both of these, which would lead to ambiguous instance heads:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> (<span class="hljs-type">Adjunction</span> <span class="hljs-title">f1</span> <span class="hljs-title">g1</span>, <span class="hljs-type">Adjunction</span> <span class="hljs-title">f2</span> <span class="hljs-title">g2</span>) =&gt;
+    <span class="hljs-type">Zap</span> (<span class="hljs-title">f2</span> `<span class="hljs-type">O</span>` <span class="hljs-title">f1</span>) (<span class="hljs-title">g1</span> `<span class="hljs-type">O</span>` <span class="hljs-title">g2</span>) <span class="hljs-keyword">where</span></span>
+        zapWith = zapWithAdjunctionFG
+<span class="hljs-class"><span class="hljs-keyword">instance</span> (<span class="hljs-type">Adjunction</span> <span class="hljs-title">f1</span> <span class="hljs-title">g1</span>, <span class="hljs-type">Adjunction</span> <span class="hljs-title">f2</span> <span class="hljs-title">g2</span>) =&gt;
+    <span class="hljs-type">Zap</span> (<span class="hljs-title">g1</span> `<span class="hljs-type">O</span>` <span class="hljs-title">g2</span>) (<span class="hljs-title">f2</span> `<span class="hljs-type">O</span>` <span class="hljs-title">f1</span>) <span class="hljs-keyword">where</span></span>
+        zapWith = zapWithAdjunctionGF
+</code></pre>
+<p>Furthermore, we can also define a third instance of <code>Zap</code> over composition, which doesn't even care about <code>Adjunction</code>, which also conflicts with the above:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> (<span class="hljs-type">Zap</span> <span class="hljs-title">f</span> <span class="hljs-title">g</span>, <span class="hljs-type">Zap</span> <span class="hljs-title">h</span> <span class="hljs-title">k</span>) =&gt; <span class="hljs-type">Zap</span> (<span class="hljs-title">f</span> `<span class="hljs-type">O</span>` <span class="hljs-title">h</span>) (<span class="hljs-title">g</span> `<span class="hljs-type">O</span>` <span class="hljs-title">k</span>) <span class="hljs-keyword">where</span></span>
+    zapWith f a b =
+        zapWith (zapWith f) (decompose a) (decompose b)
+</code></pre>
+<p>We could use the standard Haskell trick of making different compositions based on which instance of <code>Zap</code> you want to support, but the combinatorial explosion of constructors here when combined with the other reasons you may want to compose a pair of functors leads to a bit of absurdity, especially since I'm using it to capture a relationship no one cares about.</p>
+<p>Consequently, <a href="../../../haskell/category-extras/">category-extras</a> does not capture this constraint.</p>
+<h2 id="cozapping">Cozapping</h2>
+<p>As a final aside, we noted previously that <code>Traversable</code> functors were costrong. If a strong <code>Adjunction</code> gives rise to a couple of instances of <code>Zap</code>, we'd expect a similar relationship between a notion of <code>Cozap</code> and a costrong <code>Adjunction</code>.</p>
+<p>But what would cozapping be?</p>
+<p>First lets take a step back and break down zipWith into a couple of steps. If we note that <code>zapWith (,)</code> looks like:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">prezapAdjunctionGF</span> :: <span class="hljs-type">Adjunction</span> g f =&gt; f a -&gt; g b -&gt; (a,b)
+<span class="hljs-title">prezapAdjunctionGF</span> a b =
+    swap . counit . fmap (uncurry strength . swap) $ strength a b
+    <span class="hljs-keyword">where</span> swap ~(a,b) = (b,a)
+</code></pre>
+<p>Whereupon we can run the output through the canonical eval morphism for exponentials in <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="bold">H</mi><mi mathvariant="bold">a</mi><mi mathvariant="bold">s</mi><mi mathvariant="bold">k</mi></mrow><annotation encoding="application/x-tex">\mathbf{Hask}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.6944em;"></span><span class="mord"><span class="mord mathbf">Hask</span></span></span></span></span>:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">eval</span> :: (a -&gt; b, a) -&gt; b
+<span class="hljs-title">eval</span> (f,a) = f a
+</code></pre>
+<p>We can run everything backwards (modulo the noise caused by currying) in the first definition above and get:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">precozapAdjunctionFG</span> ::
+    (<span class="hljs-type">Adjunction</span> f g, <span class="hljs-type">Traversable</span> f, <span class="hljs-type">Traversable</span> g) =&gt;
+    <span class="hljs-type">Either</span> a b -&gt; <span class="hljs-type">Either</span> (f a) (g b)
+<span class="hljs-title">precozapAdjunctionFG</span> =
+    costrength . fmap (swap . costrength) . unit . swap
+</code></pre>
+<p>However, we lack a <code>coeval</code> morphism for <a href="http://citeseer.ist.psu.edu/filinski89declarative.html">coexponentials</a>, since <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="bold">H</mi><mi mathvariant="bold">a</mi><mi mathvariant="bold">s</mi><mi mathvariant="bold">k</mi></mrow><annotation encoding="application/x-tex">\mathbf{Hask}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.6944em;"></span><span class="mord"><span class="mord mathbf">Hask</span></span></span></span></span> lacks coexponentials -- with good reason! If <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="bold">H</mi><mi mathvariant="bold">a</mi><mi mathvariant="bold">s</mi><mi mathvariant="bold">k</mi></mrow><annotation encoding="application/x-tex">\mathbf{Hask}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.6944em;"></span><span class="mord"><span class="mord mathbf">Hask</span></span></span></span></span> was a co-CCC then it would degenerate to a rather boring poset.</p>
+<p>But that said, even getting this far, how many adjunctions are there between <code>Traversable</code> functors in Haskell, really?</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/adjunctions"><code>adjunctions</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><section class="comments" id="comments"><h2>From the original discussion</h2><p class="editorial">Selected questions, explanations, and corrections. Original wording and dates; spam and automated trackbacks omitted.</p><article class="comment" id="comment-1719"><header><strong>Edward Kmett</strong><a href="../../../reader/2008/zapping-strong-adjunctions/#comment-1719">June 19th, 2008 at 1:10 am</a></header><p>Good catch.</p>
+<p>I added Control.Comonad.Exponent in response to a comment over on Dan Piponi’s blog and forgot that I had those in progress at the time.</p>
+<p>Fixed and uploading to hackage as I write this.</p>
+<p>I may drop Dyad though, since it doesn’t add much value. As near as I can tell there are no interesting dyads in Haskell that aren’t just monads or comonads, and they force a profusion of typeclasses to define that lack other uses. This may also explain why there has been no followup to Fokkinga’s paper on them in the last 14 years. The distributive law is required to be a natural isomorphism, which seems to be too strong to be practical.</p>
+</article></section><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/zapping-strong-adjunctions.md" download>Article Markdown</a> · <a href="../../../source/articles/zapping-strong-adjunctions.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2008/linear-bloom-filters/">Linear Bloom Filters →</a><a href="../../../reader/2008/representing-adjunctions/">Representing Adjunctions →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

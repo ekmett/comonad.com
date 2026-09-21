@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Part I: Deamortized ST · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Haskell</span><span>Edward Kmett · <time datetime="2013-11-08">8 November 2013</time></span></div><h1>Part I: Deamortized ST</h1></header><details class="contents"><summary>On this page</summary><ol><li><a href="#the-price-of-purity">The Price of Purity</a></li><li><a href="#the-price-of-laziness">The Price of Laziness</a></li><li><a href="#slowdown-what-is-the-worst-case">Slowdown: What is the Worst Case?</a></li><li><a href="#partiality-as-an-effect">Partiality as an Effect</a></li><li><a href="#the-power-of-mutation">The Power of Mutation</a></li><li><a href="#laziness-is-its-own-reward">Laziness is its Own Reward</a></li><li><a href="#is-it-cheating-if-you-don-t-get-caught">Is It Cheating If You Don't Get Caught?</a></li><li><a href="#every-step-you-take">Every Step You Take</a></li><li><a href="#capretta-s-iterative-monad-transformer">Capretta's Iterative Monad Transformer</a></li><li><a href="#walking-the-walk">Walking the Walk</a></li><li><a href="#newsflash-unsafeinterleavest-is-unsafe">Newsflash: unsafeInterleaveST Is Unsafe!</a></li><li><a href="#a-safer-alternative-unsafeperformio">A Safer Alternative: unsafePerformIO</a></li><li><a href="#next-time">Next Time</a></li></ol></details><article class="prose"><p>A week or two ago I gave a talk at Mozilla, San Francisco on <a href="http://www.youtube.com/watch?v=P3pLDpbzqCw">Cache-Oblivious Maps</a> to the Bay Area Haskell User Group.</p>
+<p>My goal with this series of posts is to ultimately improve on the conclusion of that talk to generate a purely functional version of a structure like <a href="http://supertech.csail.mit.edu/papers/sbtree.pdf">Bender <em>et al.</em></a>'s cache-oblivious lookahead array and the <a href="http://arxiv.org/pdf/1103.4282v2.pdf">stratified B-tree</a>, closing the gap between the performance of imperative and functional data structures in this space.</p>
+<p>In short I want a really fast <code>Map</code>, optimized for contiguous use of memory that hits provably optimal asymptotics across the board for a wide array of problems despite exposing a purely functional API.</p>
+<p>We won't get there today, but we'll at least establish some of the building blocks.</p>
+<p>Today, I want to talk about a new trick that I came up with that allows us work with observably-functional algorithms in Haskell that can provide them with a purely-functional API in the same manner as the <code>ST</code> monad does today, but which permits us enough additional control over scheduling that we can deamortize many such algorithms.</p>
+<h2 id="the-price-of-purity">The Price of Purity</h2>
+<p>In a purely functional language, <a href="http://en.wikipedia.org/wiki/Amortized_analysis">amortized analysis</a> is further hampered by the fact that every previous version of a structure is available at all times, so you have to consider that any structure can participate in multiple futures. This makes working with amortization much trickier.</p>
+<p>You can't really earn credit by doing things cheaply and then use all that credit to do something big later depending on data not known when you earned the credit because someone may reuse the data structure with different data, and respend the same credit!</p>
+<p>In a purely-functional setting, if you don't use your budget this time you won't get more to spend later. It is just gone!</p>
+<p>The trick is coming up with the right contortions, so that you can build in enough lag in your data structures to ensure that you always have just enough to work on.</p>
+<h2 id="the-price-of-laziness">The Price of Laziness</h2>
+<p>Chris Okasaki's book <a href="http://www.amazon.com/Purely-Functional-Structures-Chris-Okasaki/dp/0521663504">Purely Functional Data Structures</a> and <a href="http://www.cs.cmu.edu/~rwh/theses/okasaki.pdf">thesis</a> cover a suite of tools for reasoning about asymptotics in a pure <em>lazy</em> language.</p>
+<p>He notes that you can often set up a thunk that will evaluate to the right result, if you know all the data you'll need to calculate its answer in the end. Then if two versions of the data structure in the future force this same thunk then they'll share the answer, but only compute it once. This preserves the correctness of the asymptotic analysis of the algorithm despite amortization.</p>
+<p>We get quite a bit more flexibility with regards to amortization than in the strict setting. Now we can pay into an account for later by building a thunk we'll force in later calculations.</p>
+<h2 id="slowdown-what-is-the-worst-case">Slowdown: What is the Worst Case?</h2>
+<p>When amortized complexity bounds aren't enough you can often follow Okasaki's advice and use even more advanced techniques such as "Implicit Recursive Slowdown", a variant on a technique by Kaplan and Tarjan.  There we set up a series of thunks you'll evaluate over time, each individually relatively cheap, so that you can turn amortized bounds into worst case bounds. Then you just force an appropriate amount of work as you go.</p>
+<p>By setting up the thunks and paying them down by forcing them at just the right time you can often derive quite good worst-case performance in a purely functional persistent setting, so long as you have access to laziness.</p>
+<p>There are still some algorthms such as Tarjan's <a href="http://en.wikipedia.org/wiki/Disjoint-set_data_structure">Union-Find</a> problem that don't seem to yield to this technique, but surprisingly many do.</p>
+<h2 id="partiality-as-an-effect">Partiality as an Effect</h2>
+<p>So, if I want to set up such a chain of thunks, what would be a good general purpose way to go about it?</p>
+<p><a href="http://arxiv.org/pdf/cs/0505037v6.pdf">Venanzio Capretta</a> defined a simple partiality monad. I'll play with the names a bit and reproduce a version of it here:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Partial</span> a = <span class="hljs-type">Stop</span> a | <span class="hljs-type">Step</span> (<span class="hljs-type">Partial</span> <span class="hljs-title">a</span>)</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> <span class="hljs-type">Partial</span> <span class="hljs-keyword">where</span></span>
+  return = <span class="hljs-type">Stop</span>
+  <span class="hljs-type">Stop</span> a &gt;&gt;= f = f a
+  <span class="hljs-type">Step</span> m &gt;&gt;= f = <span class="hljs-type">Step</span> (m &gt;&gt;= f)
+
+<span class="hljs-title">main</span> = putStrLn <span class="hljs-string">"It typechecks!"</span>
+</code></pre>
+<p>Those of you who watch out for such things will recognize this as just <code>Free Identity</code>, though technically there is a distinction to be had when you move beyond Haskell here. This is based on <code>νx. a + x</code> rather than <code>μx. a + x</code>, but in Haskell, <code>ν</code> and <code>μ</code> coincide. This means that technically we're using the "completely iterative" monad based on <code>Identity</code>, not the free construction, but I digress.</p>
+<p>Using it you can run a calculation a number of steps and check to see if it has stopped with an answer yet.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">run</span> :: <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Partial</span> a -&gt; <span class="hljs-type">Partial</span> a
+<span class="hljs-title">run</span> <span class="hljs-number">0</span> m = m
+<span class="hljs-title">run</span> n m@<span class="hljs-type">Stop</span>{} = m
+<span class="hljs-title">run</span> n (<span class="hljs-type">Step</span> m) = run (n-<span class="hljs-number">1</span>) m
+</code></pre>
+<p>You can inject steps into a calculation to demarcate time.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">step</span> :: <span class="hljs-type">Partial</span> ()
+<span class="hljs-title">step</span> = <span class="hljs-type">Step</span> (return ())
+</code></pre>
+<p>As a trivial example, you can also define a calculation that no matter how many steps you take will spin forever, but where each individual <code>Step</code> takes <em>O(1)</em></p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">never</span> :: <span class="hljs-type">Partial</span> a
+<span class="hljs-title">never</span> = <span class="hljs-type">Step</span> never
+</code></pre>
+<p>Using this if you have a purely functional algorithm that builds a sub-structure gradually you could pay it down <code>Step</code> by <code>Step</code> by burying a <code>Partial</code> result somewhere down in your structure. If you are careful about the amount of work within a <code>Step</code> then you can reason about the asymptotics of the overall system.</p>
+<h2 id="the-power-of-mutation">The Power of Mutation</h2>
+<div align="center"><img alt="Illustration from Part I: Deamortized ST" loading="lazy" src="../../../assets/imported/a72ad9ec6493-x-men.jpg" style="padding-bottom: 10px"></div>
+<p>There is an old result by <a href="http://www.cs.princeton.edu/courses/archive/fall03/cs528/handouts/Pure%20Versus%20Impure%20LISP.pdf">Pippenger</a> that showed that an algorithm implemented in a pure strict language may need to suffer a logarithmic slowdown relative to an algorithm implemented in a strict language with side-effects.</p>
+<p>The fact that the slowdown for some algorithms is at least logarithmic in the absence of mutation can be shown using a fairly easy pigeon-hole argument.</p>
+<p>The fact that the slowdown is at most logarithmic derives from the fact that you could always maintain a set of 'references' yourself in a <code>Map</code> like structure, in exchange for logarithmic overhead on (de)reference.</p>
+<p>The price you pay for this power is that mutation brings with it its own headaches. From a free theorem perspective every mutable input is now effectively an extra output, and you have all sorts of spooky action at a distance concerns entangling distant parts of your program.</p>
+<h2 id="laziness-is-its-own-reward">Laziness is its Own Reward</h2>
+<div align="center"><img alt="Illustration from Part I: Deamortized ST" loading="lazy" src="../../../assets/imported/76b8edd11c9f-jennifer-lawrence-pants.gif" style="padding-bottom: 10px"></div>
+<p>Pippenger's analysis relied on the absence of mutation.</p>
+<p>In a non-strict language like Haskell, graph reduction / memoization of thunk evaluation provides us with a limited form of mutation! This renders his analysis inconclusive.</p>
+<p>Many algorithms that are provably slowed down asymptotically in a strict pure language can be implemented just fine in a non-strict language, by creative contortions to exploit this limited form of mutation.</p>
+<p>This means we can at least sometimes win a log factor in a strict setting by cheating and using side-effects. There may or may not be cases where we need to pay an extra logarithmic factor for this in a lazy functional setting, but we don't have a definitive proof one way or the other.</p>
+<p>My goal today is to help narrow the gap a bit by cheating.</p>
+<h2 id="is-it-cheating-if-you-don-t-get-caught">Is It Cheating If You Don't Get Caught?</h2>
+<p>If your algorithm builds an immutable result, then does it matter how you built it?</p>
+<img alt="Illustration from Part I: Deamortized ST" loading="lazy" src="../../../assets/imported/941d9e644978-cheater.jpg" style="float: right; width:45%;margin-left:10px; margin-bottom:15px">
+<p>Secretly cheating and doing mutable stuff behind the user's back but only exposing immutable purely functional trappings has been the job of the <code>ST s</code> monad in Haskell since John Launchbury and Simon Peyton Jones introduced it in <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.144.2237&rep=rep1&type=pdf">Lazy Functional State Threads</a> back in 1994.</p>
+<p>The idea behind <code>ST</code> is that as long as nobody knows that you cheated and nobody can observe that you did, and no matter how many times they try to catch you you get away with it, does it matter that you cheated? I will definitely <em>not</em> be trying this line of reasoning with my wife, but types are more forgiving.</p>
+<p>I'm not going to dive into the use of the <code>ST s</code> monad here, beyond noting that it looks a lot like the <code>IO</code> monad under the hood with a much reduced palette of operations intended so that the result of the <code>ST s</code> calculation should be deterministic.</p>
+<br clear="all">
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">newSTRef</span> :: a -&gt; <span class="hljs-type">ST</span> s (<span class="hljs-type">STRef</span> s a)
+<span class="hljs-title">readSTRef</span> :: <span class="hljs-type">STRef</span> s a -&gt; <span class="hljs-type">ST</span> s a
+<span class="hljs-title">writeSTRef</span> :: <span class="hljs-type">STRef</span> s a -&gt; a -&gt; <span class="hljs-type">ST</span> s ()
+...
+</code></pre>
+<p>When you're done, you run the entire <code>ST s</code> calculation at once:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">runST</span> :: (<span class="hljs-keyword">forall</span> s. <span class="hljs-type">ST</span> s a) -&gt; a
+</code></pre>
+<p>Since you are universally quantified over the choice of <code>s</code>, you can't use references produced in one <code>ST</code> calculation in another, and encapsulation, referential transparency and all the good things about functional programming are preserved.</p>
+<p>However, we had to run the entire effect at once.</p>
+<p>If I want to amortize it and pay it down over time, I'm out of luck. In the end I'm interested in building very large vectors but paying for their construction in very small, affordable, chunks.</p>
+<p>That's where today's hackery comes in.</p>
+<h2 id="every-step-you-take">Every Step You Take</h2>
+<p>My first thought was of course to use something like</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">walkST</span> :: (<span class="hljs-keyword">forall</span> s. <span class="hljs-type">Free</span> (<span class="hljs-type">ST</span> s) a) -&gt; <span class="hljs-type">Free</span> <span class="hljs-type">Identity</span> a
+</code></pre>
+<p>or</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">walkST</span> :: (<span class="hljs-keyword">forall</span> s. <span class="hljs-type">Free</span> (<span class="hljs-type">ST</span> s) a) -&gt; <span class="hljs-type">Partial</span> a
+</code></pre>
+<p>But this has the problem that <a href="http://www.youtube.com/watch?v=OMOGaugKpzs&t=26s">every step you take</a> will be observed and must be paid for, even little administrative actions at the end, such as freezing the result vector costs you an extra step.</p>
+<p>If I want to do something like work with existing <code>Stream</code> fusion out of <code>vector</code> and just have it pay once for every <code>step</code>, this approach isn't going to cut it.</p>
+<p>You could bandaid this with a coproduct and use <code>Free (ST s :+: Identity)</code> and promise not to use the knowledge that the <code>ST s</code> calculations were generated separately for evil, but given the amount of time I recently spent talking about <a href="../../../reader/2013/editorial-procrustean-mathematics/">rightsizing abstractions</a>, it'd be hypocritical for me not to try to find a better way.</p>
+<h2 id="capretta-s-iterative-monad-transformer">Capretta's Iterative Monad Transformer</h2>
+<p>We can upgrade Capretta's partiality monad to a monad transformer as done by <a href="http://www.ioc.ee/~tarmo/tday-veskisilla/uustalu-slides.pdf">Capretta, Altenkirch and Uustalu</a>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">IterT</span> m a = <span class="hljs-type">IterT</span></span>
+  { runIterT :: m (<span class="hljs-type">Either</span> a (<span class="hljs-type">IterT</span> m a))
+  }
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> m =&gt; <span class="hljs-type">Monad</span> (<span class="hljs-type">IterT</span> <span class="hljs-title">m</span>) <span class="hljs-keyword">where</span></span>
+  return = <span class="hljs-type">IterT</span> . return . <span class="hljs-type">Left</span>
+  <span class="hljs-type">IterT</span> m &gt;&gt;= k = <span class="hljs-type">IterT</span> $
+    m &gt;&gt;= either (runIterT . k) (return . <span class="hljs-type">Right</span> . (&gt;&gt;= k))
+  fail = <span class="hljs-type">IterT</span> . fail
+
+<span class="hljs-title">main</span> = putStrLn <span class="hljs-string">"It typechecks!"</span>
+</code></pre>
+<p>I've added <code>IterT</code> and its dual to <code>free</code></p>
+<p>Here we can still insert explicit steps:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">step</span> :: <span class="hljs-type">Monad</span> m =&gt; <span class="hljs-type">IterT</span> m ()
+<span class="hljs-title">step</span> = <span class="hljs-type">IterT</span> . return . <span class="hljs-type">Right</span> . return
+</code></pre>
+<p>If you've been playing with free monads for a while you'll recognize this as a version of <code>FreeT Identity m</code> from the <code>free</code> package, rather than the simpler <code>Free m</code> above. Again, we face the technical distinction that this is based on <code>νx. ST s (a + x)</code> not <code>μx. ST s (a + x)</code>.</p>
+<p><code>IterT</code> has been added to the <code>free</code> package in version 4.2 as a distinct construction from <code>FreeT Identity</code> to help drive this distinction home!</p>
+<p>Now what we want to do now is generate a slower version of <code>runST</code> that takes a properly quantified <code>ST s</code> calculation with inserted step markers and walks through it carefully, one step at a time:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">walkST</span> :: (<span class="hljs-keyword">forall</span> s. <span class="hljs-type">IterT</span> (<span class="hljs-type">ST</span> s) a) -&gt; <span class="hljs-type">Partial</span> a
+</code></pre>
+<h2 id="walking-the-walk">Walking the Walk</h2>
+<p>We have a few options for how to implement <code>walkST</code>.</p>
+<p>It is possible to do this entirely with <code>unsafeInterleaveST</code>.</p>
+<p>This is actually a non-trivial exercise and it is very easy to accidentally write a version that is too eager and performs effects too soon. My best version so far requires two uses of <code>unsafeInterleaveST</code> to get the right semantics.</p>
+<p>I leave this as an exercise for the reader.</p>
+<p>You can also rummage through <a href="http://lpaste.net">λpaste</a> for old versions of this monad for tips. ;)</p>
+<h2 id="newsflash-unsafeinterleavest-is-unsafe">Newsflash: <code>unsafeInterleaveST</code> Is Unsafe!</h2>
+<p>Even if you get that right though, <code>unsafeInterleaveST</code> is a whole lot more unsafe for this use case, than the equivalent <code>unsafeInterleaveIO</code> operation! To understand why we need to look down in the guts of each of them.</p>
+<p>When a thunk is evaluated in GHC there is an ever so tiny race condition. When one thread enters into a thunk there is a tiny 1-2 cycle window between that thread entering and establishing the <a href="http://citeseerx.ist.psu.edu/viewdoc/download?rep=rep1&type=pdf&doi=10.1.1.125.857">greyhole</a> that will catch other threads and make them block, during which another thread could come along and start evaluating the same thunk at the same time.</p>
+<p>In the absence of side-effects this is benign. The risk is so low relative to the astronomical costs of synchronization across threads that we, well, just don't bother synchronizing.</p>
+<p>This of course would be bad if the thunk <em>did</em> have side-effects, <em>e.g.</em> if it called <code>unsafePerformIO</code>.</p>
+<p>Internally <code>unsafePerformIO</code> calls <code>noDuplicate</code> to check to make sure that we're not duplicating effort and effects:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">unsafePerformIO</span> :: <span class="hljs-type">IO</span> a -&gt; a
+<span class="hljs-title">unsafePerformIO</span> m = unsafeDupablePerformIO (noDuplicate &gt;&gt; m)
+</code></pre>
+<p>Similarly <code>unsafeInterleaveIO</code> also checks <code>noDuplicate</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">unsafeInterleaveIO</span> :: <span class="hljs-type">IO</span> a -&gt; a
+<span class="hljs-title">unsafeInterleaveIO</span> m = unsafeDupableInterleaveIO (noDuplicate &gt;&gt; m)
+</code></pre>
+<p>But <code>unsafeInterleaveST</code>, on the other hand rather boldly does not.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">unsafeInterleaveST</span> :: <span class="hljs-type">ST</span> s a -&gt; <span class="hljs-type">ST</span> s a
+<span class="hljs-title">unsafeInterleaveST</span> (<span class="hljs-type">ST</span> m) = <span class="hljs-type">ST</span> ( \ s -&gt;
+    <span class="hljs-keyword">let</span>
+        r = <span class="hljs-keyword">case</span> m s <span class="hljs-keyword">of</span> (# _, res #) -&gt; res
+    <span class="hljs-keyword">in</span>
+    (# s, r #)
+  )
+</code></pre>
+<p>This means that it may very well wind up duplicating work if the result <code>r</code> of the <code>ST s a</code> calculation we called <code>unsafeInterleaveST</code> on is evaluated via <code>par</code>. And since we don't control what users will do with our code, you really do need to allow for that.</p>
+<p>Roman Leschinskiy's cute <a href="http://unlines.wordpress.com/2010/04/21/sparking-imperatives/">Sparking Imperatives</a> hack even mixes <code>par</code> with <code>ST</code>, but he is careful to <code>noDuplicate</code> as he goes.</p>
+<p>Now, there is possibly a very good reason for this distinction. If we look at the haddocks for <code>noDuplicate</code> it</p>
+<blockquote>
+<p>Ensures that the suspensions under evaluation by the current thread
+are unique; that is, the current thread is not evaluating anything
+that is also under evaluation by another thread that has also executed
+'noDuplicate'.</p>
+</blockquote>
+<p>So we're faced with a dilemma (trilemma?), we can either:</p>
+<ol>
+<li>
+<p>abandon the use of <code>unsafeInterleaveST</code> entirely as too risky.</p>
+</li>
+<li>
+<p>reason through whether <code>noDuplicate</code> would be legal to use and how to mix it with the existing <code>unsafeInterleaveST</code>.</p>
+</li>
+<li>
+<p>or we can require the end user to only ever perform idempotent operations in the <code>ST</code> monad!</p>
+</li>
+</ol>
+<p>For now I'm largely restricting myself to #1 and #3.</p>
+<p>For an API I expect to expose to an end user, I'm most likely to choose option #1. Anything they do with the resulting construction can be branded <code>Trustworthy</code> and they don't need to know how it is built in too much detail.</p>
+<p>But when I'm writing code myself that merely exposes a pure façade, the performance benefits of #3 may well outweigh the reasoning difficulties. In principle, if my principal operations are merging elements from two immutable input vectors and generating output in another vector, so long as I'm not bumping a counter stored in an <code>STRef</code>, everything I do will have idempotent effects.</p>
+<p>In the long term, it is probably worth checking to see if <code>unsafeInterleaveST</code> should be updated to do <code>noDuplicate</code> and thereby close out the concern about #2, effectively merging it performance-wise with option #1.</p>
+<p>This still leaves option #3 open for constant tuning in the same crazy way as the <code>inlinePerformIO</code> hackery gets used down in <code>bytestring</code>.</p>
+<h2 id="a-safer-alternative-unsafeperformio">A Safer Alternative: <code>unsafePerformIO</code></h2>
+<p>You have to love it when <code>unsafePerformIO</code> is the safest option.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE RankNTypes #-}</span>
+
+<span class="hljs-keyword">import</span> Control.Monad.ST
+<span class="hljs-keyword">import</span> System.IO.Unsafe <span class="hljs-keyword">as</span> Unsafe
+<span class="hljs-keyword">import</span> Control.Monad.ST.Unsafe <span class="hljs-keyword">as</span> Unsafe
+
+
+<span class="hljs-title">walkST</span> :: (<span class="hljs-keyword">forall</span> s. <span class="hljs-type">IterT</span> (<span class="hljs-type">ST</span> s) a) -&gt; <span class="hljs-type">Partial</span> a
+<span class="hljs-title">walkST</span> m = go m <span class="hljs-keyword">where</span>
+  go (<span class="hljs-type">IterT</span> m) =
+    <span class="hljs-keyword">case</span> <span class="hljs-type">Unsafe</span>.unsafePerformIO $
+         <span class="hljs-type">Unsafe</span>.unsafeSTToIO m <span class="hljs-keyword">of</span>
+      <span class="hljs-type">Left</span> a  -&gt; <span class="hljs-type">Stop</span> a
+      <span class="hljs-type">Right</span> m -&gt; <span class="hljs-type">Step</span> (go m)
+
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">IterT</span> m a = <span class="hljs-type">IterT</span></span>
+  { runIterT :: m (<span class="hljs-type">Either</span> a (<span class="hljs-type">IterT</span> m a))
+  }
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> m =&gt; <span class="hljs-type">Monad</span> (<span class="hljs-type">IterT</span> <span class="hljs-title">m</span>) <span class="hljs-keyword">where</span></span>
+  return = <span class="hljs-type">IterT</span> . return . <span class="hljs-type">Left</span>
+  <span class="hljs-type">IterT</span> m &gt;&gt;= k = <span class="hljs-type">IterT</span> $
+    m &gt;&gt;= either (runIterT . k) (return . <span class="hljs-type">Right</span> . (&gt;&gt;= k))
+  fail = <span class="hljs-type">IterT</span> . fail
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Partial</span> a = <span class="hljs-type">Stop</span> a | <span class="hljs-type">Step</span> (<span class="hljs-type">Partial</span> <span class="hljs-title">a</span>)</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> <span class="hljs-type">Partial</span> <span class="hljs-keyword">where</span></span>
+  return = <span class="hljs-type">Stop</span>
+  <span class="hljs-type">Stop</span> a &gt;&gt;= f = f a
+  <span class="hljs-type">Step</span> m &gt;&gt;= f = <span class="hljs-type">Step</span> (m &gt;&gt;= f)
+
+<span class="hljs-title">main</span> = putStrLn <span class="hljs-string">"It typechecks!"</span>
+</code></pre>
+<p>Here we're relying on the fact that we perform one step at a time, and that we're evaluating an "entirely sealed" <code>ST s</code> calculation. When we're done and have the answer <code>a</code> in our <code>Partial a</code>, like with conventional <code>ST s</code> we can't go back and use any of our references any more. In <code>walkST</code> we keep reopening the same ST region, but we only do so after we look around and make sure nobody else is going to catch us and nobody else is doing the same thing.</p>
+<p>With this, we can go through and do things like calculate an <code>n</code>-element unboxed vector in <code>n</code> individually worst-case constant time steps!</p>
+<h2 id="next-time">Next Time</h2>
+<p>This opens up new opportunities for matching worst case asymptotic bounds of algorithms from the imperative world in a purely functional setting.</p>
+<p>Next time I'll start to explore how we can mix this approach with a novel (to me) choice of number system to dynamize and deamortize large immutable lookup structures.</p>
+<p>Happy Halloween!</p>
+<p>-<a href="mailto:ekmett@gmail.com">Edward Kmett</a>
+Oct 31, 2013</p>
+</article><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: School of Haskell. Date displayed by School of Haskell; may reflect a later revision.</p><p><a href="../../../source/articles/oblivious-deamortized-st.md" download>Article Markdown</a> · <a href="../../../source/articles/oblivious-deamortized-st.original.md" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2013/editorial-procrustean-mathematics/">Procrustean Mathematics →</a><a href="../../../reader/2013/cellular-automata-part-3/">Part III: A World in a Bottle →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

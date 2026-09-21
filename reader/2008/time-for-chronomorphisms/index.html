@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Time for Chronomorphisms · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Category Theory · Comonads · Haskell · Monads</span><span>Edward Kmett · <time datetime="2008-04-26">26 April 2008</time></span></div><h1>Time for Chronomorphisms</h1></header><article class="prose"><p>First, we can make the <a href="../../../reader/2008/generalized-hylomorphisms/">generalized hylomorphism</a> from the other day more efficient by noting that once you inline the <a href="http://en.wikipedia.org/wiki/Hylomorphism_(computer_science)">hylomorphism</a>, you can see that you do 3 fmaps over the same structure, so we can fuse those together yielding:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">g_hylo</span> :: (<span class="hljs-type">Comonad</span> w, <span class="hljs-type">Functor</span> f, <span class="hljs-type">Monad</span> m) =&gt;
+          (<span class="hljs-keyword">forall</span> a. f (w a) -&gt; w (f a)) -&gt;
+          (<span class="hljs-keyword">forall</span> a. m (f a) -&gt; f (m a)) -&gt;
+          (f (w b) -&gt; b) -&gt;
+          (a -&gt; f (m a)) -&gt;
+          (a -&gt; b)
+<span class="hljs-title">g_hylo</span> w m f g = extract . g_hylo' w m f g . return
+
+<span class="hljs-comment">-- | the kernel of the generalized hylomorphism</span>
+<span class="hljs-title">g_hylo'</span> :: (<span class="hljs-type">Comonad</span> w, <span class="hljs-type">Functor</span> f, <span class="hljs-type">Monad</span> m) =&gt;
+          (<span class="hljs-keyword">forall</span> a. f (w a) -&gt; w (f a)) -&gt;
+          (<span class="hljs-keyword">forall</span> a. m (f a) -&gt; f (m a)) -&gt;
+          (f (w b) -&gt; b) -&gt;
+          (a -&gt; f (m a)) -&gt;
+          (m a -&gt; w b)
+<span class="hljs-title">g_hylo'</span> w m f g =
+    liftW f . w .
+    fmap (duplicate . g_hylo' w m f g . join) .
+    m . liftM g
+</code></pre>
+<p>Also, the above made me realize that most of the generalized cata/ana, etc morphisms give you a little more interesting stuff to do if you separate out the recursive part. Then you can pass it a monad built with something other than return to perform substitution on, or inspect the comonadic wrapper on the result.</p>
+<p>Oh, and to support my earlier claim that g_hylo generalizes g_cata and g_ana here are derivations of each in terms of g_hylo.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">g_cata</span> :: (<span class="hljs-type">Functor</span> f, <span class="hljs-type">Comonad</span> w) =&gt;
+    (<span class="hljs-keyword">forall</span> a. f (w a) -&gt; w (f a)) -&gt;
+    (f (w a) -&gt; a) -&gt;
+    <span class="hljs-type">Mu</span> f -&gt; a
+
+<span class="hljs-title">g_cata</span> k f = g_hylo k (fmap <span class="hljs-type">Id</span> . runId) f (fmap <span class="hljs-type">Id</span> . outF)
+
+<span class="hljs-title">g_ana</span> :: (<span class="hljs-type">Functor</span> f, <span class="hljs-type">Monad</span> m) =&gt;
+   (<span class="hljs-keyword">forall</span> a. m (f a) -&gt; f (m a)) -&gt;
+   (a -&gt; f (m a)) -&gt;
+   a -&gt; <span class="hljs-type">Nu</span> f
+<span class="hljs-title">g_ana</span> k g = g_hylo (<span class="hljs-type">Id</span> . fmap runId) k (<span class="hljs-type">InF</span> . fmap runId) g
+</code></pre>
+<p>As an aside, histomorphisms have a dual that seems to be elided from most lists of recursion schemes: <a href="http://www.mii.lt/informatica/pdf/INFO141.pdf">Uustalu and Vene</a> call it a futumorphism. It basically lets you return a structure with seeds multiple levels deep rather than have to plumb 'one level at a time' through the anamorphism. While a histomorphism is a generalized catamorphism parameterized by the cofree comonad of your functor, a futumorphism is a generalized anamorphism parameterized by the free monad of your functor.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">futu</span> :: <span class="hljs-type">Functor</span> f =&gt; (a -&gt; f (<span class="hljs-type">Free</span> f a)) -&gt; a -&gt; <span class="hljs-type">Nu</span> f
+<span class="hljs-title">futu</span> f = ana ((f ||| id) . runFree) . return
+</code></pre>
+<p>Now, g_hylo is painfully general, so lets look at a particularly interesting choice of comonad and monad for a given functor that always have a distributive law: the cofree comonad, and the free monad of that very same functor!</p>
+<p>This gives rise to a particular form of morphism that I haven't seem talked about in literature, which after kicking a few names around on the haskell channel we chose to call a <strong>chronomorphism</strong> because it subsumes histo- and futu- morphisms.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">chrono</span> :: <span class="hljs-type">Functor</span> f =&gt;
+    (f (<span class="hljs-type">Cofree</span> f b) -&gt; b) -&gt;
+    (a -&gt; f (<span class="hljs-type">Free</span> f a)) -&gt;
+    a -&gt; b
+</code></pre>
+<p>Unlike most of the types of these generalized recursion schemes, chrono's type is quite readable!</p>
+<p>A chronomorphism's fold operation can 'look back' at the results it has given, and its unfold operation can 'jump forward' by returning seeds nested multiple levels deep. It relies on the fact that you always have a distributive law for the cofree comonad of your functor over the functor itself and also one for the functor over its free monad and so it works for any Functor.</p>
+<p>You can generalize it like you generalize histomorphisms and futumorphisms, and derive ana and catamorphisms from it by noting the fact that you can fmap extract or fmap return to deal with the cofree comonad or free monad parts of the term.</p>
+<p>Alternately, since the 'identity comonad' can be viewed as the cofree comonad of the <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>⊥</mo></mrow><annotation encoding="application/x-tex">\perp</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.6944em;"></span><span class="mrel">⊥</span></span></span></span> Functor that maps everything to <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>⊥</mo></mrow><annotation encoding="application/x-tex">\perp</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.6944em;"></span><span class="mrel">⊥</span></span></span></span>, you can also choose to rederive generalized futumorphisms from generalized chronomorphism using the distributive law of the identity comonad.</p>
+<p>Below you'll find source code for generalized hylo- cata- ana- histo- futu- chrono- etc... morphisms and their separated kernels.</p>
+<p><a href="../../../haskell/Chronomorphism.hs">Source Code</a></p>
+<p>As an aside, Dan Doel (dolio) has started packaging these up for addition to category-extras in Hackage.</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/recursion-schemes"><code>recursion-schemes</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/time-for-chronomorphisms.md" download>Article Markdown</a> · <a href="../../../source/articles/time-for-chronomorphisms.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2008/unnatural-transformations/">Unnatural Transformations →</a><a href="../../../reader/2008/dynamorphisms-as-chronomorphisms/">Dynamorphisms as Chronomorphisms →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

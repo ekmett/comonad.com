@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zipping and Unzipping Functors · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Comonads · Haskell</span><span>Edward Kmett · <time datetime="2008-05-04">4 May 2008</time></span></div><h1>Zipping and Unzipping Functors</h1></header><article class="prose"><span id="more-54"></span><p>Kefer asked a question in the comments of my post about <a href="../../../reader/2008/deriving-strength-from-laziness/">(co)monadic (co)strength</a> about Uustalu and Vene's ComonadZip class from p157 of <a href="http://cs.ioc.ee/~tarmo/papers/cefp05.pdf">The Essence of Dataflow Programming</a>. The class in question is:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Comonad</span> w =&gt; <span class="hljs-type">ComonadZip</span> w <span class="hljs-keyword">where</span></span>
+     czip :: f a -&gt; f b -&gt; f (a, b)
+</code></pre>
+<p>In response I added <a href="../../../haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Zip.html">Control.Functor.Zip</a> [<a href="../../../haskell/category-extras/src/Control/Functor/Zip.hs">Source</a>] to my nascent rebundled version of category-extras, which was posted up to hackage earlier today.</p>
+<p>Putting aside the dual operation for the moment, we can dispense with the inverse of zip quite simply, for much the same reason that every functor in Haskell is strong, every functor in haskell is unzippable:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">unfzip</span> :: <span class="hljs-type">Functor</span> f =&gt; f (a, b) -&gt; (f a, f b)
+<span class="hljs-title">unfzip</span> = fmap fst &amp;&amp;&amp; fmap snd
+</code></pre>
+<p>On the other hand the question of what Functors are zippable is a little trickier. Allowing for a circular definition between fzip and fzipWith we can start with the following class for which you have to implement at least one of fzip or fzipWith.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Functor</span> f =&gt; <span class="hljs-type">Zip</span> f <span class="hljs-keyword">where</span></span>
+  fzip :: f a -&gt; f b -&gt; f (a, b)
+  fzip = fzipWith (,)
+  fzipWith :: (a -&gt; b -&gt; c) -&gt; f a -&gt; f b -&gt; f c
+  fzipWith f <span class="hljs-keyword">as</span> bs = fmap (uncurry f) (fzip <span class="hljs-keyword">as</span> bs)
+</code></pre>
+<p>Here we set aside the restriction that we only be able to Zip a comonad, and simply require that if the functor in question is a comonad, then it is a "symmetric semi-monoidal comonad", which is to say that zipping and then extracting yields the same result as extracting from each separately. You may note a lot of similarity in the above to the definition for <a href="../../../haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Zap.html">Control.Functor.Zap</a> the Dual functor from <a href="../../../reader/2008/the-cofree-comonad-and-the-expression-problem/">the other day</a>.</p>
+<p>Now, we can throw ourselves with reckless abandon at the easy cases:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Zip</span> <span class="hljs-type">Identity</span> <span class="hljs-keyword">where</span></span>
+  fzipWith f (<span class="hljs-type">Identity</span> a) (<span class="hljs-type">Identity</span> b) = <span class="hljs-type">Identity</span> (f a b)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Zip</span> [] <span class="hljs-keyword">where</span></span>
+  fzip = zip
+  fzipWith = zipWith
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Zip</span> <span class="hljs-type">Maybe</span> <span class="hljs-keyword">where</span></span>
+  fzipWith f (<span class="hljs-type">Just</span> a) (<span class="hljs-type">Just</span> b) = <span class="hljs-type">Just</span> (f a b)
+  fzipWith f _ _ = <span class="hljs-type">Nothing</span>
+</code></pre>
+<p>But we note that Either causes us to break down, we can't handle the 'mixed' cases of Left and Right cleanly. We can however use the same 'cheat' that makes the Writer Monad work, however, and rely on an instance of Monoid, and leaving the left hand side of the bifunctor unchanged to enable us to define:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Monoid</span> a =&gt; <span class="hljs-type">Zip</span> (<span class="hljs-type">Either</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  fzipWith f (<span class="hljs-type">Left</span> a) (<span class="hljs-type">Left</span> b) = <span class="hljs-type">Left</span> (mappend a b)
+  fzipWith f (<span class="hljs-type">Right</span> a) (<span class="hljs-type">Left</span> b) = <span class="hljs-type">Left</span> b
+  fzipWith f (<span class="hljs-type">Left</span> a) (<span class="hljs-type">Right</span> b) = <span class="hljs-type">Left</span> a
+  fzipWith f (<span class="hljs-type">Right</span> a) (<span class="hljs-type">Right</span> b) = <span class="hljs-type">Right</span> (f a b)
+</code></pre>
+<p>and similarly:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Monoid</span> a =&gt; <span class="hljs-type">Zip</span> ((,)a) <span class="hljs-keyword">where</span></span>
+  fzipWith f (a, c) (b, d) = (mappend a b, f c d)
+</code></pre>
+<p>Unfortunately the instance for ((,)a) is a little less than satisfying, what we really want to say there is that we have a <a href="../../../source/unavailable/haskell-1.html">Bifunctor</a> and that it has two parameters that can be zipped together:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Bifunctor</span> p =&gt; <span class="hljs-type">Bizip</span> p <span class="hljs-keyword">where</span></span>
+  bizip :: p a c -&gt; p b d -&gt; p (a,b) (c,d)
+  bizip = bizipWith (,) (,)
+  bizipWith :: (a -&gt; b -&gt; e) -&gt; (c -&gt; d -&gt; f) -&gt; p a c -&gt; p b d -&gt; p e f
+  bizipWith f g <span class="hljs-keyword">as</span> bs = bimap (uncurry f) (uncurry g) (bizip <span class="hljs-keyword">as</span> bs)
+</code></pre>
+<p>Now, we can define a more satisfying instance for (,):</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Bizip</span> (,) <span class="hljs-keyword">where</span></span>
+  bizipWith f g (a,b) (c,d) = (f a c, g b d)
+</code></pre>
+<p>However, by its very nature, an instance for Either eludes us.</p>
+<p>Now, we can define a "Bifunctor-Functor-Functor Bifunctor" transformer that takes a bifunctor and a pair of functors to wrap it around, and derives a new bifunctor and lift the zippability of each of the parts to the zippability of the whole:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">BiffB</span> p f g a b = <span class="hljs-type">BiffB</span> { <span class="hljs-title">runBiffB</span> :: <span class="hljs-title">p</span> (<span class="hljs-title">f</span> <span class="hljs-title">a</span>) (<span class="hljs-title">g</span> <span class="hljs-title">b</span>) }</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Functor</span> <span class="hljs-title">f</span>, <span class="hljs-type">Bifunctor</span> <span class="hljs-title">p</span>, <span class="hljs-type">Functor</span> <span class="hljs-title">g</span>) =&gt; <span class="hljs-type">Bifunctor</span> (<span class="hljs-type">BiffB</span> <span class="hljs-title">p</span> <span class="hljs-title">f</span> <span class="hljs-title">g</span>) <span class="hljs-keyword">where</span></span>
+  bimap f g = <span class="hljs-type">BiffB</span> . bimap (fmap f) (fmap g) . runBiffB
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Zip</span> <span class="hljs-title">f</span>, <span class="hljs-type">Bizip</span> <span class="hljs-title">p</span>, <span class="hljs-type">Zip</span> <span class="hljs-title">g</span>) =&gt; <span class="hljs-type">Bizip</span> (<span class="hljs-type">BiffB</span> <span class="hljs-title">p</span> <span class="hljs-title">f</span> <span class="hljs-title">g</span>) <span class="hljs-keyword">where</span></span>
+  bizipWith f g <span class="hljs-keyword">as</span> bs = <span class="hljs-type">BiffB</span> $ bizipWith (fzipWith f) (fzipWith g) (runBiffB <span class="hljs-keyword">as</span>) (runBiffB bs)
+</code></pre>
+<p>What is interesting about this is that the <a href="../../../haskell/category-extras/dist/doc/html/category-extras/Control-Comonad-Cofree.html">cofree comonad</a> and <a href="../../../haskell/category-extras/dist/doc/html/category-extras/Control-Monad-Free.html">free monad</a> can be defined in terms of BiffB given a definition for the <a href="../../../source/unavailable/haskell-2.html">fixed point of a bifunctor</a>:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">FixB</span> s a = <span class="hljs-type">InB</span> { <span class="hljs-title">outB</span> :: <span class="hljs-title">s</span> <span class="hljs-title">a</span> (<span class="hljs-type">FixB</span> <span class="hljs-title">s</span> <span class="hljs-title">a</span>) }</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Bifunctor</span> s =&gt; <span class="hljs-type">Functor</span> (<span class="hljs-type">FixB</span> <span class="hljs-title">s</span>) <span class="hljs-keyword">where</span></span>
+  fmap f = <span class="hljs-type">InB</span> . bimap f (fmap f) . outB
+
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Cofree</span> f a = <span class="hljs-type">FixB</span> (<span class="hljs-type">BiffB</span> (,) <span class="hljs-type">Identity</span> f) a</span>
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Free</span> f a = <span class="hljs-type">FixB</span> (<span class="hljs-type">BiffB</span> <span class="hljs-type">Either</span> <span class="hljs-type">Identity</span> <span class="hljs-title">f</span>) a</span>
+</code></pre>
+<p>Then we can define that the fixed point of a zippable bifunctor is a zippable functor:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Bizip</span> p =&gt; <span class="hljs-type">Zip</span> (<span class="hljs-type">FixB</span> <span class="hljs-title">p</span>) <span class="hljs-keyword">where</span></span>
+  fzipWith f <span class="hljs-keyword">as</span> bs = <span class="hljs-type">InB</span> $ bizipWith f (fzipWith f) (outB <span class="hljs-keyword">as</span>) (outB bs)
+</code></pre>
+<p>Then it immediately follows by the construction for BiffB that every Cofree Comonad of a zippable base functor is Zippable because they are the fixed point of BiffB (,) Identity f. and since (,) is zippable and Identity is zippable, then given f zippable the base bifunctor is zippable, so Cofree f is zippable.</p>
+<p>On the other hand, we do not get the same result for the <a href="../../../reader/2008/monads-for-free/">Free Monad</a>, because it is built over BiffB Either Identity f, and Either is not a zippable bifunctor.</p>
+<p>We can define some other functors and bifunctors which are zippable, i.e. we can define a <a href="../../../source/unavailable/haskell-0.html">"functor-wrapped bifunctor bifunctor"</a>:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">FunctorB</span> f p a b = <span class="hljs-type">FunctorB</span> { <span class="hljs-title">runFunctorB</span> :: <span class="hljs-title">f</span> (<span class="hljs-title">p</span> <span class="hljs-title">a</span> <span class="hljs-title">b</span>) }</span>
+
+<span class="hljs-title">liftFunctorB</span> :: <span class="hljs-type">Functor</span> f =&gt; (p a b -&gt; p c d) -&gt; <span class="hljs-type">FunctorB</span> f p a b -&gt; <span class="hljs-type">FunctorB</span> f p c d
+<span class="hljs-title">liftFunctorB</span> f = <span class="hljs-type">FunctorB</span> . fmap f . runFunctorB
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Functor</span> <span class="hljs-title">f</span>, <span class="hljs-type">Bifunctor</span> <span class="hljs-title">p</span>) =&gt; <span class="hljs-type">Bifunctor</span> (<span class="hljs-type">FunctorB</span> <span class="hljs-title">f</span> <span class="hljs-title">p</span>) <span class="hljs-keyword">where</span></span>
+  bimap f g = liftFunctorB (bimap f g)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Zip</span> <span class="hljs-title">f</span>, <span class="hljs-type">Bizip</span> <span class="hljs-title">p</span>) =&gt; <span class="hljs-type">Bizip</span> (<span class="hljs-type">FunctorB</span> <span class="hljs-title">f</span> <span class="hljs-title">p</span>) <span class="hljs-keyword">where</span></span>
+  bizipWith f g <span class="hljs-keyword">as</span> bs = <span class="hljs-type">FunctorB</span> $ fzipWith (bizipWith f g) (runFunctorB <span class="hljs-keyword">as</span>) (runFunctorB bs)
+</code></pre>
+<p>But the general pattern was set by Either and Maybe. Whenever your functor has a branch you need a way to uniquely determine the way the constant terms combine.</p>
+<p>While I think the above yields a pleasingly generic version of zip. I do not believe that I have exhausted the set of possible instances, but yielding them automatically for cofree comonads of zippable functors, and hence for rose trees, streams, was rather nice.</p>
+<p>If you have any other instances of note, I would welcome the insight.</p>
+<p>[<a href="https://hackage.haskell.org/package/category-extras-0.44.1">category-extras-0.44.1</a>]</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/category-extras"><code>category-extras</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><section class="comments" id="comments"><h2>From the original discussion</h2><p class="editorial">Selected questions, explanations, and corrections. Original wording and dates; spam and automated trackbacks omitted.</p><article class="comment" id="comment-1163"><header><strong>Twan van Laarhoven</strong><a href="../../../reader/2008/zipping-and-unzipping-functors/#comment-1163">May 5th, 2008 at 3:53 pm</a></header><p>your Zip class is almost the same as Applicative:</p>
+<p>fzipWith f a b = fmap f a b</p>
+<p>Your fzip function is suggested in the Applicative paper as making more sense from a category theory perspective.</p>
+<p>This also raises the question of what exactly fzip should do. How do you say that it should ‘zip’? For instance [] is also an applicative functor with the usual Monad-style cartestian product behaviour.</p>
+<p>Specifying that unfzip is the inverse of fzip is a good idea. For [] fzip is only a right inverse of unfzip, since you could zip lists of different lengths. The same holds for Maybe: funzip (fzip (Just x) Nothing) /= (Just x, Nothing).</p>
+</article><article class="comment" id="comment-9740"><header><strong>Edward Kmett</strong><a href="../../../reader/2008/zipping-and-unzipping-functors/#comment-9740">June 22nd, 2009 at 4:59 pm</a></header><p>@Jake</p>
+<p>I almost agree. I’ve had people point out the connection to Applicative on several occasions before, but it falters slightly.</p>
+<p>There is no requirement for the existence of unit, so your functor need not be pointed. This permits the class of zippable functors to be slightly wider than the class of applicative functors.</p>
+<p>Secondly the particular near-applicative operation is selected explicitly so it will be a left inverse to unzip.</p>
+<p>fzip . unfzip = id</p>
+<p>Since that should hold for any functor to claim to be a member of Zip the definition is narrower than that of Applicative. Using list monad semantics for fzip on [] would fail this law.</p>
+<p>So Zip is neither a superclass nor a subclass of Applicative.</p>
+<p>That, at least, was my justification for a zippable functor as an independent concept; I may not have fully articulated the justification back when i wrote this article.</p>
+</article></section><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/zipping-and-unzipping-functors.md" download>Article Markdown</a> · <a href="../../../source/articles/zipping-and-unzipping-functors.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2008/deriving-strength-from-laziness/">Deriving Strength from Laziness →</a><a href="../../../reader/2008/cozipping/">Cozipping →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conquering Folds · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Haskell</span><span>Edward Kmett · <time datetime="2013-09-13">13 September 2013</time></span></div><h1>Conquering Folds</h1></header><details class="contents"><summary>On this page</summary><ol><li><a href="#close-encounters-of-the-third-kind">Close Encounters of the Third Kind</a></li><li><a href="#beyond-lists">Beyond Lists</a></li><li><a href="#clowns-and-jokers">Clowns And Jokers</a></li><li><a href="#example-nats">Example: Nats</a></li><li><a href="#conquering-reflection">Conquering Reflection</a></li><li><a href="#on-the-run">On the Run</a></li><li><a href="#comonad-and-conquer">Comonad and Conquer</a></li><li><a href="#example-folding-lists">Example: Folding Lists</a></li><li><a href="#putting-it-to-work">Putting it to Work</a></li><li><a href="#example-folding-trees">Example: Folding Trees</a></li><li><a href="#putting-it-all-together">Putting It All Together</a></li><li><a href="#go-and-make-it-fast">Go And Make It Fast</a></li></ol></details><article class="prose"><p>I've been posting a lot about comonads lately, mostly for working with folds of various flavors over lists.</p>
+<p>This time I want to take a different tack and use the tools we've been building to perform certain computations over arbitrary polynomial data types in parallel with arbitrary cuts of the data potentially distributed on different hosts.</p>
+<h2 id="close-encounters-of-the-third-kind">Close Encounters of the Third Kind</h2>
+<p>The techniques I want to use here derive from an old "folklore" tool in the constructive algorithmics community known as the <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.45.2247&rep=rep1&type=pdf">"Third Homomorphism Theorem"</a>, which was written up back in 1995 by <a href="http://www.cs.ox.ac.uk/people/jeremy.gibbons/">Jeremy Gibbons</a>, but which dates back further to a conjecture by <a href="http://web.comlab.ox.ac.uk/oucl/people/richard.bird.html">Richard Bird</a> that was proven by a bored <a href="http://www.kestrel.edu/home/people/meertens/">Lambert Meertens</a> on a train ride through the Netherlands in 1989.</p>
+<img alt="Illustration from Conquering Folds" loading="lazy" src="../../../assets/imported/c64dfacc49d3-closeencounters1.jpg">
+<p>The Third Homomorphism Theorem basically states that if you can compute something as both a left fold and a right fold then you can compute it monoidally.</p>
+<p>It is wrapped up in slightly different vocabulary, and various treatments often forget the unit for the monoid or work with what would be non-empty lists. The terminology in the papers that talk about it focus on list homomorphisms, which are just monoid homomorphisms from the list monoid.</p>
+<p>The Third Homomorphism Theorem also provides a not-so-efficient way to derive such a <code>Monoid</code>, that you can then hopefully improve by reasoning about your special case. In Gibbons' paper on the topic, he derives <em>O(n log n)</em> <code>mergesort</code> from the <em>O(n^2)</em> <code>insertsort</code> via the sort of equational reasoning that is the hallmark of the constructive algorithmics style.</p>
+<p>Unfortunately, you <em>do</em> have to reason about the particular list homomorphism to make it useful, as the result is generally not terribly efficient without some effort.</p>
+<p>Sadly, the Third Homomorphism Theorem itself isn't terribly useful as an automated parallelization technique. There has actually been some progress in that area in terms of parallel skeletons, but it has been a pretty slow couple of decades.</p>
+<p>If we ignore the particulars of how the theorem itself is used, and just focus on what it means, then it does help indicate that something like <code>foldMap</code> is a potentially powerful tool, but we've pretty much accepted that by now.</p>
+<p>In addition, the original Gibbons' paper linked above also supplied most of the examples in Conal Elliott's 2011 series on <a href="http://conal.net/blog/posts/deriving-list-scans">"Deriving List Scans"</a> about 16 years earlier, and is generally good reading, so it is a good way to get your head around that style of equational reasoning.</p>
+<h2 id="beyond-lists">Beyond Lists</h2>
+<p>But the Third Homomorphism Theorem is of course all <em>about</em> lists, so how can we use it to manipulate other things?</p>
+<p>This topic was broached by Morihata et al. in  <a href="http://www.prg.nii.ac.jp/publications/2009/popl09.pdf">"The Third Homomorphism Theorem on Trees"</a>, which noted that <a href="http://www.st.cs.uni-saarland.de/edu/seminare/2005/advanced-fp/docs/huet-zipper.pdf">Gérard Huet's notion of a zipper</a> is just a <em>list</em> of steps, and so we can apply the third <em>list</em> homomorphism theorem to it.</p>
+<p>So if you can compute something that can push information down the tree, and which can push information up the tree, then you can derive a list homomorphism that you can use on the zipper itself, and then you can subdivide your tree however you want, and compute partial answers that you can stitch together.</p>
+<p>So, let's do that!</p>
+<h2 id="clowns-and-jokers"><a href="http://www.youtube.com/watch?v=8StG4fFWHqg">Clowns And Jokers</a></h2>
+<p>Conor McBride wrote the first section of the wonderfully-titled <a href="http://strictlypositive.org/Dissect.pdf">"Clowns to the left of me, jokers to the right"</a> on how one can compute the derivatives of a polynomial functor and use it as a one hole context.</p>
+<p><em>Edit:</em> It was pointed out to me on reddit that perhaps I should have cited the more directly relevant <a href="http://strictlypositive.org/diff.pdf">The Derivative of a Regular Type is its Type of One-Hole Contexts</a> instead.</p>
+<p>My first attempt at writing this up actually used GHC.Generics to derive the zippers automatically, based on Conor's formulae. Unfortunately, the automatically generated zippers aren't really fit for human consumption.</p>
+<p>Consequently, I'm going to be asking the user to describe their derivatives manually, and I'll try to keep the set of steps minimal.</p>
+<p>In particular, I'm going to be working with some kind of recursive data type <code>t</code>, for which I'll assume it can be presented as the fixed point of some base functor <code>f</code>. I'll never actually need to use <code>f</code> directly, but when I talk about the "derivative" <code>D t</code> of <code>t</code>, I'll actually mean the derivative of the base functor for <code>t</code>.</p>
+<p>The derivative of a polynomial functor is also polynomial, so we can expect <code>D t</code> to be <code>Traversable</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Recursive</span> t <span class="hljs-keyword">where</span></span>
+  <span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">D</span> t :: * -&gt; *</span>
+  walk   :: <span class="hljs-type">Applicative</span> f =&gt; (a -&gt; f b) -&gt; <span class="hljs-type">D</span> t a -&gt; f (<span class="hljs-type">D</span> t b)
+  ...
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Recursive</span> t =&gt; <span class="hljs-type">Functor</span> (<span class="hljs-type">D</span> <span class="hljs-title">t</span>) <span class="hljs-keyword">where</span></span>
+  fmap = fmapDefault
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Recursive</span> t =&gt; <span class="hljs-type">Foldable</span> (<span class="hljs-type">D</span> <span class="hljs-title">t</span>) <span class="hljs-keyword">where</span></span>
+  foldMap = foldMapDefault
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Recursive</span> t =&gt; <span class="hljs-type">Traversable</span> (<span class="hljs-type">D</span> <span class="hljs-title">t</span>) <span class="hljs-keyword">where</span></span>
+  traverse = walk
+</code></pre>
+<p>But before we continue too far we'll need to add a couple of additional methods to <code>Recursive</code>.</p>
+<p>If we have a derivative of <code>t</code>, then it is a 'one hole context'. It is one level of the base functor of <code>t</code>, wrapped around <code>t</code>s, with one of the <code>t</code>s ripped out. We want some way to <code>plug</code> that hole:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Recursive</span> t <span class="hljs-keyword">where</span></span>
+  ...
+  plug   :: <span class="hljs-type">D</span> t t -&gt; t -&gt; t
+</code></pre>
+<p>We also need some way to pick a path through our <code>t</code>.</p>
+<p>For simplicity and to make the tools I want to build later easier to work with using standard Haskell classes I'm going to assume that you can either find a hole and name its contents or we've reached a trivial leaf.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Recursive</span> t <span class="hljs-keyword">where</span></span>
+  ...
+  path :: t -&gt; <span class="hljs-type">Maybe</span> (<span class="hljs-type">D</span> t t, t)
+</code></pre>
+<p>For now I'm just going to assume you can pick a path. Perhaps it'd be more interesting later on to try to choose a better path when we talk about parallelism. e.g. using <a href="http://en.wikipedia.org/wiki/Heavy_path_decomposition">heavy path decomposition</a> or <a href="http://courses.csail.mit.edu/6.897/spring05/lec/lec19.pdf">long path decomposition</a>, but I'll leave that to you to play with.</p>
+<p>Putting it all together we have:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Recursive</span> t <span class="hljs-keyword">where</span></span>
+  <span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">D</span> t :: * -&gt; *</span>
+  plug :: <span class="hljs-type">D</span> t t -&gt; t -&gt; t
+  walk :: <span class="hljs-type">Applicative</span> f =&gt; (a -&gt; f b) -&gt; <span class="hljs-type">D</span> t a -&gt; f (<span class="hljs-type">D</span> t b)
+  path :: t -&gt; <span class="hljs-type">Maybe</span> (<span class="hljs-type">D</span> t t, t)
+</code></pre>
+<p>This is enough that we can peel apart our data type into a zipper. Remember we asserted that all the leaves were boring, there isn't any leaf value type to go with the zipper.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Z</span> t = [<span class="hljs-type">D</span> t t]</span>
+
+<span class="hljs-title">divide</span> :: <span class="hljs-type">Recursive</span> t =&gt; t -&gt; <span class="hljs-type">Z</span> t
+<span class="hljs-title">divide</span> = unfoldr path
+</code></pre>
+<p>If on the other hand we do have something interesting that we want to use to fill in a hole, we can plug it in by recursively folding our way up the tree.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">zipped</span> :: <span class="hljs-type">Recursive</span> t =&gt; <span class="hljs-type">Z</span> t -&gt; t -&gt; t
+<span class="hljs-title">zipped</span> dt t = <span class="hljs-type">Prelude</span>.foldr plug t dt
+</code></pre>
+<h2 id="example-nats">Example: Nats</h2>
+<p>If we take a look at the basic Peano-style natural number type in Haskell:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Nat</span> = <span class="hljs-type">Z</span> | <span class="hljs-type">S</span> <span class="hljs-type">Nat</span></span>
+</code></pre>
+<p>We can talk about the type of one-hole contexts there are in its base functor, and it is easy to plug it back up, since there is only one case. Once we take the only hole for our one-hole context, there aren't any uses of the type parameter left.</p>
+<p>Similarly the <code>path</code> only has one option for us at every turn.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Recursive</span> <span class="hljs-type">Nat</span> <span class="hljs-keyword">where</span></span>
+  <span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">D</span> <span class="hljs-type">Nat</span> a = <span class="hljs-type">Succ</span></span>
+  plug <span class="hljs-type">Succ</span> = <span class="hljs-type">S</span>
+  walk _ <span class="hljs-type">Succ</span> = pure <span class="hljs-type">Succ</span>
+  path (<span class="hljs-type">S</span> n) = <span class="hljs-type">Just</span> (<span class="hljs-type">Succ</span>, n)
+  path <span class="hljs-type">Z</span>     = <span class="hljs-type">Nothing</span>
+</code></pre>
+<p>I'll throw a few more instances up later as we get to where we can use them.</p>
+<p>Needless to say I'm not going to get a lot of parallelism out of a <code>Nat</code>.</p>
+<h2 id="conquering-reflection">Conquering Reflection</h2>
+<p>So now we're ready to actually build our divide-and-conquer <code>Comonad</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Conquer</span> t a = forall b. <span class="hljs-type">Monoid</span> b =&gt; <span class="hljs-type">Conquer</span> (<span class="hljs-title">b</span> -&gt; <span class="hljs-title">a</span>) (<span class="hljs-type">D</span> <span class="hljs-title">t</span> <span class="hljs-title">b</span> -&gt; <span class="hljs-title">b</span>)</span>
+</code></pre>
+<p>What we're saying is, if you can reduce one level of the zipper's path to a monoidal result, where you've already reduced all of the other parts to the monoid, we can smash together all the answers and use the final calculation to give you an 'a' for your overall tree.</p>
+<p>If you were paying attention last time at the end of my post on parallelizing CRC calculations, this may look somewhat familiar, except for the fact that I've given in to peer pressure and decided to use an actual <code>Monoid</code>, and the input type now references the same <code>Monoid</code>.</p>
+<p>We can still use <code>reflection</code> to manufacture the <code>Monoid</code> if needed, without the user ever being any the wiser:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">M</span> a p = <span class="hljs-type">M</span> { <span class="hljs-title">runM</span> :: <span class="hljs-title">a</span> }</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Reifies</span> p (<span class="hljs-title">a</span> -&gt; <span class="hljs-title">a</span> -&gt; <span class="hljs-title">a</span>, <span class="hljs-title">a</span>)  =&gt; <span class="hljs-type">Monoid</span> (<span class="hljs-type">M</span> <span class="hljs-title">a</span> <span class="hljs-title">p</span>) <span class="hljs-keyword">where</span></span>
+  mempty = <span class="hljs-type">M</span> $ snd $ reflect (<span class="hljs-type">Proxy</span> :: <span class="hljs-type">Proxy</span> p)
+  mappend (<span class="hljs-type">M</span> a) (<span class="hljs-type">M</span> b) = <span class="hljs-type">M</span> $ fst (reflect (<span class="hljs-type">Proxy</span> :: <span class="hljs-type">Proxy</span> p)) a b
+
+<span class="hljs-title">conquer</span> :: <span class="hljs-keyword">forall</span> t a b. <span class="hljs-type">Recursive</span> t =&gt;
+  (b -&gt; a) -&gt; (<span class="hljs-type">D</span> t b -&gt; b) -&gt; (b -&gt; b -&gt; b) -&gt; b -&gt; <span class="hljs-type">Conquer</span> t a
+<span class="hljs-title">conquer</span> k h m z = reify (m,z) $ \(<span class="hljs-type">Proxy</span> :: <span class="hljs-type">Proxy</span> p) -&gt; <span class="hljs-type">Conquer</span>
+   (k . runM :: <span class="hljs-type">M</span> b p -&gt; a) (<span class="hljs-type">M</span> . h . fmap runM)
+</code></pre>
+<h2 id="on-the-run">On the Run</h2>
+<p><code>Conquer</code> describes a calculation that we expect to be able to work with both up or down the paths of the tree. Morihata et al would probably call it a path-based decomposition. However, this presentation diverges a bit from theirs to let me vary the result type covariantly and to match up with the other foldings I've been talking about lately.</p>
+<p>Now that we can build one, we should figure out how to apply it:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">run</span> :: <span class="hljs-type">Recursive</span> t =&gt; <span class="hljs-type">Conquer</span> t a -&gt; t -&gt; a
+<span class="hljs-title">run</span> (<span class="hljs-type">Conquer</span> k h) = k . go <span class="hljs-keyword">where</span>
+  go = foldMap (h . fmap go) . divide
+</code></pre>
+<p>To run our decomposition, we first take the input and divide it by pulling down the zipper. Then we run down the zipper recursively transforming each of the other entries in the context using the same approach, then applying (h :: D t b -&gt; b) to the intermediate results. When we're all done, we polish up with whatever function we wanted to use to make the result presentable to the end-user.</p>
+<h2 id="comonad-and-conquer"><a href="http://www.commandandconquer.com/en">Comonad and Conquer</a></h2>
+<p><code>Conquer</code> admits many of the same instances as <code>M</code> and <code>L</code> from the <a href="https://hackage.haskell.org/package/folds"><code>folds</code></a> package. One of the main reasons is that we assumed that the leaf was trivial. We lose a lot of structure if we don't.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Pair</span> a b = <span class="hljs-type">Pair</span> { <span class="hljs-title">pi1</span> :: !<span class="hljs-title">a</span>, <span class="hljs-title">pi2</span> :: !<span class="hljs-title">b</span> }</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Monoid</span> <span class="hljs-title">a</span>, <span class="hljs-type">Monoid</span> <span class="hljs-title">b</span>) =&gt; <span class="hljs-type">Monoid</span> (<span class="hljs-type">Pair</span> <span class="hljs-title">a</span> <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+  mempty = <span class="hljs-type">Pair</span> mempty mempty
+  mappend (<span class="hljs-type">Pair</span> a b) (<span class="hljs-type">Pair</span> c d) = <span class="hljs-type">Pair</span> (mappend a c) (mappend b d)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> (<span class="hljs-type">Conquer</span> <span class="hljs-title">t</span>) <span class="hljs-keyword">where</span></span>
+  fmap f (<span class="hljs-type">Conquer</span> k h) = <span class="hljs-type">Conquer</span> (f.k) h
+</code></pre>
+<p>The <code>Comonad</code> is basically identical to the one for <code>M</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Comonad</span> (<span class="hljs-type">Conquer</span> <span class="hljs-title">t</span>) <span class="hljs-keyword">where</span></span>
+  extract (<span class="hljs-type">Conquer</span> k h) = k mempty
+  duplicate (<span class="hljs-type">Conquer</span> k h) = <span class="hljs-type">Conquer</span> (\b -&gt; <span class="hljs-type">Conquer</span> (k . mappend b) h) h
+</code></pre>
+<p>And we get a nice <code>Applicative</code> that can be used to fuse together multiple passes:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Recursive</span> t =&gt; <span class="hljs-type">Applicative</span> (<span class="hljs-type">Conquer</span> <span class="hljs-title">t</span>) <span class="hljs-keyword">where</span></span>
+  pure a = <span class="hljs-type">Conquer</span> (const a) (const ())
+  <span class="hljs-type">Conquer</span> kf hf &lt;*&gt; <span class="hljs-type">Conquer</span> ka ha = <span class="hljs-type">Conquer</span>
+    (\(<span class="hljs-type">Pair</span> bf ba) -&gt; kf bf (ka ba))
+    (\dab -&gt; <span class="hljs-type">Pair</span> (hf (pi1 &lt;$&gt; dab)) (ha (pi2 &lt;$&gt; dab)))
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Recursive</span> t =&gt; <span class="hljs-type">ComonadApply</span> (<span class="hljs-type">Conquer</span> <span class="hljs-title">t</span>) <span class="hljs-keyword">where</span></span>
+  (&lt;@&gt;) = (&lt;*&gt;)
+</code></pre>
+<p>We can even get a <code>Monad</code> for rather inefficient multipass folding.</p>
+<p>Now, it isn't immediately obvious which way the <code>Monoid</code> is used when you <code>duplicate</code>, so lets define a couple of helper functions:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">above</span> :: <span class="hljs-type">Recursive</span> t =&gt; <span class="hljs-type">Z</span> t -&gt; <span class="hljs-type">Conquer</span> t a -&gt; <span class="hljs-type">Conquer</span> t a
+<span class="hljs-title">above</span> t0 (<span class="hljs-type">Conquer</span> k h) = <span class="hljs-keyword">let</span> x = go t0 <span class="hljs-keyword">in</span> <span class="hljs-type">Conquer</span> (k . mappend x) h <span class="hljs-keyword">where</span>
+  go = foldMap (h . fmap (go . divide))
+
+<span class="hljs-title">below</span> :: <span class="hljs-type">Recursive</span> t =&gt; <span class="hljs-type">Conquer</span> t a -&gt; <span class="hljs-type">Z</span> t -&gt; <span class="hljs-type">Conquer</span> t a
+<span class="hljs-title">below</span> (<span class="hljs-type">Conquer</span> k h) t0 = <span class="hljs-keyword">let</span> y = go t0 <span class="hljs-keyword">in</span> <span class="hljs-type">Conquer</span> (\x -&gt; k (mappend x y)) h <span class="hljs-keyword">where</span>
+  go = foldMap (h . fmap (go . divide))
+</code></pre>
+<p>These can be used to "pre-apply" our divide-and-conquer comonad to a prefix of our zipper <code>above</code> or <code>below</code> the rest of what we want to feed the fold without leaking space or holding onto anything unnecessarily.</p>
+<h2 id="example-folding-lists">Example: Folding Lists</h2>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Recursive</span> [a] <span class="hljs-keyword">where</span></span>
+  <span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">D</span> [a] b = <span class="hljs-type">Cons</span> { <span class="hljs-title">getCons</span> :: <span class="hljs-title">a</span>} <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>)</span>
+  plug (<span class="hljs-type">Cons</span> a) <span class="hljs-keyword">as</span> = a : <span class="hljs-keyword">as</span>
+  walk _ = pure . <span class="hljs-type">Cons</span> . getCons
+  path (x:xs)   = <span class="hljs-type">Just</span> (<span class="hljs-type">Cons</span> x, xs)
+  path []       = <span class="hljs-type">Nothing</span>
+
+<span class="hljs-title">sumList</span> :: <span class="hljs-type">Conquer</span> [<span class="hljs-type">Int</span>] <span class="hljs-type">Int</span>
+<span class="hljs-title">sumList</span> = <span class="hljs-type">Conquer</span> getSum (<span class="hljs-type">Sum</span> . getCons)
+</code></pre>
+<p>With that we can run the summation over a list.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">&gt;&gt;&gt; run sumList [<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>]
+<span class="hljs-number">6</span>
+</code></pre>
+<p>and we can also partially apply it</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">&gt;&gt;&gt; run (run (duplicate sumList) [<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>]) [<span class="hljs-number">4</span>,<span class="hljs-number">5</span>]
+<span class="hljs-number">15</span>
+</code></pre>
+<p>If we have a zipper lying around with the rest of what we want cut out, we can pre-apply it:</p>
+<pre tabindex="0" aria-label="text code"><code class="language-text">&gt;&gt;&gt; run (above (divide [1,2,3]) sumList) [4,5]
+15
+</code></pre>
+<h2 id="putting-it-to-work">Putting it to Work</h2>
+<p>It isn't immediately obvious that there are many algorithms that you can resolve this way.</p>
+<p>Most of the time when we're talking about tree calculations we're talking about some kind of synthesized or inherited attribute. So what kinds of things can be implemented both ways?</p>
+<p>Let's move to another example, so we can finally get some interesting structure:</p>
+<h2 id="example-folding-trees">Example: Folding Trees</h2>
+<img alt="Illustration from Conquering Folds" loading="lazy" src="../../../assets/imported/bc69c34cda5d-folding-trees.jpg">
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Tree</span> a</span>
+  = <span class="hljs-type">Bin</span> (<span class="hljs-type">Tree</span> a) a (<span class="hljs-type">Tree</span> a)
+  | <span class="hljs-type">Tip</span> <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Recursive</span> (<span class="hljs-type">Tree</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  <span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">D</span> (<span class="hljs-type">Tree</span> <span class="hljs-title">a</span>) b = <span class="hljs-type">L</span> a b | <span class="hljs-type">R</span> b a <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>)</span>
+
+  plug (<span class="hljs-type">L</span> a r) l = <span class="hljs-type">Bin</span> l a r
+  plug (<span class="hljs-type">R</span> l a) r = <span class="hljs-type">Bin</span> l a r
+
+  walk f (<span class="hljs-type">L</span> a b) = <span class="hljs-type">L</span> a &lt;$&gt; f b
+  walk f (<span class="hljs-type">R</span> b a) = (`<span class="hljs-type">R</span>` a) &lt;$&gt; f b
+
+  path (<span class="hljs-type">Bin</span> l a r) = <span class="hljs-type">Just</span> (<span class="hljs-type">L</span> a r, l)
+  path <span class="hljs-type">Tip</span> = <span class="hljs-type">Nothing</span>
+</code></pre>
+<p><code>path</code> has to pick something, so here we just lean to the left.</p>
+<p>Analogous to our <code>sumList</code>, we can define</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">sumTree</span> :: <span class="hljs-type">Num</span> a =&gt; <span class="hljs-type">Conquer</span> (<span class="hljs-type">Tree</span> a) a
+<span class="hljs-title">sumTree</span> = <span class="hljs-type">Conquer</span> getSum $ \ <span class="hljs-keyword">case</span>
+  <span class="hljs-type">L</span> a (<span class="hljs-type">Sum</span> b) -&gt; <span class="hljs-type">Sum</span> (a + b)
+  <span class="hljs-type">R</span> (<span class="hljs-type">Sum</span> b) a -&gt; <span class="hljs-type">Sum</span> (a + b)
+</code></pre>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">&gt;&gt;&gt; run sumTree (<span class="hljs-type">Bin</span> (<span class="hljs-type">Bin</span> <span class="hljs-type">Tip</span> <span class="hljs-number">1</span> <span class="hljs-type">Tip</span>) <span class="hljs-number">2</span> <span class="hljs-type">Tip</span>)
+<span class="hljs-number">3</span>
+</code></pre>
+<p>To give ourselves some non-trivial examples, lets define</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">unfoldTree</span> :: (s -&gt; <span class="hljs-type">Maybe</span> (s, a, s)) -&gt; s -&gt; <span class="hljs-type">Tree</span> a
+<span class="hljs-title">unfoldTree</span> f s = <span class="hljs-keyword">case</span> f s <span class="hljs-keyword">of</span>
+  <span class="hljs-type">Nothing</span> -&gt; <span class="hljs-type">Tip</span>
+  <span class="hljs-type">Just</span> (l, a, r) -&gt; <span class="hljs-type">Bin</span> (unfoldTree f l) a (unfoldTree f r)
+</code></pre>
+<p>To help cut them off:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">takeTree</span> :: <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Tree</span> a -&gt; <span class="hljs-type">Tree</span> a
+<span class="hljs-title">takeTree</span> <span class="hljs-number">0</span> _   = <span class="hljs-type">Tip</span>
+<span class="hljs-title">takeTree</span> n <span class="hljs-type">Tip</span> = <span class="hljs-type">Tip</span>
+<span class="hljs-title">takeTree</span> n (<span class="hljs-type">Bin</span> l a r) = <span class="hljs-type">Bin</span> (takeTree (n-<span class="hljs-number">1</span>) l) a (takeTree (n-<span class="hljs-number">1</span>) r)
+</code></pre>
+<p>Now we can define a nice infinite tree that contains all of the (positive) rationals.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">sternBrocot</span> :: <span class="hljs-type">Tree</span> <span class="hljs-type">Rational</span>
+<span class="hljs-title">sternBrocot</span> = unfoldTree
+  (\(<span class="hljs-type">Pair</span> a b) -&gt; <span class="hljs-type">Just</span> (<span class="hljs-type">Pair</span> (a+<span class="hljs-number">1</span>) b, a % b, <span class="hljs-type">Pair</span> a (b+<span class="hljs-number">1</span>)))
+  (<span class="hljs-type">Pair</span> <span class="hljs-number">1</span> <span class="hljs-number">1</span>)
+</code></pre>
+<img alt="Illustration from Conquering Folds" loading="lazy" src="../../../assets/imported/cf56a311dc62-SternBrocotTree.svg">
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">&gt;&gt;&gt; run sumTree $ takeTree <span class="hljs-number">12</span> sternBrocot
+<span class="hljs-number">26859127</span> % <span class="hljs-number">5544</span>
+</code></pre>
+<p>It is a fun exercise to <code>Conquer</code> a search through the <a href="http://en.wikipedia.org/wiki/Stern%E2%80%93Brocot_tree">Stern-Brocot tree</a> for a given positive <code>Rational</code>. They are all in there, so you'll find it eventually, but the tree goes on forever in all directions.</p>
+<p>So what can we compute that isn't just the usual <code>Foldable</code> fare? After all we could just run through a tree left to right in-order, and answer <code>sum</code>.</p>
+<p>How about the maximum path weight?</p>
+<p>We can compute the maximum path weight top to bottom and bottom to top, so a <code>Monoid</code> for it should exist, by the third homomorphism theorem... and indeed it does!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">mpw</span> :: (<span class="hljs-type">Num</span> a, <span class="hljs-type">Ord</span> a) =&gt; <span class="hljs-type">Conquer</span> (<span class="hljs-type">Tree</span> a) a
+<span class="hljs-title">mpw</span> = conquer k h m (<span class="hljs-type">Pair</span> <span class="hljs-number">0</span> <span class="hljs-number">0</span>) <span class="hljs-keyword">where</span>
+  k (<span class="hljs-type">Pair</span> a _) = a
+  h (<span class="hljs-type">L</span> n m) = <span class="hljs-type">Pair</span> (n + k m) n
+  h (<span class="hljs-type">R</span> m n) = <span class="hljs-type">Pair</span> (n + k m) n
+  m (<span class="hljs-type">Pair</span> m1 w1) (<span class="hljs-type">Pair</span> m2 w2) = <span class="hljs-type">Pair</span> (max m1 (w1 + m2)) (w1 + w2)
+</code></pre>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">&gt;&gt;&gt; run mpw (<span class="hljs-type">Bin</span> (<span class="hljs-type">Bin</span> <span class="hljs-type">Tip</span> <span class="hljs-number">1</span> <span class="hljs-type">Tip</span>) <span class="hljs-number">2</span> (<span class="hljs-type">Bin</span> (<span class="hljs-type">Bin</span> <span class="hljs-type">Tip</span> <span class="hljs-number">2</span> <span class="hljs-type">Tip</span>) <span class="hljs-number">3</span> <span class="hljs-type">Tip</span>))
+<span class="hljs-number">7</span>
+</code></pre>
+<p>Similarly, we can compute the height of the tree. (Note: this version fixes a bug in the paper by Morihata et al.)</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">height</span> :: <span class="hljs-type">Conquer</span> (<span class="hljs-type">Tree</span> a) <span class="hljs-type">Int</span>
+<span class="hljs-title">height</span> = conquer k h m (<span class="hljs-type">Pair</span> <span class="hljs-number">0</span> <span class="hljs-number">0</span>) <span class="hljs-keyword">where</span>
+  k (<span class="hljs-type">Pair</span> a _) = a + <span class="hljs-number">1</span>
+  h (<span class="hljs-type">L</span> n m) = <span class="hljs-type">Pair</span> (k m) <span class="hljs-number">1</span>
+  h (<span class="hljs-type">R</span> m n) = <span class="hljs-type">Pair</span> (k m) <span class="hljs-number">1</span>
+  m (<span class="hljs-type">Pair</span> m1 w1) (<span class="hljs-type">Pair</span> m2 w2) = <span class="hljs-type">Pair</span> (max m1 (w1 + m2)) (w1 + w2)
+</code></pre>
+<h2 id="putting-it-all-together">Putting It All Together</h2>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE ExistentialQuantification #-}</span>
+<span class="hljs-meta">{-# LANGUAGE TypeFamilies #-}</span>
+<span class="hljs-meta">{-# LANGUAGE ScopedTypeVariables #-}</span>
+<span class="hljs-meta">{-# LANGUAGE FlexibleContexts #-}</span>
+<span class="hljs-meta">{-# LANGUAGE UndecidableInstances #-}</span>
+
+<span class="hljs-keyword">import</span> Control.Applicative
+<span class="hljs-keyword">import</span> Control.Comonad
+<span class="hljs-keyword">import</span> Control.Parallel.Strategies
+<span class="hljs-keyword">import</span> Data.Foldable
+<span class="hljs-keyword">import</span> Data.List (<span class="hljs-title">unfoldr</span>)
+<span class="hljs-keyword">import</span> Data.Monoid
+<span class="hljs-keyword">import</span> Data.Proxy
+<span class="hljs-keyword">import</span> Data.Ratio
+<span class="hljs-keyword">import</span> Data.Reflection (<span class="hljs-title">reify</span>, <span class="hljs-type">Reifies(..)</span>)
+<span class="hljs-keyword">import</span> Data.Traversable
+<span class="hljs-class">
+<span class="hljs-keyword">class</span> <span class="hljs-type">Recursive</span> t <span class="hljs-keyword">where</span></span>
+  <span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">D</span> t :: * -&gt; *</span>
+  plug   :: <span class="hljs-type">D</span> t t -&gt; t -&gt; t
+  walk   :: <span class="hljs-type">Applicative</span> f =&gt; (a -&gt; f b) -&gt; <span class="hljs-type">D</span> t a -&gt; f (<span class="hljs-type">D</span> t b)
+  path :: t -&gt; <span class="hljs-type">Maybe</span> (<span class="hljs-type">D</span> t t, t)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Recursive</span> t =&gt; <span class="hljs-type">Functor</span> (<span class="hljs-type">D</span> <span class="hljs-title">t</span>) <span class="hljs-keyword">where</span></span>
+  fmap = fmapDefault
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Recursive</span> t =&gt; <span class="hljs-type">Foldable</span> (<span class="hljs-type">D</span> <span class="hljs-title">t</span>) <span class="hljs-keyword">where</span></span>
+  foldMap = foldMapDefault
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Recursive</span> t =&gt; <span class="hljs-type">Traversable</span> (<span class="hljs-type">D</span> <span class="hljs-title">t</span>) <span class="hljs-keyword">where</span></span>
+  traverse = walk
+
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Z</span> t = [<span class="hljs-type">D</span> t t]</span>
+
+<span class="hljs-title">divide</span> :: <span class="hljs-type">Recursive</span> t =&gt; t -&gt; <span class="hljs-type">Z</span> t
+<span class="hljs-title">divide</span> = unfoldr path
+
+<span class="hljs-title">zipped</span> :: <span class="hljs-type">Recursive</span> t =&gt; <span class="hljs-type">Z</span> t -&gt; t -&gt; t
+<span class="hljs-title">zipped</span> dt t = <span class="hljs-type">Prelude</span>.foldr plug t dt
+
+<span class="hljs-title">run</span> :: <span class="hljs-type">Recursive</span> t =&gt; <span class="hljs-type">Conquer</span> t a -&gt; t -&gt; a
+<span class="hljs-title">run</span> (<span class="hljs-type">Conquer</span> k h) = k . go <span class="hljs-keyword">where</span>
+  go = foldMap (h . fmap go) . divide
+<span class="hljs-meta">{-# INLINE run #-}</span>
+
+<span class="hljs-title">runPar</span> :: <span class="hljs-type">Recursive</span> t =&gt; <span class="hljs-type">Conquer</span> t a -&gt; t -&gt; a
+<span class="hljs-title">runPar</span> (<span class="hljs-type">Conquer</span> k h) = k . go <span class="hljs-keyword">where</span>
+  go = foldMap (h . (`using` parTraversable rseq) . fmap go) . divide
+<span class="hljs-meta">{-# INLINE runPar #-}</span>
+
+<span class="hljs-title">above</span> :: <span class="hljs-type">Recursive</span> t =&gt; <span class="hljs-type">Z</span> t -&gt; <span class="hljs-type">Conquer</span> t a -&gt; <span class="hljs-type">Conquer</span> t a
+<span class="hljs-title">above</span> t0 (<span class="hljs-type">Conquer</span> k h) = <span class="hljs-keyword">let</span> x = go t0 <span class="hljs-keyword">in</span> <span class="hljs-type">Conquer</span> (k . mappend x) h <span class="hljs-keyword">where</span>
+  go = foldMap (h . fmap (go . divide))
+<span class="hljs-meta">{-# INLINE above #-}</span>
+
+<span class="hljs-title">below</span> :: <span class="hljs-type">Recursive</span> t =&gt; <span class="hljs-type">Conquer</span> t a -&gt; <span class="hljs-type">Z</span> t -&gt; <span class="hljs-type">Conquer</span> t a
+<span class="hljs-title">below</span> (<span class="hljs-type">Conquer</span> k h) t0 = <span class="hljs-keyword">let</span> y = go t0 <span class="hljs-keyword">in</span> <span class="hljs-type">Conquer</span> (\x -&gt; k (mappend x y)) h <span class="hljs-keyword">where</span>
+  go = foldMap (h . fmap (go . divide))
+<span class="hljs-meta">{-# INLINE below #-}</span>
+
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">M</span> a p = <span class="hljs-type">M</span> { <span class="hljs-title">runM</span> :: <span class="hljs-title">a</span> }</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Reifies</span> p (<span class="hljs-title">a</span> -&gt; <span class="hljs-title">a</span> -&gt; <span class="hljs-title">a</span>, <span class="hljs-title">a</span>)  =&gt; <span class="hljs-type">Monoid</span> (<span class="hljs-type">M</span> <span class="hljs-title">a</span> <span class="hljs-title">p</span>) <span class="hljs-keyword">where</span></span>
+  mempty = <span class="hljs-type">M</span> $ snd $ reflect (<span class="hljs-type">Proxy</span> :: <span class="hljs-type">Proxy</span> p)
+  mappend (<span class="hljs-type">M</span> a) (<span class="hljs-type">M</span> b) = <span class="hljs-type">M</span> $ fst (reflect (<span class="hljs-type">Proxy</span> :: <span class="hljs-type">Proxy</span> p)) a b
+
+<span class="hljs-title">conquer</span> :: <span class="hljs-keyword">forall</span> t a b. <span class="hljs-type">Recursive</span> t =&gt; (b -&gt; a) -&gt; (<span class="hljs-type">D</span> t b -&gt; b) -&gt; (b -&gt; b -&gt; b) -&gt; b -&gt; <span class="hljs-type">Conquer</span> t a
+<span class="hljs-title">conquer</span> k h m z = reify (m,z) $ \(<span class="hljs-type">Proxy</span> :: <span class="hljs-type">Proxy</span> p) -&gt; <span class="hljs-type">Conquer</span>
+   (k . runM :: <span class="hljs-type">M</span> b p -&gt; a) (<span class="hljs-type">M</span> . h . fmap runM)
+
+<span class="hljs-comment">-- * The Main Attraction</span>
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Conquer</span> t a = forall b. <span class="hljs-type">Monoid</span> b =&gt; <span class="hljs-type">Conquer</span> (<span class="hljs-title">b</span> -&gt; <span class="hljs-title">a</span>) (<span class="hljs-type">D</span> <span class="hljs-title">t</span> <span class="hljs-title">b</span> -&gt; <span class="hljs-title">b</span>)</span>
+
+<span class="hljs-comment">-- * Instances</span>
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Pair</span> a b = <span class="hljs-type">Pair</span> { <span class="hljs-title">pi1</span> :: !<span class="hljs-title">a</span>, <span class="hljs-title">pi2</span> :: !<span class="hljs-title">b</span> }</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Monoid</span> <span class="hljs-title">a</span>, <span class="hljs-type">Monoid</span> <span class="hljs-title">b</span>) =&gt; <span class="hljs-type">Monoid</span> (<span class="hljs-type">Pair</span> <span class="hljs-title">a</span> <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+  mempty = <span class="hljs-type">Pair</span> mempty mempty
+  mappend (<span class="hljs-type">Pair</span> a b) (<span class="hljs-type">Pair</span> c d) = <span class="hljs-type">Pair</span> (mappend a c) (mappend b d)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> (<span class="hljs-type">Conquer</span> <span class="hljs-title">t</span>) <span class="hljs-keyword">where</span></span>
+  fmap f (<span class="hljs-type">Conquer</span> k h) = <span class="hljs-type">Conquer</span> (f.k) h
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Comonad</span> (<span class="hljs-type">Conquer</span> <span class="hljs-title">t</span>) <span class="hljs-keyword">where</span></span>
+  extract (<span class="hljs-type">Conquer</span> k h) = k mempty
+  duplicate (<span class="hljs-type">Conquer</span> k h) = <span class="hljs-type">Conquer</span> (\b -&gt; <span class="hljs-type">Conquer</span> (k . mappend b) h) h
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Recursive</span> t =&gt; <span class="hljs-type">ComonadApply</span> (<span class="hljs-type">Conquer</span> <span class="hljs-title">t</span>) <span class="hljs-keyword">where</span></span>
+  (&lt;@&gt;) = (&lt;*&gt;)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Recursive</span> t =&gt; <span class="hljs-type">Applicative</span> (<span class="hljs-type">Conquer</span> <span class="hljs-title">t</span>) <span class="hljs-keyword">where</span></span>
+  pure a = <span class="hljs-type">Conquer</span> (const a) (const ())
+  <span class="hljs-type">Conquer</span> kf hf &lt;*&gt; <span class="hljs-type">Conquer</span> ka ha = <span class="hljs-type">Conquer</span>
+    (\(<span class="hljs-type">Pair</span> bf ba) -&gt; kf bf (ka ba))
+    (\dab -&gt; <span class="hljs-type">Pair</span> (hf (pi1 &lt;$&gt; dab)) (ha (pi2 &lt;$&gt; dab)))
+
+<span class="hljs-comment">-- * Naturals</span>
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Nat</span> = <span class="hljs-type">Z</span> | <span class="hljs-type">S</span> <span class="hljs-type">Nat</span></span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Recursive</span> <span class="hljs-type">Nat</span> <span class="hljs-keyword">where</span></span>
+  <span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">D</span> <span class="hljs-type">Nat</span> a = <span class="hljs-type">Succ</span></span>
+  plug <span class="hljs-type">Succ</span> = <span class="hljs-type">S</span>
+  walk _ <span class="hljs-type">Succ</span> = pure <span class="hljs-type">Succ</span>
+  path (<span class="hljs-type">S</span> n) = <span class="hljs-type">Just</span> (<span class="hljs-type">Succ</span>, n)
+  path <span class="hljs-type">Z</span>     = <span class="hljs-type">Nothing</span>
+
+<span class="hljs-title">nat</span> :: <span class="hljs-type">Conquer</span> <span class="hljs-type">Nat</span> <span class="hljs-type">Int</span>
+<span class="hljs-title">nat</span> = <span class="hljs-type">Conquer</span> getSum (\<span class="hljs-type">Succ</span> -&gt; <span class="hljs-type">Sum</span> <span class="hljs-number">1</span>)
+
+<span class="hljs-comment">-- * Lists</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Recursive</span> [a] <span class="hljs-keyword">where</span></span>
+  <span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">D</span> [a] b = <span class="hljs-type">Cons</span> { <span class="hljs-title">getCons</span> :: <span class="hljs-title">a</span>} <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>)</span>
+  plug (<span class="hljs-type">Cons</span> a) <span class="hljs-keyword">as</span> = a : <span class="hljs-keyword">as</span>
+  walk _ = pure . <span class="hljs-type">Cons</span> . getCons
+  path (x:xs)   = <span class="hljs-type">Just</span> (<span class="hljs-type">Cons</span> x, xs)
+  path []       = <span class="hljs-type">Nothing</span>
+
+<span class="hljs-title">sumList</span> :: <span class="hljs-type">Conquer</span> [<span class="hljs-type">Int</span>] <span class="hljs-type">Int</span>
+<span class="hljs-title">sumList</span> = <span class="hljs-type">Conquer</span> getSum (<span class="hljs-type">Sum</span> . getCons)
+
+<span class="hljs-comment">-- * Trees</span>
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Tree</span> a</span>
+  = <span class="hljs-type">Bin</span> (<span class="hljs-type">Tree</span> a) a (<span class="hljs-type">Tree</span> a)
+  | <span class="hljs-type">Tip</span> <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Recursive</span> (<span class="hljs-type">Tree</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  <span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">D</span> (<span class="hljs-type">Tree</span> <span class="hljs-title">a</span>) b = <span class="hljs-type">L</span> a b | <span class="hljs-type">R</span> b a <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>)</span>
+
+  plug (<span class="hljs-type">L</span> a r) l = <span class="hljs-type">Bin</span> l a r
+  plug (<span class="hljs-type">R</span> l a) r = <span class="hljs-type">Bin</span> l a r
+
+  walk f (<span class="hljs-type">L</span> a b) = <span class="hljs-type">L</span> a &lt;$&gt; f b
+  walk f (<span class="hljs-type">R</span> b a) = (`<span class="hljs-type">R</span>` a) &lt;$&gt; f b
+
+  path (<span class="hljs-type">Bin</span> l a r) = <span class="hljs-type">Just</span> (<span class="hljs-type">L</span> a r, l)
+  path <span class="hljs-type">Tip</span> = <span class="hljs-type">Nothing</span>
+
+<span class="hljs-title">unfoldTree</span> :: (s -&gt; <span class="hljs-type">Maybe</span> (s, a, s)) -&gt; s -&gt; <span class="hljs-type">Tree</span> a
+<span class="hljs-title">unfoldTree</span> f s = <span class="hljs-keyword">case</span> f s <span class="hljs-keyword">of</span>
+  <span class="hljs-type">Nothing</span> -&gt; <span class="hljs-type">Tip</span>
+  <span class="hljs-type">Just</span> (l, a, r) -&gt; <span class="hljs-type">Bin</span> (unfoldTree f l) a (unfoldTree f r)
+
+<span class="hljs-title">sternBrocot</span> :: <span class="hljs-type">Tree</span> <span class="hljs-type">Rational</span>
+<span class="hljs-title">sternBrocot</span> = unfoldTree (\(<span class="hljs-type">Pair</span> a b) -&gt; <span class="hljs-type">Just</span> (<span class="hljs-type">Pair</span> (a+<span class="hljs-number">1</span>) b, a % b, <span class="hljs-type">Pair</span> a (b+<span class="hljs-number">1</span>))) (<span class="hljs-type">Pair</span> <span class="hljs-number">1</span> <span class="hljs-number">1</span>)
+
+<span class="hljs-title">takeTree</span> :: <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Tree</span> a -&gt; <span class="hljs-type">Tree</span> a
+<span class="hljs-title">takeTree</span> <span class="hljs-number">0</span> _   = <span class="hljs-type">Tip</span>
+<span class="hljs-title">takeTree</span> n <span class="hljs-type">Tip</span> = <span class="hljs-type">Tip</span>
+<span class="hljs-title">takeTree</span> n (<span class="hljs-type">Bin</span> l a r) = <span class="hljs-type">Bin</span> (takeTree (n-<span class="hljs-number">1</span>) l) a (takeTree (n-<span class="hljs-number">1</span>) r)
+
+<span class="hljs-title">sumTree</span> :: <span class="hljs-type">Num</span> a =&gt; <span class="hljs-type">Conquer</span> (<span class="hljs-type">Tree</span> a) a
+<span class="hljs-title">sumTree</span> = <span class="hljs-type">Conquer</span> getSum h <span class="hljs-keyword">where</span>
+  h (<span class="hljs-type">L</span> a (<span class="hljs-type">Sum</span> b)) = <span class="hljs-type">Sum</span> (a + b)
+  h (<span class="hljs-type">R</span> (<span class="hljs-type">Sum</span> b) a) = <span class="hljs-type">Sum</span> (a + b)
+
+<span class="hljs-title">mpw</span> :: (<span class="hljs-type">Num</span> a, <span class="hljs-type">Ord</span> a) =&gt; <span class="hljs-type">Conquer</span> (<span class="hljs-type">Tree</span> a) a
+<span class="hljs-title">mpw</span> = conquer k h m (<span class="hljs-type">Pair</span> <span class="hljs-number">0</span> <span class="hljs-number">0</span>) <span class="hljs-keyword">where</span>
+  k (<span class="hljs-type">Pair</span> a _) = a
+  h (<span class="hljs-type">L</span> n m) = <span class="hljs-type">Pair</span> (n + k m) n
+  h (<span class="hljs-type">R</span> m n) = <span class="hljs-type">Pair</span> (n + k m) n
+  m (<span class="hljs-type">Pair</span> m1 w1) (<span class="hljs-type">Pair</span> m2 w2) = <span class="hljs-type">Pair</span> (max m1 (w1 + m2)) (w1 + w2)
+<span class="hljs-meta">{-# INLINE mpw #-}</span>
+
+<span class="hljs-title">height</span> :: <span class="hljs-type">Conquer</span> (<span class="hljs-type">Tree</span> a) <span class="hljs-type">Int</span>
+<span class="hljs-title">height</span> = conquer k h m (<span class="hljs-type">Pair</span> <span class="hljs-number">0</span> <span class="hljs-number">0</span>) <span class="hljs-keyword">where</span>
+  k (<span class="hljs-type">Pair</span> a _) = a + <span class="hljs-number">1</span>
+  h (<span class="hljs-type">L</span> n m) = <span class="hljs-type">Pair</span> (k m) <span class="hljs-number">1</span>
+  h (<span class="hljs-type">R</span> m n) = <span class="hljs-type">Pair</span> (k m) <span class="hljs-number">1</span>
+  m (<span class="hljs-type">Pair</span> m1 w1) (<span class="hljs-type">Pair</span> m2 w2) = <span class="hljs-type">Pair</span> (max m1 (w1 + m2)) (w1 + w2)
+<span class="hljs-meta">{-# INLINE height #-}</span>
+
+<span class="hljs-title">main</span> = <span class="hljs-keyword">do</span>
+  print $ run height <span class="hljs-type">Tip</span>
+  print $ run height (<span class="hljs-type">Bin</span> (<span class="hljs-type">Bin</span> <span class="hljs-type">Tip</span> <span class="hljs-number">1</span> <span class="hljs-type">Tip</span>) <span class="hljs-number">2</span> (<span class="hljs-type">Bin</span> <span class="hljs-type">Tip</span> <span class="hljs-number">3</span> <span class="hljs-type">Tip</span>))
+  print $ run ((/) &lt;$&gt; mpw &lt;*&gt; sumTree) (takeTree <span class="hljs-number">10</span> sternBrocot)
+</code></pre>
+<h2 id="go-and-make-it-fast">Go And Make It Fast</h2>
+<p>Now, my challenge to you is to find a nice way to execute this in parallel.</p>
+<p>The obvious approach sparks way too much.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">runPar</span> :: <span class="hljs-type">Recursive</span> t =&gt; <span class="hljs-type">Conquer</span> t a -&gt; t -&gt; a
+<span class="hljs-title">runPar</span> (<span class="hljs-type">Conquer</span> k h) = k . go <span class="hljs-keyword">where</span>
+  go = foldMap (h . (`using` parTraversable rseq) . fmap go) . divide
+</code></pre>
+<p>Perhaps Morihata and Matsuzaki's 2008 <a href="http://www.keisu.t.u-tokyo.ac.jp/research/techrep/data/2008/METR08-27.pdf">A Parallel Tree Contraction Algorithm
+on Non-Binary Trees</a> may serve as a guide for how to speed this up.</p>
+<p>Thoughts?</p>
+<p>-<a href="mailto:ekmett@gmail.com">Edward Kmett</a></p>
+<p>September 13, 2013</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/folds"><code>folds</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: School of Haskell. Date displayed by School of Haskell; may reflect a later revision.</p><p><a href="../../../source/articles/conquering-folds.md" download>Article Markdown</a> · <a href="../../../source/articles/conquering-folds.original.md" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2013/parallel-crc/">Parallel and Incremental CRCs →</a><a href="../../../reader/2013/editorial-procrustean-mathematics/">Procrustean Mathematics →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

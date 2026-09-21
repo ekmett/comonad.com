@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Searching Infinity Parametrically · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Algorithms · Haskell · Kan Extensions · Logic · Mathematics · Monads · Type Hackery</span><span>Edward Kmett · <time datetime="2011-12-25">25 December 2011</time></span></div><h1>Searching Infinity Parametrically</h1></header><article class="prose"><span id="more-510"></span><p>Andrej Bauer recently gave a really nice talk on how you can exploit side-effects to make a faster version of Martin Escardo's pseudo-paradoxical combinators.</p>
+<p><a href="http://math.andrej.com/2011/12/06/how-to-make-the-impossible-functionals-run-even-faster/">A video of his talk is available over on his blog</a>, and his presentation is remarkably clear, and would serve as a good preamble to the code I'm going to present below.</p>
+<p>Andrej gave a related invited talk back at <a href="http://msfp.org.uk/">MSFP 2008</a> in Iceland, and afterwards over lunch I cornered him (with Dan Piponi) and explained how you could use parametricity to close over the side-effects of monads (or arrows, etc) but I think that trick was lost in the chaos of the weekend, so I've chosen to resurrect it here, and improve it to handle some of his more recent performance enhancements, and show that you don't need side-effects to speed up the search after all!</p>
+<p>First, we'll need to import a few things:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE RankNTypes #-}</span>
+
+<span class="hljs-keyword">import</span> Data.Maybe (<span class="hljs-title">fromMaybe</span>)
+<span class="hljs-keyword">import</span> Control.Applicative
+<span class="hljs-keyword">import</span> Data.IntMap (<span class="hljs-type">IntMap</span>)
+<span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Data.IntMap <span class="hljs-keyword">as</span> IntMap
+<span class="hljs-keyword">import</span> Control.Monad
+<span class="hljs-keyword">import</span> Control.Monad.Trans.Class
+<span class="hljs-keyword">import</span> Data.Functor.Identity
+</code></pre>
+<p>What are looking for is an implementation of <a href="http://en.wikipedia.org/wiki/Epsilon_calculus">Hilbert's epsilon</a>.</p>
+<p>This is a formal mechanism for eliminating existentials over some non-empty set <strong>X</strong> by defining a function</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">ε: (<span class="hljs-type">X</span> -&gt; <span class="hljs-type">Prop</span>) -&gt; <span class="hljs-type">X</span>
+</code></pre>
+<p>such that if there exists an <em>x</em> in <strong>X</strong> such that <em>p</em>(<strong>X</strong>) holds then <em>p</em>(<em>ε</em>(<em>p</em>)) holds.</p>
+<p>As noted by Andrej, we could reify this constructively as a function "epsilon :: (X -&gt; Bool) -&gt; X" for some X.</p>
+<p>Now, for some sets, Hilbert's epsilon is really easy to define. If X is a finite set, you can just exhaustively enumerate all of the options returning a member of X such that the property holds if any of them do, otherwise since X is non-empty, just return one of the elements that you tested.</p>
+<p>This would be a pretty boring article and I'd be back to eating Christmas dinner with my family if that was all there was to it. However, certain infinite spaces can also be searched.</p>
+<p>Last year, Luke Palmer wrote a post on <a href="http://lukepalmer.wordpress.com/2010/11/17/searchable-data-types/">"Searchable Data Types"</a> that might also serve as a good introduction. In that article he led off with the easiest infinite space to search, the lazy naturals, or the 'one point compactification of the naturals'. That is to say the natural numbers extended with infinity.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">LazyNat</span> = <span class="hljs-type">Zero</span> | <span class="hljs-type">Succ</span> <span class="hljs-type">LazyNat</span></span>
+<span class="hljs-title">infinity</span> :: <span class="hljs-type">LazyNat</span>
+<span class="hljs-title">infinity</span> = <span class="hljs-type">Succ</span> infinity
+</code></pre>
+<p>Now we can implement Palmer's epsilon (called <code>lyingSearch</code> in his article).</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">palmer</span> :: (<span class="hljs-type">LazyNat</span> -&gt; <span class="hljs-type">Bool</span>) -&gt; <span class="hljs-type">LazyNat</span>
+<span class="hljs-title">palmer</span> p
+  | p <span class="hljs-type">Zero</span> = <span class="hljs-type">Zero</span>
+  | otherwise = <span class="hljs-type">Succ</span> $ palmer $ p . <span class="hljs-type">Succ</span>
+</code></pre>
+<p>The trick to making this work is that we place a requirement that the predicate that you pass has to terminate in a bounded amount of time no matter what input you give it, and since we're working with the naturals extended with <code>infinity</code>, if no natural satisfies the predicate, we'll just keep returning a longer and longer chain of <code>Succ</code>'s, effectively yielding <code>infinity</code>.</p>
+<p>To check to see if the returned number satisfies the predicate you can always use <code>p (palmer p)</code>. The predicate is required to terminate in finite time, even when given infinity, so this will yield a Bool and not bottom out unless the user supplied predicate takes an unbounded amount of time.</p>
+<p>I posted a reply to Luke's article when it came up on reddit which included a Hinze-style generic implementation of his <code>lyingSearch</code> predicate, which you can see now is just Hilbert's epsilon for arbitrary recursive polynomial data types.</p>
+<p><a href="http://www.reddit.com/r/haskell/comments/e7nij/searchable_data_types/c15zs6l">http://www.reddit.com/r/haskell/comments/e7nij/searchable_data_types/c15zs6l</a></p>
+<p>Another space we can search is <a href="http://en.wikipedia.org/wiki/Cantor_space">the Cantor space</a> 2^N.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Cantor</span> = <span class="hljs-type">Integer</span> -&gt; <span class="hljs-type">Bool</span></span>
+</code></pre>
+<p>With that we jump clear from countable infinity to uncountable infinity, but it can still be searched in finite time!</p>
+<p>This is the space we'll be paying attention to for the rest of this article.</p>
+<p>First we'll define how to "<a href="http://en.wikipedia.org/wiki/Hilbert's_paradox_of_the_Grand_Hotel">book a room in Hilbert's Hotel</a>."</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-keyword">infixr</span> <span class="hljs-number">0</span> #
+(#) :: <span class="hljs-type">Bool</span> -&gt; <span class="hljs-type">Cantor</span> -&gt; <span class="hljs-type">Cantor</span>
+(x # a) <span class="hljs-number">0</span> = x
+(x # a) i = a (i - <span class="hljs-number">1</span>)
+</code></pre>
+<p>Then this can be used to obtain the following implementation of Hilbert's epsilon for the Cantor space, attributed by Andrej to Ulrich Berger.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">berger</span> :: (<span class="hljs-type">Cantor</span> -&gt; <span class="hljs-type">Bool</span>) -&gt; <span class="hljs-type">Cantor</span>
+<span class="hljs-title">berger</span> p =
+  <span class="hljs-keyword">if</span> ex $ \a -&gt; p $ <span class="hljs-type">False</span> # a
+  <span class="hljs-keyword">then</span> <span class="hljs-type">False</span> # berger $ \a -&gt; p $ <span class="hljs-type">False</span> # a
+  <span class="hljs-keyword">else</span> <span class="hljs-type">True</span>  # berger $ \a -&gt; p $ <span class="hljs-type">True</span> # a
+  <span class="hljs-keyword">where</span> ex q = q (berger q)
+</code></pre>
+<p>This version is particularly close in structure to the one for searching the LazyNats, but it is dreadfully slow!</p>
+<p>It would be nice to be able to search the space faster and that is just what Martin Escardo's improved version does, through a more sophisticated divide and conquer technique.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">escardo</span> :: (<span class="hljs-type">Cantor</span> -&gt; <span class="hljs-type">Bool</span>) -&gt; <span class="hljs-type">Cantor</span>
+<span class="hljs-title">escardo</span> p = go x l r <span class="hljs-keyword">where</span>
+  go x l r n =  <span class="hljs-keyword">case</span> divMod n <span class="hljs-number">2</span> <span class="hljs-keyword">of</span>
+    (<span class="hljs-number">0</span>, <span class="hljs-number">0</span>) -&gt; x
+    (q, <span class="hljs-number">1</span>) -&gt; l q
+    (q, <span class="hljs-number">0</span>) -&gt; r $ q-<span class="hljs-number">1</span>
+  x = ex $ \l -&gt; ex $ \r -&gt; p $ go <span class="hljs-type">True</span> l r
+  l = escardo $ \l -&gt; ex $ \r -&gt; p $ go x l r
+  r = escardo $ \r -&gt; p $ go x l r
+  ex q = q (escardo q)
+</code></pre>
+<p>To proceed from here I'll need a State monad:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">S</span> s a = <span class="hljs-type">S</span> { <span class="hljs-title">runS</span> :: <span class="hljs-title">s</span> -&gt; (<span class="hljs-title">a</span>, <span class="hljs-title">s</span>) }</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> (<span class="hljs-type">S</span> <span class="hljs-title">s</span>) <span class="hljs-keyword">where</span></span>
+  fmap f (<span class="hljs-type">S</span> m) = <span class="hljs-type">S</span> $ \s -&gt; <span class="hljs-keyword">case</span> m s <span class="hljs-keyword">of</span>
+    (a, s') -&gt; (f a, s')
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Applicative</span> (<span class="hljs-type">S</span> <span class="hljs-title">s</span>) <span class="hljs-keyword">where</span></span>
+  pure = return
+  (&lt; *&gt;) = ap
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> (<span class="hljs-type">S</span> <span class="hljs-title">m</span>) <span class="hljs-keyword">where</span></span>
+  return a = <span class="hljs-type">S</span> $ \s -&gt; (a, s)
+  <span class="hljs-type">S</span> m &gt;&gt;= k = <span class="hljs-type">S</span> $ \s -&gt; <span class="hljs-keyword">case</span> m s <span class="hljs-keyword">of</span>
+    (a, s') -&gt; runS (k a) s'
+</code></pre>
+<p>And now we've reached the point. From here, Andrej's pure code ends, and his side-effecting ocaml and custom programming language start. The first thing he does is compute the modulus of continuity by using a side-effect that writes to a reference cell which he very carefully ensures doesn't leak out of scope, so he doesn't have to concern himself with the proposition code editing the value of the reference.</p>
+<pre tabindex="0" aria-label="ocaml code"><code class="language-ocaml"><span class="hljs-keyword">let</span> mu f a =
+  <span class="hljs-keyword">let</span> r = <span class="hljs-built_in">ref</span> <span class="hljs-number">0</span> <span class="hljs-keyword">in</span>
+  <span class="hljs-keyword">let</span> b n = (r := max n ! r; a n) <span class="hljs-keyword">in</span>
+    ignore (f b);
+    !r
+</code></pre>
+<p>To obtain the same effect we'll instead make a predicate using the state monad to model the single reference cell.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">-- bad</span>
+<span class="hljs-title">modulus</span> :: (<span class="hljs-type">Num</span> b, <span class="hljs-type">Ord</span> s) =&gt;
+  ((s -&gt; <span class="hljs-type">S</span> s a) -&gt; <span class="hljs-type">S</span> b c) -&gt; (s -&gt; a) -&gt; b
+</code></pre>
+<p>We can mash b and s together, and try to make the ordering and number agree by claiming that it is instead Real and we'd get the slightly more reasonable looking type:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">-- still bad</span>
+<span class="hljs-title">modulus</span> :: <span class="hljs-type">Real</span> a =&gt;
+  ((a -&gt; <span class="hljs-type">S</span> n b) -&gt; <span class="hljs-type">S</span> n c) -&gt; (a -&gt; b) -&gt; a
+</code></pre>
+<p>In the imperative code, lexical scoping had ensured that no other code could edit the reference cell, but with this type we don't have that. The predicate is allowed to use arbitrary state actions to muck with the modulus of convergence even though the only thing that should be editing it is the wrapper beta that we placed around alpha.</p>
+<p>But how can we ensure that the end user couldn't gain access to any of the additional functionality from the monad? Parametricity!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">-- getting better</span>
+<span class="hljs-title">modulus</span> :: <span class="hljs-type">Real</span> a =&gt;
+  (<span class="hljs-keyword">forall</span> f. <span class="hljs-type">Monad</span> f =&gt; (a -&gt; f b) -&gt; f c) -&gt;
+  (a -&gt; b) -&gt;
+  a
+</code></pre>
+<p>Here the only thing you are allowed to assume about f is that it forms a monad. This gives you access to return and &gt;&gt;=, but the predicate can't do anything interesting with them. All it can do is work with what is effectively the identity monad, since it knows no additional properties!</p>
+<p>We can have mercy on the end user and give them a little bit more syntactic sugar, since it doesn't cost us anything to let them also have access to the Applicative instance.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">-- good</span>
+<span class="hljs-title">modulus</span> :: <span class="hljs-type">Real</span> a =&gt;
+  (<span class="hljs-keyword">forall</span> f. (<span class="hljs-type">Monad</span> f, <span class="hljs-type">Applicative</span> f) =&gt; (a -&gt; f b) -&gt; f c) -&gt;
+  (a -&gt; b) -&gt;
+  a
+</code></pre>
+<p>With that we can show Andrej's version of the modulus of convergence calculation does not need side-effects!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">modulus</span> (\a -&gt; a <span class="hljs-number">10</span> &gt;&gt;= a) (\n -&gt; n * n)
+<span class="hljs-number">100</span>
+</code></pre>
+<p>Admittedly plumbing around the monadic values in our proposition is a bit inconvenient.</p>
+<p>His next example was written in a custom ocaml-like programming language. For translating his effect type into Haskell using parametricity, we'll need a CPS'd state monad, so we can retry from the current continuation while we track a map of assigned values.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">K</span> r s a = <span class="hljs-type">K</span> { <span class="hljs-title">runK</span> :: (<span class="hljs-title">a</span> -&gt; <span class="hljs-title">s</span> -&gt; <span class="hljs-title">r</span>) -&gt; <span class="hljs-title">s</span> -&gt; <span class="hljs-title">r</span> }</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> (<span class="hljs-type">K</span> <span class="hljs-title">r</span> <span class="hljs-title">s</span>) <span class="hljs-keyword">where</span></span>
+  fmap = liftM
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Applicative</span> (<span class="hljs-type">K</span> <span class="hljs-title">r</span> <span class="hljs-title">s</span>) <span class="hljs-keyword">where</span></span>
+  pure = return
+  (&lt; *&gt;) = ap
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> (<span class="hljs-type">K</span> <span class="hljs-title">r</span> <span class="hljs-title">s</span>) <span class="hljs-keyword">where</span></span>
+  return a = <span class="hljs-type">K</span> $ \k -&gt; k a
+  <span class="hljs-type">K</span> m &gt;&gt;= f = <span class="hljs-type">K</span> $ \k -&gt; m $ \a -&gt; runK (f a) k
+</code></pre>
+<p>For those of you who have been paying attention to my previous posts, <code>K r s</code> is just a <code>Codensity</code> monad!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">neighborhood</span> ::
+  (<span class="hljs-keyword">forall</span> f. (<span class="hljs-type">Applicative</span> f, <span class="hljs-type">Monad</span> f) =&gt; (<span class="hljs-type">Int</span> -&gt; f <span class="hljs-type">Bool</span>) -&gt; f <span class="hljs-type">Bool</span>) -&gt;
+  <span class="hljs-type">IntMap</span> <span class="hljs-type">Bool</span>
+<span class="hljs-title">neighborhood</span> phi = snd $ runK (phi beta) (,) <span class="hljs-type">IntMap</span>.empty <span class="hljs-keyword">where</span>
+  beta n = <span class="hljs-type">K</span> $ \k s -&gt; <span class="hljs-keyword">case</span> <span class="hljs-type">IntMap</span>.lookup n s <span class="hljs-keyword">of</span>
+    <span class="hljs-type">Just</span> b -&gt; k b s
+    <span class="hljs-type">Nothing</span> -&gt; <span class="hljs-keyword">case</span> k <span class="hljs-type">True</span> (<span class="hljs-type">IntMap</span>.insert n <span class="hljs-type">True</span> s) <span class="hljs-keyword">of</span>
+      (<span class="hljs-type">False</span>, _) -&gt; k <span class="hljs-type">False</span> (<span class="hljs-type">IntMap</span>.insert n <span class="hljs-type">False</span> s)
+      r -&gt; r
+</code></pre>
+<p>With that we can adapt the final version of Hilbert's epsilon for the Cantor space that Andrej provided to run in pure Haskell.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">bauer</span> ::
+  (<span class="hljs-keyword">forall</span> f. (<span class="hljs-type">Applicative</span> f, <span class="hljs-type">Monad</span> f) =&gt; (<span class="hljs-type">Int</span> -&gt; f <span class="hljs-type">Bool</span>) -&gt; f <span class="hljs-type">Bool</span>) -&gt;
+  <span class="hljs-type">Cantor</span>
+<span class="hljs-title">bauer</span> p = \n -&gt; fromMaybe <span class="hljs-type">True</span> $ <span class="hljs-type">IntMap</span>.lookup n m <span class="hljs-keyword">where</span>
+  m = neighborhood p
+</code></pre>
+<p>With a little work you can implement a version of an exists and forAll predicate on top of that by running them through the identity monad.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">exists</span> ::
+  (<span class="hljs-keyword">forall</span> f. (<span class="hljs-type">Applicative</span> f, <span class="hljs-type">Monad</span> f) =&gt; (<span class="hljs-type">Int</span> -&gt; f <span class="hljs-type">Bool</span>) -&gt; f <span class="hljs-type">Bool</span>) -&gt;
+  <span class="hljs-type">Bool</span>
+<span class="hljs-title">forAll</span> ::
+  (<span class="hljs-keyword">forall</span> f. (<span class="hljs-type">Applicative</span> f, <span class="hljs-type">Monad</span> f) =&gt; (<span class="hljs-type">Int</span> -&gt; f <span class="hljs-type">Bool</span>) -&gt; f <span class="hljs-type">Bool</span>) -&gt;
+  <span class="hljs-type">Bool</span>
+</code></pre>
+<p>I've gone further in playing with this idea, using monad homomorphisms rather than simply relying on the canonical homomorphism from the identity monad. You can get the gist of it here:</p>
+<p><a href="https://gist.github.com/1518767">https://gist.github.com/1518767</a></p>
+<p>This permits the predicates themselves to embed some limited monadic side-effects, but then you get more extensional vs. intensional issues.</p>
+<p>An obvious direction from here is to fiddle with a version of Martin Escardo's search monad that takes advantage of these techniques, but I'll leave the exploration of these ideas to the reader for now and go enjoy Christmas dinner.</p>
+<p>Happy Holidays,<br>
+Edward Kmett</p>
+</article><section class="comments" id="comments"><h2>From the original discussion</h2><p class="editorial">Selected questions, explanations, and corrections. Original wording and dates; spam and automated trackbacks omitted.</p><article class="comment" id="comment-92185"><header><strong>Sean</strong><a href="../../../reader/2011/searching-infinity/#comment-92185">December 25th, 2011 at 2:14 am</a></header><p>I would hesitate calling the Cantor space</p>
+<p>type Cantor = Integer -&gt; Bool</p>
+<p>“uncountable”. After all, this is the type of Haskell functions, of which there is only countably many.</p>
+</article><article class="comment" id="comment-92191"><header><strong>Andrej Bauer</strong><a href="../../../reader/2011/searching-infinity/#comment-92191">December 25th, 2011 at 2:52 am</a></header><p>@Sean: It is not fair to judge a Haskell type from outside Haskell. As far as Haskell is concerned, Integer -&gt; Bool is uncountable. Given any sequence alleged enumeration e : Integer -&gt; (Integer -&gt; Bool) of cantor space, the sequence \n -&gt; not (e n n) is missed by e. So you cannot enumerate the type in Haskell, which is the relevant thing, who cares if god can enumerate Haskell types? (Yes, it takes the birth of Jesus to enumerate total functions, so Merry Christmas!) And another observation: Haskell has access to the real world and can use real-world data to construct elements of type Integer -&gt; Bool. Are you saying there are only countably many streams of bits in the real world?</p>
+<p>@Edward: Very nice post. I suspected something of the kind can be done, but you’re very good at minimizing the “damage” done by explicit monads. One questions remains, I think. What specification is the input predicate supposed to satisfy? The LICS 2010 paper by Martin Hofmann et al. might be relevant, see <a href="http://www2.in.tum.de/bib/files/Hofmann10Pure.pdf">http://www2.in.tum.de/bib/files/Hofmann10Pure.pdf</a>. They also use the trick with “parametric in all monads”.</p>
+</article><article class="comment" id="comment-92198"><header><strong>Sean</strong><a href="../../../reader/2011/searching-infinity/#comment-92198">December 25th, 2011 at 3:25 am</a></header><p>@Andrej: Fair enough, but if you want to stay within Haskell, your definition of “uncountable” may not be what you are expecting anymore. It’s true that there is no total surjection e : Integer -&gt; (Integer -&gt; Bool), but there is a partial surjection. Decode the Integer into Haskell code via your favorite encoding, and interpret the Haskell code. Some will fail to decode as well-typed Haskell programs of type Integer -&gt; Bool, and some will fail to terminate. But you’ll cover all of them. So in some sense there are actually “fewer” functions Integer -&gt; Bool than there are Integers.</p>
+<p>As for the existence of uncountably many streams of bits in the real world, I’m not willing to make any sort of commitment on that statement. I will say that no one has yet satisfactorily shown me uncountably many streams in the real world :)</p>
+</article><article class="comment" id="comment-92209"><header><strong>Dan P</strong><a href="../../../reader/2011/searching-infinity/#comment-92209">December 25th, 2011 at 5:22 am</a></header><p>@Sean: one of the nice things about Haskell is that you can pretty much run it on paper or on an abstract machine.</p>
+<p>We use it to model mathematical ideas all the time, ignoring the fact that (for example) Integer, being implemented on top of GMP, is finite (2^53 bits or something is the maximum allowed, even if you did have infinite memory). I think that pointing out one of the implementation details of one of Haskell’s “interpreters” (a CPU) is kind of missing the point here.</p>
+</article><article class="comment" id="comment-92237"><header><strong>Andrej Bauer</strong><a href="../../../reader/2011/searching-infinity/#comment-92237">December 25th, 2011 at 9:08 am</a></header><p>@Sean: the definition of countable simply is “there is a surjection from the natural numbers”. Subsets of countable sets are called “subcountable” and can be very, very complicated in intuitionistic logic, for example they need not be countable. In addition, your proposed plan to take codes of functions does not quite work inside Haskell, as there is no way to get the code of a function in Haskell, i.e., all total maps (int -&gt; bool) -&gt; int are constant. You would have to extend Haskell by some sort of a quoting mechanism that would allow you to always access source code (or the machine instructions of the compiled code). With such modifications your idea demonstrates the fact that it is consistent to assume intuitionistically that the Cantor space is a quotient of a subset of a countable set. Nevertheless, it is still uncountable.</p>
+</article><article class="comment" id="comment-92256"><header><strong>Sean</strong><a href="../../../reader/2011/searching-infinity/#comment-92256">December 25th, 2011 at 1:18 pm</a></header><p>@Dan P: I don’t see what any of this has to do with implementation details of any form. I’m just requiring some bijection between integers and strings which we interpret as Haskell code (Godel numbering will do).</p>
+<p>@Andrej: Agreed (although I don’t believe I’m requiring any sort of quoting mechanism…). I’m simply arguing that while “uncountable” has the same formal definition, intuitively it behaves much differently than it does in ZFC. In ZFC it means “very large”, while in this kind of intuitionistic setting it can mean “smaller than countable” (subcountable). The meanings are so different that I’m leery to call them the same thing, for fear that we mislead the classical mathematicians.</p>
+</article><article class="comment" id="comment-92273"><header><strong>Edward Kmett</strong><a href="../../../reader/2011/searching-infinity/#comment-92273">December 25th, 2011 at 3:22 pm</a></header><p>Sean: the fact that we can search it in finite time derives from the fact that the predicate is required to evaluate in a bounded amount of time regardless of the ’size’ of the input. This keeps me from trying to compare with a lazy nat with infinity, and ensures I only look at so many of the results from the Cantor space.</p>
+<p>The ability to do this in finite time would hold even if you had a language that could represent uncountably many programs! That I believe was Andrej’s point.</p>
+<p>Consider data vs. codata. Think of the Cantor’s space as ‘codata’. It is infinitely large, but we can productively consume any finite portion of it. Determining the neighborhood used by a predicate only requires a finite amount of time, and then we wrap back into codata by filling in the infinite set of other cases with a valid inhabitant.</p>
+<p>Ultimately all we have to do is find the neighborhood that was inspected (which is finite and can be done in finite time) and find a member of that neighborhood where the property does or does not hold.</p>
+<p>This ability to search doesn’t make any use of the finiteness of the language. The finiteness of the language is interesting but irrelevant for this purpose.</p>
+</article><article class="comment" id="comment-101849"><header><strong>Ryan Ingram</strong><a href="../../../reader/2011/searching-infinity/#comment-101849">February 22nd, 2012 at 6:02 pm</a></header><p>One thing that’s interesting to me is the transformation from</p>
+<p>type Pure a b c = (a -&gt; b) -&gt; c</p>
+<p>to</p>
+<p>type Effect a b c = forall f. Monad f =&gt; (a -&gt; f b) -&gt; f c</p>
+<p>Clearly f_effect is pure; you can get f_pure from f_effect by specializing f to the identity monad:</p>
+<p>purify :: Effect a b c -&gt; Pure a b c<br>
+purify f ab = runIdentity $ f $ \a -&gt; Identity $ ab a</p>
+<p>But it seems to me that no unsoundness is introduced by allowing this isomorphism in the other direction as well, although I don’t think that’s implementable in Haskell.</p>
+<p>effectify :: Pure a b c -&gt; Effect a b c<br>
+effectify f = ???</p>
+</article></section><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/searching-infinity.md" download>Article Markdown</a> · <a href="../../../source/articles/searching-infinity.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2011/what-constraints-entail-part-1/">What Constraints Entail: Part 1 →</a><a href="../../../reader/2012/wadlers-law-revisited/">Wadler’s Law Revisited →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

@@ -1,0 +1,1542 @@
+{
+  "schemaVersion": "1.0",
+  "researchedOn": "2026-09-21",
+  "channel": {
+    "name": "Boston Haskell",
+    "handle": "@BostonHaskell",
+    "id": "UCUCpgCWjaniUkX88wZrK_Ig",
+    "url": "https://www.youtube.com/@BostonHaskell",
+    "videosUrl": "https://www.youtube.com/@BostonHaskell/videos",
+    "streamsUrl": "https://www.youtube.com/@BostonHaskell/streams",
+    "identityEvidence": "Public channelMetadataRenderer identifies this name, handle, and externalId; every watch page matches the channel ID.",
+    "reportedPublicVideoCount": 33
+  },
+  "coverage": {
+    "count": 33,
+    "regularVideos": 30,
+    "archivedLivestreams": 3,
+    "matchesChannelReportedCount": true,
+    "limits": "Complete public Videos and Live tab listing at retrieval; excludes private, deleted, and unlisted videos absent from these tabs."
+  },
+  "datePolicy": "eventDate is used only for explicitly evidenced dates. Otherwise date is the original upload timestamp calendar date with dateBasis labeled upload. Never parse YYYY-MM-DD into the browser local timezone; treat it as a calendar date. eventMonth retains month-only knowledge without inventing a day. Full source timestamps preserve offsets. Live dates are normalized specifically to America/New_York.",
+  "attributionPolicy": "Uploader is not the speaker. All named speakers are preserved; a group recording has timed speaker segments rather than attribution to the channel owner.",
+  "videos": [
+    {
+      "id": "youtube-IAYNk951_xk",
+      "videoId": "IAYNk951_xk",
+      "title": "Tim Braje - A Quick Introduction To Haskell",
+      "type": "talk",
+      "speakers": [
+        "Tim Braje"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=IAYNk951_xk",
+      "uploadDate": "2015-02-15",
+      "uploadTimestamp": "2015-02-15T10:51:53-08:00",
+      "publicationTimestamp": "2015-02-15T10:51:53-08:00",
+      "eventDate": "2014-04-16",
+      "eventMonth": null,
+      "eventDatePrecision": "day",
+      "date": "2014-04-16",
+      "dateBasis": "presentation (uploader description)",
+      "dateConfidence": "high",
+      "dateEvidence": "The channel description explicitly states the meetup/recording date.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 3240,
+      "description": "Back at the beginning of 2014, the membership of Boston Haskell had recently begun to expand very rapidly. We'd gone from 20 to 60 attendees almost overnight. Consequently, A \"why you should care about Haskell\" talk seemed to be in order, so Tim Braje gave us all \"A Quick Introduction to Haskell\" on April 16th, 2014.",
+      "context": "Back at the beginning of 2014, the membership of Boston Haskell had recently begun to expand very rapidly. We'd gone from 20 to 60 attendees almost overnight. Consequently, A \"why you should care about Haskell\" talk seemed to be in order, so Tim Braje gave us all \"A Quick Introduction to Haskell\" on April 16th, 2014.",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=IAYNk951_xk"
+      ],
+      "descriptionLinks": [],
+      "materials": [],
+      "uncertainty": [],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube-Q0m8baqBrk4",
+      "videoId": "Q0m8baqBrk4",
+      "title": "Ryan Wisnesky - A Functorial Query Language",
+      "type": "talk",
+      "speakers": [
+        "Ryan Wisnesky"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=Q0m8baqBrk4",
+      "uploadDate": "2015-02-15",
+      "uploadTimestamp": "2015-02-15T10:52:10-08:00",
+      "publicationTimestamp": "2015-02-15T10:52:10-08:00",
+      "eventDate": "2014-04-16",
+      "eventMonth": null,
+      "eventDatePrecision": "day",
+      "date": "2014-04-16",
+      "dateBasis": "presentation (uploader description)",
+      "dateConfidence": "high",
+      "dateEvidence": "The channel description explicitly states the meetup/recording date.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 3277,
+      "description": "Ryan Wisnesky came out to give us a talk at Boston Haskell on April 16th, 2014 based on joint work with David Spivak on new ways to think about data and databases using category theory, along with a new tool they have been building to put these ideas into practice.",
+      "context": "Ryan Wisnesky came out to give us a talk at Boston Haskell on April 16th, 2014 based on joint work with David Spivak on new ways to think about data and databases using category theory, along with a new tool they have been building to put these ideas into practice.",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=Q0m8baqBrk4"
+      ],
+      "descriptionLinks": [],
+      "materials": [],
+      "uncertainty": [],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      },
+      "contributors": [
+        {
+          "name": "David Spivak",
+          "role": "joint research; not identified as presenter"
+        }
+      ]
+    },
+    {
+      "id": "youtube-8n5ubDe9FAA",
+      "videoId": "8n5ubDe9FAA",
+      "title": "Adam Chlipala - Ur/Web",
+      "type": "talk",
+      "speakers": [
+        "Adam Chlipala"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=8n5ubDe9FAA",
+      "uploadDate": "2015-02-17",
+      "uploadTimestamp": "2015-02-17T08:30:16-08:00",
+      "publicationTimestamp": "2015-02-17T08:30:16-08:00",
+      "eventDate": "2014-08-20",
+      "eventMonth": null,
+      "eventDatePrecision": "day",
+      "date": "2014-08-20",
+      "dateBasis": "presentation (uploader description)",
+      "dateConfidence": "high",
+      "dateEvidence": "The channel description explicitly states the meetup/recording date.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 3874,
+      "description": "Adam Chlipala agreed to come out to Boston Haskell and give a talk on the Ur/Web programming language on August 20th, 2014.",
+      "context": "Adam Chlipala agreed to come out to Boston Haskell and give a talk on the Ur/Web programming language on August 20th, 2014.",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=8n5ubDe9FAA"
+      ],
+      "descriptionLinks": [],
+      "materials": [],
+      "uncertainty": [],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube-8r1lji4Pzsg",
+      "videoId": "8r1lji4Pzsg",
+      "title": "Kenneth Foner - Getting a Quick Fix of Comonads",
+      "type": "talk",
+      "speakers": [
+        "Kenneth Foner"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=8r1lji4Pzsg",
+      "uploadDate": "2014-09-24",
+      "uploadTimestamp": "2014-09-24T08:41:23-07:00",
+      "publicationTimestamp": "2014-09-24T08:41:23-07:00",
+      "eventDate": "2014-09-17",
+      "eventMonth": null,
+      "eventDatePrecision": "day",
+      "date": "2014-09-17",
+      "dateBasis": "presentation (uploader description)",
+      "dateConfidence": "high",
+      "dateEvidence": "The channel description explicitly states the meetup/recording date.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 3513,
+      "description": "Kenneth Foner's Comonad talk at the Boston Haskell meetup, September 17, 2014.\nCode and slides: https://github.com/kwf/ComonadSheet",
+      "context": "Kenneth Foner's Comonad talk at the Boston Haskell meetup, September 17, 2014.",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=8r1lji4Pzsg"
+      ],
+      "descriptionLinks": [
+        "https://github.com/kwf/ComonadSheet"
+      ],
+      "materials": [
+        {
+          "kind": "slides_and_code",
+          "url": "https://github.com/kwf/ComonadSheet",
+          "note": "Repository linked in uploader description."
+        }
+      ],
+      "uncertainty": [],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube-vYh27zz9530",
+      "videoId": "vYh27zz9530",
+      "title": "Ranjit Jhala - Liquid Haskell",
+      "type": "talk",
+      "speakers": [
+        "Ranjit Jhala"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=vYh27zz9530",
+      "uploadDate": "2014-11-24",
+      "uploadTimestamp": "2014-11-24T18:25:15-08:00",
+      "publicationTimestamp": "2014-11-24T18:25:15-08:00",
+      "eventDate": "2014-11-19",
+      "eventMonth": null,
+      "eventDatePrecision": "day",
+      "date": "2014-11-19",
+      "dateBasis": "presentation (uploader description)",
+      "dateConfidence": "high",
+      "dateEvidence": "The channel description explicitly states the meetup/recording date.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 6046,
+      "description": "Ranjit's talk on Liquid Haskell, for the Boston Haskell meetup group, November 19 2014",
+      "context": "Ranjit's talk on Liquid Haskell, for the Boston Haskell meetup group, November 19 2014",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=vYh27zz9530"
+      ],
+      "descriptionLinks": [],
+      "materials": [],
+      "uncertainty": [],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube-yFXzuCFeRGM",
+      "videoId": "yFXzuCFeRGM",
+      "title": "Boston Haskell Lightning talks - Dec. 2014",
+      "type": "talk",
+      "speakers": [
+        "Darius Jahandarie",
+        "Elliot Stern",
+        "William Blair",
+        "Kenneth Foner",
+        "Tom Titchener",
+        "Edward Kmett"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=yFXzuCFeRGM",
+      "uploadDate": "2015-01-15",
+      "uploadTimestamp": "2015-01-15T14:16:55-08:00",
+      "publicationTimestamp": "2015-01-15T14:16:55-08:00",
+      "eventDate": null,
+      "eventMonth": "2014-12",
+      "eventDatePrecision": "month",
+      "date": "2015-01-15",
+      "dateBasis": "upload (presentation date unknown)",
+      "dateConfidence": "upload-only",
+      "dateEvidence": "No complete event date found in the channel description; upload date is a fallback only.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 7328,
+      "description": "Darius Jahandarie - Rust for Haskellers http://youtu.be/yFXzuCFeRGM?t=1s\nElliot Stern - Fun with Phantoms  http://youtu.be/yFXzuCFeRGM?t=14m58s\nWilliam Blair - Debugging with types in ATS http://youtu.be/yFXzuCFeRGM?t=31m30s\nKenny Foner - Ice, Ice, Data (Freezing mutable data structures with Midas)  http://youtu.be/yFXzuCFeRGM?t=50m52s\nTom Titchener - Building a real simple music generator to parameterize canons. http://youtu.be/yFXzuCFeRGM?t=1h12m53s\nEdward Kmett - Encapsulation vs. Code Reuse  http://youtu.be/yFXzuCFeRGM?t=1h34m55s",
+      "context": "Darius Jahandarie - Rust for Haskellers http://youtu.be/yFXzuCFeRGM?t=1s",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=yFXzuCFeRGM"
+      ],
+      "descriptionLinks": [
+        "http://youtu.be/yFXzuCFeRGM?t=1s",
+        "http://youtu.be/yFXzuCFeRGM?t=14m58s",
+        "http://youtu.be/yFXzuCFeRGM?t=31m30s",
+        "http://youtu.be/yFXzuCFeRGM?t=50m52s",
+        "http://youtu.be/yFXzuCFeRGM?t=1h12m53s",
+        "http://youtu.be/yFXzuCFeRGM?t=1h34m55s"
+      ],
+      "materials": [],
+      "uncertainty": [
+        "Video title establishes December 2014 but not a day. Upload date is kept as sortable fallback; display event month and Published 2015-01-15 distinctly.",
+        "The upload date must not be displayed as the presentation date.",
+        "No exact December day located. Do not infer the usual third Wednesday of the month. Six speakers share this recording; retain per-segment attribution and timestamps."
+      ],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      },
+      "segments": [
+        {
+          "startSeconds": 1,
+          "speaker": "Darius Jahandarie",
+          "title": "Rust for Haskellers",
+          "url": "https://www.youtube.com/watch?v=yFXzuCFeRGM&t=1s"
+        },
+        {
+          "startSeconds": 898,
+          "speaker": "Elliot Stern",
+          "title": "Fun with Phantoms",
+          "url": "https://www.youtube.com/watch?v=yFXzuCFeRGM&t=898s"
+        },
+        {
+          "startSeconds": 1890,
+          "speaker": "William Blair",
+          "title": "Debugging with types in ATS",
+          "url": "https://www.youtube.com/watch?v=yFXzuCFeRGM&t=1890s"
+        },
+        {
+          "startSeconds": 3052,
+          "speaker": "Kenneth Foner",
+          "title": "Ice, Ice, Data (Freezing mutable data structures with Midas)",
+          "url": "https://www.youtube.com/watch?v=yFXzuCFeRGM&t=3052s"
+        },
+        {
+          "startSeconds": 4373,
+          "speaker": "Tom Titchener",
+          "title": "Building a real simple music generator to parameterize canons",
+          "url": "https://www.youtube.com/watch?v=yFXzuCFeRGM&t=4373s"
+        },
+        {
+          "startSeconds": 5695,
+          "speaker": "Edward Kmett",
+          "title": "Encapsulation vs. Code Reuse",
+          "url": "https://www.youtube.com/watch?v=yFXzuCFeRGM&t=5695s"
+        }
+      ],
+      "attributionNote": "Uploader uses Kenny Foner for the lightning segment; normalized to Kenneth Foner, retaining source description."
+    },
+    {
+      "id": "youtube-hIZxTQP1ifo",
+      "videoId": "hIZxTQP1ifo",
+      "title": "Edward Kmett - Type Classes vs. the World",
+      "type": "talk",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=hIZxTQP1ifo",
+      "uploadDate": "2015-02-16",
+      "uploadTimestamp": "2015-02-16T13:26:27-08:00",
+      "publicationTimestamp": "2015-02-16T13:26:27-08:00",
+      "eventDate": "2015-01-21",
+      "eventMonth": null,
+      "eventDatePrecision": "day",
+      "date": "2015-01-21",
+      "dateBasis": "presentation (uploader description)",
+      "dateConfidence": "high",
+      "dateEvidence": "The channel description explicitly states the meetup/recording date.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 6173,
+      "description": "Boston Haskell Meetup - January 21, 2015",
+      "context": "Boston Haskell Meetup - January 21, 2015",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=hIZxTQP1ifo"
+      ],
+      "descriptionLinks": [],
+      "materials": [],
+      "uncertainty": [],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube-9-u2n4GgcVw",
+      "videoId": "9-u2n4GgcVw",
+      "title": "Rishiyur S. Nikhil - Enigmatic Haskell, Haskellish Enigma",
+      "type": "talk",
+      "speakers": [
+        "Rishiyur S. Nikhil"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=9-u2n4GgcVw",
+      "uploadDate": "2015-03-29",
+      "uploadTimestamp": "2015-03-29T15:03:35-07:00",
+      "publicationTimestamp": "2015-03-29T15:03:35-07:00",
+      "eventDate": "2015-02-18",
+      "eventMonth": null,
+      "eventDatePrecision": "day",
+      "date": "2015-02-18",
+      "dateBasis": "presentation (uploader description)",
+      "dateConfidence": "high",
+      "dateEvidence": "The channel description explicitly states the meetup/recording date.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 3580,
+      "description": "Boston Haskell, February 18, 2015\nNikhil builds an Enigma machine. First in Cryptol, then in hardware by way of Haskell.\nSlides and code available here:  https://github.com/rsnikhil/Enigma_Cryptol_Bluespec_BSV.git",
+      "context": "Boston Haskell, February 18, 2015",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=9-u2n4GgcVw"
+      ],
+      "descriptionLinks": [
+        "https://github.com/rsnikhil/Enigma_Cryptol_Bluespec_BSV.git"
+      ],
+      "materials": [
+        {
+          "kind": "slides_and_code",
+          "url": "https://github.com/rsnikhil/Enigma_Cryptol_Bluespec_BSV",
+          "note": "Repository linked in uploader description."
+        }
+      ],
+      "uncertainty": [],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube-ZGqKsalJi4s",
+      "videoId": "ZGqKsalJi4s",
+      "title": "Cody Roux - Pure Type Systems",
+      "type": "talk",
+      "speakers": [
+        "Cody Roux"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=ZGqKsalJi4s",
+      "uploadDate": "2015-03-29",
+      "uploadTimestamp": "2015-03-29T14:31:40-07:00",
+      "publicationTimestamp": "2015-03-29T14:31:40-07:00",
+      "eventDate": "2015-02-18",
+      "eventMonth": null,
+      "eventDatePrecision": "day",
+      "date": "2015-02-18",
+      "dateBasis": "presentation (uploader description)",
+      "dateConfidence": "high",
+      "dateEvidence": "The channel description explicitly states the meetup/recording date.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 4620,
+      "description": "Cody Roux's talk for the Boston Haskell Meetup - February 18, 2015\nSlides: http://www.slideshare.net/imalsogreg/cody-roux-pure-type-systems-boston-haskell-meetup",
+      "context": "Cody Roux's talk for the Boston Haskell Meetup - February 18, 2015",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=ZGqKsalJi4s"
+      ],
+      "descriptionLinks": [
+        "http://www.slideshare.net/imalsogreg/cody-roux-pure-type-systems-boston-haskell-meetup"
+      ],
+      "materials": [
+        {
+          "kind": "slides",
+          "url": "http://www.slideshare.net/imalsogreg/cody-roux-pure-type-systems-boston-haskell-meetup",
+          "note": "Slides linked in uploader description."
+        }
+      ],
+      "uncertainty": [],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube-_KioQRICpmo",
+      "videoId": "_KioQRICpmo",
+      "title": "Anthony Cowley - Framing the Discussion with EDSLs",
+      "type": "talk",
+      "speakers": [
+        "Anthony Cowley"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=_KioQRICpmo",
+      "uploadDate": "2015-04-01",
+      "uploadTimestamp": "2015-04-01T11:31:32-07:00",
+      "publicationTimestamp": "2015-04-01T11:31:32-07:00",
+      "eventDate": "2015-03-25",
+      "eventMonth": null,
+      "eventDatePrecision": "day",
+      "date": "2015-03-25",
+      "dateBasis": "presentation (organizer and speaker sources)",
+      "dateConfidence": "high",
+      "dateEvidence": "Full date follows by combining organizer’s March 25 with speaker’s March 2015 for the same recording. Repo initial commit 2015-04-02 is a material upload/commit date, not the presentation date.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 6101,
+      "description": "Anthony Cowley's Talk for the Boston Haskell Meetup. March 25",
+      "context": "Anthony Cowley's Talk for the Boston Haskell Meetup. March 25",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=_KioQRICpmo",
+        "https://github.com/acowley/BostonHaskell2015",
+        "https://raw.githubusercontent.com/acowley/BostonHaskell2015/master/README.md"
+      ],
+      "descriptionLinks": [],
+      "materials": [
+        {
+          "kind": "slides_pdf",
+          "url": "https://raw.githubusercontent.com/acowley/BostonHaskell2015/master/edsl.pdf",
+          "status": "public retrieval verified; PDF text not extracted"
+        },
+        {
+          "kind": "source_code",
+          "url": "https://github.com/acowley/BostonHaskell2015/blob/master/Lang.hs",
+          "status": "file presence verified through GitHub contents API"
+        }
+      ],
+      "uncertainty": [],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube-_2jrmgO_Gq0",
+      "videoId": "_2jrmgO_Gq0",
+      "title": "Chris Casinghino - Making Dependent Types Practical",
+      "type": "talk",
+      "speakers": [
+        "Chris Casinghino"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=_2jrmgO_Gq0",
+      "uploadDate": "2015-05-09",
+      "uploadTimestamp": "2015-05-09T16:05:37-07:00",
+      "publicationTimestamp": "2015-05-09T16:05:37-07:00",
+      "eventDate": "2015-04-15",
+      "eventMonth": null,
+      "eventDatePrecision": "day",
+      "date": "2015-04-15",
+      "dateBasis": "presentation (uploader description)",
+      "dateConfidence": "high",
+      "dateEvidence": "The channel description explicitly states the meetup/recording date.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 3685,
+      "description": "Aᴘʀɪʟ 15, 2015 @ Bᴏsᴛᴏɴ Hᴀsᴋᴇʟʟ: http://www.meetup.com/Boston-Haskell/events/219653486/\nSʟɪᴅᴇs: http://tyconmismatch.com/bh_talk.pdf\n\"The last decade has seen many success stories for verified programming with dependent types, including the CompCert verified C compiler, verified libraries for concurrency and security, and machine-checked proofs of results like the four color theorem and the Feit-Thompson theorem.  Despite these successes, dependently typed languages are rarely used for day-to-day programming tasks.  In this talk, I’ll describe several limitations of modern dependently-typed languages that are holding them back from wider adoption for practical programming tasks.  I’ll explain the historical and mathematical reasons for these limitations, and describe how we attempted to relax them in the design of the Zombie research language.\"",
+      "context": "Aᴘʀɪʟ 15, 2015 @ Bᴏsᴛᴏɴ Hᴀsᴋᴇʟʟ: http://www.meetup.com/Boston-Haskell/events/219653486/",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=_2jrmgO_Gq0",
+        "http://www.meetup.com/Boston-Haskell/events/219653486/"
+      ],
+      "descriptionLinks": [
+        "http://www.meetup.com/Boston-Haskell/events/219653486/",
+        "http://tyconmismatch.com/bh_talk.pdf"
+      ],
+      "materials": [
+        {
+          "kind": "slides",
+          "url": "http://tyconmismatch.com/bh_talk.pdf",
+          "note": "PDF linked in uploader description; current availability not reverified."
+        }
+      ],
+      "uncertainty": [],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube-dOy7zIk3IUI",
+      "videoId": "dOy7zIk3IUI",
+      "title": "Ryan Trinkle - Reflex: Practical Functional Reactive Programming",
+      "type": "talk",
+      "speakers": [
+        "Ryan Trinkle"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=dOy7zIk3IUI",
+      "uploadDate": "2015-05-09",
+      "uploadTimestamp": "2015-05-09T16:05:24-07:00",
+      "publicationTimestamp": "2015-05-09T16:05:24-07:00",
+      "eventDate": "2015-04-15",
+      "eventMonth": null,
+      "eventDatePrecision": "day",
+      "date": "2015-04-15",
+      "dateBasis": "presentation (uploader description)",
+      "dateConfidence": "high",
+      "dateEvidence": "The channel description explicitly states the meetup/recording date.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 4013,
+      "description": "Aᴘʀɪʟ 15, 2015 @ Bᴏsᴛᴏɴ Hᴀsᴋᴇʟʟ: http://www.meetup.com/Boston-Haskell/events/219653486/\nSʟɪᴅᴇs: https://obsidian.systems/reflex-nyhug/\n\"Ryan Trinkle presents his new library, Reflex, a deterministic, efficient, higher-order Functional Reactive Programming system. FRP is a radically new paradigm for writing interactive software: Instead of writing event loops or callbacks, programmers compose interactive applications using ordinary pure functional programming methods. The unique design of Reflex gives it the power and flexibility necessary to handle complex large-scale applications. Reflex can be compiled to binary using GHC or JavaScript using GHCJS.\"",
+      "context": "Aᴘʀɪʟ 15, 2015 @ Bᴏsᴛᴏɴ Hᴀsᴋᴇʟʟ: http://www.meetup.com/Boston-Haskell/events/219653486/",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=dOy7zIk3IUI",
+        "http://www.meetup.com/Boston-Haskell/events/219653486/"
+      ],
+      "descriptionLinks": [
+        "http://www.meetup.com/Boston-Haskell/events/219653486/",
+        "https://obsidian.systems/reflex-nyhug/"
+      ],
+      "materials": [
+        {
+          "kind": "slides",
+          "url": "https://obsidian.systems/reflex-nyhug/",
+          "note": "Slides linked in uploader description; directory names NYHUG, so retain as associated slides, not evidence of Boston date."
+        }
+      ],
+      "uncertainty": [],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube-gZwMp8YXIXg",
+      "videoId": "gZwMp8YXIXg",
+      "title": "Alec Heller - Skete: Exploring Distributed Package Management",
+      "type": "talk",
+      "speakers": [
+        "Alec Heller"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=gZwMp8YXIXg",
+      "uploadDate": "2015-07-06",
+      "uploadTimestamp": "2015-07-06T21:31:45-07:00",
+      "publicationTimestamp": "2015-07-06T21:31:45-07:00",
+      "eventDate": "2015-05-20",
+      "eventMonth": null,
+      "eventDatePrecision": "day",
+      "date": "2015-05-20",
+      "dateBasis": "presentation (uploader description)",
+      "dateConfidence": "high",
+      "dateEvidence": "The channel description explicitly states the meetup/recording date.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 1456,
+      "description": "May 20, 2015 @ Bᴏsᴛᴏɴ Hᴀsᴋᴇʟʟ: http://www.meetup.com/Boston-Haskell/events/219653513/\n\"We thought it would be nice to have a completely local hackage. To this end we've spent the past few months experimenting with a new distributed package management system called Skete.  Our primary backend for Skete is based on Git. Using that, we've built a functional hackage repository. This combination allows us to keep a local copy of all of hackage in ~1GB of storage.  Additionally, Skete provides a clean approach to maintaining curated collections of packages (such as stackage) or private collections (such as internal company software or local forks) which can still be refreshed from upstream (public) repositories.\"",
+      "context": "May 20, 2015 @ Bᴏsᴛᴏɴ Hᴀsᴋᴇʟʟ: http://www.meetup.com/Boston-Haskell/events/219653513/",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=gZwMp8YXIXg",
+        "http://www.meetup.com/Boston-Haskell/events/219653513/"
+      ],
+      "descriptionLinks": [
+        "http://www.meetup.com/Boston-Haskell/events/219653513/"
+      ],
+      "materials": [],
+      "uncertainty": [],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube-O0oBXcwGZQY",
+      "videoId": "O0oBXcwGZQY",
+      "title": "Paul Chiusano on csound-expression",
+      "type": "talk",
+      "speakers": [
+        "Paul Chiusano"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=O0oBXcwGZQY",
+      "uploadDate": "2015-11-11",
+      "uploadTimestamp": "2015-11-11T12:19:45-08:00",
+      "publicationTimestamp": "2015-11-11T12:19:45-08:00",
+      "eventDate": "2015-10-21",
+      "eventMonth": null,
+      "eventDatePrecision": "day",
+      "date": "2015-10-21",
+      "dateBasis": "presentation (uploader description)",
+      "dateConfidence": "high",
+      "dateEvidence": "The channel description explicitly states the meetup/recording date.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 5322,
+      "description": "Paul Chiusano gives Boston Haskell a demo of the csound system (https://csound.github.io/) and its Haskell expression library (https://hackage.haskell.org/package/csound-expression). Recorded on Oct. 21, 2015",
+      "context": "Paul Chiusano gives Boston Haskell a demo of the csound system (https://csound.github.io/) and its Haskell expression library (https://hackage.haskell.org/package/csound-expression). Recorded on Oct. 21, 2015",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=O0oBXcwGZQY"
+      ],
+      "descriptionLinks": [
+        "https://csound.github.io/)",
+        "https://hackage.haskell.org/package/csound-expression)."
+      ],
+      "materials": [],
+      "uncertainty": [],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube-rsv96JK4Vx4",
+      "videoId": "rsv96JK4Vx4",
+      "title": "Julian Arni - Servant - Boston Haskell",
+      "type": "talk",
+      "speakers": [
+        "Julian Arni"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=rsv96JK4Vx4",
+      "uploadDate": "2015-11-13",
+      "uploadTimestamp": "2015-11-13T13:33:38-08:00",
+      "publicationTimestamp": "2015-11-13T13:33:38-08:00",
+      "eventDate": "2015-11-04",
+      "eventMonth": null,
+      "eventDatePrecision": "day",
+      "date": "2015-11-04",
+      "dateBasis": "presentation (uploader description)",
+      "dateConfidence": "high",
+      "dateEvidence": "The channel description explicitly states the meetup/recording date.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 9110,
+      "description": "Julian Arni delivers a marathon talk on Servant for the Boston Haskell Users Group. Recorded November 4th, 2015\n\nhttp://haskell-servant.github.io/\n\nhttp://www.meetup.com/Boston-Haskell/events/226374552/",
+      "context": "Julian Arni delivers a marathon talk on Servant for the Boston Haskell Users Group. Recorded November 4th, 2015",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=rsv96JK4Vx4",
+        "http://www.meetup.com/Boston-Haskell/events/226374552/"
+      ],
+      "descriptionLinks": [
+        "http://haskell-servant.github.io/",
+        "http://www.meetup.com/Boston-Haskell/events/226374552/"
+      ],
+      "materials": [],
+      "uncertainty": [],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube-DyPzPeOPgUE",
+      "videoId": "DyPzPeOPgUE",
+      "title": "Edward Kmett - Propagators - Boston Haskell",
+      "type": "talk",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=DyPzPeOPgUE",
+      "uploadDate": "2015-11-19",
+      "uploadTimestamp": "2015-11-19T16:35:30-08:00",
+      "publicationTimestamp": "2015-11-19T16:35:30-08:00",
+      "eventDate": "2015-11-18",
+      "eventMonth": null,
+      "eventDatePrecision": "day",
+      "date": "2015-11-18",
+      "dateBasis": "presentation (uploader description)",
+      "dateConfidence": "high",
+      "dateEvidence": "The channel description explicitly states the meetup/recording date.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 6803,
+      "description": "Recorded on Nov 18, 2015\nhttp://www.meetup.com/Boston-Haskell/events/224740729/",
+      "context": "Recorded on Nov 18, 2015",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=DyPzPeOPgUE",
+        "http://www.meetup.com/Boston-Haskell/events/224740729/"
+      ],
+      "descriptionLinks": [
+        "http://www.meetup.com/Boston-Haskell/events/224740729/"
+      ],
+      "materials": [],
+      "uncertainty": [
+        "Some secondary resource lists label this Boston performance 2016; the primary description explicitly records 2015-11-18."
+      ],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube--Kz7SYZNoUU",
+      "videoId": "-Kz7SYZNoUU",
+      "title": "Dimensional - Douglas McClean - Boston Haskell",
+      "type": "talk",
+      "speakers": [
+        "Douglas McClean"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=-Kz7SYZNoUU",
+      "uploadDate": "2016-01-20",
+      "uploadTimestamp": "2016-01-20T16:46:00-08:00",
+      "publicationTimestamp": "2016-01-20T16:46:00-08:00",
+      "eventDate": "2016-01-20",
+      "eventMonth": null,
+      "eventDatePrecision": "day",
+      "date": "2016-01-20",
+      "dateBasis": "presentation (uploader description)",
+      "dateConfidence": "high",
+      "dateEvidence": "The channel description explicitly states the meetup/recording date.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 1238,
+      "description": "Boston Haskell Meetup, January 20 2016",
+      "context": "Boston Haskell Meetup, January 20 2016",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=-Kz7SYZNoUU"
+      ],
+      "descriptionLinks": [],
+      "materials": [],
+      "uncertainty": [],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube-MfXxuy_CJSk",
+      "videoId": "MfXxuy_CJSk",
+      "title": "On Reflex - Boston Haskell - Greg Hale",
+      "type": "talk",
+      "speakers": [
+        "Greg Hale"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=MfXxuy_CJSk",
+      "uploadDate": "2016-01-21",
+      "uploadTimestamp": "2016-01-21T15:15:13-08:00",
+      "publicationTimestamp": "2016-01-21T15:15:13-08:00",
+      "eventDate": "2016-01-20",
+      "eventMonth": null,
+      "eventDatePrecision": "day",
+      "date": "2016-01-20",
+      "dateBasis": "presentation (uploader description)",
+      "dateConfidence": "high",
+      "dateEvidence": "The channel description explicitly states the meetup/recording date.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 672,
+      "description": "Greg Hale's reflex-dom lightning talk for http://www.meetup.com/Boston-Haskell/ on Jan 20, 2016.\ntry-reflex: https://github.com/ryantrinkle/try-reflex\nreflex-dom-contrib: https://github.com/reflex-frp/reflex-dom-contrib\nmy-reflex-recipes: http://web.mit.edu/greghale/Public/my-reflex-recipes/\ncochleagram: https://cbmm.github.io/cochleagram (Chrome only)\ncochleagram code: http://github.com/cbmm/cochleagram",
+      "context": "Greg Hale's reflex-dom lightning talk for http://www.meetup.com/Boston-Haskell/ on Jan 20, 2016.",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=MfXxuy_CJSk",
+        "http://www.meetup.com/Boston-Haskell/"
+      ],
+      "descriptionLinks": [
+        "http://www.meetup.com/Boston-Haskell/",
+        "https://github.com/ryantrinkle/try-reflex",
+        "https://github.com/reflex-frp/reflex-dom-contrib",
+        "http://web.mit.edu/greghale/Public/my-reflex-recipes/",
+        "https://cbmm.github.io/cochleagram",
+        "http://github.com/cbmm/cochleagram"
+      ],
+      "materials": [],
+      "uncertainty": [],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube-ZL9ehIJhk98",
+      "videoId": "ZL9ehIJhk98",
+      "title": "Edward Kmett - Undecidable Superclasses",
+      "type": "talk",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=ZL9ehIJhk98",
+      "uploadDate": "2016-02-28",
+      "uploadTimestamp": "2016-02-28T18:16:57-08:00",
+      "publicationTimestamp": "2016-02-28T18:16:57-08:00",
+      "eventDate": "2016-02-17",
+      "eventMonth": null,
+      "eventDatePrecision": "day",
+      "date": "2016-02-17",
+      "dateBasis": "presentation (uploader description)",
+      "dateConfidence": "high",
+      "dateEvidence": "The channel description explicitly states the meetup/recording date.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 2162,
+      "description": "Edward shows the Boston Haskell meetup group some of his GHC 8.0 toys.  2016.02.17",
+      "context": "Edward shows the Boston Haskell meetup group some of his GHC 8.0 toys.  2016.02.17",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=ZL9ehIJhk98"
+      ],
+      "descriptionLinks": [],
+      "materials": [],
+      "uncertainty": [],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube-0fyrf83pjMg",
+      "videoId": "0fyrf83pjMg",
+      "title": "James Larisch - Haskell Code Review!",
+      "type": "talk",
+      "speakers": [
+        "James Larisch"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=0fyrf83pjMg",
+      "uploadDate": "2016-02-28",
+      "uploadTimestamp": "2016-02-28T18:55:34-08:00",
+      "publicationTimestamp": "2016-02-28T18:55:34-08:00",
+      "eventDate": null,
+      "eventMonth": null,
+      "eventDatePrecision": "unknown",
+      "date": "2016-02-28",
+      "dateBasis": "upload (presentation date unknown)",
+      "dateConfidence": "upload-only",
+      "dateEvidence": "No complete event date found in the channel description; upload date is a fallback only.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 3651,
+      "description": "James Larisch presents his Haskell learning project for review by the Boston Haskell meetup peanut gallery",
+      "context": "James Larisch presents his Haskell learning project for review by the Boston Haskell meetup peanut gallery",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=0fyrf83pjMg"
+      ],
+      "descriptionLinks": [],
+      "materials": [],
+      "uncertainty": [
+        "The upload date must not be displayed as the presentation date."
+      ],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube-R4nLSxCKkNw",
+      "videoId": "R4nLSxCKkNw",
+      "title": "Haskell, Startups, and Domain Specific Languages",
+      "type": "talk",
+      "speakers": [
+        "Adam Wespiser"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=R4nLSxCKkNw",
+      "uploadDate": "2016-03-27",
+      "uploadTimestamp": "2016-03-27T14:48:52-07:00",
+      "publicationTimestamp": "2016-03-27T14:48:52-07:00",
+      "eventDate": "2016-03-16",
+      "eventMonth": null,
+      "eventDatePrecision": "day",
+      "date": "2016-03-16",
+      "dateBasis": "presentation (uploader description)",
+      "dateConfidence": "high",
+      "dateEvidence": "The channel description explicitly states the meetup/recording date.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 2173,
+      "description": "Adam Wespiser's talk for the Boston Haskell meetup group, March 16 2016",
+      "context": "Adam Wespiser's talk for the Boston Haskell meetup group, March 16 2016",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=R4nLSxCKkNw"
+      ],
+      "descriptionLinks": [],
+      "materials": [],
+      "uncertainty": [],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube-Jmw6LLNQQfs",
+      "videoId": "Jmw6LLNQQfs",
+      "title": "Composing (Music) in Haskell - Stuart Popejoy",
+      "type": "talk",
+      "speakers": [
+        "Stuart Popejoy"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=Jmw6LLNQQfs",
+      "uploadDate": "2016-03-28",
+      "uploadTimestamp": "2016-03-28T08:21:16-07:00",
+      "publicationTimestamp": "2016-03-28T08:21:16-07:00",
+      "eventDate": null,
+      "eventMonth": null,
+      "eventDatePrecision": "unknown",
+      "date": "2016-03-28",
+      "dateBasis": "upload (presentation date unknown)",
+      "dateConfidence": "upload-only",
+      "dateEvidence": "No complete event date found in the channel description; upload date is a fallback only.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 3445,
+      "description": "Stuart Popejoy's talk on music composition for the Boston Haskell meetup group.",
+      "context": "Stuart Popejoy's talk on music composition for the Boston Haskell meetup group.",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=Jmw6LLNQQfs"
+      ],
+      "descriptionLinks": [],
+      "materials": [],
+      "uncertainty": [
+        "The upload date must not be displayed as the presentation date."
+      ],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube-8YUUuZMawdY",
+      "videoId": "8YUUuZMawdY",
+      "title": "Alexey Radul - Probabilistic Programming Live-code",
+      "type": "talk",
+      "speakers": [
+        "Alexey Radul"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=8YUUuZMawdY",
+      "uploadDate": "2016-04-28",
+      "uploadTimestamp": "2016-04-28T12:59:50-07:00",
+      "publicationTimestamp": "2016-04-28T12:59:50-07:00",
+      "eventDate": "2016-04-20",
+      "eventMonth": null,
+      "eventDatePrecision": "day",
+      "date": "2016-04-20",
+      "dateBasis": "presentation (uploader description)",
+      "dateConfidence": "high",
+      "dateEvidence": "The channel description explicitly states the meetup/recording date.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 4240,
+      "description": "Alexey's talk for the Boston Haskell Meetup - April 20, 2016",
+      "context": "Alexey's talk for the Boston Haskell Meetup - April 20, 2016",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=8YUUuZMawdY"
+      ],
+      "descriptionLinks": [],
+      "materials": [],
+      "uncertainty": [],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube-Mj2cXQXgyWE",
+      "videoId": "Mj2cXQXgyWE",
+      "title": "Austin Seipp - binary-serialize-cbor",
+      "type": "talk",
+      "speakers": [
+        "Austin Seipp"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=Mj2cXQXgyWE",
+      "uploadDate": "2016-04-27",
+      "uploadTimestamp": "2016-04-27T18:21:43-07:00",
+      "publicationTimestamp": "2016-04-27T18:21:43-07:00",
+      "eventDate": "2016-04-20",
+      "eventMonth": null,
+      "eventDatePrecision": "day",
+      "date": "2016-04-20",
+      "dateBasis": "presentation (uploader description)",
+      "dateConfidence": "high",
+      "dateEvidence": "The channel description explicitly states the meetup/recording date.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 3403,
+      "description": "Austin's talk at the Boston Haskell Meetup - April 20, 2016",
+      "context": "Austin's talk at the Boston Haskell Meetup - April 20, 2016",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=Mj2cXQXgyWE"
+      ],
+      "descriptionLinks": [],
+      "materials": [],
+      "uncertainty": [],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube-heU8NyX5Hus",
+      "videoId": "heU8NyX5Hus",
+      "title": "Faré Rideau - First-class implementations",
+      "type": "talk",
+      "speakers": [
+        "François-René Rideau"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=heU8NyX5Hus",
+      "uploadDate": "2016-05-26",
+      "uploadTimestamp": "2016-05-26T21:49:18-07:00",
+      "publicationTimestamp": "2016-05-26T21:49:18-07:00",
+      "eventDate": "2016-05-18",
+      "eventMonth": null,
+      "eventDatePrecision": "day",
+      "date": "2016-05-18",
+      "dateBasis": "presentation (organizer and speaker sources)",
+      "dateConfidence": "high",
+      "dateEvidence": "Exact presentation date is confirmed by two primary sources. Preserve author as François-René Rideau (Faré Rideau), not Edward Kmett.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 4124,
+      "description": "Faré Rideau's talk at Boston Haskell, May 18, 2016",
+      "context": "Faré Rideau's talk at Boston Haskell, May 18, 2016",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=heU8NyX5Hus",
+        "https://fare.tunes.org/files/cs/fci-bh2016.pdf"
+      ],
+      "descriptionLinks": [],
+      "materials": [
+        {
+          "kind": "slides",
+          "url": "https://fare.tunes.org/files/cs/fci-bh2016.pdf",
+          "note": "Speaker-hosted PDF; title page dates BostonHaskell 2016-05-18."
+        }
+      ],
+      "uncertainty": [],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      },
+      "speakerAliases": {
+        "François-René Rideau": [
+          "Faré Rideau"
+        ]
+      }
+    },
+    {
+      "id": "youtube-2rhrxkNtrM4",
+      "videoId": "2rhrxkNtrM4",
+      "title": "Cody Roux - SMT for DSLs: a Tutorial",
+      "type": "talk",
+      "speakers": [
+        "Cody Roux"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=2rhrxkNtrM4",
+      "uploadDate": "2017-08-06",
+      "uploadTimestamp": "2017-08-06T15:33:58-07:00",
+      "publicationTimestamp": "2017-08-06T15:33:58-07:00",
+      "eventDate": null,
+      "eventMonth": null,
+      "eventDatePrecision": "unknown",
+      "date": "2017-08-06",
+      "dateBasis": "upload (presentation date unknown)",
+      "dateConfidence": "upload-only",
+      "dateEvidence": "No complete event date found in the channel description; upload date is a fallback only.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 6739,
+      "description": "Cody Roux gives an overview of the sbv library for interacting with SMT solvers in Haskell, and gives strategies for using it to verify properties of/in domain specific languages.",
+      "context": "Cody Roux gives an overview of the sbv library for interacting with SMT solvers in Haskell, and gives strategies for using it to verify properties of/in domain specific languages.",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=2rhrxkNtrM4"
+      ],
+      "descriptionLinks": [],
+      "materials": [],
+      "uncertainty": [
+        "The upload date must not be displayed as the presentation date."
+      ],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube-SmBpQ3V9Yqo",
+      "videoId": "SmBpQ3V9Yqo",
+      "title": "James Koppel - Cracking Multi-Language Transformations",
+      "type": "talk",
+      "speakers": [
+        "James Koppel"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=SmBpQ3V9Yqo",
+      "uploadDate": "2017-09-05",
+      "uploadTimestamp": "2017-09-05T06:26:08-07:00",
+      "publicationTimestamp": "2017-09-05T06:26:08-07:00",
+      "eventDate": null,
+      "eventMonth": "2017-07",
+      "eventDatePrecision": "month",
+      "date": "2017-09-05",
+      "dateBasis": "upload (presentation date unknown)",
+      "dateConfidence": "upload-only",
+      "dateEvidence": "No complete event date found in the channel description; upload date is a fallback only.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 4176,
+      "description": "Jimmy Koppel explains his work on performing rewriting transforms in ways that are language agnostic and produce more human readable code.",
+      "context": "Jimmy Koppel explains his work on performing rewriting transforms in ways that are language agnostic and produce more human readable code.",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=SmBpQ3V9Yqo",
+        "https://www.jameskoppel.com/files/cv.pdf"
+      ],
+      "descriptionLinks": [],
+      "materials": [],
+      "uncertainty": [
+        "The upload date must not be displayed as the presentation date.",
+        "Speaker’s own CV establishes July 2017. Exact day remains unknown. The same CV lists many other presentations of this work; do not substitute those dates for Boston."
+      ],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      },
+      "speakerAliases": {
+        "James Koppel": [
+          "Jimmy Koppel"
+        ]
+      }
+    },
+    {
+      "id": "youtube-wjyiOXRuUdo",
+      "videoId": "wjyiOXRuUdo",
+      "title": "Thomas Dietert - Introduction to Cryptocurrencies in Haskell",
+      "type": "talk",
+      "speakers": [
+        "Thomas Dietert"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=wjyiOXRuUdo",
+      "uploadDate": "2017-09-05",
+      "uploadTimestamp": "2017-09-05T06:28:34-07:00",
+      "publicationTimestamp": "2017-09-05T06:28:34-07:00",
+      "eventDate": null,
+      "eventMonth": null,
+      "eventDatePrecision": "unknown",
+      "date": "2017-09-05",
+      "dateBasis": "upload (presentation date unknown)",
+      "dateConfidence": "upload-only",
+      "dateEvidence": "No complete event date found in the channel description; upload date is a fallback only.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 6051,
+      "description": "Thomas Dietert gives an overview of various topics underlying cryptocurrencies and demonstrates his personal cryptocurrency, nanocoin, written in Haskell.",
+      "context": "Thomas Dietert gives an overview of various topics underlying cryptocurrencies and demonstrates his personal cryptocurrency, nanocoin, written in Haskell.",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=wjyiOXRuUdo"
+      ],
+      "descriptionLinks": [],
+      "materials": [],
+      "uncertainty": [
+        "The upload date must not be displayed as the presentation date."
+      ],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube-JzShJfikr4g",
+      "videoId": "JzShJfikr4g",
+      "title": "Algebraic Databases - Boston Haskell Meetup",
+      "type": "talk",
+      "speakers": [
+        "Ryan Wisnesky"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=JzShJfikr4g",
+      "uploadDate": "2017-09-20",
+      "uploadTimestamp": "2017-09-20T17:25:12-07:00",
+      "publicationTimestamp": "2017-09-20T17:25:12-07:00",
+      "eventDate": "2017-09-20",
+      "eventMonth": null,
+      "eventDatePrecision": "day",
+      "date": "2017-09-20",
+      "dateBasis": "presentation (livestream start, America/New_York)",
+      "dateConfidence": "high",
+      "dateEvidence": "YouTube liveBroadcastDetails startTimestamp converted explicitly to the event timezone; visible page confirms the live date.",
+      "eventDateTimezone": "America/New_York",
+      "livestream": {
+        "isLiveNow": false,
+        "startTimestamp": "2017-09-20T22:49:35+00:00",
+        "endTimestamp": "2017-09-21T00:19:12+00:00"
+      },
+      "durationSeconds": 5165,
+      "description": "Ryan Wisnesky presents Algebraic Databases.\n\nSee meetup for full details: \nhttps://www.meetup.com/Boston-Haskell/events/243375233/",
+      "context": "Ryan Wisnesky presents Algebraic Databases.",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=JzShJfikr4g",
+        "https://www.meetup.com/Boston-Haskell/events/243375233/"
+      ],
+      "descriptionLinks": [
+        "https://www.meetup.com/Boston-Haskell/events/243375233/"
+      ],
+      "materials": [],
+      "uncertainty": [],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube-090hIEiUoE0",
+      "videoId": "090hIEiUoE0",
+      "title": "Monoidal Parsing - Boston Haskell Meetup",
+      "type": "talk",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=090hIEiUoE0",
+      "uploadDate": "2017-10-18",
+      "uploadTimestamp": "2017-10-18T17:39:26-07:00",
+      "publicationTimestamp": "2017-10-18T17:39:26-07:00",
+      "eventDate": "2017-10-18",
+      "eventMonth": null,
+      "eventDatePrecision": "day",
+      "date": "2017-10-18",
+      "dateBasis": "presentation (livestream start, America/New_York)",
+      "dateConfidence": "high",
+      "dateEvidence": "YouTube liveBroadcastDetails startTimestamp converted explicitly to the event timezone; visible page confirms the live date.",
+      "eventDateTimezone": "America/New_York",
+      "livestream": {
+        "isLiveNow": false,
+        "startTimestamp": "2017-10-18T22:58:09+00:00",
+        "endTimestamp": "2017-10-19T00:31:18+00:00"
+      },
+      "durationSeconds": 5568,
+      "description": "October Boston Haskell Meetup @ ThoughBot\n\nWell known Haskell guru Edward Kmett speaking about parsing programs (with Haskell-like syntax) in parallel and incrementally by making some small changes to the grammar. Talk provides a nice whirlwind tour of semigroup actions, inverse semigroups and a bunch of less well-known bits of algebra that have a lot of applications.\n\nhttps://www.meetup.com/Boston-Haskell/events/244136649/",
+      "context": "October Boston Haskell Meetup @ ThoughBot",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=090hIEiUoE0",
+        "https://www.meetup.com/Boston-Haskell/events/244136649/"
+      ],
+      "descriptionLinks": [
+        "https://www.meetup.com/Boston-Haskell/events/244136649/"
+      ],
+      "materials": [],
+      "uncertainty": [],
+      "relatedEntries": [
+        {
+          "relation": "topic_family",
+          "title": "Earlier monoidal/parallel parsing talks and blog posts",
+          "note": "The 2017 live performance remains its own dated event."
+        }
+      ],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube-4BmvEInzoY0",
+      "videoId": "4BmvEInzoY0",
+      "title": "A Walk-through of Computational Reflection in Coq  - Boston Haskell Meetup",
+      "type": "talk",
+      "speakers": [
+        "Gregory Malecha"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=4BmvEInzoY0",
+      "uploadDate": "2017-11-15",
+      "uploadTimestamp": "2017-11-15T17:32:21-08:00",
+      "publicationTimestamp": "2017-11-15T17:32:21-08:00",
+      "eventDate": "2017-11-15",
+      "eventMonth": null,
+      "eventDatePrecision": "day",
+      "date": "2017-11-15",
+      "dateBasis": "presentation (livestream start, America/New_York)",
+      "dateConfidence": "high",
+      "dateEvidence": "YouTube liveBroadcastDetails startTimestamp converted explicitly to the event timezone; visible page confirms the live date.",
+      "eventDateTimezone": "America/New_York",
+      "livestream": {
+        "isLiveNow": false,
+        "startTimestamp": "2017-11-16T00:01:57+00:00",
+        "endTimestamp": "2017-11-16T01:16:36+00:00"
+      },
+      "durationSeconds": 4493,
+      "description": "November Boston Haskell Meetup @ ThoughBot\n\nGregory Malecha presents techniques for computational reflection in the Coq proof assistant. Computational reflection is a proof technique that makes use of programs written within the language of the proof assistant itself, rather than a meta-language.\n\nhttps://www.meetup.com/Boston-Haskell/events/244608020/",
+      "context": "November Boston Haskell Meetup @ ThoughBot",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=4BmvEInzoY0",
+        "https://www.meetup.com/Boston-Haskell/events/244608020/"
+      ],
+      "descriptionLinks": [
+        "https://www.meetup.com/Boston-Haskell/events/244608020/"
+      ],
+      "materials": [],
+      "uncertainty": [],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube-BiH_A36zKwI",
+      "videoId": "BiH_A36zKwI",
+      "title": "Programming with Tactics",
+      "type": "talk",
+      "speakers": [
+        "Reed Mullanix"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=BiH_A36zKwI",
+      "uploadDate": "2021-11-17",
+      "uploadTimestamp": "2021-11-17T09:33:01-08:00",
+      "publicationTimestamp": "2021-11-17T09:33:01-08:00",
+      "eventDate": "2021-10-27",
+      "eventMonth": null,
+      "eventDatePrecision": "day",
+      "date": "2021-10-27",
+      "dateBasis": "presentation (uploader description)",
+      "dateConfidence": "high",
+      "dateEvidence": "The channel description explicitly states the meetup/recording date.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 3900,
+      "description": "From the 10/27/21 meetup\nReed Mullanix talks about programming with Tactics in Haskell especially concerning their use in Haskell Language Server.",
+      "context": "From the 10/27/21 meetup",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=BiH_A36zKwI"
+      ],
+      "descriptionLinks": [],
+      "materials": [],
+      "uncertainty": [],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    },
+    {
+      "id": "youtube-AweAVW4Pig8",
+      "videoId": "AweAVW4Pig8",
+      "title": "The current state of the Haskell Foundation",
+      "type": "talk",
+      "speakers": [
+        "Andrew Boardman"
+      ],
+      "event": "Boston Haskell meetup",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=AweAVW4Pig8",
+      "uploadDate": "2022-02-07",
+      "uploadTimestamp": "2022-02-07T07:06:35-08:00",
+      "publicationTimestamp": "2022-02-07T07:06:35-08:00",
+      "eventDate": "2022-01-05",
+      "eventMonth": null,
+      "eventDatePrecision": "day",
+      "date": "2022-01-05",
+      "dateBasis": "presentation (uploader description)",
+      "dateConfidence": "high",
+      "dateEvidence": "The channel description explicitly states the meetup/recording date.",
+      "eventDateTimezone": null,
+      "livestream": null,
+      "durationSeconds": 3649,
+      "description": "From the 1/5/22 meetup\nIn a wild and creative talk, Andrew Boardman lets us know about the current state of the Haskell Foundation and its future plans.",
+      "context": "From the 1/5/22 meetup",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=AweAVW4Pig8"
+      ],
+      "descriptionLinks": [],
+      "materials": [],
+      "uncertainty": [],
+      "relatedEntries": [],
+      "channelId": "UCUCpgCWjaniUkX88wZrK_Ig",
+      "verification": {
+        "checkedOn": "2026-09-21",
+        "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
+        "channelMatches": true
+      }
+    }
+  ]
+}

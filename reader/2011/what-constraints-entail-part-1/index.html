@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What Constraints Entail: Part 1 · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Category Theory · Constraint Kinds · Haskell · Logic · Monads · Type Hackery · Uncategorized</span><span>Edward Kmett · <time datetime="2011-11-03">3 November 2011</time></span></div><h1>What Constraints Entail: Part 1</h1></header><details class="contents"><summary>On this page</summary><ol><li><a href="#a-few-extensions">A Few Extensions</a></li><li><a href="#explicit-dictionaries">Explicit Dictionaries</a></li><li><a href="#entailment">Entailment</a></li><li><a href="#limited-sub-superkinding">Limited Sub-Superkinding?</a></li><li><a href="#stay-tuned">Stay Tuned</a></li></ol></details><article class="prose"><span id="more-430"></span><p>Max Bolingbroke has done a wonderful job on adding Constraint kinds to GHC.</p>
+<p>Constraint Kinds adds a new kind <code>Constraint</code>, such that <code>Eq :: * -&gt; Constraint</code>, <code>Monad :: (* -&gt; *) -&gt; Constraint</code>, but since it is a kind, we can make type families for constraints, and even parameterize constraints <em>on</em> constraints.</p>
+<p>So, let's play with them and see what we can come up with!</p>
+<h2 id="a-few-extensions">A Few Extensions</h2>
+<p>First, we'll need a few language features:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE
+  CPP,
+  ScopedTypeVariables,
+  FlexibleInstances,
+  FlexibleContexts,
+  ConstraintKinds,
+  KindSignatures,
+  TypeOperators,
+  FunctionalDependencies,
+  Rank2Types,
+  StandaloneDeriving,
+  GADTs
+  #-}</span>
+</code></pre>
+<p>Because of the particular version of GHC I'm using I'll also need</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE UndecidableInstances #-}</span>
+<span class="hljs-meta">#define UNDECIDABLE</span>
+</code></pre>
+<p>but this bug has been fixed in the current version of GHC Head. I'll be explicit about any instances that need UndecidableInstances by surrounding them in an <code>#ifdef UNDECIDABLE</code> block.</p>
+<h2 id="explicit-dictionaries">Explicit Dictionaries</h2>
+<p>So with that out of the way, let's import some definitions</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-keyword">import</span> Control.Monad
+<span class="hljs-keyword">import</span> Control.Monad.Instances
+<span class="hljs-keyword">import</span> Control.Applicative
+<span class="hljs-keyword">import</span> Data.Monoid
+<span class="hljs-keyword">import</span> Data.Complex
+<span class="hljs-keyword">import</span> Data.Ratio
+<span class="hljs-keyword">import</span> Unsafe.Coerce
+</code></pre>
+<p>and make one of our own that shows what we get out of making Constraints into a kind we can manipulate like any other.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Dict</span> a <span class="hljs-keyword">where</span></span>
+  <span class="hljs-type">Dict</span> :: a =&gt; <span class="hljs-type">Dict</span> a
+</code></pre>
+<p>Previously, we coud make a Dict like data type for any one particular class constraint that we wanted to capture, but now we can write this type once and for all. The act of pattern matching on the Dict constructor will bring the constraint 'a' into scope.</p>
+<p>Of course, in the absence of incoherent and overlapping instances there is at most one dictionary of a given type, so we could make instances, like we can for any other data type, but standalone deriving is smart enough to figure these out for me. (Thanks copumpkin!)</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">deriving</span> <span class="hljs-keyword">instance</span> <span class="hljs-type">Eq</span> (<span class="hljs-type">Dict</span> a)
+<span class="hljs-title">deriving</span> <span class="hljs-keyword">instance</span> <span class="hljs-type">Ord</span> (<span class="hljs-type">Dict</span> a)
+<span class="hljs-title">deriving</span> <span class="hljs-keyword">instance</span> <span class="hljs-type">Show</span> (<span class="hljs-type">Dict</span> a)
+</code></pre>
+<p>If we're willing to turn on UndecidableInstances to enable the polymorphic constraint we can even add:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">#ifdef UNDECIDABLE</span>
+<span class="hljs-title">deriving</span> <span class="hljs-keyword">instance</span> a =&gt; <span class="hljs-type">Read</span> (<span class="hljs-type">Dict</span> a)
+<span class="hljs-class"><span class="hljs-keyword">instance</span> a =&gt; <span class="hljs-type">Monoid</span> (<span class="hljs-type">Dict</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  mappend <span class="hljs-type">Dict</span> <span class="hljs-type">Dict</span> = <span class="hljs-type">Dict</span>
+  mempty = <span class="hljs-type">Dict</span>
+<span class="hljs-meta">#endif</span>
+</code></pre>
+<p>and similar polymorphically constrained instances for <code>Enum</code>, <code>Bounded</code>, etc.</p>
+<h2 id="entailment">Entailment</h2>
+<p>For that we'll need a notion of entailment.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-keyword">infixr</span> <span class="hljs-number">9</span> :-
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> a :- b = <span class="hljs-type">Sub</span> (<span class="hljs-title">a</span> =&gt; <span class="hljs-type">Dict</span> <span class="hljs-title">b</span>)</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Eq</span> (<span class="hljs-title">a</span> :- <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+  _ == _ = <span class="hljs-type">True</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Ord</span> (<span class="hljs-title">a</span> :- <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+  compare _ _ = <span class="hljs-type">EQ</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Show</span> (<span class="hljs-title">a</span> :- <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+  showsPrec d _ = showParen (d &gt; <span class="hljs-number">10</span>) $
+    showString <span class="hljs-string">"Sub Dict"</span>
+</code></pre>
+<p>Here we're saying that <code>Sub</code> takes one argument, which is a computation that when implicitly given a constraint of type <em>a</em>, can give me back a dictionary for the type <em>b</em>. Moreover, as a newtype it adds no overhead that isn't aleady present in manipulating terms of type (a =&gt; Dict b) directly.</p>
+<p>The simplest thing we can define with this is that entailment is reflexive.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">refl</span> :: a :- a
+<span class="hljs-title">refl</span> = <span class="hljs-type">Sub</span> <span class="hljs-type">Dict</span>
+</code></pre>
+<p>Max has already written up a nice restricted monad example using these, but what I want to play with today is the category of substitutability of constraints, but there are a few observations I need to make, first.</p>
+<p>ConstraintKinds overloads <code>()</code> and <code>(a,b)</code> to represent the trivial constraint and the product of two constraints respectively.</p>
+<p>The latter is done with a bit of a hack, which we'll talk about in a minute, but we can use the former as a terminal object for our category of entailments.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">weaken1</span> :: (a, b) :- a
+<span class="hljs-title">weaken1</span> = <span class="hljs-type">Sub</span> <span class="hljs-type">Dict</span>
+
+<span class="hljs-title">weaken2</span> :: (a, b) :- b
+<span class="hljs-title">weaken2</span> = <span class="hljs-type">Sub</span> <span class="hljs-type">Dict</span>
+</code></pre>
+<p>Constraints are idempotent, so we can duplicate one, perhaps as a prelude to transforming one of them into something else.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">contract</span> :: a :- (a, a)
+<span class="hljs-title">contract</span> = <span class="hljs-type">Sub</span> <span class="hljs-type">Dict</span>
+</code></pre>
+<p>But to do much more complicated, we're going to need a notion of substitution, letting us use our entailment relation to satisfy obligations.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-keyword">infixl</span> <span class="hljs-number">1</span> \\ <span class="hljs-comment">-- required comment</span>
+(\\) :: a =&gt; (b =&gt; r) -&gt; (a :- b) -&gt; r
+<span class="hljs-title">r</span> \\ <span class="hljs-type">Sub</span> <span class="hljs-type">Dict</span> = r
+</code></pre>
+<p>The type says that given that a constraint <em>a</em> can be satisfied, a computation that needs a constraint of type <em>b</em> to be satisfied in order to obtain a result, and the fact that <em>a</em> entails <em>b</em>, we can compute the result.</p>
+<p>The constraint <em>a</em> is satisfied by the type signature, and the fact that we get quietly passed whatever dictionary is needed. Pattern matching on Sub brings into scope a computation of type <code>(a =&gt; Dict b)</code>, and we are able to discharge the <em>a</em> obligation, using the dictionary we were passed, Pattern matching on <code>Dict</code> forces that computation to happen and brings b into scope, allowing us to meet the obligation of the computation of r. All of this happens for us behind the scenes just by pattern matching.</p>
+<p>So what can we do with this?</p>
+<p>We can use \\ to compose constraints.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">trans</span> :: (b :- c) -&gt; (a :- b) -&gt; a :- c
+<span class="hljs-title">trans</span> f g = <span class="hljs-type">Sub</span> $ <span class="hljs-type">Dict</span> \\ f \\ g
+</code></pre>
+<p>In fact, the way the dictionaries get plumbed around inside the argument to Sub is rather nice, because we can give that same definition different type signatures, letting us make (,) more product-like, giving us the canonical product morphism to go with the weakenings/projections we defined above.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">(&amp;&amp;&amp;) :: (a :- b) -&gt; (a :- c) -&gt; a :- (b, c)
+<span class="hljs-title">f</span> &amp;&amp;&amp; g = <span class="hljs-type">Sub</span> $ <span class="hljs-type">Dict</span> \\ f \\ g
+</code></pre>
+<p>And since we're using it as a product, we can make it act like a bifunctor also using the same definition.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">(***) :: (a :- b) -&gt; (c :- d) -&gt; (a, c) :- (b, d)
+<span class="hljs-title">f</span> *** g = <span class="hljs-type">Sub</span> $ <span class="hljs-type">Dict</span> \\ f \\ g
+</code></pre>
+<h2 id="limited-sub-superkinding">Limited Sub-Superkinding?</h2>
+<p>Ideally we'd be able to capture something like that bifunctoriality using a type like</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">#if 0</span>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">BifunctorS</span> (<span class="hljs-title">p</span> :: <span class="hljs-type">Constraint</span> -&gt; <span class="hljs-type">Constraint</span> -&gt; <span class="hljs-type">Constraint</span>) <span class="hljs-keyword">where</span></span>
+  bimapS :: (a :- b) -&gt; (c :- d) -&gt; p a c :- p b d
+<span class="hljs-meta">#endif</span>
+</code></pre>
+<p>In an even more ideal world, it would be enriched using something like</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">#ifdef POLYMORPHIC_KINDS</span>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Category</span> (<span class="hljs-title">k</span> :: <span class="hljs-title">x</span> -&gt; <span class="hljs-title">x</span> -&gt; *) <span class="hljs-keyword">where</span></span>
+  id :: k a a
+  (.) :: k b c -&gt; k a b -&gt; k a c
+<span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Category</span> (:-) <span class="hljs-keyword">where</span></span>
+  id = refl
+  (.) = trans
+<span class="hljs-meta">#endif</span>
+</code></pre>
+<p>where x is a <strong>kind variable</strong>, then we could obtain a more baroque and admittedly far less thought-out bifunctor class like:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">#if 0</span>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Bifunctor</span> (<span class="hljs-title">p</span> :: <span class="hljs-title">x</span> -&gt; <span class="hljs-title">y</span> -&gt; <span class="hljs-title">z</span>) <span class="hljs-keyword">where</span></span>
+  <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Left</span> p :: x -&gt; x -&gt; *</span>
+  <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Left</span> p = (-&gt;)</span>
+  <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Right</span> p :: y -&gt; y -&gt; *</span>
+  <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Right</span> p = (-&gt;)</span>
+  <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Cod</span> p :: z -&gt; z -&gt; *</span>
+  <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Cod</span> p = (-&gt;)</span>
+  bimap :: <span class="hljs-type">Left</span> p a b -&gt; <span class="hljs-type">Right</span> p c d -&gt; <span class="hljs-type">Cod</span> p (p a c) (p b d)
+<span class="hljs-meta">#endif</span>
+</code></pre>
+<p>Or even more more ideally, you could use the fact that we can directly define product categories!</p>
+<p>Since they are talking about kind-indexing for classes and type families, we could have separate bifunctors for (,) for both kinds * and Constraint.</p>
+<p>The current constraint kind code uses a hack to let (a,b) be used as a type inhabiting * and as the syntax for constraints. This hack is limited however. It only works when the type (,) is fully applied to its arguments. Otherwise you'd wind up with the fact that the type (,) needs to have both of these kinds:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">-- (,) :: Constraint -&gt; Constraint -&gt; Constraint and</span>
+<span class="hljs-comment">-- (,) :: * -&gt; * -&gt; *</span>
+</code></pre>
+<p>What is currently done is that the kind magically switches for <code>()</code> and <code>(,)</code> in certain circumstances. GHC already had some support for this because it parses <code>(Foo a, Bar b)</code> as a type in <code>(Foo a, Bar b) =&gt; Baz a b</code> before transforming it into a bunch of constraints.</p>
+<p>Since we already have a notion of sub-kinding at the kind level, we could solve this for <code>()</code> by making up a new kind, say, <code>???</code> which is the subkind of both <code>*</code> and <code>Constraint</code>, but this would break the nice join lattice properties of the current system.</p>
+<p>[Edit: in the initial draft, I had said superkind]</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">--    ?</span>
+<span class="hljs-comment">--   / \</span>
+<span class="hljs-comment">-- (#)  ??</span>
+<span class="hljs-comment">--     /  \</span>
+<span class="hljs-comment">--    #    *  Constraint</span>
+<span class="hljs-comment">--          \ /</span>
+<span class="hljs-comment">--          ???</span>
+</code></pre>
+<p>But this doesn't address the kind of <code>(,)</code> above. With the new polymorphic kinds that Brent Yorgey and company have been working on and a limited notion of sub-superkinding, this could be resolved by making a new super-kind <code>@</code> that is the super-kind of both <code>*</code> and <code>Constraint</code>, and which is a sub-superkind of the usual unnamed Box superkind.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">-- Box</span>
+<span class="hljs-comment">--  |</span>
+<span class="hljs-comment">--  @</span>
+</code></pre>
+<p>Then we can have:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">-- (,) :: forall (k :: @). k -&gt; k -&gt; k</span>
+<span class="hljs-comment">-- () :: forall (k :: @). k</span>
+</code></pre>
+<p>and kind checking/inference will do the right thing about keeping the kind ambiguous for types like <code>(,) () :: forall (k :: @). k</code></p>
+<p>This would get rid of the hack and let me make a proper bifunctor for <code>(,)</code> in the category of entailments.</p>
+<p>The version of GHC head I'm working with right now doesn't support polymorphic kinds, so I've only been playing with these in a toy type checker, but I'm really looking forward to being able to have product categories!</p>
+<h2 id="stay-tuned">Stay Tuned</h2>
+<p><a href="../../../reader/2011/what-constraints-entail-part-2/">Next</a>, we'll go over how to reflect the class and instance declarations so we can derive entailment of a superclass for a class, and the entailment of instances.</p>
+<p>[<a href="https://github.com/ekmett/constraints/blob/master/Data/Constraint.hs">Source</a>]</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/constraints"><code>constraints</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><section class="comments" id="comments"><h2>From the original discussion</h2><p class="editorial">Selected questions, explanations, and corrections. Original wording and dates; spam and automated trackbacks omitted.</p><article class="comment" id="comment-81890"><header><strong>Edward Kmett</strong><a href="../../../reader/2011/what-constraints-entail-part-1/#comment-81890">November 3rd, 2011 at 10:28 am</a></header><p>@Dan,</p>
+<p>Good catch. I’d had it drawn that way on the whiteboard at work, but somewhere along the way got it flipped.</p>
+<p>In practice, I think just doing the right thing and adding @ so we can do the bounded quantification at the kind level is a better idea than trying to preserve the bandaid.</p>
+</article><article class="comment" id="comment-84922"><header><strong>Doug McClean</strong><a href="../../../reader/2011/what-constraints-entail-part-1/#comment-84922">November 16th, 2011 at 4:13 pm</a></header><p>This overloading problem with (,) and () seems like it’s just yet another case of there be insufficiently many kinds of bracketing characters that (a) Unicode encodes, (b) can be typed (keyboarded) easily, and (c) are visually distinguishable.</p>
+<p>The same problem arises with {} signifying the empty set and the record with no attributes. Basically the same thing clutters up the possibility of having a nice concrete syntax for all of: lists, sets, bags, vectors, matrices.</p>
+<p>At the same time, it adds a lot more noise to require writing Set { 3, 7, 2 } everywhere since just { 3, 7, 2 } doesn’t overlap with the concrete syntax for records like { frog := 2, apple := “moose” }.</p>
+<p>It seems like the middle ground approach is to make a lot of granular “re-bindable syntax” type classes for all of the different literals.</p>
+<p>Following that approach seems to work well, and ordinary type ascription expressions suffice to resolve the empty cases. Committing to it fully does feel a little silly in some cases though.</p>
+<p>For example, zero is more polymorphic than other numeric literals. This arises because zero may have any dimension, but 3.7 is always dimensionless. The only language I know of that encodes this is CSS, although I’m sure there are others.</p>
+<p>This sort of thing is leading to my pet language having a large number of type classes which play a role in desugaring, but I think that’s a tradeoff I’m willing to make.</p>
+</article><article class="comment" id="comment-105339"><header><strong>zzo38</strong><a href="../../../reader/2011/what-constraints-entail-part-1/#comment-105339">June 26th, 2012 at 1:59 pm</a></header><p>What I have decided for Ibtlfmm it does not use this kind of superkinds (and Constraint is named &amp; while @ is used for program modules, although you can give them alphabetic names if you want using kind synonyms), rather I would think (,) and () and so on are macros that decide the corresponding types according to what fits. There could also be “kind classes” to rebind the syntax, although I prefer using macros. But yes () should be a constraint too. I do not think making up the new superkiind for this purpose is such a good idea (including for the reasons you have described).</p>
+</article><article class="comment" id="comment-148646"><header><strong>Edward Kmett</strong><a href="../../../reader/2011/what-constraints-entail-part-1/#comment-148646">September 2nd, 2017 at 9:01 pm</a></header><p>Conal: The category of constraints has coproducts, or at least, they are admissable, even if not expressed in Haskell today, but they are more like a greatest lower bound than the disjunction you are looking for.</p>
+<p>(p \/ q) :- r given p :- r and q :- r</p>
+<p>But because of the thinness of the category, the ‘r’ dictionary that results will be the same result given either path.</p>
+<p>e.g. (Ord [a]\/ Eq a) :- Eq [[[a]]]</p>
+<p>would let you produce Eq [[[a]]] given either Eq a or an Ord [a]</p>
+<p>Giving you the ability to do true general ‘Either’ constraints would compromise the thinness of the category and the safety of global instance resolution. (Mind you, incoherent instances also do that.)</p>
+</article></section><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/what-constraints-entail-part-1.md" download>Article Markdown</a> · <a href="../../../source/articles/what-constraints-entail-part-1.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2011/what-constraints-entail-part-2/">What Constraints Entail: Part 2 →</a><a href="../../../reader/2011/searching-infinity/">Searching Infinity Parametrically →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

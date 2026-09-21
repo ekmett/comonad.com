@@ -1,0 +1,16 @@
+{
+  "id": "naturality-square",
+  "objects": [
+    "Fa",
+    "Ga",
+    "Fb",
+    "Gb"
+  ],
+  "arrows": [
+    "ϕₐ",
+    "Ff",
+    "Gf",
+    "ϕᵦ"
+  ],
+  "originalTex": " \\bfig \\square&lt;1000,1000>[Fa`Ga`Fb`Gb;\\phi_a`Ff`Gf`\\phi_b]\\efig "
+}

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cozipping · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Category Theory · Haskell · Monads</span><span>Edward Kmett · <time datetime="2008-05-05">5 May 2008</time></span></div><h1>Cozipping</h1></header><article class="prose"><span id="more-55"></span><p><a href="http://twan.home.fmf.nl/">Twan van Laarhoven</a> <a href="../../../reader/2008/zipping-and-unzipping-functors/#comments">pointed out</a> that fzip from the other day is a close cousin of applicative chosen to be an inverse of the universal construction 'unfzip'.</p>
+<p>During that post I also put off talking about the dual of zipping, so I figured I'd bring up the notion of choosing a notion of 'cozipping' by defining it as an inverse to a universally definable notion of 'counzipping'.</p>
+<p>[Edit: Twan pointed out I had flipped which was the dual of zip, revised]</p>
+<p>Abusing the new category-extras to avoid making an enormous post and recycling the constructions from the previous post, we can define:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE FlexibleInstances #-}</span>
+<span class="hljs-keyword">module</span> Control.Functor.Cozip <span class="hljs-keyword">where</span>
+
+<span class="hljs-keyword">import</span> Control.Arrow ((|||),(+++))
+<span class="hljs-keyword">import</span> Control.Monad.Identity
+<span class="hljs-keyword">import</span> Control.Bifunctor.Biff
+<span class="hljs-keyword">import</span> Control.Bifunctor.Fix
+</code></pre>
+<p>The same inverse question leads to some observations about the dual of fzip as opposed to its inverse.</p>
+<p>We could call them cozip and uncozip for lack of a better name, but as we will see cozip is more accurately about deciding classifying the contents of the functor, so maybe deserves a better, more evocative name like 'decide' or 'cleave'.</p>
+<p>counzip and its bifunctorial equivalent always exist.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">counzip</span> :: <span class="hljs-type">Functor</span> f =&gt; <span class="hljs-type">Either</span> (f a) (f b) -&gt; f (<span class="hljs-type">Either</span> a b)
+<span class="hljs-title">counzip</span> = fmap <span class="hljs-type">Left</span> ||| fmap <span class="hljs-type">Right</span>
+
+<span class="hljs-title">counbizip</span> :: <span class="hljs-type">Bifunctor</span> f =&gt; <span class="hljs-type">Either</span> (f a c) (f b d) -&gt; f (<span class="hljs-type">Either</span> a b) (<span class="hljs-type">Either</span> c d)
+<span class="hljs-title">counbizip</span> = bimap <span class="hljs-type">Left</span> <span class="hljs-type">Left</span> ||| bimap <span class="hljs-type">Right</span> <span class="hljs-type">Right</span>
+</code></pre>
+<p>But there are some cases where its inverse doesn't exist, such as the Reader/State monads, or where uncozip only has a right inverse like with Maybe/Either.</p>
+<p>Counzipping basically demonstrates the fact that if I have either a container of a's or a container of b's, I can treat that as a container of 'as or bs', giving up the knowledge that the container contains entirely one or the other.</p>
+<p>Its inverse describes the cases where we can recover this information.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Functor</span> f =&gt; <span class="hljs-type">Cozip</span> f <span class="hljs-keyword">where</span></span>
+   cozip :: f (<span class="hljs-type">Either</span> a b) -&gt; <span class="hljs-type">Either</span> (f a) (f b)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Cozip</span> <span class="hljs-type">Identity</span> <span class="hljs-keyword">where</span></span>
+   cozip = bimap <span class="hljs-type">Identity</span> <span class="hljs-type">Identity</span> . runIdentity
+</code></pre>
+<p>Now, in general a functor that has more than one 'hole' will not be recoverable because one hole could contain an a, and the other could contain a b, so you would be unable to perform the split. Futhermore unless there is a way to decide the value contained you'll never be able to tell which branch of the Either to return, so functors like the reader/state monads are out.</p>
+<p>However, this does not close the door to a few other functors:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Cozip</span> ((,)c) <span class="hljs-keyword">where</span></span>
+   cozip (c,ab) = bimap ((,)c) ((,)c) ab
+
+<span class="hljs-comment">-- ambiguous choice</span>
+<span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Cozip</span> <span class="hljs-type">Maybe</span> <span class="hljs-keyword">where</span></span>
+   cozip = maybe (<span class="hljs-type">Left</span> <span class="hljs-type">Nothing</span>) (bimap <span class="hljs-type">Just</span> <span class="hljs-type">Just</span>)
+<span class="hljs-comment">-- cozip = maybe (Right Nothing) (bimap Just Just)</span>
+
+<span class="hljs-comment">-- ambiguous choice</span>
+<span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Cozip</span> (<span class="hljs-type">Either</span> <span class="hljs-title">c</span>) <span class="hljs-keyword">where</span></span>
+   cozip = (<span class="hljs-type">Left</span> . <span class="hljs-type">Left</span>) ||| bimap <span class="hljs-type">Right</span> <span class="hljs-type">Right</span>
+<span class="hljs-comment">-- cozip = (Right . Left) ||| bimap Right Right</span>
+</code></pre>
+<p>Note that the definitions for Maybe and (Either c) had to 'choose' where to put the "Nothing/Left" term. Consequently they are only right-inverses of counzip.</p>
+<p>You can also go and generate one that says that the functor coproduct of a pair of cozippable functors is cozippable, just like the functor product of a pair of zippable functors is zippable (given by the construction given for BiffB the other day).</p>
+<p>Finally, the only surprising instance is for the free monad of a cozippable functor.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">-- instance Cozip f =&gt; Cozip (Free f) where</span>
+<span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Cozip</span> f =&gt; <span class="hljs-type">Cozip</span> (<span class="hljs-type">FixB</span> (<span class="hljs-type">BiffB</span> <span class="hljs-type">Either</span> <span class="hljs-type">Identity</span> <span class="hljs-title">f</span>)) <span class="hljs-keyword">where</span></span>
+   cozip (<span class="hljs-type">InB</span> (<span class="hljs-type">BiffB</span> (<span class="hljs-type">Left</span> (<span class="hljs-type">Identity</span> (<span class="hljs-type">Left</span> a))))) = <span class="hljs-type">Left</span> (<span class="hljs-type">InB</span> (<span class="hljs-type">BiffB</span> (<span class="hljs-type">Left</span> (<span class="hljs-type">Identity</span> a))))
+   cozip (<span class="hljs-type">InB</span> (<span class="hljs-type">BiffB</span> (<span class="hljs-type">Left</span> (<span class="hljs-type">Identity</span> (<span class="hljs-type">Right</span> a))))) = <span class="hljs-type">Right</span> (<span class="hljs-type">InB</span> (<span class="hljs-type">BiffB</span> (<span class="hljs-type">Left</span> (<span class="hljs-type">Identity</span> a))))
+   cozip (<span class="hljs-type">InB</span> (<span class="hljs-type">BiffB</span> (<span class="hljs-type">Right</span> <span class="hljs-keyword">as</span>))) = ((<span class="hljs-type">InB</span> . <span class="hljs-type">BiffB</span> . <span class="hljs-type">Right</span>) +++ (<span class="hljs-type">InB</span> . <span class="hljs-type">BiffB</span> . <span class="hljs-type">Right</span>)) (cozip (fmap cozip <span class="hljs-keyword">as</span>))
+</code></pre>
+<p>This says that even though Either is not 'bicozippable' - which appears to be an ill-defined concept - we can build up a general cozip for the free monad of an cozippable functor. The reason is that if your functor only has one place to put a value, then putting the free monad in that place just means that you have to search longer.</p>
+<p>So, we've found the fact that free monads of cozippable functors are cozippable, in contrast to the conclusion of the other day that cofree comonads of zippable functors are zippable.</p>
+</article><section class="comments" id="comments"><h2>From the original discussion</h2><p class="editorial">Selected questions, explanations, and corrections. Original wording and dates; spam and automated trackbacks omitted.</p><article class="comment" id="comment-1168"><header><strong>Twan van Laarhoven</strong><a href="../../../reader/2008/cozipping/#comment-1168">May 5th, 2008 at 7:23 pm</a></header><p>An interesting post, I was thinking along a slightly different (and wrong) route myself.</p>
+<p>First of all, shouldn’t cozip be called counzip and vice-versa? fzip has type “(f a * f b) -&gt; f (a*b)” doesn’t taking the dual give “(f a + f b) Either (f a) (f b)”?</p>
+<p>I was thinking about the type</p>
+<p>&gt; almostcozip :: f (Either a b) -&gt; (f a, f b)</p>
+<p>This function can be implemented unambiguously for [] and Maybe, and is in quite useful in practice. It also has a right inverse,</p>
+<p>&gt; acounzip :: (f a, f b) -&gt; f (Either a b)</p>
+<p>If (f x) is a Monoid then<br>
+&gt; acounzip (fa, fb) = fmap Left fa `mappend` fmap Right fb</p>
+<p>Thinking about it some more, there is also the dual type</p>
+<p>&gt; azip :: Either (f a) (f b) -&gt; f (a,b)<br>
+&gt; aunzip :: f (a,b) -&gt; Either (f a) (f b)</p>
+<p>But I can’t think of any nice function with this type.</p>
+</article><article class="comment" id="comment-1171"><header><strong>Edward Kmett</strong><a href="../../../reader/2008/cozipping/#comment-1171">May 5th, 2008 at 8:00 pm</a></header><p>You’re right, I flipped the names when I was slapping together the code over lunch. I had left my notes at home. I’ll fix it up.</p>
+<p>Hrmm, of course now you need an extra ‘fair’ acounzip as well.</p>
+</article><article class="comment" id="comment-18878"><header><strong>Xplat</strong><a href="../../../reader/2008/cozipping/#comment-18878">August 4th, 2010 at 3:03 pm</a></header><p>Counzipping makes a pretty good toy model of the runtime type erasure that happens in Java and Scala generics — it pushes a tag from the root of a container down into the individual ‘holes’. Cases where the cozip doesn’t exist become unsafe ‘unchecked casts’. I wonder if this sort of analysis could be used as a basis for better compile-time analysis of where unsafety occurs.</p>
+</article></section><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/cozipping.md" download>Article Markdown</a> · <a href="../../../source/articles/cozipping.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2008/zipping-and-unzipping-functors/">Zipping and Unzipping Functors →</a><a href="../../../reader/2008/just-fokkinga-abide/">Just Fokkinga Abide →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

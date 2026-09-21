@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adjoint Triples · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Category Theory · Comonads · Haskell · Logic · Mathematics · Monads · Type Theory · Uncategorized</span><span>Dan Doel · <time datetime="2016-01-13">13 January 2016</time></span></div><h1>Adjoint Triples</h1></header><article class="prose"><p>A common occurrence in category theory is the <a href="https://ncatlab.org/nlab/show/adjoint+triple">adjoint triple</a>. This is a pair of adjunctions relating three functors:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">F</span> ⊣ <span class="hljs-type">G</span> ⊣ <span class="hljs-type">H</span>
+<span class="hljs-type">F</span> ⊣ <span class="hljs-type">G</span>, <span class="hljs-type">G</span> ⊣ <span class="hljs-type">H</span>
+</code></pre>
+<p>Perhaps part of the reason they are so common is that (co)limits form one:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">colim</span> ⊣ Δ ⊣ lim
+</code></pre>
+<p>where <code>Δ : C -&gt; C^J</code> is the diagonal functor, which takes objects in <code>C</code> to the constant functor returning that object. A version of this shows up in Haskell (with some extensions) and dependent type theories, as:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">∃ ⊣ <span class="hljs-type">Const</span> ⊣ ∀
+Σ ⊣ <span class="hljs-type">Const</span> ⊣ Π
+</code></pre>
+<p>where, if we only care about quantifying over a single variable, existential and sigma types can be seen as a left adjoint to a diagonal functor that maps types into constant type families (either over <code>*</code> for the first triple in Haskell, or some other type for the second in a dependently typed language), while universal and pi types can be seen as a right adjoint to the same.</p>
+<p>It's not uncommon to see the above information in type theory discussion forums. But, there are a few cute properties and examples of adjoint triples that I haven't really seen come up in such contexts.</p>
+<p>To begin, we can compose the two adjunctions involved, since the common functor ensures things match up. By calculating on the hom definition, we can see:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">Hom</span>(<span class="hljs-type">FGA</span>, <span class="hljs-type">B</span>)     <span class="hljs-type">Hom</span>(<span class="hljs-type">GFA</span>, <span class="hljs-type">B</span>)
+    ~=              ~=
+<span class="hljs-type">Hom</span>(<span class="hljs-type">GA</span>, <span class="hljs-type">GB</span>)     <span class="hljs-type">Hom</span>(<span class="hljs-type">FA</span>, <span class="hljs-type">HB</span>)
+    ~=              ~=
+<span class="hljs-type">Hom</span>(<span class="hljs-type">A</span>, <span class="hljs-type">HGB</span>)     <span class="hljs-type">Hom</span>(<span class="hljs-type">A</span>, <span class="hljs-type">GHB</span>)
+</code></pre>
+<p>So there are two ways to compose the adjunctions, giving two induced adjunctions:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">FG</span> ⊣ <span class="hljs-type">HG</span>,  <span class="hljs-type">GF</span> ⊣ <span class="hljs-type">GH</span>
+</code></pre>
+<p>And there is something special about these adjunctions. Note that <code>FG</code> is the comonad for the <code>F ⊣ G</code> adjunction, while <code>HG</code> is the monad for the <code>G ⊣ H</code> adjunction. Similarly, <code>GF</code> is the <code>F ⊣ G</code> monad, and <code>GH</code> is the <code>G ⊣ H</code> comonad. So each adjoint triple gives rise to two adjunctions between monads and comonads.</p>
+<p>The second of these has another interesting property. We often want to consider the algebras of a monad, and coalgebras of a comonad. The (co)algebra operations with carrier <code>A</code> have type:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">alg</span>   : <span class="hljs-type">GFA</span> -&gt; <span class="hljs-type">A</span>
+<span class="hljs-title">coalg</span> : <span class="hljs-type">A</span> -&gt; <span class="hljs-type">GHA</span>
+</code></pre>
+<p>but these types are isomorphic according to the <code>GF ⊣ GH</code> adjunction. Thus, one might guess that <code>GF</code> monad algebras are also <code>GH</code> comonad coalgebras, and that in such a situation, we actually have some structure that can be characterized both ways. In fact this is true for any monad left adjoint to a comonad; <a href="../../../reader/2016/adjoint-triples/#note0">[0]</a> but all adjoint triples give rise to these.</p>
+<p>The first adjunction actually turns out to be more familiar for the triple examples above, though. (Edit: <a href="../../../reader/2016/adjoint-triples/#note2">[2]</a>) If we consider the <code>Σ ⊣ Const ⊣ Π</code> adjunction, where:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">Σ Π : (<span class="hljs-type">A</span> -&gt; <span class="hljs-type">Type</span>) -&gt; <span class="hljs-type">Type</span>
+<span class="hljs-type">Const</span> : <span class="hljs-type">Type</span> -&gt; (<span class="hljs-type">A</span> -&gt; <span class="hljs-type">Type</span>)
+</code></pre>
+<p>we get:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">Σ<span class="hljs-type">Const</span> : <span class="hljs-type">Type</span> -&gt; <span class="hljs-type">Type</span>
+Σ<span class="hljs-type">Const</span> <span class="hljs-type">B</span> = <span class="hljs-type">A</span> × <span class="hljs-type">B</span>
+Π<span class="hljs-type">Const</span> : <span class="hljs-type">Type</span> -&gt; <span class="hljs-type">Type</span>
+Π<span class="hljs-type">Const</span> <span class="hljs-type">B</span> = <span class="hljs-type">A</span> -&gt; <span class="hljs-type">B</span>
+</code></pre>
+<p>So this is the familiar adjunction:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">A</span> × - ⊣ <span class="hljs-type">A</span> -&gt; -
+</code></pre>
+<p>But, there happens to be a triple that is a bit more interesting for both cases. It refers back to categories of functors vs. bare type constructors mentioned in previous posts. So, suppose we have a category called <code>Con</code> whose objects are (partially applied) type constructors (f, g) with kind <code>* -&gt; *</code>, and arrows are polymorphic functions with types like:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">forall</span> x. f x -&gt; g x
+</code></pre>
+<p>And let us further imagine that there is a similar category, called <code>Func</code>, except its objects are the things with <code>Functor</code> instances. Now, there is a functor:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">U</span> : <span class="hljs-type">Func</span> -&gt; <span class="hljs-type">Con</span>
+</code></pre>
+<p>that 'forgets' the functor instance requirement. This functor is in the middle of an adjoint triple:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">F</span> ⊣ <span class="hljs-type">U</span> ⊣ <span class="hljs-type">C</span>
+<span class="hljs-type">F</span>, <span class="hljs-type">C</span> : <span class="hljs-type">Con</span> -&gt; <span class="hljs-type">Func</span>
+</code></pre>
+<p>where <code>F</code> creates the free functor over a type constructor, and <code>C</code> creates the cofree functor over a type constructor. These can be written using the types:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">F</span> f a = forall e. <span class="hljs-type">F</span> (<span class="hljs-title">e</span> -&gt; <span class="hljs-title">a</span>) (<span class="hljs-title">f</span> <span class="hljs-title">e</span>)</span>
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">C</span> f a = <span class="hljs-type">C</span> (<span class="hljs-title">forall</span> <span class="hljs-title">r</span>. (<span class="hljs-title">a</span> -&gt; <span class="hljs-title">r</span>) -&gt; f r)</span>
+</code></pre>
+<p>and these types will also serve as the types involved in the composite adjunctions:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">FU</span> ⊣ <span class="hljs-type">CU</span> : <span class="hljs-type">Func</span> -&gt; <span class="hljs-type">Func</span>
+<span class="hljs-type">UF</span> ⊣ <span class="hljs-type">UC</span> : <span class="hljs-type">Con</span> -&gt; <span class="hljs-type">Con</span>
+</code></pre>
+<p>Now, <code>CU</code> is a monad on functors, and the Yoneda lemma tells us that it is actually the identity monad. Similarly, <code>FU</code> is a comonad, and the co-Yoneda lemma tells us that it is the identity comonad (which makes sense, because identity is self-adjoint; and the above is why <code>F</code> and <code>C</code> are often named <code>(Co)Yoneda</code> in Haskell examples).</p>
+<p>On the other hand, <code>UF</code> is a <em>monad</em> on type constructors (note, <code>U</code> isn't represented in the Haskell types; <code>F</code> and <code>C</code> just play triple duty, and the constraints on <code>f</code> control what's going on):</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">eta</span> :: f a -&gt; <span class="hljs-type">F</span> f a
+<span class="hljs-title">eta</span> = <span class="hljs-type">F</span> id
+
+<span class="hljs-title">transform</span> :: (<span class="hljs-keyword">forall</span> x. f x -&gt; g x) -&gt; <span class="hljs-type">F</span> f a -&gt; <span class="hljs-type">F</span> g a
+<span class="hljs-title">transform</span> tr (<span class="hljs-type">F</span> g x) = <span class="hljs-type">F</span> g (tr x)
+
+<span class="hljs-title">mu</span> :: <span class="hljs-type">F</span> (<span class="hljs-type">F</span> f) a -&gt; <span class="hljs-type">F</span> f a
+<span class="hljs-title">mu</span> (<span class="hljs-type">F</span> g (<span class="hljs-type">F</span> h x)) = <span class="hljs-type">F</span> (g . h) x
+</code></pre>
+<p>and <code>UC</code> is a <em>comonad</em>:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">epsilon</span> :: <span class="hljs-type">C</span> f a -&gt; f a
+<span class="hljs-title">epsilon</span> (<span class="hljs-type">C</span> e) = e id
+
+<span class="hljs-title">transform'</span> :: (<span class="hljs-keyword">forall</span> x. f x -&gt; g x) -&gt; <span class="hljs-type">C</span> f a -&gt; <span class="hljs-type">C</span> g a
+<span class="hljs-title">transform'</span> tr (<span class="hljs-type">C</span> e) = <span class="hljs-type">C</span> (tr . e)
+
+<span class="hljs-title">delta</span> :: <span class="hljs-type">C</span> f a -&gt; <span class="hljs-type">C</span> (<span class="hljs-type">C</span> f) a
+<span class="hljs-title">delta</span> (<span class="hljs-type">C</span> e) = <span class="hljs-type">C</span> $ \h -&gt; <span class="hljs-type">C</span> $ \g -&gt; e (g . h)
+</code></pre>
+<p>These are not the identity (co)monad, but this is the case where we have algebras and coalgebras that are equivalent. So, what are the (co)algebras? If we consider <code>UF</code> (and unpack the definitions somewhat):</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">alg</span> :: <span class="hljs-keyword">forall</span> e. (e -&gt; a, f e) -&gt; f a
+<span class="hljs-title">alg</span> (id, x) = x
+<span class="hljs-title">alg</span> (g . h, x) = alg (g, alg (h, x))
+</code></pre>
+<p>and for <code>UC</code>:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">coalg</span> :: f a -&gt; <span class="hljs-keyword">forall</span> r. (a -&gt; r) -&gt; f r
+<span class="hljs-title">coalg</span> x id = x
+<span class="hljs-title">coalg</span> x (g . h) = coalg (coalg x h) g
+</code></pre>
+<p>in other words, (co)algebra actions of these (co)monads are (mangled) <code>fmap</code> implementations, and the commutativity requirements are exactly what is required to be a law abiding instance. So the (co)algebras are exactly the <code>Functors</code>. <a href="../../../reader/2016/adjoint-triples/#note1">[1]</a></p>
+<p>There are, of course, many other examples of adjoint triples. And further, there are even adjoint quadruples, which in turn give rise to adjoint triples of (co)monads. Hopefully this has sparked some folks' interest in finding and studying more interesting examples.</p>
+<p><span id="note0"></span>[0]: Another exmaple is <code>A × - ⊣ A -&gt; -</code> where the <code>A</code> in question is a monoid. (Co)monad (co)algebras of these correspond to actions of the monoid on the carrier set.</p>
+<p><span id="note1"></span>[1]: This shouldn't be too surprising, because having a category of (co)algebraic structures that is equivalent to the category of (co)algebras of the (co)monad that comes from the (co)free-forgetful adjunction is the basis for doing algebra in category theory (with (co)monads, at least). However, it is somewhat unusual for a forgetful functor to have both a left and right adjoint. In many cases, something is either algebraic or coalgebraic, and not both.</p>
+<p><span id="note2"></span>[2]: Urs Schreiber informed me of an interesting interpretation of the <code>ConstΣ ⊣ ConstΠ</code> adjunction. If you are familiar with modal logic and the possible worlds semantics thereof, you can probably imagine that we could model it using something like <code>P : W -&gt; Type</code>, where <code>W</code> is the type of possible worlds, and propositions are types. Then values of type <code>Σ P</code> demonstrate that <code>P</code> holds in particular worlds, while values of type <code>Π P</code> demonstrate that it holds in all worlds. <code>Const</code> turns these types back into world-indexed 'propositions,' so <code>ConstΣ</code> is the possibility modality and <code>ConstΠ</code> is the necessity modality.</p>
+</article><section class="comments" id="comments"><h2>From the original discussion</h2><p class="editorial">Selected questions, explanations, and corrections. Original wording and dates; spam and automated trackbacks omitted.</p><article class="comment" id="comment-131779"><header><strong>Urs Schreiber</strong><a href="../../../reader/2016/adjoint-triples/#comment-131779">January 14th, 2016 at 2:28 am</a></header><p>Excellent point. We have been discussing these situations elsewhere a fair bit, under the name “adjoint modalities” [1]. For notice that the _other_ two (co-)monads obtained from Σ ⊣ Const ⊣ Π are the the necessity- and the possibility modalities for the context type regarded as a type of possible worlds [2]. Introducing further adjoint triples to (homotopy) type theory (”cohesion”) turns out to make it a highly expressive language for geometry. Mike Shulman has formalized this in [3], using the native logical expression of adjunctions via “adjoint logic” [4].</p>
+<p>[1] <a href="https://ncatlab.org/nlab/show/adjoint+modality">https://ncatlab.org/nlab/show/adjoint+modality</a><br>
+[2] <a href="https://ncatlab.org/nlab/show/necessity+and+possibility#InFirstOrderLogicAndTypeTheory">https://ncatlab.org/nlab/show/necessity+and+possibility#InFirstOrderLogicAndTypeTheory</a><br>
+[3] <a href="https://ncatlab.org/nlab/show/cohesive+homotopy+type+theory#Shulman15">https://ncatlab.org/nlab/show/cohesive+homotopy+type+theory#Shulman15</a><br>
+[4] <a href="https://ncatlab.org/nlab/show/adjoint+logic">https://ncatlab.org/nlab/show/adjoint+logic</a></p>
+</article></section><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/adjoint-triples.md" download>Article Markdown</a> · <a href="../../../source/articles/adjoint-triples.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2015/bound/">Bound →</a><a href="../../../reader/2018/the-state-comonad/">The State Comonad →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Dan Doel.<br>Comments attributed to their original authors.</p></footer></main></body></html>

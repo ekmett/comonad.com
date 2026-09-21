@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clearer Reflections · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Haskell · Monads · Monoids · Type Hackery</span><span>Edward Kmett · <time datetime="2009-08-15">15 August 2009</time></span></div><h1>Clearer Reflections</h1></header><article class="prose"><span id="more-93"></span><p>I have updated the <a href="https://hackage.haskell.org/package/reflection-0.2.0">reflection</a> package on hackage to use <a href="http://www.haskell.org/pipermail/haskell-cafe/2009-August/065237.html">an idea for avoiding dummy arguments</a> posted to the <a href="http://www.haskell.org/mailman/listinfo/haskell-cafe">Haskell cafe mailing list</a> by Bertram Felgenhauer, which adapts nicely to the case of handling Reflection. The reflection package implements the ideas from the <a href="http://www.cs.rutgers.edu/~ccshan/prepose/prepose.pdf">Functional Pearl: Implicit Configurations</a> paper by Oleg Kiselyov and Chung-chieh Shan.</p>
+<p>Now, you no longer need to use big scary undefineds throughout your code and can instead program with implicit configurations more naturally, using Applicative and Monad sugar.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">*<span class="hljs-type">Data</span>.<span class="hljs-type">Reflection</span>&gt; reify (+)
+    (reflect &lt; *&gt; pure <span class="hljs-number">1</span> &lt; *&gt; (reflect &lt; *&gt; pure <span class="hljs-number">2</span> &lt; *&gt; pure <span class="hljs-number">3</span>))
+<span class="hljs-number">6</span>
+</code></pre>
+<p>The Monad in question just replaces the lambda with a phantom type parameter, enabling the compiler to more readily notice that no instance can actually even try to use the value of the type parameter.</p>
+<p>An <a href="http://www.mail-archive.com/haskell-cafe@haskell.org/msg57747.html">example from the old API</a> can be seen on the Haskell cafe.</p>
+<p>This example can be made appreciably less scary now!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE
+     MultiParamTypeClasses,
+     FlexibleInstances, Rank2Types,
+     FlexibleContexts, UndecidableInstances #-}</span>
+<span class="hljs-keyword">import</span> Control.Applicative
+<span class="hljs-keyword">import</span> Data.Reflection
+<span class="hljs-keyword">import</span> Data.Monoid
+<span class="hljs-keyword">import</span> Data.Tagged
+
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">M</span> s a = <span class="hljs-type">M</span> a</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Reifies</span> s (<span class="hljs-title">a</span>,<span class="hljs-title">a</span> → <span class="hljs-title">a</span> → <span class="hljs-title">a</span>) ⇒ <span class="hljs-type">Monoid</span> (<span class="hljs-type">M</span> <span class="hljs-title">s</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+    mempty = tagMonoid $ fst &lt; $&gt; reflect
+    a `mappend` b = tagMonoid $
+        snd &lt; $&gt; reflect &lt; *&gt; monoidTag a &lt; *&gt; monoidTag b
+
+<span class="hljs-title">monoidTag</span> :: <span class="hljs-type">M</span> s a → <span class="hljs-type">Tagged</span> s a
+<span class="hljs-title">monoidTag</span> (<span class="hljs-type">M</span> a) = <span class="hljs-type">Tagged</span> a
+
+<span class="hljs-title">tagMonoid</span> :: <span class="hljs-type">Tagged</span> s a → <span class="hljs-type">M</span> s a
+<span class="hljs-title">tagMonoid</span> (<span class="hljs-type">Tagged</span> a) = <span class="hljs-type">M</span> a
+
+<span class="hljs-title">withMonoid</span> :: a → (a → a → a) →
+    (∀s. <span class="hljs-type">Reifies</span> s (a, a → a → a) ⇒ <span class="hljs-type">M</span> s w) → w
+<span class="hljs-title">withMonoid</span> e op m = reify (e,op) (monoidTag m)
+</code></pre>
+<p>And with that we can cram a Monoid dictionary -- or any other -- with whatever methods we want and our safety is assured by parametricity due to the rank 2 type, just like with the ST monad.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">*&gt; withMonoid <span class="hljs-number">0</span> (+) (<span class="hljs-type">M</span> <span class="hljs-number">5</span> `mappend` <span class="hljs-type">M</span> <span class="hljs-number">4</span> `mappend` mempty)
+<span class="hljs-number">9</span>
+</code></pre>
+<p>[Edit: factored Tagged out into Data.Tagged in a separate package, and modified reflection to use that instead, with an appropriate version bump to satisfy the package versioning policy]</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/reflection"><code>reflection</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><section class="comments" id="comments"><h2>From the original discussion</h2><p class="editorial">Selected questions, explanations, and corrections. Original wording and dates; spam and automated trackbacks omitted.</p><article class="comment" id="comment-11056"><header><strong>Edward Kmett</strong><a href="../../../reader/2009/clearer-reflection/#comment-11056">August 15th, 2009 at 9:41 am</a></header><p>@Sebastian:</p>
+<p>Actually, I went through and tried to minimize the number of language extensions the package required. Two of the ones I eliminated were EmptyDataDecls and KindSignatures, since you can define a ‘bottom only’ datatype with a newtype wrapper, and you can perform some shenanigans to avoid the kind signatures once it is a newtype.</p>
+<p>However, when you don’t use the newtype’s constructor anywhere, -Wall gives you a warning. Rather than have the module spit out 8-9 warnings, I wrote the Unused typeclass to give a single reference to each constructor and to silence the compiler.</p>
+</article><article class="comment" id="comment-11060"><header><strong>Edward Kmett</strong><a href="../../../reader/2009/clearer-reflection/#comment-11060">August 15th, 2009 at 12:17 pm</a></header><p>@Cale:</p>
+<p>Yeah, it seems to be a bug in the package I’m using for syntax highlighting. =/ I swapped it out like 3 times, and eventually just moved on. If you have a suggestion for a good WordPress syntax highlighter that does Haskell, I’m all ears.</p>
+</article><article class="comment" id="comment-11224"><header><strong>Edward Kmett</strong><a href="../../../reader/2009/clearer-reflection/#comment-11224">August 23rd, 2009 at 8:39 am</a></header><p>@Sjoerd:</p>
+<p>The problem with that is that Monoid isn’t the only kind of thing we might want to reify into a type so we can reflect it as a dictionary.</p>
+<p>If any other type had the same dictionary shape, and you took that approach then you could very easily conflate instances.</p>
+<p>If the reflection library wanted to concern itself with every type class in Haskell, that would work fine, but otherwise, you would be stuck with orphan instances. ;)</p>
+</article></section><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/clearer-reflection.md" download>Article Markdown</a> · <a href="../../../source/articles/clearer-reflection.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2009/hac-phi-slides/">Slides from Hac Phi: “All About Monoids” →</a><a href="../../../reader/2009/iteratees-parsec-and-monoid/">Iteratees, Parsec and Monoids (Slides) →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

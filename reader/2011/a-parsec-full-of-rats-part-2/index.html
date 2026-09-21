@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Parsec Full of Rats, Part 2 · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Algorithms · Data Structures · Haskell · Monads · Parsing · Uncategorized</span><span>Edward Kmett · <time datetime="2011-09-23">23 September 2011</time></span></div><h1>A Parsec Full of Rats, Part 2</h1></header><article class="prose"><span id="more-397"></span><p>Last time, I showed that we can build a small parsec clone with packrat support.</p>
+<p>This time I intend to implement packrat directly on top of Parsec 3.</p>
+<p>One of the main topics of discussion when it comes to packrat parsing since Bryan Ford's initial release of Pappy has been the fact that in general you shouldn't use packrat to memoize every rule, and that instead you should apply Amdahl's law to look for the cases where the lookup time is paid back in terms of repetitive evaluation, computation time and the hit rate. This is great news for us, since, we only want to memoize a handful of expensive combinators.</p>
+<p>First, we'll need to import enough of Parsec to do something interesting.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE RecordWildCards, ViewPatterns, FlexibleInstances, MultiParamTypeClasses #-}</span>
+
+<span class="hljs-keyword">import</span> Text.Parsec
+<span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Text.Parsec.Token <span class="hljs-keyword">as</span> T
+<span class="hljs-keyword">import</span> Text.Parsec.Token
+    (<span class="hljs-type">GenLanguageDef</span>(..), <span class="hljs-type">GenTokenParser</span>(<span class="hljs-type">TokenParser</span>))
+<span class="hljs-keyword">import</span> Text.Parsec.Pos (<span class="hljs-title">initialPos</span>, <span class="hljs-title">updatePosChar</span>)
+<span class="hljs-keyword">import</span> Data.Functor.Identity (<span class="hljs-type">Identity(..)</span>)
+<span class="hljs-keyword">import</span> Control.Applicative <span class="hljs-keyword">hiding</span> ((&lt; |&gt;))
+<span class="hljs-keyword">import</span> Control.Monad.Fix (<span class="hljs-title">fix</span>)
+</code></pre>
+<p>Then as before, we'll define PEG-style backtracking:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">(&lt; /&gt;) :: <span class="hljs-type">Monad</span> m =&gt; <span class="hljs-type">ParsecT</span> s u m a -&gt; <span class="hljs-type">ParsecT</span> s u m a -&gt;
+    <span class="hljs-type">ParsecT</span> s u m a
+<span class="hljs-title">p</span> &lt; /&gt; q = try p &lt; |&gt; q
+<span class="hljs-keyword">infixl</span> <span class="hljs-number">3</span> &lt; /&gt;
+</code></pre>
+<p>Now we need an analogue to our Result type from last time, which recalled whether or not we had consumed input, and what the current cursor location is. Fortunately, we can recycle the definitions from Parsec to this end.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Result</span> d a = <span class="hljs-type">Consumed</span> (<span class="hljs-type">Reply</span> <span class="hljs-title">d</span> () a)</span>
+</code></pre>
+<p>We'll define a combinator to build a parser directly from a field accessor. Last time, this was just the use of the "Rat" constructor. Now it is a bit trickier, because we need to turn <code>Consumed (Reply d () a)</code> into <code>m (Consumed (m (Reply d u a)))</code> by wrapping it in the appropriate monad, and giving the user back his state unmolested.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">rat</span> :: <span class="hljs-type">Monad</span> m =&gt; (d -&gt; <span class="hljs-type">Result</span> d a) -&gt; <span class="hljs-type">ParsecT</span> d u m a
+<span class="hljs-title">rat</span> f   = mkPT $ \s0 -&gt; return $
+    return . patch s0 &lt; $&gt; f (stateInput s0) <span class="hljs-keyword">where</span>
+  patch (<span class="hljs-type">State</span> _ _ u) (<span class="hljs-type">Ok</span> a (<span class="hljs-type">State</span> s p _) err) = <span class="hljs-type">Ok</span> a (<span class="hljs-type">State</span> s p u) err
+  patch _             (<span class="hljs-type">Error</span> e)                = <span class="hljs-type">Error</span> e
+</code></pre>
+<p>Last time we could go from a parser to a result just by applying the user stream type, but with parsec we also have to supply their notion of a position. This leads to the following combinator. By running in the Identity monad with no user state it should be obvious that we've duplicated the functionality of the previous 'Rat' parser (with the addition of a source position).</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">womp</span> :: d -&gt; <span class="hljs-type">SourcePos</span> -&gt; <span class="hljs-type">ParsecT</span> d () <span class="hljs-type">Identity</span> a -&gt; <span class="hljs-type">Result</span> d a
+<span class="hljs-title">womp</span> d pos p = fmap runIdentity . runIdentity $
+    runParsecT p (<span class="hljs-type">State</span> d pos ())
+</code></pre>
+<p>The combinator is so named because we needed a big space-rat rather than a little pack-rat to keep with the theme.</p>
+<blockquote>
+<p>It's not impossible. I used to bullseye womp rats in my T-16 back home, they're not much bigger than two meters.</p>
+</blockquote>
+<p>Now we'll write a bit of annoyingly verbose boilerplate to convince <code>Parsec</code> that we really want a <code>LanguageDef</code> for some monad other than Identity. (As an aside, why <code>Text.Parsec.Language</code> doesn't contain GenLanguageDefs that are parametric in their choice of Monad is beyond me.)</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">myLanguageDef</span> :: <span class="hljs-type">Monad</span> m =&gt; <span class="hljs-type">T</span>.<span class="hljs-type">GenLanguageDef</span> <span class="hljs-type">D</span> u m
+<span class="hljs-title">myLanguageDef</span> = <span class="hljs-type">T</span>.<span class="hljs-type">LanguageDef</span>
+  { commentStart    = <span class="hljs-string">"{-"</span>
+  , commentEnd      = <span class="hljs-string">"-}"</span>
+  , commentLine     = <span class="hljs-string">"--"</span>
+  , nestedComments  = <span class="hljs-type">True</span>
+  , identStart      = letter &lt; |&gt; char <span class="hljs-string">'_'</span>
+  , identLetter     = alphaNum &lt; |&gt; oneOf <span class="hljs-string">"_'"</span>
+  , opStart         = opLetter myLanguageDef
+  , opLetter        = oneOf <span class="hljs-string">":!#$%&amp;*+./&lt; =&gt;?@\\^|-~"</span>
+  , reservedOpNames = []
+  , reservedNames   = []
+  , caseSensitive   = <span class="hljs-type">True</span>
+  }
+</code></pre>
+<p>As a shameless plug, trifecta offers a particularly nice solution to this problem, breaking up the monolithic Token type into separate concerns and letting you layer parser transformers that enrich the parser to deal with things like Haskell-style layout, literate comments, parsing comments in whitespace, etc.</p>
+<p>And as one last bit of boilerplate, we'll abuse RecordWildcards once again to avoid the usual 20 lines of boilerplate that are expected of us, so we can get access to parsec's token parsers.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">TokenParser</span> {..} = <span class="hljs-type">T</span>.makeTokenParser myLanguageDef
+</code></pre>
+<p>Now we're ready to define our incredibly straightforward stream type:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">D</span> = <span class="hljs-type">D</span></span>
+  { _add        :: <span class="hljs-type">Result</span> <span class="hljs-type">D</span> <span class="hljs-type">Integer</span>
+  , _mult       :: <span class="hljs-type">Result</span> <span class="hljs-type">D</span> <span class="hljs-type">Integer</span>
+  , _primary    :: <span class="hljs-type">Result</span> <span class="hljs-type">D</span> <span class="hljs-type">Integer</span>
+  , _dec        :: <span class="hljs-type">Result</span> <span class="hljs-type">D</span> <span class="hljs-type">Integer</span>
+  , _uncons     :: <span class="hljs-type">Maybe</span> (<span class="hljs-type">Char</span>, <span class="hljs-type">D</span>)
+  }
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> m =&gt; <span class="hljs-type">Stream</span> <span class="hljs-type">D</span> m <span class="hljs-type">Char</span> <span class="hljs-keyword">where</span></span>
+  uncons = return . _uncons
+</code></pre>
+<p>And using the general purpose <code>rat</code> combinator from earlier, we can write some memoized parsers:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">add</span>, mult, primary, dec :: <span class="hljs-type">Parsec</span> <span class="hljs-type">D</span> u <span class="hljs-type">Integer</span>
+<span class="hljs-title">add</span>     = rat _add
+<span class="hljs-title">mult</span>    = rat _mult
+<span class="hljs-title">primary</span> = rat _primary
+<span class="hljs-title">dec</span>     = rat _dec
+</code></pre>
+<p>And finally, we write the code to tie the knot and build the stream:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">parse</span> :: <span class="hljs-type">SourceName</span> -&gt; <span class="hljs-type">String</span> -&gt; <span class="hljs-type">D</span>
+<span class="hljs-title">parse</span> n = go (initialPos n) <span class="hljs-keyword">where</span>
+  go p s = fix $ \d -&gt; <span class="hljs-keyword">let</span>
+    (womp d p -&gt; _add) =
+            (+) &lt; $&gt; mult &lt; * reservedOp <span class="hljs-string">"+"</span> &lt;*&gt; add
+        &lt; /&gt; mult &lt; ?&gt; <span class="hljs-string">"summand"</span>
+    (womp d p -&gt; _mult) =
+            (*) &lt; $&gt; primary &lt; * reservedOp <span class="hljs-string">"*"</span> &lt;*&gt; mult
+        &lt; /&gt; primary &lt; ?&gt; <span class="hljs-string">"factor"</span>
+    (womp d p -&gt; _primary) =
+            parens add
+        &lt; /&gt; dec &lt; ?&gt; <span class="hljs-string">"number"</span>
+    (womp d p -&gt; _dec) = natural
+    _uncons = <span class="hljs-keyword">case</span> s <span class="hljs-keyword">of</span>
+      (x:xs) -&gt; <span class="hljs-type">Just</span> (x, go (updatePosChar p x) xs)
+      []     -&gt; <span class="hljs-type">Nothing</span>
+    <span class="hljs-keyword">in</span> <span class="hljs-type">D</span> { .. }
+
+<span class="hljs-title">runD</span> :: <span class="hljs-type">Parsec</span> <span class="hljs-type">D</span> u a -&gt; u -&gt; <span class="hljs-type">SourceName</span> -&gt; <span class="hljs-type">String</span> -&gt; <span class="hljs-type">Either</span> <span class="hljs-type">ParseError</span> a
+<span class="hljs-title">runD</span> p u fn s = runParser p u fn (prep fn s)
+</code></pre>
+<p>and finally, let it rip:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">eval</span> :: <span class="hljs-type">String</span> -&gt; <span class="hljs-type">Integer</span>
+<span class="hljs-title">eval</span> s = either (error . show) id $
+    runD (whiteSpace *&gt; add &lt; * eof) () <span class="hljs-string">"-"</span> s
+</code></pre>
+<p>While this approach tends to encourage memoizing fewer combinators than libraries such as frisby, this is exactly what <a href="http://www.mercury.csse.unimelb.edu.au/information/papers/packrat.pdf">current research suggests you probably should do</a> with packrat parsing!</p>
+<p>The other purported advantage of packrat parsers is that they <a href="http://www.vpri.org/pdf/tr2007002_packrat.pdf">can deal with left recursion in the grammar</a>. However, that is not the case, hidden left recursion in the presence of the algorithm used in the scala parsing combinator libraries leads to incorrect non-left-most parses <a href="http://tratt.net/laurie/research/publications/papers/tratt__direct_left_recursive_parsing_expression_grammars.pdf">as shown by Tratt</a>.</p>
+<p>I leave it as an exercise for the reader to extend this material with the parsec+iteratees approach from my original talk on trifecta to get packrat parsing of streaming input. Either that or you can wait until it is integrated into trifecta.</p>
+<p>You can download the source to this (without the spurious spaces inserted by wordpress) <a href="https://github.com/ekmett/trifecta/blob/master/wip/Womprat.hs">here</a>.</p>
+<p>If I can find the time, I hope to spend some time addressing Scott and Johnstone's GLL parsers, which actually achieve the O(n^3) worst case bounds touted for Tomita's GLR algorithm (which is actually O(n^4) as it was originally defined despite the author's claims), and how to encode them in Haskell with an eye towards building a memoizing parser combinator library that can parse LL(1) fragments in O(1), deal with arbitrary context-free grammars in O(n^3), and degrade reasonably gracefully in the presence of context-sensitivity, while supporting hidden left recursion as long as such recursion passes through at least one memoized rule. This is important because CFGs are closed under extensions to the grammar, which is a nice property to have if you want to have a language where you can add new statement types easily without concerning yourself overmuch with the order in which you insert the rules or load the different extensions.</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/trifecta"><code>trifecta</code></a> · <a href="https://hackage.haskell.org/package/parsers"><code>parsers</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/a-parsec-full-of-rats-part-2.md" download>Article Markdown</a> · <a href="../../../source/articles/a-parsec-full-of-rats-part-2.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2011/free-modules-and-functional-linear-functionals/">Free Modules and Functional Linear Functionals →</a><a href="../../../reader/2011/a-parsec-full-of-rats/">A Parsec Full of Rats, Part 1 →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

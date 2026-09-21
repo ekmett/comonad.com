@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fast Circular Substitution · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Algorithms · Haskell · Type Theory</span><span>Edward Kmett · <time datetime="2014-12-30">30 December 2014</time></span></div><h1>Fast Circular Substitution</h1></header><article class="prose"><span id="more-956"></span><p>Emil Axelsson and Koen Claessen wrote a functional pearl last year about <a href="http://www.cse.chalmers.se/~emax/documents/axelsson2013using.pdf">Using Circular Programs for Higher-Order Syntax</a>.</p>
+<p>About 6 months ago I had an opportunity to play with this approach in earnest, and realized we can speed it up a great deal. This has kept coming up in conversation ever since, so I've decided to write up an article here.</p>
+<p>In my <a href="https://hackage.haskell.org/package/bound">bound</a> library I exploit the fact that monads are about substitution to make a monad transformer that manages substitution for me.</p>
+<p>Here I'm going to take a more coupled approach.</p>
+<p>To have a type system with enough complexity to be worth examining, I'll adapt Dan Doel's <a href="http://hub.darcs.net/dolio/upts">UPTS</a>, which is a pure type system with universe polymorphism. I won't finish the implementation here, but from where we get it should be obvious how to finish the job.</p>
+<p>Unlike Axelsson and Claessen I'm not going to bother to abstract over my name representation.</p>
+<p>To avoid losing the original name from the source, we'll just track names as strings with an integer counting the number of times it has been 'primed'. The name is purely for expository purposes, the real variable identifier is the number. We'll follow the Axelsson and Claessen convention of having the identifier assigned to each binder be larger than any one bound inside of it. If you don't need he original source names you can cull them from the representation, but they can be useful if you are representing a syntax tree for something you parsed and/or that you plan to pretty print later.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Name</span> = <span class="hljs-type">Name</span> <span class="hljs-type">String</span> <span class="hljs-type">Int</span></span>
+   <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>)
+
+<span class="hljs-title">hint</span> :: <span class="hljs-type">Name</span> -&gt; <span class="hljs-type">String</span>
+<span class="hljs-title">hint</span> (<span class="hljs-type">Name</span> n _) = n
+
+<span class="hljs-title">nameId</span> :: <span class="hljs-type">Name</span> -&gt; <span class="hljs-type">Int</span>
+<span class="hljs-title">nameId</span> (<span class="hljs-type">Name</span> _ i) = i
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Eq</span> <span class="hljs-type">Name</span> <span class="hljs-keyword">where</span></span>
+  (==) = (==) `on` nameId
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Ord</span> <span class="hljs-type">Name</span> <span class="hljs-keyword">where</span></span>
+  compare = compare `on` nameId
+
+<span class="hljs-title">prime</span> :: <span class="hljs-type">String</span> -&gt; <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Name</span>
+<span class="hljs-title">prime</span> n i = <span class="hljs-type">Name</span> n (i + <span class="hljs-number">1</span>)
+</code></pre>
+<p>So what is the language I want to work with?</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Level</span> = <span class="hljs-type">Int</span></span>
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Constant</span></span>
+  = <span class="hljs-type">Level</span>
+  | <span class="hljs-type">LevelLiteral</span> <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Level</span>
+  | <span class="hljs-type">Omega</span>
+  <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Eq</span>,<span class="hljs-type">Ord</span>,<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>,<span class="hljs-type">Typeable</span>)
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Term</span> a</span>
+  = <span class="hljs-type">Free</span> a
+  | <span class="hljs-type">Bound</span> <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Name</span>
+  | <span class="hljs-type">Constant</span> !<span class="hljs-type">Constant</span>
+  | <span class="hljs-type">Term</span> a :+ <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Level</span>
+  | <span class="hljs-type">Max</span>  [<span class="hljs-type">Term</span> a]
+  | <span class="hljs-type">Type</span> !(<span class="hljs-type">Term</span> a)
+  | <span class="hljs-type">Lam</span>   <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Name</span> !(<span class="hljs-type">Term</span> a) !(<span class="hljs-type">Term</span> a)
+  | <span class="hljs-type">Pi</span>    <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Name</span> !(<span class="hljs-type">Term</span> a) !(<span class="hljs-type">Term</span> a)
+  | <span class="hljs-type">Sigma</span> <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Name</span> !(<span class="hljs-type">Term</span> a) !(<span class="hljs-type">Term</span> a)
+  | <span class="hljs-type">App</span> !(<span class="hljs-type">Term</span> a) !(<span class="hljs-type">Term</span> a)
+  | <span class="hljs-type">Fst</span> !(<span class="hljs-type">Term</span> a)
+  | <span class="hljs-type">Snd</span> !(<span class="hljs-type">Term</span> a)
+  | <span class="hljs-type">Pair</span> !(<span class="hljs-type">Term</span> a) !(<span class="hljs-type">Term</span> a) !(<span class="hljs-type">Term</span> a)
+  <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>,<span class="hljs-type">Eq</span>,<span class="hljs-type">Ord</span>,<span class="hljs-type">Functor</span>,<span class="hljs-type">Foldable</span>,<span class="hljs-type">Traversable</span>,<span class="hljs-type">Typeable</span>)
+</code></pre>
+<p>That is perhaps a bit paranoid about remaining strict, but it seemed like a good idea at the time.</p>
+<p>We can define capture avoiding substitution on terms:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">subst</span> :: <span class="hljs-type">Eq</span> a =&gt; a -&gt; <span class="hljs-type">Term</span> a -&gt; <span class="hljs-type">Term</span> a -&gt; <span class="hljs-type">Term</span> a
+<span class="hljs-title">subst</span> a x y = y &gt;&gt;= \a' -&gt;
+  <span class="hljs-keyword">if</span> a == a'
+    <span class="hljs-keyword">then</span> x
+    <span class="hljs-keyword">else</span> return a'
+</code></pre>
+<p>Now we finally need to implement Axelsson and Claessen's circular programming trick. Here we'll abstract over terms that allow us to find the highest bound value within them:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Bindable</span> t <span class="hljs-keyword">where</span></span>
+  bound :: t -&gt; <span class="hljs-type">Int</span>
+</code></pre>
+<p>and instantiate it for our <code>Term</code> type</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Bindable</span> (<span class="hljs-type">Term</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  bound <span class="hljs-type">Free</span>{}        = <span class="hljs-number">0</span>
+  bound <span class="hljs-type">Bound</span>{}       = <span class="hljs-number">0</span> <span class="hljs-comment">-- intentional!</span>
+  bound <span class="hljs-type">Constant</span>{}    = <span class="hljs-number">0</span>
+  bound (a :+ _)      = bound a
+  bound (<span class="hljs-type">Max</span> xs)      = foldr (\a r -&gt; bound a `max` r) <span class="hljs-number">0</span> xs
+  bound (<span class="hljs-type">Type</span> t)      = bound t
+  bound (<span class="hljs-type">Lam</span> b t _)   = nameId b `max` bound t
+  bound (<span class="hljs-type">Pi</span> b t _)    = nameId b `max` bound t
+  bound (<span class="hljs-type">Sigma</span> b t _) = nameId b `max` bound t
+  bound (<span class="hljs-type">App</span> x y)     = bound x `max`  bound y
+  bound (<span class="hljs-type">Fst</span> t)       = bound t
+  bound (<span class="hljs-type">Snd</span> t)       = bound t
+  bound (<span class="hljs-type">Pair</span> t x y)  = bound t `max` bound x `max` bound y
+</code></pre>
+<p>As in the original pearl we avoid traversing into the body of the binders, hence the _'s in the code above.</p>
+<p>Now we can abstract over the pattern used to create a binder in the functional pearl, since we have multiple binder types in this syntax tree, and the code would get repetitive.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">binder</span> :: <span class="hljs-type">Bindable</span> t =&gt;
+  (<span class="hljs-type">Name</span> -&gt; t) -&gt;
+  (<span class="hljs-type">Name</span> -&gt; t -&gt; r) -&gt;
+  <span class="hljs-type">String</span> -&gt; (t -&gt; t) -&gt; r
+<span class="hljs-title">binder</span> bd c n e = c b body <span class="hljs-keyword">where</span>
+  body = e (bd b)
+  b = prime n (bound body)
+
+<span class="hljs-title">lam</span>, pi, sigma :: <span class="hljs-type">String</span> -&gt; <span class="hljs-type">Term</span> a -&gt; (<span class="hljs-type">Term</span> a -&gt; <span class="hljs-type">Term</span> a) -&gt; <span class="hljs-type">Term</span> a
+<span class="hljs-title">lam</span> s t   = binder <span class="hljs-type">Bound</span> (`<span class="hljs-type">Lam</span>` t) s
+<span class="hljs-title">pi</span> s t    = binder <span class="hljs-type">Bound</span> (`<span class="hljs-type">Pi</span>` t) s
+<span class="hljs-title">sigma</span> s t = binder <span class="hljs-type">Bound</span> (`<span class="hljs-type">Sigma</span>` t) s
+</code></pre>
+<p>We may not always want to give names to the variables we capture, so let's define:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">lam_</span>, pi_, sigma_ :: <span class="hljs-type">Term</span> a -&gt; (<span class="hljs-type">Term</span> a -&gt; <span class="hljs-type">Term</span> a) -&gt; <span class="hljs-type">Term</span> a
+<span class="hljs-title">lam_</span>   = lam <span class="hljs-string">"_"</span>
+<span class="hljs-title">pi_</span>    = pi <span class="hljs-string">"_"</span>
+<span class="hljs-title">sigma_</span> = sigma <span class="hljs-string">"_"</span>
+</code></pre>
+<p>Now, here's the interesting part. The problem with Axelsson and Claessen's original trick is that every substitution is being handled separately. This means that if you were to write a monad for doing substitution with it, it'd actually be quite slow. You have to walk the syntax tree over and over and over.</p>
+<p>We can fuse these together by making a single pass:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">instantiate</span> :: <span class="hljs-type">Name</span> -&gt; t -&gt; <span class="hljs-type">IntMap</span> t -&gt; <span class="hljs-type">IntMap</span> t
+<span class="hljs-title">instantiate</span> = <span class="hljs-type">IntMap</span>.insert . nameId
+
+<span class="hljs-title">rebind</span> :: <span class="hljs-type">IntMap</span> (<span class="hljs-type">Term</span> b) -&gt; <span class="hljs-type">Term</span> a -&gt; (a -&gt; <span class="hljs-type">Term</span> b) -&gt; <span class="hljs-type">Term</span> b
+<span class="hljs-title">rebind</span> env xs0 f = go xs0 <span class="hljs-keyword">where</span>
+  go = \<span class="hljs-keyword">case</span>
+    <span class="hljs-type">Free</span> a       -&gt; f a
+    <span class="hljs-type">Bound</span> b      -&gt; env <span class="hljs-type">IntMap</span>.! nameId b
+    <span class="hljs-type">Constant</span> c   -&gt; <span class="hljs-type">Constant</span> c
+    m :+ n       -&gt; go m :+ n
+    <span class="hljs-type">Type</span> t       -&gt; <span class="hljs-type">Type</span> (go t)
+    <span class="hljs-type">Max</span> xs       -&gt; <span class="hljs-type">Max</span> (fmap go xs)
+    <span class="hljs-type">Lam</span> b t e    -&gt; lam   (hint b) (go t) $ \v -&gt;
+      rebind (instantiate b v env) e f
+    <span class="hljs-type">Pi</span> b t e     -&gt; pi    (hint b) (go t) $ \v -&gt;
+      rebind (instantiate b v env) e f
+    <span class="hljs-type">Sigma</span> b t e  -&gt; sigma (hint b) (go t) $ \v -&gt;
+      rebind (instantiate b v env) e f
+    <span class="hljs-type">App</span> x y      -&gt; <span class="hljs-type">App</span> (go x) (go y)
+    <span class="hljs-type">Fst</span> x        -&gt; <span class="hljs-type">Fst</span> (go x)
+    <span class="hljs-type">Snd</span> x        -&gt; <span class="hljs-type">Snd</span> (go x)
+    <span class="hljs-type">Pair</span> t x y   -&gt; <span class="hljs-type">Pair</span> (go t) (go x) (go y)
+</code></pre>
+<p>Note that the <code>Lam</code>, <code>Pi</code> and <code>Sigma</code> cases just extend the current environment.</p>
+<p>With that now we can upgrade the pearl's encoding to allow for an actual Monad in the same sense as <code>bound</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Applicative</span> <span class="hljs-type">Term</span> <span class="hljs-keyword">where</span></span>
+  pure = <span class="hljs-type">Free</span>
+  (&lt; *&gt;) = ap
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> <span class="hljs-type">Term</span> <span class="hljs-keyword">where</span></span>
+  return = <span class="hljs-type">Free</span>
+  (&gt;&gt;=) = rebind <span class="hljs-type">IntMap</span>.empty
+</code></pre>
+<p>To show that we can work with this syntax tree representation, let's write an evaluator from it to weak head normal form:</p>
+<p>First we'll need some helpers:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">apply</span> :: <span class="hljs-type">Term</span> a -&gt; [<span class="hljs-type">Term</span> a] -&gt; <span class="hljs-type">Term</span> a
+<span class="hljs-title">apply</span> = foldl <span class="hljs-type">App</span>
+
+<span class="hljs-title">rwhnf</span> :: <span class="hljs-type">IntMap</span> (<span class="hljs-type">Term</span> a) -&gt;
+  [<span class="hljs-type">Term</span> a] -&gt; <span class="hljs-type">Term</span> a -&gt; <span class="hljs-type">Term</span> a
+<span class="hljs-title">rwhnf</span> env stk     (<span class="hljs-type">App</span> f x)
+  = rwhnf env (rebind env x <span class="hljs-type">Free</span>:stk) f
+<span class="hljs-title">rwhnf</span> env (x:stk) (<span class="hljs-type">Lam</span> b _ e)
+  = rwhnf (instantiate b x env) stk e
+<span class="hljs-title">rwhnf</span> env stk (<span class="hljs-type">Fst</span> e)
+  = <span class="hljs-keyword">case</span> rwhnf env [] e <span class="hljs-keyword">of</span>
+  <span class="hljs-type">Pair</span> _ e' _ -&gt; rwhnf env stk e'
+  e'          -&gt; <span class="hljs-type">Fst</span> e'
+<span class="hljs-title">rwhnf</span> env stk (<span class="hljs-type">Snd</span> e)
+  = <span class="hljs-keyword">case</span> rwhnf env [] e <span class="hljs-keyword">of</span>
+  <span class="hljs-type">Pair</span> _ _ e' -&gt; rwhnf env stk e'
+  e'          -&gt; <span class="hljs-type">Snd</span> e'
+<span class="hljs-title">rwhnf</span> env stk e
+  = apply (rebind env e <span class="hljs-type">Free</span>) stk
+</code></pre>
+<p>Then we can start off the <code>whnf</code> by calling our helper with an initial starting environment:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">whnf</span> :: <span class="hljs-type">Term</span> a -&gt; <span class="hljs-type">Term</span> a
+<span class="hljs-title">whnf</span> = rwhnf <span class="hljs-type">IntMap</span>.empty []
+</code></pre>
+<p>So what have we given up? Well, <code>bound</code> automatically lets you compare terms for alpha equivalence by quotienting out the placement of "F" terms in the syntax tree. Here we have a problem in that the identifiers we get assigned aren't necessarily canonical.</p>
+<p>But we can get the same identifiers out by just using the monad above:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">alphaEq</span> :: <span class="hljs-type">Eq</span> a =&gt; <span class="hljs-type">Term</span> a -&gt; <span class="hljs-type">Term</span> a -&gt; <span class="hljs-type">Bool</span>
+<span class="hljs-title">alphaEq</span> = (==) `on` liftM id
+</code></pre>
+<p>It makes me a bit uncomfortable that our monad is only up to alpha equivalence and that <code>liftM</code> swaps out the identifiers used throughout the entire syntax tree, and we've also lost the ironclad protection against exotic terms.</p>
+<p>But overall, this is a much faster version of Axelsson and Claessen's trick and it can be used as a drop-in replacement for something like <code>bound</code> in many cases, and unlike bound, it lets you use HOAS-style syntax for constructing <code>lam</code>, <code>pi</code> and <code>sigma</code> terms.</p>
+<p>With pattern synonyms you can prevent the user from doing bad things as well. Once 7.10 ships you'd be able to use a bidirectional pattern synonym for <code>Pi</code>, <code>Sigma</code> and <code>Lam</code> to hide the real constructors behind. I'm not yet sure of the "best practices" in this area.</p>
+<p>Here's the code all in one place:</p>
+<p>[<a href="../../../assets/imported/ea8840c3fab3-Circular.hs">Download Circular.hs</a>]</p>
+<p>Happy Holidays,<br>
+-Edward</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/bound"><code>bound</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><section class="comments" id="comments"><h2>From the original discussion</h2><p class="editorial">Selected questions, explanations, and corrections. Original wording and dates; spam and automated trackbacks omitted.</p><article class="comment" id="comment-127728"><header><strong>Edward Kmett</strong><a href="../../../reader/2014/fast-circular-substitution/#comment-127728">December 30th, 2014 at 3:23 pm</a></header><p>That is there for the body of Lam, hence the _ that is there, but the type of the lambda doesn’t have the bound variable occurring inside of it, and so isn’t included in that guarantee and has to be added separately.</p>
+</article></section><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/fast-circular-substitution.md" download>Article Markdown</a> · <a href="../../../source/articles/fast-circular-substitution.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2014/cellular-automata-part-1/">Part I: From Theory to Pretty Pictures →</a><a href="../../../reader/2015/snippets-fmap/">The free theorem for fmap →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

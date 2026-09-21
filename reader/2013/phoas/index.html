@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PHOAS For Free · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Haskell</span><span>Edward Kmett · <time datetime="2013-12-09">9 December 2013</time></span></div><h1>PHOAS For Free</h1></header><details class="contents"><summary>On this page</summary><ol><li><a href="#folding-invariants">Folding Invariants</a></li><li><a href="#weak-hoas">Weak HOAS</a></li><li><a href="#parametric-hoas">Parametric HOAS</a></li><li><a href="#p-is-for-profunctor">P is for Profunctor</a></li><li><a href="#phoas-is-free">PHOAS Is Free</a></li><li><a href="#take-the-end">Take The End</a></li><li><a href="#boxes-go-bananas-for-less">Boxes Go Bananas For Less</a></li><li><a href="#conclusion">Conclusion</a></li></ol></details><article class="prose"><p>Back in 2008 I wrote an article entitled <a href="../../../reader/2008/rotten-bananas/">"Rotten Bananas"</a> about how to convert between the different forms of catamorphisms over "exponential" data types that arise when we go to work with Higher Order Abstract Syntax (HOAS).</p>
+<p>Today I want to go back and revisit that post in light of my current understanding of profunctors from working on <a href="https://hackage.haskell.org/package/lens"><code>lens</code></a>.</p>
+<p>My goal today is to go through and reformulate Parametric HOAS slightly differently by using profunctors to tease apart the positive and negative occurences of the type variable.</p>
+<p>By doing so, we can show the connection between Fegaras and Sheard's catamorphism and the free monad that laid so close to the surface in the original formulation, and we can derive a variant on Weirich and Washburn's efficient catamorphism by using an alternate encoding of the free monad that I've already <a href="../../../reader/2011/free-monads-for-less-2/">blogged about before</a> in my series on <a href="../../../reader/2011/free-monads-for-less/">"Free Monads for Less"</a>.</p>
+<h2 id="folding-invariants">Folding Invariants</h2>
+<p>If we take the base functor for an expression type that has both positive and negative occurences of a variable, there isn't much we can do with our standard tools. It isn't even a <code>Functor</code>, so it can't be <code>Foldable</code> or <code>Traversable</code>, <code>Applicative</code> or a <code>Monad</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">ExpF</span> a</span>
+  = <span class="hljs-type">App</span> a a
+  | <span class="hljs-type">Lam</span> (a -&gt; a)
+</code></pre>
+<p>To work with it, you can define a rather unsatisfying</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Invariant</span> f <span class="hljs-keyword">where</span></span>
+  invmap :: (a -&gt; b) -&gt; (b -&gt; a) -&gt; f a -&gt; f b
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Invariant</span> <span class="hljs-type">ExpF</span> <span class="hljs-keyword">where</span></span>
+  invmap ab ba (<span class="hljs-type">App</span> x y) = <span class="hljs-type">App</span> (ab x) (ab y)
+  invmap ab ba (<span class="hljs-type">Lam</span> aa)  = <span class="hljs-type">Lam</span> (ab.aa.ba)
+</code></pre>
+<p>I described this in my 2008 post as <code>ExpFunctor</code>, based on a similar operation in Weirich and Washburn. It is packaged up in the <code>invariant</code> package on Hackage as <code>Invariant</code>, with a method named <code>invmap</code>, if you find you  really want to use it.</p>
+<p>One of my goals today is to show that we can get away without it!</p>
+<p>Erik Meijer and Graham Hutton showed in <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.64.4921&rep=rep1&type=pdf">"Bananas in Space"</a> that you can define a catamorphism over that data type if you can <em>also</em> define a corresponding anamorphism that serves as its inverse. E.g. to define a pretty printer for this type with Meijer/Hutton's catamorphism you also need a parser. ಠ__ಠ</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Mu</span> f = <span class="hljs-type">In</span> { <span class="hljs-title">out</span> :: <span class="hljs-title">f</span> (<span class="hljs-type">Mu</span> <span class="hljs-title">f</span>) }</span>
+
+<span class="hljs-title">cata</span> :: <span class="hljs-type">Invariant</span> f =&gt; (f a -&gt; a) -&gt; (a -&gt; f a) -&gt; <span class="hljs-type">Mu</span> f -&gt; a
+<span class="hljs-title">cata</span> f g (<span class="hljs-type">In</span> x) = f (invmap (cata f g) (ana f g) x)
+
+<span class="hljs-title">ana</span> :: <span class="hljs-type">Invariant</span> f =&gt; (f a -&gt; a) -&gt; (a -&gt; f a) -&gt; a -&gt; <span class="hljs-type">Mu</span> f
+<span class="hljs-title">ana</span> f g x = <span class="hljs-type">In</span> (invmap (ana f g) (cata f g) (g x))
+</code></pre>
+<p><a href="http://citeseer.ist.psu.edu/viewdoc/summary?doi=10.1.1.36.2763">Fegaras and Sheard</a> showed that if you change the domain of the problem a bit, you can get away with a 'fake' anamorphism, by adding a constructor that you agree never to use, because the anamorphism is only ever used as a right inverse to our catamorphism. They then proceeded to provide a type system for checking this. Adopting the notation from Weirich and Washburn's take on Fegaras and Sheard's catamorphism, this would be:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Rec</span> f a = <span class="hljs-type">Place</span> a | <span class="hljs-type">Roll</span> (<span class="hljs-title">f</span> (<span class="hljs-type">Rec</span> <span class="hljs-title">f</span> <span class="hljs-title">a</span>))</span>
+
+<span class="hljs-title">cata</span> :: <span class="hljs-type">Invariant</span> f =&gt; (f a -&gt; a) -&gt; <span class="hljs-type">Rec</span> f a -&gt; a
+<span class="hljs-title">cata</span> f (<span class="hljs-type">Roll</span> x) = f (invmap (cata f) <span class="hljs-type">Place</span> x)
+<span class="hljs-title">cata</span> f (<span class="hljs-type">Place</span> x) = x
+</code></pre>
+<p>You can clearly see that <code>Place</code> forms a right inverse of <code>cata f</code>:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">cata</span> f . <span class="hljs-type">Place</span> = id
+</code></pre>
+<p>Now you can define smart constructors for the running <code>Exp</code> example, using <code>Roll</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Exp</span> = <span class="hljs-type">Rec</span> <span class="hljs-type">ExpF</span></span>
+
+<span class="hljs-title">lam</span> :: (<span class="hljs-type">Exp</span> a -&gt; <span class="hljs-type">Exp</span> a) -&gt; <span class="hljs-type">Exp</span> a
+<span class="hljs-title">lam</span> f = <span class="hljs-type">Roll</span> (<span class="hljs-type">Lam</span> f)
+
+<span class="hljs-title">app</span> :: <span class="hljs-type">Exp</span> a -&gt; <span class="hljs-type">Exp</span> a -&gt; <span class="hljs-type">Exp</span> a
+<span class="hljs-title">app</span> x y = <span class="hljs-type">Roll</span> (<span class="hljs-type">App</span> x y)
+</code></pre>
+<p>Weirich and Washburn noted that you can prevent the accidental use of the type parameter <code>a</code> by quantifying over it.</p>
+<p>Finally, Weirich and Washburn reimplemented <code>Rec</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Rec</span> f a = (<span class="hljs-title">f</span> <span class="hljs-title">a</span> -&gt; <span class="hljs-title">a</span>) -&gt; a</span>
+</code></pre>
+<p>This made <code>cata</code> ridiculously simple:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">cata</span> :: (f a -&gt; a) -&gt; <span class="hljs-type">Rec</span> f a -&gt; a
+<span class="hljs-title">cata</span> f x = x f
+</code></pre>
+<p>But we don't have <code>Roll</code> any more, so we need to move the complexity into an explicit <code>roll</code> combinator:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">roll</span> :: <span class="hljs-type">Invariant</span> f =&gt; f (<span class="hljs-type">Rec</span> f a) -&gt; <span class="hljs-type">Rec</span> f a
+<span class="hljs-title">roll</span> x f = f (invmap (cata f) place x)
+</code></pre>
+<p>We no longer have <code>Place</code> either, but nothing says <code>(f a -&gt; a) -&gt; a</code> has to use the supplied function, when we know <code>a</code>!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">place</span> :: a -&gt; <span class="hljs-type">Rec</span> f a
+<span class="hljs-title">place</span> = const
+</code></pre>
+<p>Then we can see:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Exp</span> a = <span class="hljs-type">Rec</span> <span class="hljs-type">ExpF</span> a</span>
+
+<span class="hljs-title">lam</span> :: (<span class="hljs-type">Exp</span> a -&gt; <span class="hljs-type">Exp</span> a) -&gt; <span class="hljs-type">Exp</span> a
+<span class="hljs-title">lam</span> f = roll (<span class="hljs-type">Lam</span> f)
+
+<span class="hljs-title">app</span> :: <span class="hljs-type">Exp</span> a -&gt; <span class="hljs-type">Exp</span> a -&gt; <span class="hljs-type">Exp</span> a
+<span class="hljs-title">app</span> x y = roll (<span class="hljs-type">App</span> x y)
+
+<span class="hljs-title">var</span> :: a -&gt; <span class="hljs-type">Exp</span> a
+<span class="hljs-title">var</span> = place
+</code></pre>
+<p>Again, in particular in both the Fegaras-Sheard and Weirich-Washburn forms, you can denote a closed term safely using</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">ClosedExp</span> = forall x. <span class="hljs-type">Exp</span> x</span>
+</code></pre>
+<p>The safety of this is really the subject of the "Boxes Go Bananas" paper.</p>
+<p>Based on the observations about the price of substitution into free monads by <a href="http://www.iai.uni-bonn.de/~jv/mpc08.pdf">Janis Voigtländer</a>, one should probably favor Weirich and Washburn's construction if you're going to be doing substitution on your HOAS representation -- and if you're not doing substitution, then why are you using HOAS in the first place?!</p>
+<h2 id="weak-hoas">Weak HOAS</h2>
+<p>Everything I've mentioned above is a "strong" HOAS variants. You can perform substitution just by passing in the expression you want.</p>
+<p>In weak HOAS (and PHOAS) the decision is made to deal with negative occurences differently than in what we've done so far.</p>
+<p>Instead of taking a full <code>Exp a</code> in negative position, we're just going to take an <code>a</code>.</p>
+<p>Written monolithically, it would look something like:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Exp</span> a</span>
+  = <span class="hljs-type">Var</span> a
+  | <span class="hljs-type">Lam</span> (a -&gt; <span class="hljs-type">Exp</span> a)
+  | <span class="hljs-type">App</span> (<span class="hljs-type">Exp</span> a) (<span class="hljs-type">Exp</span> a)
+</code></pre>
+<p>Then our smart constructors change a bit:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">lam</span> :: (<span class="hljs-type">Exp</span> a -&gt; <span class="hljs-type">Exp</span> a) -&gt; <span class="hljs-type">Exp</span> a
+</code></pre>
+<p>weakens to</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">lam</span> :: (a -&gt; <span class="hljs-type">Exp</span> a) -&gt; <span class="hljs-type">Exp</span> a
+</code></pre>
+<p>We still have both positive and negative occurences of <code>a</code>, but we no longer have <code>Exp</code> occurring in both positive and negative position.</p>
+<p>This is particularly popular in the Coq and Agda communities because it can pass the positivity checker, but unlike strong HOAS can be a bit more painful to work with.</p>
+<h2 id="parametric-hoas">Parametric HOAS</h2>
+<p><a href="http://adam.chlipala.net/">Adam Chlipala</a> does a lot of work with Parametric HOAS, which is based on a weak HOAS variant of Weirich and Washburn's <a href="http://www.seas.upenn.edu/~sweirich/papers/itabox/icfp-published-version.pdf">Boxes Go Bananas: Encoding Higher-Order Abstract Syntax with
+Parametric Polymorphism</a>, which I talked about in that post. His <a href="http://ltamer.sourceforge.net/">Lambda Tamer</a> is based on this model.</p>
+<p>One issue is that neither of these really gives us a free <code>Monad</code>, due to the fact that the <code>a</code> occurs in both positive and negative position and so we can't even derive a <code>Functor</code> instance.</p>
+<p>Adam's work doesn't really feel this pinch, because in <a href="http://coq.inria.fr/">Coq</a> he can <a href="http://adam.chlipala.net/papers/PhoasICFP08/PhoasICFP08Talk.pdf">define custom tactics</a> for <a href="http://coq.inria.fr/files/adt-30jun09-bruno-ltac.pdf"><code>ltac</code></a> to use and you generally don't try to factor out this pattern into a library, but when you switch to <a href="http://wiki.portal.chalmers.se/agda/pmwiki.php">Agda</a> and have to do everything by hand, the lack of common abstractions comes to bite you.</p>
+<h2 id="p-is-for-profunctor">P is for Profunctor</h2>
+<p>Dan Piponi wrote a nice article on <a href="http://blog.sigfpe.com/2011/07/profunctors-in-haskell.html">Profunctors in Haskell</a> introducing profunctors to the Haskell community, and they now form the basis of much of <code>lens</code>. Liyang HU also has a more <a href="https://www.fpcomplete.com/school/pick-of-the-week/profunctors">tongue in cheek introduction</a> here on the School of Haskell that he originally presented back in April at a <a href="../../../reader/2013/japanese-workshop-1/">benkyoukai</a> about various libraries of mine in Japan.</p>
+<p>To say something is a <code>Profunctor</code> in Haskell is just to say it is contravariant in the first argument and covariant in the second.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Profunctor</span> p <span class="hljs-keyword">where</span></span>
+  dimap :: (a -&gt; b) -&gt; (c -&gt; d) -&gt; p b c -&gt; p a d
+</code></pre>
+<p>This argument order is a bit reversed from how it is usually tackled in category theory, but by lining things up this way we match up with the variances for <code>Arrow</code> and <code>(-&gt;)</code>.</p>
+<p>For convenience we also provide class methods for:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">lmap</span> :: <span class="hljs-type">Profunctor</span> p =&gt; (a -&gt; b) -&gt; p b c -&gt; p a c
+<span class="hljs-title">rmap</span> :: <span class="hljs-type">Profunctor</span> p =&gt; (b -&gt; c) -&gt; p a b -&gt; p a c
+</code></pre>
+<p>Notice when I wrote the Weak HOAS definition, I had to keep it monolithic? To factor out <code>Var</code> / <code>Place</code>, it winds up needing two type parameters, since now both <code>a</code> and <code>Exp a</code> occur inside the expression.</p>
+<p>So, if we go back to the start and separate positive and negative occurences of these, we're left with something like</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">ExpF</span> a b</span>
+  = <span class="hljs-type">App</span> b b
+  | <span class="hljs-type">Lam</span> (a -&gt; b)
+</code></pre>
+<p>This forms a valid <code>Profunctor</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Profunctor</span> <span class="hljs-type">ExpF</span> <span class="hljs-keyword">where</span></span>
+  dimap f g (<span class="hljs-type">App</span> x y) = <span class="hljs-type">App</span> (g x) (g y)
+  dimap f g (<span class="hljs-type">Lam</span> h)   = <span class="hljs-type">Lam</span> (g.h.f)
+</code></pre>
+<h2 id="phoas-is-free">PHOAS Is Free</h2>
+<p>Now we can revisit the <code>Exp</code> we were talking about in the section on Weak HOAS and we can rip apart the old:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Exp</span> a</span>
+  = <span class="hljs-type">Var</span> a
+  | <span class="hljs-type">Lam</span> (a -&gt; <span class="hljs-type">Exp</span> a)
+  | <span class="hljs-type">Abs</span> (<span class="hljs-type">Exp</span> a) (<span class="hljs-type">Exp</span> a)
+</code></pre>
+<p>into the application of a Fegaras and Sheard free-monad-like construction</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Rec</span> p a b</span>
+  = <span class="hljs-type">Place</span> b
+  | <span class="hljs-type">Roll</span> (p a (<span class="hljs-type">Rec</span> p a b))
+</code></pre>
+<p>to our base profunctor <code>ExpF</code>, so now</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Exp</span> = <span class="hljs-type">Rec</span> <span class="hljs-type">ExpF</span></span>
+</code></pre>
+<p>But now, we're no longer free-monad like, we're actually a free monad!</p>
+<p>We can even define this <code>Monad</code>, by cribbing the definition from <a href="https://hackage.haskell.org/package/free"><code>free</code></a>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Profunctor</span> p =&gt; <span class="hljs-type">Monad</span> (<span class="hljs-type">Rec</span> <span class="hljs-title">p</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  return = <span class="hljs-type">Place</span>
+  <span class="hljs-type">Place</span> b  &gt;&gt;= f = f b
+  <span class="hljs-type">Roll</span> bs &gt;&gt;= f = <span class="hljs-type">Roll</span> $ rmap (&gt;&gt;= f) bs
+</code></pre>
+<p>This <code>Monad</code> even performs capture avoiding substitution.</p>
+<p>The Fegaras-Sheard catamorphism doesn't change much</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">cata</span> :: <span class="hljs-type">Profunctor</span> p =&gt; (p a b -&gt; b) -&gt; <span class="hljs-type">Rec</span> p a b -&gt; b
+<span class="hljs-title">cata</span> phi (<span class="hljs-type">Place</span> b)  = b
+<span class="hljs-title">cata</span> phi (<span class="hljs-type">Roll</span> bs) = phi (rmap (cata phi) bs)
+</code></pre>
+<p>However, it now just turns a <code>p a</code>-algebra into a <code>Rec p a</code>-algebra, and doesn't need to use <code>Place</code> at all!</p>
+<p>And we get weak HOAS style smart constructors:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">lam</span> :: (a -&gt; <span class="hljs-type">Exp</span> a b) -&gt; <span class="hljs-type">Exp</span> a b
+<span class="hljs-title">lam</span> f = <span class="hljs-type">Roll</span> (<span class="hljs-type">Lam</span> f)
+
+<span class="hljs-title">app</span> :: <span class="hljs-type">Exp</span> a b -&gt; <span class="hljs-type">Exp</span> a b -&gt; <span class="hljs-type">Exp</span> a b
+<span class="hljs-title">app</span> x y = <span class="hljs-type">Roll</span> (<span class="hljs-type">App</span> x y)
+</code></pre>
+<p>Now, <code>var</code> is the only thing that <a href="http://www.youtube.com/watch?v=jyaLZHiJJnE">crosses the streams</a> and causes the two type arguments to unify</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">var</span> :: b -&gt; <span class="hljs-type">Exp</span> a b
+<span class="hljs-title">var</span> = return
+</code></pre>
+<p>Notice the difference between the type of the argument of <code>lam</code> and the signature of <code>var</code>. This causes actual expressions that use any variable they bind to wind up with the types agreeing:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">foo</span> :: <span class="hljs-type">Exp</span> a a
+<span class="hljs-title">foo</span> = lam $ \x -&gt; lam $ \y -&gt; app (var x) (var y)
+</code></pre>
+<h2 id="take-the-end">Take The End</h2>
+<p>Now instead of talking about a closed term in terms of quantifying over a single parameter that can only vary with an isomorphism, we take an end over our <code>Profunctor</code> instead:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">End</span> p = forall x. p x x</span>
+
+<span class="hljs-title">iter0</span> :: <span class="hljs-type">Profunctor</span> p =&gt; (p a a -&gt; a) -&gt; <span class="hljs-type">End</span> (<span class="hljs-type">Rec</span> p) -&gt; a
+<span class="hljs-title">iter0</span> phi x = cata phi x
+</code></pre>
+<p>I intend to write up a post on how to "read" universal properties as types, to help folks see where this definition for <code>End</code> comes from.</p>
+<p>This was the Free monad I just said you probably don't want to use for substitution, so let's go try the other one.</p>
+<h2 id="boxes-go-bananas-for-less">Boxes Go Bananas For Less</h2>
+<p>Recall Weirich and Washburn's <code>Rec</code>:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Rec</span> f a = (<span class="hljs-title">f</span> <span class="hljs-title">a</span> -&gt; <span class="hljs-title">a</span>) -&gt; a</span>
+</code></pre>
+<p>When we go to turn that into a <code>Profunctor</code> directly we get stuck.</p>
+<p>We could make</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Rec</span> p a b = <span class="hljs-type">Rec</span> { <span class="hljs-title">runRec</span> :: (<span class="hljs-title">p</span> <span class="hljs-title">a</span> <span class="hljs-title">b</span> -&gt; <span class="hljs-title">a</span>) -&gt; <span class="hljs-title">b</span> }</span>
+</code></pre>
+<p>and get the variances right for a <code>Profunctor</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Profunctor</span> p =&gt; <span class="hljs-type">Profunctor</span> (<span class="hljs-type">Rec</span> <span class="hljs-title">p</span>) <span class="hljs-keyword">where</span></span>
+  dimap f g (<span class="hljs-type">Rec</span> h) = <span class="hljs-type">Rec</span> $ \pab2a -&gt; g $ h $ f . pab2a . dimap f g
+</code></pre>
+<p>But this doesn't look much like the instance I derived from Fegaras and Sheard's construction, and doesn't give us a Monad!</p>
+<p>They could pull this off because <code>a</code> and <code>b</code> were interchangeable in either direction. We're a bit more constrained.</p>
+<p>We could turn to <code>Codensity</code> of my weak variant of the Fegaras-Sheard construction, but as I've blogged about before, <code>Codensity (Free f)</code> is bigger than it needs to be.</p>
+<p>Fortunately, that same series ended showing how you can get there with just Yoneda. Armed with that, we can borrow the Church-Free monad and get a Weirich and Wasburn-style <code>Profunctor</code> for <code>Rec</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Rec</span> p a b = <span class="hljs-type">Rec</span></span>
+  { runRec :: <span class="hljs-keyword">forall</span> r.
+    (b -&gt; r) -&gt; (p a r -&gt; r) -&gt; r
+  }
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Profunctor</span> p =&gt; <span class="hljs-type">Profunctor</span> (<span class="hljs-type">Rec</span> <span class="hljs-title">p</span>) <span class="hljs-keyword">where</span></span>
+  dimap f g m = <span class="hljs-type">Rec</span> $ \kp kf -&gt; runRec m (kp.g) (kf.lmap f)
+</code></pre>
+<p>We retain the <code>Monad</code> we won by splitting our type parameters in the weak Fegaras-Sheard variant above:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Profunctor</span> p =&gt; <span class="hljs-type">Monad</span> (<span class="hljs-type">Rec</span> <span class="hljs-title">p</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  return b = <span class="hljs-type">Rec</span> $ \ br _ -&gt; br b
+  m &gt;&gt;= f  = <span class="hljs-type">Rec</span> $ \kp kf -&gt;
+    runRec m (\a -&gt; runRec (f a) kp kf) kf
+</code></pre>
+<p>and we can define the rest of the catamorphism machinery:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">End</span> p = forall x. p x x</span>
+
+<span class="hljs-title">cata</span> :: <span class="hljs-type">Profunctor</span> p =&gt; (p a b -&gt; b) -&gt; <span class="hljs-type">Rec</span> p a b -&gt; b
+<span class="hljs-title">cata</span> phi m = runRec m id phi
+
+<span class="hljs-title">roll</span> :: <span class="hljs-type">Profunctor</span> p =&gt; p a (<span class="hljs-type">Rec</span> p a b) -&gt; <span class="hljs-type">Rec</span> p a b
+<span class="hljs-title">roll</span> w = <span class="hljs-type">Rec</span> $ \kp kf -&gt; kf (rmap (\r -&gt; runRec r kp kf) w)
+
+<span class="hljs-title">iter0</span> :: <span class="hljs-type">Profunctor</span> p =&gt; (p a a -&gt; a) -&gt; <span class="hljs-type">End</span> (<span class="hljs-type">Rec</span> p) -&gt; a
+<span class="hljs-title">iter0</span> phi x = cata phi x
+</code></pre>
+<p>Now we can put together our smart constructors</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">lam</span> :: (a -&gt; <span class="hljs-type">Exp</span> a b) -&gt; <span class="hljs-type">Exp</span> a b
+<span class="hljs-title">lam</span> f = roll (<span class="hljs-type">Lam</span> f)
+
+<span class="hljs-title">app</span> :: <span class="hljs-type">Exp</span> a b -&gt; <span class="hljs-type">Exp</span> a b -&gt; <span class="hljs-type">Exp</span> a b
+<span class="hljs-title">app</span> x y = roll (<span class="hljs-type">App</span> x y)
+
+<span class="hljs-title">var</span> :: b -&gt; <span class="hljs-type">Exp</span> a b
+<span class="hljs-title">var</span> = return
+</code></pre>
+<p>and we can build expressions</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">foo</span> :: <span class="hljs-type">Exp</span> a a
+<span class="hljs-title">foo</span> = lam $ \x -&gt; lam $ \y -&gt; app (var x) (var y)
+</code></pre>
+<h2 id="conclusion">Conclusion</h2>
+<p>There is a lot more we can play with here.</p>
+<p>Many expression types will admit a <code>Strong</code> instance. Now that we've split the input and output parameters can we perhaps use that or something like it to more easily <a href="http://www.haskell.org/pipermail/haskell-cafe/2008-November/049473.html">manipulate environments</a>?</p>
+<p>Just like with <a href="../../../reader/2015/bound/"><code>bound</code></a> we can build an <a href="http://github.com/ekmett/indexed"><code>indexed</code></a> version of this construction that permits us to write strongly typed EDSLs. That is how PHOAS is usually presented in Coq after all.</p>
+<p>There is also probably a lot more to be said about dinaturality here.</p>
+<p>I still generally prefer working with <a href="https://hackage.haskell.org/package/bound"><code>bound</code></a> to working in HOAS these days, because it is much easier to work under lambdas, and it is easier to grab all your free variables using <code>Foldable</code> and <code>Traversable</code> and harder to make mistakes with.</p>
+<p>That said it is good to finally be able to merge together the notion of Fegaras and Sheard's construction and the standard free monad.</p>
+<p>This also strikes me as a good first step towards being able to turn PHOAS into something that can be encoded usefully in Haskell as a library rather than a design pattern.</p>
+<p><a href="https://plus.google.com/u/0/113063331545548237308?rel=author">-</a>[-](<a href="https://plus.google.com/u/0/113063331545548237308" rel="publisher">-</a>)<a href="mailto:ekmett@gmail.com">Edward Kmett</a></p>
+<p>September 18th, 2013</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/bound"><code>bound</code></a> · <a href="https://hackage.haskell.org/package/free"><code>free</code></a> · <a href="https://hackage.haskell.org/package/lens"><code>lens</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: School of Haskell. Date displayed by School of Haskell; may reflect a later revision.</p><p><a href="../../../source/articles/phoas.md" download>Article Markdown</a> · <a href="../../../source/articles/phoas.original.md" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2013/cellular-automata-part-3/">Part III: A World in a Bottle →</a><a href="../../../reader/2014/recursion-schemes-catamorphisms/">Catamorphisms →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

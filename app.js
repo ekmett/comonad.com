@@ -15,48 +15,6 @@ const leaves = originalChunks.map((value, index) => {
   return div;
 });
 
-const sources = {
-  core: ['CRC.hs', 'Modern Haskell core shared by both adapters. The composition law is preserved; Semigroup is explicit, multiplication is strict, and the byte step is written without extra packages.'],
-  wasm: ['Browser.hs', 'The browser adapter exports small Haskell functions through GHC’s C FFI. The JavaScript UI passes UTF-8 bytes and displays results; all CRC arithmetic runs in the compiled WebAssembly module.'],
-  server: ['Server.hs', 'A new WAI/Warp adapter for the same core. Run locally and visit /crc?message=123456789&split=4. This is a companion example, not recovered Yesod code and not a dependency of this page.'],
-  original: ['original/MonoidalCRC.hs', 'Unchanged “The Story So Far” snippet from the 2013 article, including its original imports and pre-Semigroup Monoid instance. It is preserved as historical source, not claimed to compile against current packages.'],
-};
-let selectedSource = '';
-async function showSource(key) {
-  selectedSource = key;
-  const [file, description] = sources[key];
-  document.querySelectorAll('[data-source]').forEach(button => {
-    const selected = button.dataset.source === key;
-    button.setAttribute('aria-selected', selected);
-    button.tabIndex = selected ? 0 : -1;
-  });
-  $('source-panel').setAttribute('aria-labelledby', `tab-${key}`);
-  $('source-description').textContent = description;
-  $('source-download').href = `./source/${file}`;
-  $('source-code').textContent = 'Loading source…';
-  try {
-    const response = await fetch(`./source/${file}`);
-    if (!response.ok) throw new Error('Source unavailable');
-    const text = await response.text();
-    if (selectedSource === key) $('source-code').textContent = text;
-  } catch (error) { if (selectedSource === key) $('source-code').textContent = error.message; }
-}
-const tabs = [...document.querySelectorAll('[data-source]')];
-tabs.forEach((button, index) => {
-  button.addEventListener('click', () => showSource(button.dataset.source));
-  button.addEventListener('keydown', event => {
-    let target;
-    if (event.key === 'ArrowRight') target = (index + 1) % tabs.length;
-    if (event.key === 'ArrowLeft') target = (index + tabs.length - 1) % tabs.length;
-    if (event.key === 'Home') target = 0;
-    if (event.key === 'End') target = tabs.length - 1;
-    if (target !== undefined) {
-      event.preventDefault(); tabs[target].focus(); showSource(tabs[target].dataset.source);
-    }
-  });
-});
-showSource('core');
-
 try {
   const engine = await createEngine();
   const known = engine.direct(encode('123456789'));
@@ -128,11 +86,40 @@ try {
   });
   updateSplit();
   updateTree();
+
+  function updateAssociativity() {
+    const chunks = ['a', 'b', 'c'].map(name => encode($(`assoc-${name}`).value));
+    const [a, b, c] = chunks.map(bytes => engine.summarize(bytes));
+    const ab = engine.combine(a, b);
+    const left = engine.combine(ab, c);
+    const bc = engine.combine(b, c);
+    const right = engine.combine(a, bc);
+    for (const [id, summary] of [['ab', ab], ['bc', bc], ['left', left], ['right', right]]) {
+      $(`assoc-${id}-p`).textContent = hex(summary.p);
+      $(`assoc-${id}-m`).textContent = hex(summary.m);
+    }
+    const leftCRC = engine.finish(left), rightCRC = engine.finish(right);
+    $('assoc-left-crc').textContent = hex(leftCRC);
+    $('assoc-right-crc').textContent = hex(rightCRC);
+    const joined = new Uint8Array(chunks.reduce((n, bytes) => n + bytes.length, 0));
+    let offset = 0;
+    for (const bytes of chunks) { joined.set(bytes, offset); offset += bytes.length; }
+    const direct = engine.direct(joined);
+    const samePair = left.p === right.p && left.m === right.m;
+    const matches = leftCRC === direct && rightCRC === direct;
+    $('assoc-match').textContent = samePair ? '✓ Same remainder and shift in both groupings' : 'Different summaries';
+    $('assoc-match').classList.toggle('failed', !samePair);
+    $('assoc-direct').textContent = `Direct CRC-32 of A ++ B ++ C: ${hex(direct)} · ${matches ? 'matches both' : 'mismatch'}. Fragment lengths: ${chunks.map(b => b.length).join(', ')} UTF-8 bytes.`;
+    $('assoc-direct').classList.toggle('failed', !matches);
+  }
+  for (const name of ['a', 'b', 'c']) $(`assoc-${name}`).addEventListener('input', updateAssociativity);
+  updateAssociativity();
 } catch (error) {
   console.error(error);
   $('runtime').textContent = `Could not start Haskell: ${error.message}`;
   $('runtime').className = 'failed';
   $('match').textContent = 'Example unavailable';
   $('match').className = 'match failed';
+  $('assoc-match').textContent = 'Interactive example unavailable; see the algebra below.';
   document.querySelectorAll('input, textarea, #reset-tree, [data-preset]').forEach(input => input.disabled = true);
 }

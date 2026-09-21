@@ -1,0 +1,20 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--Rendered using the Haskell Html Library v0.2-->
+<html><head><meta content="text/html; charset=UTF-8" http-equiv="Content-Type"><title>Data.Type.Binary</title><link type="text/css" rel="stylesheet" href="haddock.css"><script type="text/javascript" src="haddock-util.js"></script></head><body><table cellpadding="0" cellspacing="0" class="vanilla"><tr><td class="topbar"><table cellpadding="0" cellspacing="0" class="vanilla"><tr><td><img alt=" " height="16" width="16" src="haskell_icon.gif"></td><td class="title">type-int-0.4: Type Level 2s- and 16s- Complement Integers</td><td class="topbut"><a href="./">Contents</a></td><td class="topbut"><a href="doc-index.html">Index</a></td></tr></table></td></tr><tr><td class="modulebar"><table cellpadding="0" cellspacing="0" class="vanilla"><tr><td><font size="6">Data.Type.Binary</font></td><td align="right"><table cellpadding="0" cellspacing="0" class="narrow"><tr><td class="infohead">Portability</td><td class="infoval">non-portable (MPTC, FD, TH, undecidable instances, and missing constructors)</td></tr><tr><td class="infohead">Stability</td><td class="infoval">experimental</td></tr><tr><td class="infohead">Maintainer</td><td class="infoval">Edward Kmett &lt;ekmett@gmail.com&gt;</td></tr></table></td></tr></table></td></tr><tr><td class="s15"></td></tr><tr><td class="section1">Description</td></tr><tr><td class="doc"><p>Simple type-level binary numbers, positive and negative with infinite
+ precision. This forms a nice commutative ring with multiplicative identity
+ like we would expect from a representation for Z.
+</p><p>The numbers are represented as a Boolean Ring over a countable set of
+ variables, in which for every element in the set there exists an n in N
+ and a b in {T,F} such that forall n' &gt;= n in N, x_i = b.
+</p><p>For uniqueness we always choose the least such n when representing numbers
+ this allows us to run most computations backwards. When we can't, and such
+ a fundep would be implied, we obtain it by combining semi-operations that
+ together yield the appropriate class fundep list.
+</p><p>The goal here was to pull together many of the good ideas I've seen from
+ various sources, and sprinkle a two's complement negative number
+ representation on top.
+</p><p>Reuses T and F from the Type.Boolean as the infinite tail of the 2s
+ complement binary number. I'm particularly fond of the symmetry exhibited
+ in the full adder.
+</p><p>TODO: <tt>TDivMod, TImplies, TGCD, TBit, TComplementBit, TSetBit</tt>
+</p></td></tr><tr><td class="s15"></td></tr><tr><td class="s15"></td></tr><tr><td class="section1">Documentation</td></tr><tr><td class="s15"></td></tr><tr><td class="decl">module <a href="Data-Type-Binary-Internals.html">Data.Type.Binary.Internals</a></td></tr><tr><td class="s15"></td></tr><tr><td class="decl">module <a href="Data-Type-Boolean.html">Data.Type.Boolean</a></td></tr><tr><td class="s15"></td></tr><tr><td class="decl">module <a href="Data-Type-Ord.html">Data.Type.Ord</a></td></tr><tr><td class="s15"></td></tr><tr><td class="decl">module <a href="Data-Type-Binary-TH.html">Data.Type.Binary.TH</a></td></tr><tr><td class="s15"></td></tr><tr><td class="botbar">Produced by <a href="http://www.haskell.org/haddock/">Haddock</a> version 0.8</td></tr></table></body></html>

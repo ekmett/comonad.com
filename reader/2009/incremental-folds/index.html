@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reflecting On Incremental Folds · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Category Theory · Haskell · Squiggol</span><span>Edward Kmett · <time datetime="2009-03-31">31 March 2009</time></span></div><h1>Reflecting On Incremental Folds</h1></header><article class="prose"><span id="more-83"></span><p>Recently, Sean Leather took up the idea of incremental folds. <a href="http://splonderzoek.blogspot.com/2009/02/incremental-fold-design-pattern.html">[1]</a> <a href="http://splonderzoek.blogspot.com/2009/03/incremental-attributes.html">[2]</a>. At the end of his first article on the topic he made a comment on how this was a useful design pattern and sagely noted the advice of Jeremy Gibbons that design patterns are more effective as programs, while complaining of cut and paste coding issues.</p>
+<p>The following attempts to address these concerns.</p>
+<p>Below, I'm going to be using two libraries which I haven't mentioned on here before:</p>
+<ul>
+<li>My <a href="https://hackage.haskell.org/package/monoids">monoids</a> library which contains among other things a large supply of monoids and the concept of a <a href="../../../haskell/monoids/dist/doc/html/monoids/Data-Monoid-Reducer.html">Reducer</a>. A 'Reducer' is a monoid that knows how to inject values from another type. It also supports efficient left-to-right and right-to-left reduction, but we will be availing ourselves of neither of those extra faculties at the moment.</li>
+<li>The other library is <a href="https://hackage.haskell.org/package/reflection">reflection</a>, which is a transcoding of Oleg Kiselyov and Chung-chieh Shan's incredibly elegant approach from <a href="http://www.cs.rutgers.edu/~ccshan/prepose/prepose.pdf">"Functional Pearl: Implicit Configurations"</a> updated slightly to work with the changes in GHC's implementation of ScopedTypeVariables since the article was written.</li>
+</ul>
+<p>The source code for this post is available as <a href="../../../haskell/Incremental.hs">Incremental.hs</a>.</p>
+<p>The 'monoids' and 'reflection' libraries are available from hackage.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE
+   TypeOperators
+ , MultiParamTypeClasses
+ , FlexibleInstances
+ , FlexibleContexts
+ , UndecidableInstances
+ , ScopedTypeVariables
+ , GeneralizedNewtypeDeriving
+ #-}</span>
+
+<span class="hljs-keyword">module</span> Incremental <span class="hljs-keyword">where</span>
+
+<span class="hljs-keyword">import</span> Text.Show
+<span class="hljs-keyword">import</span> Text.Read
+<span class="hljs-keyword">import</span> Data.Reflection
+<span class="hljs-keyword">import</span> Data.Monoid.Reducer <span class="hljs-keyword">hiding</span> (<span class="hljs-type">Sum</span>,<span class="hljs-title">getSum</span>,<span class="hljs-title">cons</span>,<span class="hljs-type">ReducedBy</span>(<span class="hljs-type">Reduction</span>,<span class="hljs-title">getReduction</span>))
+</code></pre>
+<p>[Edit: updated to hide a few more things from Data.Monoid.Reducer which now contains a 'ReducedBy' constructor, which serves a different purpose.]</p>
+<p>I want to take a bit of a different tack than I did with 'category-extras' and define algebras and coalgebras as type classes.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Functor</span> f =&gt; <span class="hljs-type">Algebra</span> f m <span class="hljs-keyword">where</span></span>
+    phi :: f m -&gt; m
+<span class="hljs-class">
+<span class="hljs-keyword">class</span> <span class="hljs-type">Functor</span> f =&gt; <span class="hljs-type">Coalgebra</span> f m <span class="hljs-keyword">where</span></span>
+    psi :: m -&gt; f m
+</code></pre>
+<p>This means that if you need to use a different Algebra, apply a newtype wrapper to the value m. We'll fix this requirement to some degree later on in this post.</p>
+<p>Now, for every Functor, we can reduce it to ().</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> f =&gt; <span class="hljs-type">Algebra</span> f () <span class="hljs-keyword">where</span></span>
+    phi _ = ()
+</code></pre>
+<p>And we can define the idea of an F-Algebra product</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">-- F-Algebra product</span>
+<span class="hljs-class"><span class="hljs-keyword">instance</span> (<span class="hljs-type">Algebra</span> <span class="hljs-title">f</span> <span class="hljs-title">m</span>, <span class="hljs-type">Algebra</span> <span class="hljs-title">f</span> <span class="hljs-title">n</span>) =&gt; <span class="hljs-type">Algebra</span> f (<span class="hljs-title">m</span>,<span class="hljs-title">n</span>) <span class="hljs-keyword">where</span></span>
+    phi a = (phi (fmap fst a), phi (fmap snd a))
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Algebra</span> <span class="hljs-title">f</span> <span class="hljs-title">m</span>, <span class="hljs-type">Algebra</span> <span class="hljs-title">f</span> <span class="hljs-title">n</span>, <span class="hljs-type">Algebra</span> <span class="hljs-title">f</span> <span class="hljs-title">o</span>)
+  =&gt; <span class="hljs-type">Algebra</span> f (<span class="hljs-title">m</span>,<span class="hljs-title">n</span>,<span class="hljs-title">o</span>) <span class="hljs-keyword">where</span></span>
+    phi a = (phi (fmap f a),phi (fmap g a),phi (fmap h a)) <span class="hljs-keyword">where</span>
+        f (x,_,_) = x
+        g (_,y,_) = y
+        h (_,_,z) = z
+</code></pre>
+<p>and so on for larger tuples.</p>
+<p>From there, the usual direction would be to define a fixpoint operator in one of several ways, so not to disappoint:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Mu</span> f = <span class="hljs-type">In</span> (<span class="hljs-title">f</span> (<span class="hljs-type">Mu</span> <span class="hljs-title">f</span>))</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Eq</span> (<span class="hljs-title">f</span> (<span class="hljs-type">Mu</span> <span class="hljs-title">f</span>))) =&gt; <span class="hljs-type">Eq</span> (<span class="hljs-type">Mu</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+    <span class="hljs-type">In</span> f == <span class="hljs-type">In</span> g = f == g
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Ord</span> (<span class="hljs-title">f</span> (<span class="hljs-type">Mu</span> <span class="hljs-title">f</span>))) =&gt; <span class="hljs-type">Ord</span> (<span class="hljs-type">Mu</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+    <span class="hljs-type">In</span> f `compare` <span class="hljs-type">In</span> g = f `compare` g
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Show</span> (<span class="hljs-title">f</span> (<span class="hljs-type">Mu</span> <span class="hljs-title">f</span>))) =&gt; <span class="hljs-type">Show</span> (<span class="hljs-type">Mu</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+    showsPrec d (<span class="hljs-type">In</span> f) = showParen (d &gt; <span class="hljs-number">10</span>) $
+        showString <span class="hljs-string">"In "</span> . showsPrec <span class="hljs-number">11</span> f
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Read</span> (<span class="hljs-title">f</span> (<span class="hljs-type">Mu</span> <span class="hljs-title">f</span>))) =&gt; <span class="hljs-type">Read</span> (<span class="hljs-type">Mu</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+    readPrec = parens . prec <span class="hljs-number">10</span> $ <span class="hljs-keyword">do</span>
+        <span class="hljs-type">Ident</span> <span class="hljs-string">"In "</span> &lt; - lexP
+        f &lt;- step readPrec
+        return (<span class="hljs-type">In</span> f)
+</code></pre>
+<p>Now, we can define an Algebra and Coalgebra for getting into and out of this fixed point.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> f =&gt; <span class="hljs-type">Algebra</span> f (<span class="hljs-type">Mu</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+    phi = <span class="hljs-type">In</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> f =&gt; <span class="hljs-type">Coalgebra</span> f (<span class="hljs-type">Mu</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+    psi (<span class="hljs-type">In</span> x) = x
+</code></pre>
+<p>But our goal is an incremental fold without boilerplate. So I'd rather than the fixed point operator did the heavy lifting for me.</p>
+<p>So lets define an alternative fixedpoint, in which we'll carry around an extra term for the result of applying the incremental Algebra so far.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> (<span class="hljs-title">f</span> :&gt; <span class="hljs-title">m</span>) = f (<span class="hljs-title">f</span> :&gt; <span class="hljs-title">m</span>) :&gt; m</span>
+</code></pre>
+<p>The much more categorically inclined members of the audience may recognize that immediately as the 'cofree' comonad of f from category-extras, and in fact we could continue on adding that definition, and turn it into a comonad for any Functor. I leave that as an exercise for the interested reader, but what we are interested in is the 'extract' operation of that comonad, which we'll just call value for now.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">value</span> :: (f :&gt; m) -&gt; m
+<span class="hljs-title">value</span> (_ :&gt; m) = m
+</code></pre>
+<p>The particularly observant may further note that value itself is an (f :&gt;)-algebra, since the 'extract' operation of any copointed functor f is just an f-algebra.</p>
+<p>First, we add some boilerplate in the fashion of Mu f above.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> (<span class="hljs-type">Eq</span> <span class="hljs-title">m</span>, <span class="hljs-type">Eq</span> (<span class="hljs-title">f</span> (<span class="hljs-title">f</span> :&gt; <span class="hljs-title">m</span>))) =&gt; <span class="hljs-type">Eq</span> (<span class="hljs-title">f</span> :&gt; <span class="hljs-title">m</span>) <span class="hljs-keyword">where</span></span>
+    f :&gt; m == g :&gt; n = f == g &amp;&amp; m == n
+    f :&gt; m /= g :&gt; n = f /= g || m /= n
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Ord</span> <span class="hljs-title">m</span>, <span class="hljs-type">Ord</span> (<span class="hljs-title">f</span> (<span class="hljs-title">f</span> :&gt; <span class="hljs-title">m</span>))) =&gt; <span class="hljs-type">Ord</span> (<span class="hljs-title">f</span> :&gt; <span class="hljs-title">m</span>) <span class="hljs-keyword">where</span></span>
+    (f :&gt; m) `compare` (g :&gt; n) | a == <span class="hljs-type">EQ</span> = m `compare` n
+                                | otherwise = a
+        <span class="hljs-keyword">where</span> a = f `compare` g
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Show</span> <span class="hljs-title">m</span>, <span class="hljs-type">Show</span> (<span class="hljs-title">f</span> (<span class="hljs-title">f</span> :&gt; <span class="hljs-title">m</span>))) =&gt; <span class="hljs-type">Show</span> (<span class="hljs-title">f</span> :&gt; <span class="hljs-title">m</span>) <span class="hljs-keyword">where</span></span>
+    showsPrec d (f :&gt; m) = showParen (d &gt; <span class="hljs-number">9</span>) $
+        showsPrec <span class="hljs-number">10</span> f .
+        showString <span class="hljs-string">" :&gt; "</span> .
+        showsPrec <span class="hljs-number">10</span> m
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Read</span> <span class="hljs-title">m</span>, <span class="hljs-type">Read</span> (<span class="hljs-title">f</span> (<span class="hljs-title">f</span> :&gt; <span class="hljs-title">m</span>))) =&gt; <span class="hljs-type">Read</span> (<span class="hljs-title">f</span> :&gt; <span class="hljs-title">m</span>) <span class="hljs-keyword">where</span></span>
+    readPrec = parens $ prec <span class="hljs-number">9</span> $ <span class="hljs-keyword">do</span>
+            f &lt; - step readPrec
+            <span class="hljs-type">Symbol</span> <span class="hljs-string">":&gt;"</span> &lt; - lexP
+            m &lt;- step readPrec
+            return (f :&gt; m)
+</code></pre>
+<p>and then we note that we can ask for the 'tail' of any cofree comonad as well, which gives us a more immediately useful coalgebra.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> f =&gt; <span class="hljs-type">Coalgebra</span> f (<span class="hljs-title">f</span> :&gt; <span class="hljs-title">m</span>) <span class="hljs-keyword">where</span></span>
+    psi (x :&gt; _) = x
+</code></pre>
+<p>And now, we come back to why we made algebras and coalgebras into a typeclass in the first place. We can define an algebra for how we propagate the information from another algebra that we want to incrementally apply to our functor f.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Algebra</span> f m =&gt; <span class="hljs-type">Algebra</span> f (<span class="hljs-title">f</span> :&gt; <span class="hljs-title">m</span>) <span class="hljs-keyword">where</span></span>
+    phi x = x :&gt; phi (fmap value x)
+</code></pre>
+<p>We can give these convenient names so we don't get our phi's and psi's confused.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">forget</span> :: <span class="hljs-type">Functor</span> f =&gt; (f :&gt; m) -&gt; f (f :&gt; m)
+<span class="hljs-title">forget</span> = psi
+
+<span class="hljs-title">remember</span> :: <span class="hljs-type">Algebra</span> f m =&gt; f (f :&gt; m) -&gt; f :&gt; m
+<span class="hljs-title">remember</span> = phi
+</code></pre>
+<p>'forget' discards the wrapper which contains the result of having applied our algebra.</p>
+<p>'remember' takes an f (f :&gt; m) and adds a wrapper, which remembers the result of having applied our selected f-algebra with carrier m.</p>
+<p>With these convenient aliases, we can define catamorphisms and anamorphisms over (f :&gt; m).</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">cata</span> :: <span class="hljs-type">Algebra</span> f a =&gt; (f :&gt; m) -&gt; a
+<span class="hljs-title">cata</span> = phi . fmap cata . forget
+
+<span class="hljs-title">ana</span> :: (<span class="hljs-type">Algebra</span> f m, <span class="hljs-type">Coalgebra</span> f a) =&gt; a -&gt; (f :&gt; m)
+<span class="hljs-title">ana</span> = remember . fmap ana . psi
+</code></pre>
+<p>cata just forgets the wrapper, and applies an algebra recursively as usual.</p>
+<p>On the other hand, our anamorphism now needs to know the algebra for the incremental fold, so that it can apply it as it builds up our new structure.</p>
+<p>We can easily go back and forth between our two fixed point representations.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">tag</span> :: <span class="hljs-type">Algebra</span> f m =&gt; <span class="hljs-type">Mu</span> f -&gt; (f :&gt; m)
+<span class="hljs-title">tag</span> = remember . fmap tag . psi
+
+<span class="hljs-title">untag</span> :: <span class="hljs-type">Functor</span> f =&gt; (f :&gt; m) -&gt; <span class="hljs-type">Mu</span> f
+<span class="hljs-title">untag</span> = phi . fmap untag . forget
+</code></pre>
+<p>Now, with that machinery in hand, lets try to build a couple of examples, and then see if we can push the envelope a little further.</p>
+<p>So lets define the binary tree that Sean has been using, except now as a base functor that we'll fold.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Tree</span> a r = <span class="hljs-type">Bin</span> r a r | <span class="hljs-type">Tip</span></span>
+    <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Eq</span>,<span class="hljs-type">Ord</span>,<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> (<span class="hljs-type">Tree</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+    fmap f (<span class="hljs-type">Bin</span> x a y) = <span class="hljs-type">Bin</span> (f x) a (f y)
+    fmap _ <span class="hljs-type">Tip</span> = <span class="hljs-type">Tip</span>
+</code></pre>
+<p>As with Sean's code, we'll use a pair of smart constructors to build our tree, but note, we no longer have the unsightly and easily mistaken explicit algebra arguments. You can no longer mistakenly apply the wrong algebra!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">bin</span> :: <span class="hljs-type">Algebra</span> (<span class="hljs-type">Tree</span> a) m =&gt;
+    (<span class="hljs-type">Tree</span> a :&gt; m) -&gt; a -&gt; (<span class="hljs-type">Tree</span> a :&gt; m) -&gt; (<span class="hljs-type">Tree</span> a :&gt; m)
+<span class="hljs-title">bin</span> a v b = remember (<span class="hljs-type">Bin</span> a v b)
+
+<span class="hljs-title">tip</span> :: <span class="hljs-type">Algebra</span> (<span class="hljs-type">Tree</span> a) m =&gt; (<span class="hljs-type">Tree</span> a :&gt; m)
+<span class="hljs-title">tip</span> = remember <span class="hljs-type">Tip</span>
+</code></pre>
+<p>And, we'll need some data to play with, so lets define a nice generic looking tree.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">testTree</span> :: (<span class="hljs-type">Num</span> a, <span class="hljs-type">Algebra</span> (<span class="hljs-type">Tree</span> a) m) =&gt; <span class="hljs-type">Tree</span> a :&gt; m
+<span class="hljs-title">testTree</span> = bin tip <span class="hljs-number">2</span> (bin (bin tip <span class="hljs-number">3</span> tip) <span class="hljs-number">4</span> tip)
+</code></pre>
+<p>And while we're at it lets define a couple of algebras to try things out.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Size</span> = <span class="hljs-type">Size</span> { <span class="hljs-title">getSize</span> :: <span class="hljs-type">Int</span> } <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Eq</span>,<span class="hljs-type">Ord</span>,<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>,<span class="hljs-type">Num</span>)</span>
+<span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Algebra</span> (<span class="hljs-type">Tree</span> <span class="hljs-title">a</span>) <span class="hljs-type">Size</span> <span class="hljs-keyword">where</span></span>
+    phi (<span class="hljs-type">Bin</span> x _ y) = x + <span class="hljs-number">1</span> + y
+    phi <span class="hljs-type">Tip</span> = <span class="hljs-number">0</span>
+
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Sum</span> = <span class="hljs-type">Sum</span> { <span class="hljs-title">getSum</span> :: <span class="hljs-type">Int</span> } <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Eq</span>,<span class="hljs-type">Ord</span>,<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>,<span class="hljs-type">Num</span>)</span>
+<span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Algebra</span> (<span class="hljs-type">Tree</span> <span class="hljs-type">Int</span>) <span class="hljs-type">Sum</span> <span class="hljs-keyword">where</span></span>
+    phi (<span class="hljs-type">Bin</span> x y z) = x + <span class="hljs-type">Sum</span> y + z
+    phi <span class="hljs-type">Tip</span> = <span class="hljs-number">0</span>
+</code></pre>
+<p>With those we can now rush off to ghci and give it a whirl.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">*<span class="hljs-type">Incremental</span>&gt; testTree :: <span class="hljs-type">Tree</span> <span class="hljs-type">Int</span> :&gt; <span class="hljs-type">Sum</span>
+<span class="hljs-type">Bin</span>
+    (<span class="hljs-type">Tip</span> :&gt; <span class="hljs-type">Sum</span> {getSum = <span class="hljs-number">0</span>})
+    <span class="hljs-number">2</span>
+    (<span class="hljs-type">Bin</span>
+        (<span class="hljs-type">Bin</span>
+            (<span class="hljs-type">Tip</span> :&gt; <span class="hljs-type">Sum</span> {getSum = <span class="hljs-number">0</span>})
+            <span class="hljs-number">3</span>
+            (<span class="hljs-type">Tip</span> :&gt; <span class="hljs-type">Sum</span> {getSum = <span class="hljs-number">0</span>})
+            :&gt; <span class="hljs-type">Sum</span> {getSum = <span class="hljs-number">3</span>}
+        )
+        <span class="hljs-number">4</span>
+        (<span class="hljs-type">Tip</span> :&gt; <span class="hljs-type">Sum</span> {getSum = <span class="hljs-number">0</span>})
+        :&gt; <span class="hljs-type">Sum</span> {getSum = <span class="hljs-number">7</span>}
+    ) :&gt; <span class="hljs-type">Sum</span> {getSum = <span class="hljs-number">9</span>}
+</code></pre>
+<p>Note that each node in the tree is tagged with the accumulated result of our algebra.</p>
+<p>Of course, since we also have an f-algebra with carrier Mu f, we can ask for that to be computed incrementally as well.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">*<span class="hljs-type">Incremental</span>&gt; testTree :: <span class="hljs-type">Tree</span> <span class="hljs-type">Int</span> :&gt; <span class="hljs-type">Mu</span> (<span class="hljs-type">Tree</span> <span class="hljs-type">Int</span>)
+<span class="hljs-type">Bin</span> (<span class="hljs-type">Tip</span> :&gt; <span class="hljs-type">In</span> <span class="hljs-type">Tip</span>) <span class="hljs-number">2</span> (<span class="hljs-type">Bin</span> (<span class="hljs-type">Bin</span> (<span class="hljs-type">Tip</span> :&gt; <span class="hljs-type">In</span> <span class="hljs-type">Tip</span>) <span class="hljs-number">3</span> (<span class="hljs-type">Tip</span> :&gt; <span class="hljs-type">In</span> <span class="hljs-type">Tip</span>)
+:&gt; <span class="hljs-type">In</span> (<span class="hljs-type">Bin</span> (<span class="hljs-type">In</span> <span class="hljs-type">Tip</span>) <span class="hljs-number">3</span> (<span class="hljs-type">In</span> <span class="hljs-type">Tip</span>))) <span class="hljs-number">4</span> (<span class="hljs-type">Tip</span> :&gt; <span class="hljs-type">In</span> <span class="hljs-type">Tip</span>) :&gt; <span class="hljs-type">In</span> (<span class="hljs-type">Bin</span> (<span class="hljs-type">In</span>
+(<span class="hljs-type">Bin</span> (<span class="hljs-type">In</span> <span class="hljs-type">Tip</span>) <span class="hljs-number">3</span> (<span class="hljs-type">In</span> <span class="hljs-type">Tip</span>))) <span class="hljs-number">4</span> (<span class="hljs-type">In</span> <span class="hljs-type">Tip</span>))) :&gt; <span class="hljs-type">In</span> (<span class="hljs-type">Bin</span> (<span class="hljs-type">In</span> <span class="hljs-type">Tip</span>) <span class="hljs-number">2</span> (<span class="hljs-type">In</span>
+(<span class="hljs-type">Bin</span> (<span class="hljs-type">In</span> (<span class="hljs-type">Bin</span> (<span class="hljs-type">In</span> <span class="hljs-type">Tip</span>) <span class="hljs-number">3</span> (<span class="hljs-type">In</span> <span class="hljs-type">Tip</span>))) <span class="hljs-number">4</span> (<span class="hljs-type">In</span> <span class="hljs-type">Tip</span>))))
+</code></pre>
+<p>Of course, this prints very poorly, but shares heavily as you can see below thanks to <a href="https://hackage.haskell.org/package/vacuum">vacuum</a> by Matt Morrow.</p>
+<p><img loading="lazy" src="../../../haskell/tree.gif" alt=""></p>
+<p>Now, defining Sum, and Size manually may be all well and good, and its sure a lot less work than it was before, but we can also just decide to lift almost any Monoid into an f-Algebra. Here is where we need the 'Reducer' concept from 'monoids' that was mentioned earlier.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Mon</span> m = <span class="hljs-type">Mon</span> { <span class="hljs-title">getMon</span> :: <span class="hljs-title">m</span> } <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Eq</span>,<span class="hljs-type">Ord</span>,<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>,<span class="hljs-type">Monoid</span>)</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-title">a</span> `<span class="hljs-type">Reducer</span>` <span class="hljs-title">m</span>) =&gt; <span class="hljs-type">Algebra</span> (<span class="hljs-type">Tree</span> <span class="hljs-title">a</span>) (<span class="hljs-type">Mon</span> <span class="hljs-title">m</span>) <span class="hljs-keyword">where</span></span>
+    phi (<span class="hljs-type">Bin</span> x v y) = x `mappend` <span class="hljs-type">Mon</span> (unit v) `mappend` y
+    phi <span class="hljs-type">Tip</span> = mempty
+    <span class="hljs-comment">-- where unit :: (a `Reducer`m) =&gt; a -&gt; m</span>
+</code></pre>
+<p>Of course, we're not limited to trees.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">List</span> a r = <span class="hljs-type">Cons</span> a r | <span class="hljs-type">Nil</span></span>
+    <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Eq</span>,<span class="hljs-type">Ord</span>,<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> (<span class="hljs-type">List</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+    fmap f (<span class="hljs-type">Cons</span> a x) = <span class="hljs-type">Cons</span> a (f x)
+    fmap _ <span class="hljs-type">Nil</span> = <span class="hljs-type">Nil</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Algebra</span> (<span class="hljs-type">List</span> <span class="hljs-title">a</span>) <span class="hljs-type">Size</span> <span class="hljs-keyword">where</span></span>
+    phi (<span class="hljs-type">Cons</span> _ xs) = <span class="hljs-number">1</span> + xs
+    phi <span class="hljs-type">Nil</span> = <span class="hljs-number">0</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Algebra</span> (<span class="hljs-type">List</span> <span class="hljs-type">Int</span>) <span class="hljs-type">Sum</span> <span class="hljs-keyword">where</span></span>
+    phi (<span class="hljs-type">Cons</span> x xs) = fromIntegral x + xs
+    phi <span class="hljs-type">Nil</span> = <span class="hljs-number">0</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-title">a</span> `<span class="hljs-type">Reducer</span>` <span class="hljs-title">m</span>) =&gt; <span class="hljs-type">Algebra</span> (<span class="hljs-type">List</span> <span class="hljs-title">a</span>) (<span class="hljs-type">Mon</span> <span class="hljs-title">m</span>) <span class="hljs-keyword">where</span></span>
+    phi (<span class="hljs-type">Cons</span> x xs) = <span class="hljs-type">Mon</span> (unit x) `mappend` xs
+    phi <span class="hljs-type">Nil</span> = mempty
+
+<span class="hljs-title">cons</span> :: <span class="hljs-type">Algebra</span> (<span class="hljs-type">List</span> a) m =&gt; a -&gt; (<span class="hljs-type">List</span> a :&gt; m) -&gt; (<span class="hljs-type">List</span> a :&gt; m)
+<span class="hljs-title">cons</span> a b = remember (<span class="hljs-type">Cons</span> a b)
+
+<span class="hljs-title">nil</span> :: <span class="hljs-type">Algebra</span> (<span class="hljs-type">List</span> a) m =&gt; <span class="hljs-type">List</span> a :&gt; m
+<span class="hljs-title">nil</span> = remember <span class="hljs-type">Nil</span>
+
+<span class="hljs-title">testList</span> :: (<span class="hljs-type">Num</span> a, <span class="hljs-type">Algebra</span> (<span class="hljs-type">List</span> a) m) =&gt; <span class="hljs-type">List</span> a :&gt; m
+<span class="hljs-title">testList</span> = cons <span class="hljs-number">2</span> . cons <span class="hljs-number">5</span> . cons <span class="hljs-number">8</span> $ cons <span class="hljs-number">27</span> nil
+</code></pre>
+<p>But now we're at a bit of an impasse. How do you deal with f-algebras that use some environment? When writing these out by hand, if a particular algebra uses a variable that is in scope it just closes over it in its environment. Giving a reference to the carrier for the algebra permits the abstraction to leak, and most likely requires you to regress to a smart constructor approach in which you package up that extra information by hand.</p>
+<p>Since we package up the algebra in a type class, we seem, at first glance to have lost the ability to access an environment. After all a 'benefit' of the looser types permitted by Sean's post was that he could build values using an arbitrary algebra, just using any old pair of functions.</p>
+<p>One useful example that would seem at first glance to be ruled out is the following. Every different filter function would have to be a different algebra!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">filter_phi</span> ::
+    <span class="hljs-type">Algebra</span> (<span class="hljs-type">List</span> a) m =&gt;
+    (a -&gt; <span class="hljs-type">Bool</span>) -&gt;
+    <span class="hljs-type">List</span> a (<span class="hljs-type">List</span> a :&gt; m) -&gt; <span class="hljs-type">List</span> a :&gt; m
+<span class="hljs-title">filter_phi</span> p <span class="hljs-type">Nil</span> = nil
+<span class="hljs-title">filter_phi</span> p (<span class="hljs-type">Cons</span> a <span class="hljs-keyword">as</span>)
+    | p a = cons a <span class="hljs-keyword">as</span>
+    | otherwise = <span class="hljs-keyword">as</span>
+</code></pre>
+<p>So, lets do just that. We need to be able to reify an arbitrary function from a term into a type and we can do this with Data.Reflection! For the technical details, please read Oleg and Chung-chieh's very elegant functional pearl, but the idea is that by carefully abusing the ability to convert a list of integers into a type, we can convert a stable pointer into a type and share it in a limited context. In this case, that stable pointer can point to our particular algebra, environment and all, and yet we can be sure that the user doesn't try to mix incremental folds that use different environments.</p>
+<p>To do this, we need a phantom type parameter in the carrier for our f-algebra.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> (<span class="hljs-title">a</span> `<span class="hljs-type">ReducedBy</span>` <span class="hljs-title">s</span>) = <span class="hljs-type">Reduction</span> { <span class="hljs-title">getReduction</span> :: <span class="hljs-title">a</span> }</span>
+</code></pre>
+<p>and to reflect the function back down from the type level in our f-algebra.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> (<span class="hljs-type">Functor</span> <span class="hljs-title">f</span>, <span class="hljs-title">s</span> `<span class="hljs-type">Reflects</span>` (<span class="hljs-title">f</span> <span class="hljs-title">a</span> -&gt; <span class="hljs-title">a</span>)) =&gt;
+  <span class="hljs-type">Algebra</span> f (<span class="hljs-title">a</span> `<span class="hljs-type">ReducedBy</span>` <span class="hljs-title">s</span>) <span class="hljs-keyword">where</span></span>
+    phi = <span class="hljs-type">Reduction</span> . reflect (undefined :: s) . fmap getReduction
+</code></pre>
+<p>With that we can define any f-algebra that needs context, by reflecting it into the type system. The rank-2 type protects us from trying to put together data structures that were constructed using different algebras.</p>
+<p>So now we can now apply this particular algebra to filter a list incrementally build up a list which incrementally builds itself in the [Int] monoid and tracks its length. Here we'll filter the list from earlier for even numbers and apply these other incremental operations all in one go. It reads a little more naturally if broken into parts, but we can write this all in one go.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">test</span> :: <span class="hljs-type">List</span> <span class="hljs-type">Int</span> :&gt; (<span class="hljs-type">Mon</span> [<span class="hljs-type">Int</span>],<span class="hljs-type">Size</span>)
+<span class="hljs-title">test</span> = reify
+    (filter_phi (\x -&gt; x `mod` <span class="hljs-number">2</span> == <span class="hljs-number">0</span>))
+    (\\(_ :: s) -&gt;
+      getReduction (
+        value (
+          testList :: <span class="hljs-type">List</span> <span class="hljs-type">Int</span> :&gt;
+            ((<span class="hljs-type">List</span> <span class="hljs-type">Int</span> :&gt; (<span class="hljs-type">Mon</span> [<span class="hljs-type">Int</span>],<span class="hljs-type">Size</span>)) `<span class="hljs-type">ReducedBy</span>` s))))
+</code></pre>
+<p>Which we can test out:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">*<span class="hljs-type">Incremental</span>&gt; test
+<span class="hljs-type">Cons</span> <span class="hljs-number">2</span> (
+    <span class="hljs-type">Cons</span> <span class="hljs-number">8</span> (
+        <span class="hljs-type">Nil</span> :&gt; (<span class="hljs-type">Mon</span> {getMon = []},<span class="hljs-type">Size</span> {getSize = <span class="hljs-number">0</span>})
+    ) :&gt; (<span class="hljs-type">Mon</span> {getMon = [<span class="hljs-number">8</span>]},<span class="hljs-type">Size</span> {getSize = <span class="hljs-number">1</span>})
+) :&gt; (<span class="hljs-type">Mon</span> {getMon = [<span class="hljs-number">2</span>,<span class="hljs-number">8</span>]},<span class="hljs-type">Size</span> {getSize = <span class="hljs-number">2</span>})
+</code></pre>
+<p>And there you have an incremental fold upon reflection.</p>
+<p>[<a href="../../../haskell/Incremental.hs">Incremental.hs</a>]<br>
+[<a href="../../../haskell/reflection/Data/Reflection.hs">Data/Reflection.hs</a>]<br>
+[<a href="../../../haskell/monoids/dist/doc/html/monoids/src/Data-Monoid-Reducer.html">Data/Monoid/Reducer.hs</a>]</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/monoids"><code>monoids</code></a> · <a href="https://hackage.haskell.org/package/reflection"><code>reflection</code></a> · <a href="https://hackage.haskell.org/package/reducers"><code>reducers</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/incremental-folds.md" download>Article Markdown</a> · <a href="../../../source/articles/incremental-folds.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2008/the-pointed-set-comonad/">The Pointed-Set Comonad →</a><a href="../../../reader/2009/recursion-schemes/">Recursion Schemes: A Field Guide (Redux) →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

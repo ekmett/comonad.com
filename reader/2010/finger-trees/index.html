@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Finger Trees · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Boston Haskell · Data Structures · Haskell · Type Hackery</span><span>Edward Kmett · <time datetime="2010-04-29">29 April 2010</time></span></div><h1>Finger Trees</h1></header><article class="prose"><span id="more-174"></span><p>I gave a talk last night at <a href="http://www.haskell.org/haskellwiki/Boston_Area_Haskell_Users%27_Group">Boston Haskell</a> on finger trees.</p>
+<p>In particular I spent a lot of time focusing on how to derive the construction of Hinze and Paterson's 2-3 finger trees via an extended detour into a whole menagerie of tree types, and less on particular applications of the final resulting structure.</p>
+<p>Overall, I think the talk went over quite well.</p>
+<p>In other finger-tree-related news, Mark Chu-Carroll recently wrote a <a href="http://scienceblogs.com/goodmath/2010/04/finger_trees_done_right_i_hope.php">blog post on finger trees</a> as well, which might serve as a faster introduction in case you don't want to wade through 50 slides before seeing something recognizable as a finger tree. The comments given in reply to his very timely article were very useful in fleshing out this presentation.</p>
+<p>For those who are interested, while we have yet to establish a good way to record video, here are my slides.</p>
+<ul>
+<li><a href="../../../assets/imported/64f0f408248f-Finger-Trees.pdf">Finger Trees [PDF]</a></li>
+</ul>
+<p>There are two parts of the talk that may be difficult to adequately reconstruct from the slides alone:</p>
+<ol>
+<li>I talked through the notion of safe and dangerous digits in a Hinze and Paterson tree and explained how the extra slop in a Hinze and Paterson tree work.</li>
+<li>The other part that was talked through largely via the blackboard was how one uses the monotonicity of the function passed to split.</li>
+</ol>
+<p>Otherwise, you can probably reconstruct the narrative from the slides.</p>
+<p>If you have any questions or spot any errors or grievous omissions, please feel free to contact me.</p>
+<p>[Edit: Updated slide 54]</p>
+</article><section class="comments" id="comments"><h2>From the original discussion</h2><p class="editorial">Selected questions, explanations, and corrections. Original wording and dates; spam and automated trackbacks omitted.</p><article class="comment" id="comment-16531"><header><strong>Edward Kmett</strong><a href="../../../reader/2010/finger-trees/#comment-16531">April 29th, 2010 at 11:06 am</a></header><p>@Dougal:</p>
+<p>You’ll still need to use mappend to define them, but a &lt;&gt; b — is so much easier on the eyes than a `mappend` b when it comes to using them.</p>
+</article></section><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/finger-trees.md" download>Article Markdown</a> · <a href="../../../source/articles/finger-trees.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2009/iteratees-take-2/">Iteratees, Parsec, and Monoids, Oh My! →</a><a href="../../../reader/2010/reverse-mode-automatic-differentiation-in-haskell/">Reverse-Mode Automatic Differentiation in Haskell →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

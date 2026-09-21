@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Part II: The Zen of Z-Ordering · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Haskell</span><span>Edward Kmett · <time datetime="2013-08-25">25 August 2013</time></span></div><h1>Part II: The Zen of Z-Ordering</h1></header><details class="contents"><summary>On this page</summary><ol><li><a href="#a-most-significant-difference">A Most Significant Difference</a></li><li><a href="#the-2-fattest-number">The 2-Fattest Number</a></li><li><a href="#the-only-winning-move">The Only Winning Move</a></li><li><a href="#omake-dilated-arithmetic">Omake: Dilated Arithmetic</a></li><li><a href="#where-do-we-go-now">Where Do We Go Now?</a></li></ol></details><article class="prose"><p>If you haven't already, you'll want to read <a href="../../../reader/2013/revisiting-matrix-multiplication-part-1/">Revisiting Matrix Multiplication, Part I</a> before proceeding.</p>
+<p>I've posted the result from the first 2 No-Prizes inline in the original post, with the spoilers being hidden.</p>
+<h2 id="a-most-significant-difference">A Most Significant Difference</h2>
+<p>As anyone who read through <a href="http://en.wikipedia.org/wiki/Z-order_curve">the wikipedia article on Z-order curves</a> for spoilers can tell you, it turns out we don't have to actually interleave the bits if all we want is the ability to compare two keys <em>as if</em> they had been interleaved.</p>
+<p>What we need to know is where the most significant difference between them occurs.</p>
+<p>Given two halves of a key we can exclusive or them together to find the positions at which they differ.</p>
+<p>I'll call the mask with only the most significant bit (<code>msb</code>) of this mask set their "most significant difference" (<code>msd</code>) and that position as indicating the "critical bit" if it exists.</p>
+<p>One way to compute that most significant difference is to first "smear" all of the bits that are set in that mask to the right to get a new mask.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-keyword">import</span> Data.Bits
+<span class="hljs-keyword">import</span> Data.Word
+<span class="hljs-keyword">import</span> Control.Lens
+<span class="hljs-keyword">import</span> Numeric.Lens
+
+<span class="hljs-comment">-- | @smear x@ returns the smallest @2^n-1 &gt;= x@</span>
+<span class="hljs-title">smear</span> :: <span class="hljs-type">Word64</span> -&gt; <span class="hljs-type">Word64</span>
+<span class="hljs-title">smear</span> k0 = k6 <span class="hljs-keyword">where</span>
+  k1 = k0 .|. unsafeShiftR k0 <span class="hljs-number">1</span>
+  k2 = k1 .|. unsafeShiftR k1 <span class="hljs-number">2</span>
+  k3 = k2 .|. unsafeShiftR k2 <span class="hljs-number">4</span>
+  k4 = k3 .|. unsafeShiftR k3 <span class="hljs-number">8</span>
+  k5 = k4 .|. unsafeShiftR k4 <span class="hljs-number">16</span>
+  k6 = k5 .|. unsafeShiftR k5 <span class="hljs-number">32</span>
+
+<span class="hljs-comment">-- | @msb x@ returns the largest @2^n &lt;= x@</span>
+<span class="hljs-title">msb</span> :: <span class="hljs-type">Word64</span> -&gt; <span class="hljs-type">Word64</span>
+<span class="hljs-title">msb</span> x = y `xor` unsafeShiftR y <span class="hljs-number">1</span>
+  <span class="hljs-keyword">where</span> y = smear x
+
+<span class="hljs-comment">-- | @fat x y@ for @x &lt; y@ returns the unique selection of @z = i*2^n@</span>
+<span class="hljs-comment">-- in @x &lt; z &lt;= y@ that maximizes n.</span>
+<span class="hljs-title">fat</span> :: <span class="hljs-type">Word64</span> -&gt; <span class="hljs-type">Word64</span> -&gt; <span class="hljs-type">Word64</span>
+<span class="hljs-title">fat</span> x y = complement (unsafeShiftR (smear (xor x y)) <span class="hljs-number">1</span>) .&amp;. y
+
+
+<span class="hljs-title">main</span> = print $ base <span class="hljs-number">16</span> # smear <span class="hljs-number">0xf001030900</span>
+
+</code></pre>
+<p>And then we could shift them mask right one place and xor that with the original mask to get the most significant bit as a mask.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-keyword">import</span> Data.Bits
+<span class="hljs-keyword">import</span> Data.Word
+<span class="hljs-keyword">import</span> Control.Lens
+<span class="hljs-keyword">import</span> Numeric.Lens
+<span class="hljs-comment">-- | @smear x@ returns the smallest @2^n-1 &gt;= x@</span>
+<span class="hljs-title">smear</span> :: <span class="hljs-type">Word64</span> -&gt; <span class="hljs-type">Word64</span>
+<span class="hljs-title">smear</span> k0 = k6 <span class="hljs-keyword">where</span>
+  k1 = k0 .|. unsafeShiftR k0 <span class="hljs-number">1</span>
+  k2 = k1 .|. unsafeShiftR k1 <span class="hljs-number">2</span>
+  k3 = k2 .|. unsafeShiftR k2 <span class="hljs-number">4</span>
+  k4 = k3 .|. unsafeShiftR k3 <span class="hljs-number">8</span>
+  k5 = k4 .|. unsafeShiftR k4 <span class="hljs-number">16</span>
+  k6 = k5 .|. unsafeShiftR k5 <span class="hljs-number">32</span>
+<span class="hljs-comment">-- | @msb x@ returns the largest @2^n &lt;= x@</span>
+
+<span class="hljs-title">msb</span> :: <span class="hljs-type">Word64</span> -&gt; <span class="hljs-type">Word64</span>
+<span class="hljs-title">msb</span> x = y `xor` unsafeShiftR y <span class="hljs-number">1</span>
+  <span class="hljs-keyword">where</span> y = smear x
+
+<span class="hljs-comment">-- | @fat x y@ for @x &lt; y@ returns the unique selection of @z = i*2^n@</span>
+<span class="hljs-comment">-- in @x &lt; z &lt;= y@ that maximizes n.</span>
+<span class="hljs-title">fat</span> :: <span class="hljs-type">Word64</span> -&gt; <span class="hljs-type">Word64</span> -&gt; <span class="hljs-type">Word64</span>
+<span class="hljs-title">fat</span> x y = complement (unsafeShiftR (smear (xor x y)) <span class="hljs-number">1</span>) .&amp;. y
+
+
+<span class="hljs-title">main</span> = <span class="hljs-keyword">do</span>
+  print $ base <span class="hljs-number">16</span> # msb <span class="hljs-number">0xf001030900</span>
+  print $ base <span class="hljs-number">16</span> # msb (xor <span class="hljs-number">0xff0</span> <span class="hljs-number">0xc00</span>)
+
+</code></pre>
+<blockquote>
+<p><strong>No-Prize opportunity #3</strong></p>
+<p><code>__builtin_clz</code> can be used to count leading zeros and we can shift that many places. How big of a
+performance difference is there in doing it this way vs. doing this with the fiddly masks? I need benchmarks
+and performance numbers -- preferably as patches to that shiny new <a href="https://github.com/ekmett/sparse">sparse</a>
+repository I mentioned last time as a patch to <a href="https://github.com/ekmett/bits">bits</a> which provides <code>nlz</code>
+for the number of leading zeroes as part of a class in <code>Data.Bits.Extras</code>. Please feel free to send me pull requests if you find faster ways to do things! We'll need all the speed we can get soon.</p>
+</blockquote>
+<h2 id="the-2-fattest-number">The 2-Fattest Number</h2>
+<p>(You can skip this on first-reading, but it'll be relevant later and we <em>just</em> introduced all the bits needed to define it.)</p>
+<p>There is another related quantity that we'll need soon when I turn to matrix multiplication that I'd like to point out. It is known as the 2-fattest number in an interval. The 2-fattest number in an interval is the number in that interval that has the largest number of trailing 0s in its binary representation.</p>
+<p>The first time I saw this term was in Djamal Belazzougui et al.'s excellent treatise on <a href="http://www.itu.dk/people/pagh/papers/sparse.pdf">Monotone Minimal Perfect Hashing</a>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-keyword">import</span> Data.Bits
+<span class="hljs-keyword">import</span> Data.Word
+<span class="hljs-keyword">import</span> Control.Lens
+<span class="hljs-keyword">import</span> Numeric.Lens
+<span class="hljs-comment">-- | @smear x@ returns the smallest @2^n-1 &gt;= x@</span>
+<span class="hljs-title">smear</span> :: <span class="hljs-type">Word64</span> -&gt; <span class="hljs-type">Word64</span>
+<span class="hljs-title">smear</span> k0 = k6 <span class="hljs-keyword">where</span>
+  k1 = k0 .|. unsafeShiftR k0 <span class="hljs-number">1</span>
+  k2 = k1 .|. unsafeShiftR k1 <span class="hljs-number">2</span>
+  k3 = k2 .|. unsafeShiftR k2 <span class="hljs-number">4</span>
+  k4 = k3 .|. unsafeShiftR k3 <span class="hljs-number">8</span>
+  k5 = k4 .|. unsafeShiftR k4 <span class="hljs-number">16</span>
+  k6 = k5 .|. unsafeShiftR k5 <span class="hljs-number">32</span>
+
+<span class="hljs-comment">-- | @msb x@ returns the largest @2^n &lt;= x@</span>
+<span class="hljs-title">msb</span> :: <span class="hljs-type">Word64</span> -&gt; <span class="hljs-type">Word64</span>
+<span class="hljs-title">msb</span> x = y `xor` unsafeShiftR y <span class="hljs-number">1</span>
+  <span class="hljs-keyword">where</span> y = smear x
+
+
+<span class="hljs-comment">-- | @fat x y@ for @x &lt; y@ returns the unique selection of @z = b*2^i@</span>
+<span class="hljs-comment">-- in @x &lt; z &lt;= y@ that maximizes @i@.</span>
+<span class="hljs-title">fat</span> :: <span class="hljs-type">Word64</span> -&gt; <span class="hljs-type">Word64</span> -&gt; <span class="hljs-type">Word64</span>
+<span class="hljs-title">fat</span> x y = complement (unsafeShiftR (smear (xor x y)) <span class="hljs-number">1</span>) .&amp;. y
+
+
+<span class="hljs-title">main</span> = print $ base <span class="hljs-number">16</span> # fat <span class="hljs-number">0x1</span> <span class="hljs-number">0xf</span>
+
+</code></pre>
+<p>The 2-fattest number for an interval has a number of interesting properties.</p>
+<p>1.) The 2-fattest number <code>z = b*2^i</code>in an interval <code>[x..y]</code> is uniquely determined by <code>x</code> and <code>y</code>. <em>Proof Sketch</em> If it were not, then since it the two candidates are odd, there'd exists an even number between them and hence also in the interval, but then that number would be of the form <code>b*2^(i+1)</code>, violating our claim that either of them was 2-fattest. Note the shift to talking about a closed interval rather than one open on the left.</p>
+<p>2.) It is the least value in the interval for which their most significant differing bit goes from low to high.</p>
+<p>3.) If <code>y - x &lt; 2^i</code> then there exists at most one <code>b</code> value for which <code>b*2^i</code> falls within the interval <code>[x..y]</code>.</p>
+<p>4.) If <code>i</code> is such that <code>[x..y]</code> does not contain any value of the form <code>b*2^i</code> then <code>y - x + 1 &lt;= 2^i - 1</code> and the interval may contain at most one single value of the form <code>b*2^(i-1)</code>.</p>
+<p>Most if not all of these properties will be useful to us later on.</p>
+<blockquote>
+<p><strong>No-Prize opportunity #4</strong></p>
+<p>Cleanly rewrite those laws in terms of <code>(x..y]</code>, so I can clean up the exposition above and be the first to send them to me.</p>
+</blockquote>
+<h2 id="the-only-winning-move">The Only Winning Move</h2>
+<p>Now that we are so equipped with new bit twiddling tools, we can finally tackle comparing keys for relative ordering by their Morton order without interleaving their bits at all!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Key</span> = <span class="hljs-type">Key</span> <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Word32</span> <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Word32</span> <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Eq</span>,<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>)</span>
+</code></pre>
+<p>The lenses to access the fields become trivial.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> (<span class="hljs-title">a</span> ~ <span class="hljs-type">Word32</span>, <span class="hljs-title">b</span> ~ <span class="hljs-type">Word32</span>) =&gt; <span class="hljs-type">Field2</span> <span class="hljs-type">Key</span> <span class="hljs-type">Key</span> a b <span class="hljs-keyword">where</span></span>
+  _2 f (<span class="hljs-type">Key</span> i j) = <span class="hljs-type">Key</span> i &lt;$&gt; indexed f (<span class="hljs-number">1</span> :: <span class="hljs-type">Int</span>) j
+</code></pre>
+<p>We now know how to compute the most significant difference between two key <em>components</em>. So to compare keys what we want to do is determine which key component has the most significant "most significant difference".</p>
+<p>We could do that directly by computing the <code>msd</code> of each key component independently, and then comparing it, and then following up by comparing just the key component that won the toss. This is a fun exercise to do. It is also slightly more general than the construction I'm about to use, as I don't have to have keys with the same word size, and can support variable length keys so long as they have the <a href="http://en.wikipedia.org/wiki/Prefix_code">prefix property</a> enabling me to work with compressed indices, and provides other benefits, but we can perform an equivalent operation with a lot less bit twiddling!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Ord</span> <span class="hljs-type">Key</span> <span class="hljs-keyword">where</span></span>
+  compare (<span class="hljs-type">Key</span> a b) (<span class="hljs-type">Key</span> c d)
+    | ac &lt; bd &amp;&amp; ac &lt; xor ac bd = compare b d
+    | otherwise                 = compare a c
+    <span class="hljs-keyword">where</span>
+      ac = xor a c
+      bd = xor b d
+</code></pre>
+<blockquote>
+<p><strong>No-Prize opportunity #5</strong></p>
+<p>Be the first to email me a proof of why this works and see your name immortalized as the proud owner of the 5th No-Prize!</p>
+</blockquote>
+<p>This isn't a pure win as they are a number of operations that can still be performed on the shuffled representation somewhat faster, such as calculating <code>succ</code> in Morton order.</p>
+<p>Fun Exercise: What does a nice version of <code>succ</code> or <code>pred</code> that moves to the next address in Morton order look like in this representation?</p>
+<p>However, this does provide a reference for how we can play around with identifying and using the "most significant most significant difference" in a useful way.</p>
+<p>Putting it all together:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE FlexibleInstances #-}</span>
+<span class="hljs-meta">{-# LANGUAGE TypeFamilies #-}</span>
+<span class="hljs-meta">{-# LANGUAGE UndecidableInstances #-}</span>
+<span class="hljs-meta">{-# LANGUAGE MultiParamTypeClasses #-}</span>
+<span class="hljs-keyword">import</span> Control.Applicative
+<span class="hljs-keyword">import</span> Control.Lens
+<span class="hljs-keyword">import</span> Data.Bits
+<span class="hljs-keyword">import</span> Data.Word
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Key</span> = <span class="hljs-type">Key</span> <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Word32</span> <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Word32</span> <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Eq</span>,<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>)</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Ord</span> <span class="hljs-type">Key</span> <span class="hljs-keyword">where</span></span>
+  compare (<span class="hljs-type">Key</span> a b) (<span class="hljs-type">Key</span> c d)
+    | ac &lt; bd &amp;&amp; ac &lt; xor ac bd = compare b d
+    | otherwise                 = compare a c
+    <span class="hljs-keyword">where</span>
+      ac = xor a c
+      bd = xor b d
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-title">a</span> ~ <span class="hljs-type">Word32</span>, <span class="hljs-title">b</span> ~ <span class="hljs-type">Word32</span>) =&gt; <span class="hljs-type">Field1</span> <span class="hljs-type">Key</span> <span class="hljs-type">Key</span> a b <span class="hljs-keyword">where</span></span>
+  _1 f (<span class="hljs-type">Key</span> a b) = (`<span class="hljs-type">Key</span>` b) &lt;$&gt; indexed f (<span class="hljs-number">0</span> :: <span class="hljs-type">Int</span>) a
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-title">a</span> ~ <span class="hljs-type">Word32</span>, <span class="hljs-title">b</span> ~ <span class="hljs-type">Word32</span>) =&gt; <span class="hljs-type">Field2</span> <span class="hljs-type">Key</span> <span class="hljs-type">Key</span> a b <span class="hljs-keyword">where</span></span>
+  _2 f (<span class="hljs-type">Key</span> a b) = <span class="hljs-type">Key</span> a &lt;$&gt; indexed f (<span class="hljs-number">1</span> :: <span class="hljs-type">Int</span>) b
+
+
+<span class="hljs-title">main</span> = putStrLn <span class="hljs-string">"it compiles!"</span>
+</code></pre>
+<p>As an alternative to the comparison above, we could have checked the if <code>ac .&amp;. msb (ac .|. bd) == 0</code>. But that relies on <code>msb</code> being particularly fast to calculate relative to a few <code>xor</code>s and inequalities. I'm dubious but available to be swayed by benchmarks. Also, I'll need to know if the msb is in an even or odd position later on, so any calculation of it that doesn't let me calculate the msb's position parity won't be very useful.</p>
+<h2 id="omake-dilated-arithmetic">Omake: Dilated Arithmetic</h2>
+<p>We could continue to explore alternative alternatives.</p>
+<p>When we extracted <code>_1</code> and <code>_2</code> from <code>Key</code> in the previous article, we bothered to shuffle them into and out of position.</p>
+<p>It turns out that we can support a form of dilated arithmetic directly on them in their shuffled form.</p>
+<p>We could make newtype wrappers around a <code>Word64</code> for two different dilations.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">DilatedEven</span> = <span class="hljs-type">DilatedEven</span> <span class="hljs-type">Word64</span></span>
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">DilatedOdd</span>  = <span class="hljs-type">DilatedOdd</span> <span class="hljs-type">Word64</span></span>
+</code></pre>
+<p>Then there is a nice paper by Wise, Frens and Gu on <a href="http://www.cs.indiana.edu/~dswise/ppopp01.pdf">Language Support for Morton-order Matrices</a> that describes how to directly perform dilated arithmetic where the bits you are interested are only in the even or odd bits of a larger number. They further talk about a number of compiler optimizations you may want to perform on these. Some of those optimizations could be implemented with <code>RULES</code> pragmas.</p>
+<p>I'd be curious to see what anyone comes up with down this path of inquiry.</p>
+<p>In practice we'll see a couple of numbers left in dilated form later, but I haven't (yet!) bothered to write newtypes for them or duplicate Wise et al's arithmetic operators for working on them directly.</p>
+<h2 id="where-do-we-go-now">Where Do We Go Now?</h2>
+<p>We'll be abusing <code>smear</code>, this terminology, the notion of a "most significant most significant difference" and the 2-fattest number in a range when we start to talk about how we might want to decompose matrices. However, next time I need to take a slight detour into talking about how to make a custom <code>Vector</code> type!</p>
+<p>-<a href="mailto:ekmett@gmail.com">Edward Kmett</a>
+August 16, 2013</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/lens"><code>lens</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: School of Haskell. Date displayed by School of Haskell; may reflect a later revision.</p><p><a href="../../../source/articles/revisiting-matrix-multiplication-part-2.md" download>Article Markdown</a> · <a href="../../../source/articles/revisiting-matrix-multiplication-part-2.original.md" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2013/revisiting-matrix-multiplication-part-3/">Part III: Extending Vector →</a><a href="../../../reader/2013/revisiting-matrix-multiplication-part-1/">Part I: Bit Shuffling with Lenses and Isomorphisms →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

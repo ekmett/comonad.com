@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Once · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Haskell</span><span>Edward Kmett · <time datetime="2013-09-03">3 September 2013</time></span></div><h1>Once</h1></header><details class="contents"><summary>On this page</summary><ol><li><a href="#evaluating-to-normal-form">Evaluating to Normal Form</a></li><li><a href="#once-and-for-all">Once and For All</a></li><li><a href="#with-a-little-bit-of-lens">With A Little Bit of Lens</a></li></ol></details><article class="prose"><p>I wrote this fragment a few years ago and have talked about it to folks individually, but it came up again in discussion on the <code>#haskell</code> channel, so I figured it was worth posting about in a central location.</p>
+<h2 id="evaluating-to-normal-form">Evaluating to Normal Form</h2>
+<p>The <code>deepseq</code> package's <code>Control.DeepSeq</code> provides the incredibly useful <code>NFData</code> class.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">NFData</span> a <span class="hljs-keyword">where</span></span>
+  rnf :: a -&gt; ()
+</code></pre>
+<p><code>rnf</code> evaluates its argument fully to normal form.</p>
+<p>This class is abused by efficiency afficionados everywhere to ensure that no undue laziness leaks into their data structures.</p>
+<p>However, it is easy to abuse, and often winds up having to do a lot of unnecessary work forcing things we already know to be forced!</p>
+<h2 id="once-and-for-all">Once and For All</h2>
+<p>We can prevent that by making a rather tricky little instance of <code>NFData</code>:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-keyword">import</span> Control.DeepSeq
+<span class="hljs-keyword">import</span> Control.Lens
+<span class="hljs-keyword">import</span> Data.Copointed
+<span class="hljs-keyword">import</span> Data.Foldable
+
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Once</span> a = <span class="hljs-type">Once</span> () a</span>
+
+<span class="hljs-title">runOnce</span> :: <span class="hljs-type">Once</span> a -&gt; a
+<span class="hljs-title">runOnce</span> (<span class="hljs-type">Once</span> _ a) = a
+
+<span class="hljs-title">once</span> :: <span class="hljs-type">NFData</span> a =&gt; a -&gt; <span class="hljs-type">Once</span> a
+<span class="hljs-title">once</span> a = <span class="hljs-type">Once</span> (rnf a) a
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">NFData</span> (<span class="hljs-type">Once</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  rnf (<span class="hljs-type">Once</span> () _) = ()
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Foldable</span> <span class="hljs-type">Once</span> <span class="hljs-keyword">where</span></span>
+  foldMap f (<span class="hljs-type">Once</span> _ a) = f a
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Copointed</span> <span class="hljs-type">Once</span> <span class="hljs-keyword">where</span></span>
+  copoint (<span class="hljs-type">Once</span> _ a) = a
+
+<span class="hljs-title">_Once</span> :: <span class="hljs-type">NFData</span> a =&gt; <span class="hljs-type">Iso'</span> (<span class="hljs-type">Once</span> a) a
+<span class="hljs-title">_Once</span> = iso runOnce once
+
+<span class="hljs-title">main</span> = putStrLn <span class="hljs-string">"It compiled."</span>
+</code></pre>
+<p>Now, anywhere you expect to spam <code>rnf</code> in your code, just wrap the value in <code>Once</code>, and any attempts will only force the fragment underneath once.</p>
+<p>This can make a massive difference in the performance of code that happens to abuse <code>rnf</code>, enabling it to avoid doing useless work and avoid thrashing caches walking over irrelevant data.</p>
+<p>You don't have to use <code>Once</code> to make this trick work. You can of course put extra <code>()</code> arguments as needed recursively within your data structure and replicate the <code>NFData</code> trick above yourself.</p>
+<h2 id="with-a-little-bit-of-lens">With A Little Bit of Lens</h2>
+<p>With <code>lens</code> you can collapse the entire API for working with <code>Once</code> to a single isomorphism:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">_Once</span> :: <span class="hljs-type">NFData</span> a =&gt; <span class="hljs-type">Iso'</span> (<span class="hljs-type">Once</span> a) a
+<span class="hljs-title">_Once</span> = iso runOnce once
+</code></pre>
+<p>-<a href="mailto:ekmett@gmail.com">Edward Kmett</a></p>
+<p>September 3, 2013</p>
+</article><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: School of Haskell. Date displayed by School of Haskell; may reflect a later revision.</p><p><a href="../../../source/articles/snippets-once.md" download>Article Markdown</a> · <a href="../../../source/articles/snippets-once.original.md" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2013/revisiting-matrix-multiplication-part-1/">Part I: Bit Shuffling with Lenses and Isomorphisms →</a><a href="../../../reader/2013/snippets-mandelbrot/">Mandelbrot →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

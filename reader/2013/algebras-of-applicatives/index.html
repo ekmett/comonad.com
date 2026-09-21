@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Algebras of Applicatives · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Uncategorized</span><span>Gershom Bazerman · <time datetime="2013-01-11">11 January 2013</time></span></div><h1>Algebras of Applicatives</h1></header><article class="prose"><p>While the <a href="../../../reader/2012/abstracting-with-applicatives/">previous post</a> in this series was relatively immediately applicable, this one has constructions I definitely wouldn't recommend in production code. However, they do take us further in exploring the universe of applicative functors, and, more broadly, exploring which data types provide which properties by construcion.</p>
+<p>It's well known that if you have any Functor <code>F a</code>, you can take its "fixpoint", creating a structure of infinitely nested Fs, like so. <code>F (F (F (...) ) )</code> Since we can't have infinite types directly in Haskell, we introduce the Fix newtype:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Fix</span> f = <span class="hljs-type">Fix</span> (<span class="hljs-title">f</span> (<span class="hljs-type">Fix</span> <span class="hljs-title">f</span>))</span>
+</code></pre>
+<p>This "wraps up" the recursion so that GHC accepts the type. <code>Fix f</code> is a <code>Fix</code> constructor, containing an "f" of <code>Fix f</code> inside. Each in turn expands out, and soforth. Fixpoints of functors have fixedpoints of functors inside 'em. And so on, and so on, ad infinitum.</p>
+<p>(Digression: We speak of "algebraic data types" in Haskell. The "algebra" in question is an "F-algebra", and we can build up structures with fixpoints of functors, taking those functors as initial or terminal objects and generating either initial algebras or terminal coalgebras. These latter two concepts coincide in Haskell in the Fix description given above, as greatest and least fixpoints of data types in Haskell turn out to be the same thing. For more background, one can go to Wadler's "<a href="http://homepages.inf.ed.ac.uk/wadler/papers/free-rectypes/free-rectypes.txt">Recursive Types for Free</a>," or Jacobs and Rutten's "<a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.37.1418">Tutorial on (Co)Algebras and (Co)Induction</a>" for starters.)</p>
+<p>The family of functors built from our friends Const, Sum, Product, and Reader (exponentiation) are known as Polynomial Functors. If we take closure of these with a proper fixpoint construct (that lets us build infinite structures), we get things that are variously known as Containers, Shapely Types, and Strictly Positive types.</p>
+<p>One irritating thing is that the fixpoint of a functor as we've written it is no longer itself a functor. The type constructor Fix is of kind <code>(* -&gt; *) -&gt; *</code>, which says it takes an "f" which takes one argument (e.g. "Maybe" or "Identity" or etc.) and returns a proper type (i.e. a value at the type level of kind *).</p>
+<p>We want a fixpoint construction that gives back something of kind <code>* -&gt; *</code> — i.e. something that is a type constructor representing a functor, and not just a plain old type. The following does the trick.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">FixF</span> f a = <span class="hljs-type">FixF</span> (<span class="hljs-title">f</span> (<span class="hljs-type">FixF</span> <span class="hljs-title">f</span>) a)</span>
+<span class="hljs-title">deriving</span> <span class="hljs-keyword">instance</span> (<span class="hljs-type">Show</span> (f (<span class="hljs-type">FixF</span> f) a)) =&gt; <span class="hljs-type">Show</span> (<span class="hljs-type">FixF</span> f a)
+</code></pre>
+<p>(I learned about FixF from <a href="http://www.cs.ox.ac.uk/ralf.hinze/SSGIP10/AdjointFolds.pdf">a paper by Ralf Hinze</a>, but I'm sure the origins go back much further).</p>
+<p>FixF is of kind <code>((* -&gt; *) -&gt; * -&gt; *) -&gt; * -&gt; *</code>. It takes the fixpoint of a "second-order Functor" (a Functor that sends a Functor to another Functor, i.e. an endofunctor on the functor category of hask), to recover a standard "first order Functor" back out. This sounds scary, but it isn't once you load it up in ghci and start playing with it. In fact, we've encountered second order functors just recently. Product, Sum, and Compose are all of kind <code>(* -&gt; *) -&gt; (* -&gt; *) -&gt; * -&gt; *</code>. So they all send two functors to a third functor. That means that <code>Product Const</code>, <code>Sum Identity</code> and <code>Compose Maybe</code> are all second-order functors, and things appropriate to take our "second-order fixpoint" of.</p>
+<p>Conceptually, "Fix f" took a value with one hole, and we filled that hole with "Fix f" so there was no room for a type parameter. Now we've got an "f" with two holes, the first of which takes a functor, and the second of which is the hole of the resulting functor.</p>
+<p>Unlike boring old "Fix", we can write Functor and Applicative instances for "FixF", and they're about as simple and compositional as we could possibly hope.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> (<span class="hljs-title">f</span> (<span class="hljs-type">FixF</span> <span class="hljs-title">f</span>)) =&gt; <span class="hljs-type">Functor</span> (<span class="hljs-type">FixF</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+    fmap f (<span class="hljs-type">FixF</span> x) = <span class="hljs-type">FixF</span> $ fmap f x
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Applicative</span> (<span class="hljs-title">f</span> (<span class="hljs-type">FixF</span> <span class="hljs-title">f</span>)) =&gt; <span class="hljs-type">Applicative</span> (<span class="hljs-type">FixF</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+    pure x = <span class="hljs-type">FixF</span> $ pure x
+    (<span class="hljs-type">FixF</span> f) &lt; *&gt; (<span class="hljs-type">FixF</span> x) = <span class="hljs-type">FixF</span> (f &lt; *&gt; x)
+</code></pre>
+<p>But now we run into a new problem! It seems like this "a" parameter is just hanging out there, doing basically nothing. We take our classic functors and embed them in there, and they still only have "one hole" at the value level, so don't actually have any place to put the "a" type we now introduced. For example, we can write the following:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">-- FixF . Compose . Just . FixF . Compose $ Nothing</span>
+<span class="hljs-comment">-- &gt; FixF (Compose (Just (FixF (Compose Nothing))))</span>
+<span class="hljs-comment">-- :t FixF (Compose (Just (FixF (Compose Nothing))))</span>
+<span class="hljs-comment">-- &gt; FixF (Compose Maybe) a</span>
+</code></pre>
+<p>We now introduce one new member of our basic constructions — a second order functor that acts like "const" on the type level, taking any functor and returning Identity.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Embed</span> (<span class="hljs-title">f</span> :: * -&gt; *) a = <span class="hljs-type">Embed</span> a <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Show</span>)</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> (<span class="hljs-type">Embed</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+    fmap f (<span class="hljs-type">Embed</span> x) = <span class="hljs-type">Embed</span> $ f x
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Applicative</span> (<span class="hljs-type">Embed</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+    pure x = <span class="hljs-type">Embed</span> x
+    (<span class="hljs-type">Embed</span> f) &lt; *&gt; (<span class="hljs-type">Embed</span> x) = <span class="hljs-type">Embed</span> (f x)
+</code></pre>
+<p>Now we can actually stick functorial values into our fixpoints:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">-- FixF $ Embed "hi"</span>
+<span class="hljs-comment">-- &gt; FixF (Embed "hi")</span>
+
+<span class="hljs-comment">-- fmap (++ " world") $ FixF (Embed "hi")</span>
+<span class="hljs-comment">-- &gt; FixF (Embed "hi world")</span>
+
+<span class="hljs-comment">-- FixF . Product (Embed "hi") .</span>
+<span class="hljs-comment">--        FixF . Product (Embed "there") . FixF $ undefined</span>
+<span class="hljs-comment">-- &gt; FixF (Product (Embed "hi")</span>
+<span class="hljs-comment">--   (FixF (Product (Embed "there")</span>
+<span class="hljs-comment">--   (FixF *** Exception: Prelude.undefined</span>
+</code></pre>
+<p>You may have noticed that we seem to be able to use "product" to begin a chain of nested fixpoints, but we don't seem able to stick a "Maybe" in there to <strong>stop</strong> the chain. And it seems like we're not even "fixing" where we intend to be:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">-- :t FixF . Product (Embed "hi") . FixF . Product (Embed "there") . FixF $ undefined</span>
+<span class="hljs-comment">-- &gt; FixF (Product (Embed f)) [Char]</span>
+</code></pre>
+<p>That's because we're applying Product, takes and yields arguments of kind <code>* -&gt; *</code> in a context where we really want to take and yield second-order functors as arguments — things of kind <code>(* -&gt; *) -&gt; * -&gt; *</code>. If we had proper kind polymorphism, "Product" and "ProductF" would be able to collapse (and maybe, soon, they will). But at least in the ghc 7.4.1 that I'm working with, we have to write the same darn thing, but "up a kind".</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">ProductF</span> f g (<span class="hljs-title">b</span> :: * -&gt; *) a =</span>
+      <span class="hljs-type">ProductF</span> (f b a) (g b a) <span class="hljs-keyword">deriving</span> <span class="hljs-type">Show</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Functor</span> (<span class="hljs-title">f</span> <span class="hljs-title">b</span>), <span class="hljs-type">Functor</span> (<span class="hljs-title">g</span> <span class="hljs-title">b</span>)) =&gt;
+         <span class="hljs-type">Functor</span> (<span class="hljs-type">ProductF</span> <span class="hljs-title">f</span> <span class="hljs-title">g</span> <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+                fmap f (<span class="hljs-type">ProductF</span> x y) = <span class="hljs-type">ProductF</span> (fmap f x) (fmap f y)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Applicative</span> (<span class="hljs-title">f</span> <span class="hljs-title">b</span>), <span class="hljs-type">Applicative</span> (<span class="hljs-title">g</span> <span class="hljs-title">b</span>)) =&gt;
+         <span class="hljs-type">Applicative</span> (<span class="hljs-type">ProductF</span> <span class="hljs-title">f</span> <span class="hljs-title">g</span> <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+               pure x = <span class="hljs-type">ProductF</span> (pure x) (pure x)
+              (<span class="hljs-type">ProductF</span> f g) &lt; *&gt; (<span class="hljs-type">ProductF</span> x y) = <span class="hljs-type">ProductF</span> (f &lt; *&gt; x) (g &lt; *&gt; y)
+</code></pre>
+<p>We can now do the following properly.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">yy</span> = <span class="hljs-type">FixF</span> . <span class="hljs-type">ProductF</span> (<span class="hljs-type">Embed</span> <span class="hljs-string">"foo"</span>) $ <span class="hljs-type">InL</span> $ <span class="hljs-type">Const</span> ()
+<span class="hljs-title">xx</span> = <span class="hljs-type">FixF</span> . <span class="hljs-type">ProductF</span> (<span class="hljs-type">Embed</span> <span class="hljs-string">"bar"</span>) . <span class="hljs-type">InR</span> .
+  <span class="hljs-type">FixF</span> . <span class="hljs-type">ProductF</span> (<span class="hljs-type">Embed</span> <span class="hljs-string">"baz"</span>) . <span class="hljs-type">InL</span> $ <span class="hljs-type">Const</span> ()
+</code></pre>
+<p>So we've recovered proper lists in Haskell, as the "second-order fixpoint" of polynomial functors. And the types look right too:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">-- :t yy</span>
+<span class="hljs-comment">-- &gt; FixF (ProductF Embed (Sum (Const ()))) [Char]</span>
+</code></pre>
+<p>Because we've built our Applicative instances compositionally, we have an applicative for our list list construction automatically:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">-- (++) &lt; $&gt; yy &lt; *&gt; xx</span>
+<span class="hljs-comment">-- &gt; FixF (ProductF (Embed "foobar") (InL (Const ())))</span>
+</code></pre>
+<p>This is precisely the "ZipList" applicative instance. In fact, our applicative instances from this "functor toolkit" are all "zippy" — matching up structure where possible, and "smashing it down" where not. This is because Sum, with its associated natural transformation logic, is the only way to introduce a disjoint choice of shape. Here are some simple examples with Sum to demonstrate:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">-- liftA2 (++) (InL (Identity "hi")) $</span>
+<span class="hljs-comment">--      InR (Product (Identity " there") (Const ([12::Int])))</span>
+<span class="hljs-comment">-- &gt; InL (Identity "hi there")</span>
+<span class="hljs-comment">-- liftA2 (++) (InR (Identity "hi")) $ InL (Product (Identity " there") (Const ([12::Int])))</span>
+<span class="hljs-comment">-- &gt; InL (Product (Identity "hi there") (Const [12]))</span>
+</code></pre>
+<p>We're always "smashing" towards the left. So in the first case, that means throwing away half of the pair. In the second case, it means injecting Const mempty into a pair, and then operating with that.</p>
+<p>In any case, we now have infinite and possibly infinite branching structures. And not only are they Functors, but they're also Applicatives, and in a way that's uniform and straightforward to reason about.</p>
+<p>In the next post, we'll stop building out our vocabulary of "base" Functors (though it's not quite complete) and instead push forward on what else these functors can provide "beyond" Applicative.</p>
+</article><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/algebras-of-applicatives.md" download>Article Markdown</a> · <a href="../../../source/articles/algebras-of-applicatives.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2012/abstracting-with-applicatives/">Abstracting with Applicatives →</a><a href="../../../reader/2013/japanese-workshop-1/">Japanese “ekmett” Workshop (Part 1 of 2) →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Gershom Bazerman.<br>Comments attributed to their original authors.</p></footer></main></body></html>

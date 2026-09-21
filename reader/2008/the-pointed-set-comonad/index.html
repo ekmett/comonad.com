@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Pointed-Set Comonad · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Comonads · Haskell · Uncategorized</span><span>Edward Kmett · <time datetime="2008-12-04">4 December 2008</time></span></div><h1>The Pointed-Set Comonad</h1></header><details class="contents"><summary>On this page</summary><ol><li><a href="#the-pointed-cycle-comonad">The Pointed-Cycle Comonad</a></li></ol></details><article class="prose"><span id="more-80"></span><p>Last night, Chung-Chieh Shan posted an example of a <a href="http://conway.rutgers.edu/~ccshan/wiki/blog/posts/Pointed_set/">pointed-set monad</a> on his blog, which happens to be isomorphic to a non-empty stream monad with a different emphasis.</p>
+<p>But, I thought I should point out that the pointed set that he posted also has a comonadic structure, which may be exploited since it is just a variation on the "zipper comonad," a structure that is perhaps more correctly called a "pointing comonad."</p>
+<p>But first, a little background:</p>
+<p>With <a href="http://en.wikipedia.org/wiki/Combinatorial_species">combinatorial species</a> you point a data structure by marking a single element in it as special. We can represent that with the product of an element and the <a href="http://en.wikipedia.org/wiki/Derivative_(generalizations)#Set_theory_and_logic">derivative</a> of the original type.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">F</span>*[<span class="hljs-type">A</span>] = <span class="hljs-type">A</span> * <span class="hljs-type">F'</span>[<span class="hljs-type">A</span>]
+</code></pre>
+<p>So, then looking at Shan's pointed set, we can ask what combinatorial species has a list as its derivative?</p>
+<p>The answer is a cycle, not a set.</p>
+<p>This fact doesn't matter to the monad, since the only way a monadic action interacts with that extra structure is safely through bind, but does for the comonad where every comonadic action has access to that structure, but no control over the shape of the result.</p>
+<p>However, we don't really have a way to represent an unordered set in Haskell, so if you are treating a list as a set, the derivative of a set is another set then we can also view the a * [a] as a pointed set, so long as we don't depend on the order of the elements in the list in any way in obtaining the result of our comonadic actions.</p>
+<p>I've changed the name of his data type to <code>PointedSet</code> to avoid conflicting with the definitions of <code>Pointed</code> and <code>Copointed</code> functors in category extras.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-keyword">module</span> PointedSet <span class="hljs-keyword">where</span>
+
+<span class="hljs-keyword">import</span> Control.Comonad <span class="hljs-comment">-- from my category-extras library</span>
+<span class="hljs-keyword">import</span> Data.List (<span class="hljs-title">inits</span>,<span class="hljs-title">tails</span>) <span class="hljs-comment">-- used much later below</span>
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">PointedSet</span> a = <span class="hljs-type">PointedSet</span> a [a] <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Eq</span>, <span class="hljs-type">Ord</span>, <span class="hljs-type">Show</span>, <span class="hljs-type">Read</span>)</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> <span class="hljs-type">PointedSet</span> <span class="hljs-keyword">where</span></span>
+    fmap f (<span class="hljs-type">PointedSet</span> x xs) = <span class="hljs-type">PointedSet</span> (f x) $ fmap f xs
+</code></pre>
+<p>The definition for extract is obvious, since you have already selected a point, just return it.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Copointed</span> <span class="hljs-type">PointedSet</span> <span class="hljs-keyword">where</span></span>
+    extract (<span class="hljs-type">PointedSet</span> x _) = x
+</code></pre>
+<p>On the other hand, for duplicate we have a couple of options. An obvious and correct, but boring implementation transforms a value as follows:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">boring_duplicate</span> :: <span class="hljs-type">PointedSet</span> a -&gt; <span class="hljs-type">PointedSet</span> (<span class="hljs-type">PointedSet</span> a)
+<span class="hljs-title">boring_duplicate</span> xxs@(<span class="hljs-type">PointedSet</span> x xs) =
+    <span class="hljs-type">PointedSet</span> xxs $ fmap (flip <span class="hljs-type">PointedSet</span> []) xs
+</code></pre>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">*<span class="hljs-type">PointedSet</span>&gt; boring_duplicate $ <span class="hljs-type">PointedSet</span> <span class="hljs-number">0</span> [<span class="hljs-number">1</span>..<span class="hljs-number">3</span>]
+<span class="hljs-type">PointedSet</span> (<span class="hljs-type">PointedSet</span> <span class="hljs-number">0</span> [<span class="hljs-number">1</span>..<span class="hljs-number">3</span>]) [
+    <span class="hljs-type">PointedSet</span> <span class="hljs-number">1</span> [],
+    <span class="hljs-type">PointedSet</span> <span class="hljs-number">2</span> [],
+    <span class="hljs-type">PointedSet</span> <span class="hljs-number">3</span> []
+]
+</code></pre>
+<p>but that just abuses the fact that we can always return an empty list.</p>
+<p>Another fairly boring interpretation is to just use the guts of the definition of the Stream comonad, but that doesn't model a set with a single memory singled out.</p>
+<p>A more interesting version refocuses on each element of the list in turn, which makes the connection to the zipper comonad much more obvious. Since we want a pointed set and not a pointed cycle, we can focus on an element just by swapping out the element in the list in that position for the focus.</p>
+<p>Again, since we can't specify general species in Haskell, this is as close as we can come to the correct comonadic structure for a pointed set. Due to the limitations of our type system, the comonadic action can still see the order of elements in the set, but it shouldn't use that information.</p>
+<p>Since we don't care to preserve the order of the miscellaneous set elements, the <code>refocus</code> helper function below can just accumulate preceding elements in an accumulating parameter in reverse order.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Comonad</span> <span class="hljs-type">PointedSet</span> <span class="hljs-keyword">where</span></span>
+    duplicate xxs@(<span class="hljs-type">PointedSet</span> x xs) = <span class="hljs-type">PointedSet</span> xxs $ refocus [] x xs
+      <span class="hljs-keyword">where</span>
+        refocus :: [a] -&gt; a -&gt; [a] -&gt; [<span class="hljs-type">PointedSet</span> a]
+        refocus acc x (y:ys) =
+            <span class="hljs-type">PointedSet</span> y (acc ++ (x:ys)) : refocus (y:acc) x ys
+        refocus acc x [] = []
+</code></pre>
+<p>Now,</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">*<span class="hljs-type">PointedSet</span>&gt; duplicate $ <span class="hljs-type">PointedSet</span> <span class="hljs-number">0</span> [<span class="hljs-number">1</span>..<span class="hljs-number">3</span>] =
+<span class="hljs-type">PointedSet</span> (<span class="hljs-type">PointedSet</span> <span class="hljs-number">0</span> [<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>]) [
+    <span class="hljs-type">PointedSet</span> <span class="hljs-number">1</span> [<span class="hljs-number">0</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>],
+    <span class="hljs-type">PointedSet</span> <span class="hljs-number">2</span> [<span class="hljs-number">1</span>,<span class="hljs-number">0</span>,<span class="hljs-number">3</span>],
+    <span class="hljs-type">PointedSet</span> <span class="hljs-number">3</span> [<span class="hljs-number">2</span>,<span class="hljs-number">1</span>,<span class="hljs-number">0</span>]
+]
+</code></pre>
+<p>With that in hand we can define comonadic actions that can look at an entire <code>PointedSet</code> and return a value, then extend them comonadically to generate new pointed sets.</p>
+<p>For instance, if we had a numerical pointed set and wanted to blur our focus somewhat we could weight an average between the focused and unfocused elements:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">smooth</span> :: <span class="hljs-type">Fractional</span> a =&gt; a -&gt; <span class="hljs-type">PointedSet</span> a -&gt; a
+<span class="hljs-title">smooth</span> w (<span class="hljs-type">PointedSet</span> a <span class="hljs-keyword">as</span>) =
+    w * a +
+    (<span class="hljs-number">1</span> - w) * sum <span class="hljs-keyword">as</span> / fromIntegral (length <span class="hljs-keyword">as</span>)
+</code></pre>
+<p>Smoothing is a safe pointed-set comonadic operation because it doesn't care about the order of the elements in the list.</p>
+<p>And so now we can blur the distinction between the focused element and the rest of the set:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">*<span class="hljs-type">PointedSet</span>&gt; extend (smooth <span class="hljs-number">0.5</span>) $ <span class="hljs-type">PointedSet</span> <span class="hljs-number">10</span> [<span class="hljs-number">1</span>..<span class="hljs-number">5</span>]
+<span class="hljs-type">PointedSet</span> <span class="hljs-number">6.5</span> [<span class="hljs-number">2.9</span>,<span class="hljs-number">3.3</span>,<span class="hljs-number">3.7</span>,<span class="hljs-number">4.1</span>,<span class="hljs-number">4.5</span>]
+</code></pre>
+<p>A quick pass over the comonad laws shows that they all check out.</p>
+<p>As noted above, if your comonadic action uses the order of the elements in the list beyond the selection of the focus, then it isn't really a valid pointed set comonadic operation. This is because we are abusing a list to approximate a (multi)set.</p>
+<h2 id="the-pointed-cycle-comonad">The Pointed-Cycle Comonad</h2>
+<p>A slight variation on this theme keeps the order of the elements the same in exchange for a more expensive refocusing operation and just rotates them through the focus.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">PointedCycle</span> a = <span class="hljs-type">PointedCycle</span> a [a] <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Eq</span>, <span class="hljs-type">Ord</span>, <span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>)</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> <span class="hljs-type">PointedCycle</span> <span class="hljs-keyword">where</span></span>
+    fmap f (<span class="hljs-type">PointedCycle</span> x xs) = <span class="hljs-type">PointedCycle</span> (f x) $ fmap f xs
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Copointed</span> <span class="hljs-type">PointedCycle</span> <span class="hljs-keyword">where</span></span>
+    extract (<span class="hljs-type">PointedCycle</span> x _) = x
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Comonad</span> <span class="hljs-type">PointedCycle</span> <span class="hljs-keyword">where</span></span>
+   duplicate xxs@(<span class="hljs-type">PointedCycle</span> x xs) =
+        <span class="hljs-type">PointedCycle</span> xxs . fmap listToCycle . tail $ rotations (x:xs)
+     <span class="hljs-keyword">where</span>
+        rotations :: [a] -&gt; [[a]]
+        rotations xs = init $ zipWith (++) (tails xs) (inits xs)
+        listToCycle (x:xs) = <span class="hljs-type">PointedCycle</span> x xs
+</code></pre>
+<p>With that you acknowledge that you really have a pointed cycle and the writer of the comonadic action can safely use the ordering information intrinsic to the list as a natural consequence of having taken the derivative of a cycle.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">*<span class="hljs-type">PointedSet</span>&gt; duplicate $ <span class="hljs-type">PointedCycle</span> <span class="hljs-number">0</span> [<span class="hljs-number">1</span>..<span class="hljs-number">3</span>]
+<span class="hljs-type">PointedCycle</span> (<span class="hljs-type">PointedCycle</span> <span class="hljs-number">0</span> [<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>]) [
+    <span class="hljs-type">PointedCycle</span> <span class="hljs-number">1</span> [<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">0</span>],
+    <span class="hljs-type">PointedCycle</span> <span class="hljs-number">2</span> [<span class="hljs-number">3</span>,<span class="hljs-number">0</span>,<span class="hljs-number">1</span>],
+    <span class="hljs-type">PointedCycle</span> <span class="hljs-number">3</span> [<span class="hljs-number">0</span>,<span class="hljs-number">1</span>,<span class="hljs-number">2</span>]
+]
+</code></pre>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/comonad"><code>comonad</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><section class="comments" id="comments"><h2>From the original discussion</h2><p class="editorial">Selected questions, explanations, and corrections. Original wording and dates; spam and automated trackbacks omitted.</p><article class="comment" id="comment-5484"><header><strong>Edward Kmett</strong><a href="../../../reader/2008/the-pointed-set-comonad/#comment-5484">January 12th, 2009 at 10:04 am</a></header><p>Do you mean that have no return, just bind? Monads without mzero are er.. just monads. ;)</p>
+</article></section><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/the-pointed-set-comonad.md" download>Article Markdown</a> · <a href="../../../source/articles/the-pointed-set-comonad.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2008/still-alive/">Still Alive →</a><a href="../../../reader/2009/incremental-folds/">Reflecting On Incremental Folds →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

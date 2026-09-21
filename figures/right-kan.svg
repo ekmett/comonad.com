@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 285" role="img" aria-labelledby="title desc">
+  <title id="title">Right Kan extension of H along G</title>
+  <desc id="desc">G goes from C to D, H from C to E, and Ran G H from D to E. The counit epsilon is a natural transformation from the composite Ran G H after G to H.</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1 L9 5 L1 9" fill="none" stroke="#26354a" stroke-width="1.3"/></marker></defs>
+  <g fill="none" stroke="#26354a" stroke-width="1.5" marker-end="url(#arrow)"><path d="M110 51 H335"/><path d="M102 70 L337 228"/><path d="M359 78 V216" stroke-dasharray="5 5"/></g>
+  <g fill="#182738" font-family="Georgia,serif" text-anchor="middle" font-size="29" font-style="italic"><text x="84" y="61">C</text><text x="359" y="61">D</text><text x="359" y="249">E</text><text x="224" y="35" font-size="23">G</text><text x="193" y="160" font-size="23">H</text></g>
+  <text x="377" y="151" fill="#244be0" font-family="Georgia,serif" font-size="21">Ran<tspan baseline-shift="sub" font-size="14">G</tspan><tspan> H</tspan></text>
+  <g fill="none" stroke="#244be0" stroke-width="1.5"><path d="M298 101 L254 125 M300 105 L256 129 M258 118 L252 129 L265 128"/></g>
+  <text x="286" y="139" fill="#244be0" font-family="Georgia,serif" font-size="23" font-style="italic">ε</text>
+</svg>

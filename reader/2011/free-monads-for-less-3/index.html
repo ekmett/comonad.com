@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free Monads for Less (Part 3 of 3): Yielding IO · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Algorithms · Category Theory · Comonads · Data Structures · Haskell · Kan Extensions · Monads</span><span>Edward Kmett · <time datetime="2011-06-24">24 June 2011</time></span></div><h1>Free Monads for Less (Part 3 of 3): Yielding IO</h1></header><details class="contents"><summary>On this page</summary><ol><li><a href="#yield-for-less">Yield for Less</a></li><li><a href="#who-needs-the-realworld">Who Needs the RealWorld?</a></li></ol></details><article class="prose"><span id="more-251"></span><p><a href="../../../reader/2011/free-monads-for-less-2/">Last time</a>, I said that I was going to put our cheap new free monad to work, so let's give it a shot.</p>
+<h2 id="yield-for-less">Yield for Less</h2>
+<p>Last month at <a href="http://www.pps.jussieu.fr/~saurin/tpdc2011/">TPDC 2011</a>, Roshan James and Amr Sabry presented <a href="http://parametricity.net/dropbox/yield.subc.pdf">Yield: Mainstream Delimited Continuations</a>.</p>
+<p>Without calling it such they worked with the free monad of the indexed store comonad. Ignoring the comonad, and just looking at the functor we can see that</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Store</span> i o r = <span class="hljs-type">Store</span> (<span class="hljs-title">i</span> -&gt; <span class="hljs-title">r</span>) o</span>
+    <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Functor</span>)
+</code></pre>
+<p>admits the operation</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Functor</span> y =&gt; <span class="hljs-type">Yieldable</span> y i o | y -&gt; i o <span class="hljs-keyword">where</span></span>
+   yield :: o -&gt; y i
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Yieldable</span> (<span class="hljs-type">Store</span> <span class="hljs-title">i</span> <span class="hljs-title">o</span>) i o <span class="hljs-keyword">where</span></span>
+   yield = <span class="hljs-type">Store</span> id
+</code></pre>
+<p>The free monad of <code>Store i o</code> is a nice model for asymmetric coroutines.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Yield</span> i o = <span class="hljs-type">Free</span> (<span class="hljs-type">Store</span> <span class="hljs-title">i</span> <span class="hljs-title">o</span>)</span>
+
+<span class="hljs-title">liftFree</span> :: <span class="hljs-type">Functor</span> f =&gt; f a -&gt; <span class="hljs-type">Free</span> f a
+<span class="hljs-title">liftFree</span> = <span class="hljs-type">Free</span> . fmap <span class="hljs-type">Pure</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Yieldable</span> y i o =&gt; <span class="hljs-type">Yieldable</span> (<span class="hljs-type">Free</span> <span class="hljs-title">y</span>) i o <span class="hljs-keyword">where</span></span>
+   yield = liftFree . yield
+</code></pre>
+<p>With its <code>Monad</code>, you can write computations like:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">foo</span> :: <span class="hljs-type">Num</span> o =&gt; <span class="hljs-type">Yield</span> () o ()
+<span class="hljs-title">foo</span> = <span class="hljs-keyword">do</span>
+   yield <span class="hljs-number">1</span>
+   yield <span class="hljs-number">2</span>
+   yield <span class="hljs-number">3</span>
+</code></pre>
+<p>or to streamline one of James and Sabry's examples</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">walk</span> :: <span class="hljs-type">Traversable</span> f =&gt; f o -&gt; <span class="hljs-type">Yield</span> i o (f i)
+<span class="hljs-title">walk</span> = traverse yield
+</code></pre>
+<p>is an asymmetric coroutine that yields each of the elements in a traversable container in turn, replacing them with the responses from whatever is driving the coroutine.</p>
+<p>James and Sabry called this the naive frame grabbing implementation. It is inefficient for the same reasons that we discussed before about retraversing the common trunk in free monads in general. Note that the unchanging trunk here isn't the data structure that we're traversing, but instead the chain of <code>Store i o</code> actions we took to get to the current instruction.</p>
+<p>James and Sabry then proceeded to optimize it by hitting it with <a href="https://hackage.haskell.org/packages/archive/kan-extensions/0.5.0/doc/html/Control-Monad-Codensity.html">Codensity</a>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Iterator</span> i o = <span class="hljs-type">Codensity</span> (<span class="hljs-type">Yield</span> <span class="hljs-title">i</span> <span class="hljs-title">o</span>)</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Monad</span> <span class="hljs-title">y</span>, <span class="hljs-type">Yieldable</span> <span class="hljs-title">y</span> <span class="hljs-title">i</span> <span class="hljs-title">o</span>) =&gt; <span class="hljs-type">Yieldable</span> (<span class="hljs-type">Codensity</span> <span class="hljs-title">y</span>) i o <span class="hljs-keyword">where</span></span>
+   yield = liftCodensity . yield
+</code></pre>
+<p>But we've now seen that we can get away with something smaller and get the same benefits.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">liftF</span> :: <span class="hljs-type">Functor</span> f =&gt; f a -&gt; <span class="hljs-type">F</span> f a
+<span class="hljs-title">liftF</span> f = <span class="hljs-type">F</span> (\kp kf -&gt; kf (fmap kp f))
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Yieldable</span> y i o =&gt; <span class="hljs-type">Yieldable</span> (<span class="hljs-type">F</span> <span class="hljs-title">y</span>) i o <span class="hljs-keyword">where</span></span>
+   yield = liftF . yield
+</code></pre>
+<p>Flattened, and with the store untupled the new optimized representation looks like:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Iterator</span> i o a = <span class="hljs-type">Iterator</span></span>
+  { runIterator ::
+    <span class="hljs-keyword">forall</span> r. (a -&gt; r) -&gt; (o -&gt; (i -&gt; r) -&gt; r) -&gt; r)
+  }
+</code></pre>
+<p>and provides the same performance improvements for asymmetric coroutines as the <code>Codensity</code> version, used by James and Sabry, which would flatten to the much larger and less satisfying:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">RSIterator</span> i o a = <span class="hljs-type">RSIterator</span></span>
+    { runRSIterator :: <span class="hljs-keyword">forall</span> r.
+          (a -&gt; (o -&gt; (i -&gt; r) -&gt; r) -&gt; r)
+             -&gt; (o -&gt; (i -&gt; r) -&gt; r) -&gt; r
+    }
+</code></pre>
+<p>They proceed to give an encoding of delimited continuations into this type and vice versa, but the rest of their material is of no further use to us here.</p>
+<p>As an aside the performance benefits of encoding Oleg's <a href="http://okmij.org/ftp/Streams.html">iteratees</a> in <a href="https://hackage.haskell.org/packages/archive/iteratee/0.8.5.0/doc/html/Data-Iteratee-Base.html">continuation passing style</a> arise for much the same reason. The resuting encoding is a right Kan extension!</p>
+<h2 id="who-needs-the-realworld">Who Needs the RealWorld?</h2>
+<p>As <a href="http://twitter.com/#!/runarorama/status/83570792704638976">Runar recently tweeted</a>, we have put this to good use here at <a href="https://www.capitaliq.com/home/what-we-offer/how-you-can-get-it/clarifi.aspx">ClariFI</a>. (<strong>Yes</strong>, we are hiring! If the contents of my blog make sense to you then <a href="mailto:ekmett@gmail.com">email me</a> and let's talk.)</p>
+<p>At ClariFI have a strongly typed functional language that bears a strong resemblance to Haskell with <a href="http://www.haskell.org/haskellwiki/Rank-N_types">rank-n types</a> and a number of other interesting type system features that are particularly suited to our problem domain.</p>
+<p>However, as with Haskell, we needed a story for how to deal with <code>IO</code>.</p>
+<p>Now, <a href="http://www.haskell.org/ghc/">GHC</a> models <a href="http://www.haskell.org/ghc/docs/6.2/html/libraries/base/GHC.IOBase.html">IO</a> with the type</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">IO</span> a =</span>
+   <span class="hljs-type">IO</span> (<span class="hljs-type">State</span># <span class="hljs-type">RealWorld</span> -&gt; (# a, <span class="hljs-type">State</span># <span class="hljs-type">RealWorld</span> #))
+</code></pre>
+<p>where they model <code>IO</code> by working in a strict state monad, passing around a real world that they promise not to mutate or copy. (In practice, the world is passed around as a 0-byte token.</p>
+<p>This is somewhat problematic semantically, for a number of reasons.</p>
+<p>First, There is always the risk of copying it or plumbing it through backwards, so we carefully hide the <code>State# RealWorld</code> from the end user. So this model really wants some notion of uniqueness or linear typing to render it perfectly safe. Heck, the entire <a href="http://en.wikipedia.org/wiki/Clean_(programming_language)">Clean</a> language arose from just trying to address this concern.</p>
+<p>Second, you don't <strong>really</strong> get to pass the real world around! We have multiple cores working these days. Stuff is happening in the back end, and as much as you might want it to be, your program isn't responsible for everything that happens in the <code>RealWorld</code>!.</p>
+<p>Third, if in some sense all bottoms are the same, then <code>forever (putStrLn "Hello World")</code> and <code>undefined</code> are the same in that sense, despite the slew of side-effects that arise from the first one. Now, in Haskell you are allowed to catch some bottoms in the IO monad, and thereby escape from certain doom, but it is still a reasonable objection.</p>
+<p>One alternate model for talking about <code>IO</code> is to view it as a free monad of some set of operations. This approach was taken by Wouter Swierstra's Functional Pearl: <a href="http://www.cs.nott.ac.uk/~wss/Publications/DataTypesALaCarte.pdf">Data Types a la Carte</a>.</p>
+<p>You can then supply some sort of external interpreter that pumps that tree structure, performing the individual actions.</p>
+<p>This is unsatisfying because of two things:</p>
+<p>First, the performance is abysmal using the common ADT encoding of a free monad. Janis Voigtländer of course showed, that this can be rectified by using the <code>Codensity</code> monad.</p>
+<p>Second, the set of <code>FFI</code> operations is closed.</p>
+<p>What we've done instead is to define our primitive <code>IO</code> actions externally as some <code>FFI</code> type:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">FFI</span> o i <span class="hljs-comment">-- external, side-effecting computation taking o, returning i</span></span>
+</code></pre>
+<p>In practice, these are obtained by reflection by our <code>foreign import</code> statements since we run in the JVM.</p>
+<p>Then we looked at the free monad of</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">OI</span> a = forall o i. <span class="hljs-type">OI</span> (<span class="hljs-type">FFI</span> <span class="hljs-title">o</span> <span class="hljs-title">i</span>) o (<span class="hljs-title">i</span> -&gt; <span class="hljs-title">a</span>) <span class="hljs-keyword">deriving</span> <span class="hljs-type">Functor</span></span>
+</code></pre>
+<p>where <code>OI</code> is the indexed store comonad used as the building block above, yielding arguments to <code>FFI</code> of type <em>o</em>, and representing a computation that would resume with a value of type <em>i</em> to obtain a result of type <em>a</em>.</p>
+<p>In some sense this yields a more useful notion than Richard Kieburtz's novel, but largely unimplementable, <code>OI</code> comonad from <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.45.4741&rep=rep1&type=ps">Codata and Comonads in Haskell</a>.</p>
+<p>Flattening <code>Free OI</code> would yield the naive</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">-- data FIO a where</span>
+<span class="hljs-comment">--    Return :: a -&gt; FIO a</span>
+<span class="hljs-comment">--    FIO :: FFI o i -&gt; o -&gt; (i -&gt; FIO a) -&gt; FIO a</span>
+</code></pre>
+<p>which would be interpreted by the runtime system.</p>
+<p>But once we've converted to our Church-encoded Free monad and flattened we obtain:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">IO</span> a = <span class="hljs-type">IO</span></span>
+    (<span class="hljs-keyword">forall</span> r. (a -&gt; r) -&gt;
+                 (<span class="hljs-keyword">forall</span> i o. <span class="hljs-type">FFI</span> o i -&gt; o -&gt; (i -&gt; r) -&gt; r) -&gt;
+                 r)
+</code></pre>
+<p>with the <code>Functor</code> and <code>Monad</code> instances defined above.</p>
+<p>This then gives us a number of choices on how we implement the runtime system:</p>
+<p>We can use the machinery described earlier to convert from <code>IO a</code> to <code>Free OI a</code> or <code>FIO a</code>, and then have the runtime system pattern match on that structure on our main method, taking the <code>FFI</code> actions and their arguments and passing the results in to the language, or we can invert control, and implement things more directly by just defining</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">FFI</span> = (-&gt;)
+</code></pre>
+<p>while letting the <code>FFI</code>'d methods have side-effects, and then defining</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">unsafePerformIO</span> :: <span class="hljs-type">IO</span> a -&gt; a
+<span class="hljs-title">unsafePerformIO</span> (<span class="hljs-type">IO</span> m) = m id (\ oi o ir -&gt; ir (oi o))
+</code></pre>
+<p>But regardless of how <code>FFI</code> is implemented, this model provides a clear structural difference between <code>forever (putStrLn "Hello")</code> and <code>undefined</code> and does not require us to believe the pleasant fiction that we can get our hands on the real world and pass it around.</p>
+<p>Our actual <code>IO</code> representation is only slightly more complicated than the one presented here in order to deal with the plumbing of an extra continuation to deal with Java exceptions, but the substance of this approach isn't changed by this addition.</p>
+<p>[Edit: incorporated a minor typographical fix into Iterator from Max Bolingbroke]<br>
+[Edit: fixed Store to be data, an liftM that should have been an fmap and added the missing Functor constraint that was present in my actual implementation but didn't make it to the web, and a couple of typos in the implementation of RSIterator, all noted by Clumsy.]</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/kan-extensions"><code>kan-extensions</code></a> · <a href="https://hackage.haskell.org/package/free"><code>free</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><section class="comments" id="comments"><h2>From the original discussion</h2><p class="editorial">Selected questions, explanations, and corrections. Original wording and dates; spam and automated trackbacks omitted.</p><article class="comment" id="comment-61376"><header><strong>wren ng thornton</strong><a href="../../../reader/2011/free-monads-for-less-3/#comment-61376">June 24th, 2011 at 11:36 pm</a></header><p>Your language’s IO type is extremely reminiscent of the old pre-monad Haskell days of main :: [Response]-&gt;[Request]. Except that with the coroutine structure you ensure that requests and responses can’t get out of sync. That’s quite elegant. Much nicer than the RealWorld baton in a lot of ways.</p>
+<p>Have you considered how parallelism plays into this model of I/O?</p>
+</article><article class="comment" id="comment-61383"><header><strong>Edward Kmett</strong><a href="../../../reader/2011/free-monads-for-less-3/#comment-61383">June 25th, 2011 at 12:31 am</a></header><p>@Wren: parallelism works fine and was a large portion of the motivation for this approach. A program exists in a quiescent state. From the outside (a thread), I can ask a term to evaluate itself apply itself to an argument, and do case analysis upon the result. We apply that to main and keep pumping. Any of those operations can be performed in parallel; the answers to them are all referentially transparent! Hence we can have as many threads running as we want demanding those answers. We aren’t passing a world. The evaluator just responds transparently to demands from the RTS, potentially many such demands simultaneously.</p>
+</article><article class="comment" id="comment-61413"><header><strong>Chris Kuklewicz</strong><a href="../../../reader/2011/free-monads-for-less-3/#comment-61413">June 25th, 2011 at 9:13 am</a></header><p>After being clumsy for a while, I reached the end. Great post.</p>
+<p>Reordering some arguments in IO to</p>
+<p>(forall i o. (i -&gt; r) -&gt; FFI o i -&gt; o -&gt; r)</p>
+<p>gives the more concise</p>
+<p>unsafePerformIO (IO m) = m id fmap</p>
+<p>which for simple FFI functions is</p>
+<p>unsafePerformIO (IO m) = m id (.)</p>
+</article><article class="comment" id="comment-106002"><header><strong>Richard Wallace</strong><a href="../../../reader/2011/free-monads-for-less-3/#comment-106002">September 7th, 2012 at 1:24 am</a></header><p>I’m not clear on what you mean by the set of FFI operations being closed with the “Data Types a la Carte” approach. It seems to me the point of that approach is to not limit operations. You just define new operations and interpreters for those operations.</p>
+<p>I’m also not clear on how the proposed FFI type you’ve presented here works. How is it not limited? How would you define such a thing in Haskell? (Very curious about this approach because right now I’m planning on using the approach from “Data Types a la Carte”, but am always interested in learning about/using something better.)</p>
+</article><article class="comment" id="comment-106004"><header><strong>Edward Kmett</strong><a href="../../../reader/2011/free-monads-for-less-3/#comment-106004">September 7th, 2012 at 8:53 am</a></header><p>The difference is in order to support new operations with the usual free monad/a la carte approach you need to define a new data type or a new constructor, or tuple up more and more stuff and pay a higher and higher cost when accessing the next constructor.</p>
+<p>We use this in a language we have here at S&amp;P Capital IQ called Ermine as our only FFI mechanism. It isn’t something you could bolt into, say, GHC without changing out pretty much everything in the language, but in a new Haskell implementation, it has the benefit that you don’t need to deal with magic RealWorld tokens and then restrict transformations that may attempt to commute past them.</p>
+<p>This enables you to transform the language more easily, in exchange, we denote operations with this separate FFI type, rather than primops, and view the runtime system as an external agent driving an asymmetric coroutine.</p>
+</article><article class="comment" id="comment-106223"><header><strong>Richard Wallace</strong><a href="../../../reader/2011/free-monads-for-less-3/#comment-106223">October 6th, 2012 at 6:44 pm</a></header><p>Ok, I understand the cost of tupling up more and more and that being undesirable. Also, you’re right that adding new constructors breaks the whole “a la Carte” notion.</p>
+<p>I’m just looking for alternatives to the typical way of building FP apps of using a monad transformer stack with ReaderT and StateT and type-classes for all the data you want to inject (config, db connections, etc.). I was looking at the a la Carte approach as a way of doing that. Although, to be fair my distaste for this approach comes from a Scala app where it became a PITA to manage everything and if it had been written in Haskell the experience might have been different.</p>
+</article><article class="comment" id="comment-106228"><header><strong>Edward Kmett</strong><a href="../../../reader/2011/free-monads-for-less-3/#comment-106228">October 6th, 2012 at 10:38 pm</a></header><p>The irony with that is that it is particularly easy to add cases to a ‘Free’/a la carte monad in scala. Just don’t seal the class. ;)</p>
+<p>To mitigate the boilerplate in Haskell at least, the typeclasses for config, db connection, etc. can be autogenerated by something like makeClassy from my lens package.</p>
+</article></section><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/free-monads-for-less-3.md" download>Article Markdown</a> · <a href="../../../source/articles/free-monads-for-less-3.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2011/free-monads-for-less/">Free Monads for Less (Part 1 of 3): Codensity →</a><a href="../../../reader/2011/monads-from-comonads/">Monads from Comonads →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

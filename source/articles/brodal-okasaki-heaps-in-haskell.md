@@ -1,0 +1,3 @@
+I've uploaded a package named [heaps](http://hackage.haskell.org/packages/archive/heaps/0.2/doc/html/Data-Heap.html) to Hackage that provides [Brodal-Okasaki bootstrapped skew-binomial heaps](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.48.973) in Haskell.  
+
+The main features of the library are that it provides a nice [containers](http://hackage.haskell.org/package/containers)\-like API with provably asymptotically optimal functional heap operations including O(1) insert and O(1) union, and that the library design jump through a number of hoops to provide implementations of common Haskell typeclasses such as [Foldable](http://www.haskell.org/ghc/docs/6.12.1/html/libraries/base/Data-Foldable.html), Data and Typeable.

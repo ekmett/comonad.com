@@ -1,0 +1,220 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head profile="http://gmpg.org/xfn/11">
+        <link rel="shortcut icon" href="http://comonad.com/reader/wp-content/themes/connections/favicon.ico" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>The Comonad.Reader &raquo; Iteratees, Parsec and Monoids (Slides)</title>
+	<meta name="generator" content="WordPress 2.8.4" />
+	<style type="text/css" media="screen">@import url( http://comonad.com/reader/wp-content/themes/connections/style.css );</style>
+	<!--[if IE]><style type="text/css"> img { behavior: url(/reader/pngbehavior/pngbehavior.htc); } </style><![endif]-->
+        <link rel="openid.server" href="https://api.screenname.aol.com/auth/openidServer"/>
+        <link rel="openid.delegate" href="http://openid.aol.com/edwardallankmett"/>
+
+	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://comonad.com/reader/feed/" />
+	<link rel="alternate" type="application/atom+xml" title="Atom 0.3" href="http://comonad.com/reader/feed/atom/" />
+	<link rel="pingback" href="http://comonad.com/reader/xmlrpc.php" />
+    	<link rel='archives' title='October 2022' href='http://comonad.com/reader/2022/10/' />
+	<link rel='archives' title='January 2018' href='http://comonad.com/reader/2018/01/' />
+	<link rel='archives' title='January 2016' href='http://comonad.com/reader/2016/01/' />
+	<link rel='archives' title='September 2015' href='http://comonad.com/reader/2015/09/' />
+	<link rel='archives' title='July 2015' href='http://comonad.com/reader/2015/07/' />
+	<link rel='archives' title='May 2015' href='http://comonad.com/reader/2015/05/' />
+	<link rel='archives' title='April 2015' href='http://comonad.com/reader/2015/04/' />
+	<link rel='archives' title='February 2015' href='http://comonad.com/reader/2015/02/' />
+	<link rel='archives' title='December 2014' href='http://comonad.com/reader/2014/12/' />
+	<link rel='archives' title='August 2014' href='http://comonad.com/reader/2014/08/' />
+	<link rel='archives' title='April 2014' href='http://comonad.com/reader/2014/04/' />
+	<link rel='archives' title='May 2013' href='http://comonad.com/reader/2013/05/' />
+	<link rel='archives' title='April 2013' href='http://comonad.com/reader/2013/04/' />
+	<link rel='archives' title='January 2013' href='http://comonad.com/reader/2013/01/' />
+	<link rel='archives' title='December 2012' href='http://comonad.com/reader/2012/12/' />
+	<link rel='archives' title='September 2012' href='http://comonad.com/reader/2012/09/' />
+	<link rel='archives' title='August 2012' href='http://comonad.com/reader/2012/08/' />
+	<link rel='archives' title='June 2012' href='http://comonad.com/reader/2012/06/' />
+	<link rel='archives' title='May 2012' href='http://comonad.com/reader/2012/05/' />
+	<link rel='archives' title='April 2012' href='http://comonad.com/reader/2012/04/' />
+	<link rel='archives' title='December 2011' href='http://comonad.com/reader/2011/12/' />
+	<link rel='archives' title='November 2011' href='http://comonad.com/reader/2011/11/' />
+	<link rel='archives' title='October 2011' href='http://comonad.com/reader/2011/10/' />
+	<link rel='archives' title='September 2011' href='http://comonad.com/reader/2011/09/' />
+	<link rel='archives' title='July 2011' href='http://comonad.com/reader/2011/07/' />
+	<link rel='archives' title='June 2011' href='http://comonad.com/reader/2011/06/' />
+	<link rel='archives' title='July 2010' href='http://comonad.com/reader/2010/07/' />
+	<link rel='archives' title='May 2010' href='http://comonad.com/reader/2010/05/' />
+	<link rel='archives' title='April 2010' href='http://comonad.com/reader/2010/04/' />
+	<link rel='archives' title='September 2009' href='http://comonad.com/reader/2009/09/' />
+	<link rel='archives' title='August 2009' href='http://comonad.com/reader/2009/08/' />
+	<link rel='archives' title='July 2009' href='http://comonad.com/reader/2009/07/' />
+	<link rel='archives' title='June 2009' href='http://comonad.com/reader/2009/06/' />
+	<link rel='archives' title='March 2009' href='http://comonad.com/reader/2009/03/' />
+	<link rel='archives' title='December 2008' href='http://comonad.com/reader/2008/12/' />
+	<link rel='archives' title='November 2008' href='http://comonad.com/reader/2008/11/' />
+	<link rel='archives' title='June 2008' href='http://comonad.com/reader/2008/06/' />
+	<link rel='archives' title='May 2008' href='http://comonad.com/reader/2008/05/' />
+	<link rel='archives' title='April 2008' href='http://comonad.com/reader/2008/04/' />
+	<link rel='archives' title='March 2008' href='http://comonad.com/reader/2008/03/' />
+	<link rel='archives' title='January 2008' href='http://comonad.com/reader/2008/01/' />
+	<link rel='archives' title='July 2007' href='http://comonad.com/reader/2007/07/' />
+	<link rel='archives' title='May 2007' href='http://comonad.com/reader/2007/05/' />
+	<link rel='archives' title='November 2006' href='http://comonad.com/reader/2006/11/' />
+	<link rel='archives' title='October 2006' href='http://comonad.com/reader/2006/10/' />
+	<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader &raquo; Iteratees, Parsec and Monoids (Slides) Comments Feed" href="http://comonad.com/reader/2009/iteratees-parsec-and-monoid/feed/" />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://comonad.com/reader/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://comonad.com/reader/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='The Comonad.Reader' href='http://comonad.com/reader' />
+<link rel='start' title='Hello, World!' href='http://comonad.com/reader/2006/hello-world/' />
+<link rel='prev' title='Clearer Reflections' href='http://comonad.com/reader/2009/clearer-reflection/' />
+<link rel='next' title='Curried Scheme' href='http://comonad.com/reader/2009/curried-scheme/' />
+<meta name="generator" content="WordPress 2.8.4" />
+</head>
+<body>
+<div id="rap">
+	<div id="header">
+	<ul id="topnav">
+		<li><a href="/reader" id="navHome" title="Posted Recently" accesskey="h">Home |</a></li>
+		<li><a href="/reader/about/" id="navAbout" title="About the Author" accesskey="a">About |</a></li>
+		<li><a href="/reader/source;item=libraries" id="navSource" title="Source Code" accesskey="s">Source |</a></li>
+		<li><a href="mailto:ekmett@gmail.com" id="navContact" title="Contact the Author" accesskey="c">Contact </a></li>
+	</ul>
+	<a href="http://comonad.com/reader" id="logoHome" title="Posted Recently"><img id="logo" src="/reader/pngbehavior/blank.gif" ></a>
+	<h1><a href="http://comonad.com/reader" title="The Comonad.Reader">The Comonad.Reader</a></h1>		
+	<div id="desc">types, (co)monads, substructural logic</div>
+</div>
+	
+	<div id="main">
+	<div id="content">
+
+						<div class="post">
+				<p class="post-date">Thu 20 Aug 2009</p>
+<div class="post-info"><h2 class="post-title"><a href="http://comonad.com/reader/2009/iteratees-parsec-and-monoid/" rel="bookmark" title="Permanent Link: Iteratees, Parsec and Monoids (Slides)">Iteratees, Parsec and Monoids (Slides)</a></h2>
+Posted by Edward Kmett under <a href="http://comonad.com/reader/category/algorithms/" title="View all posts in Algorithms" rel="category tag">Algorithms</a> ,  <a href="http://comonad.com/reader/category/data-structures/" title="View all posts in Data Structures" rel="category tag">Data Structures</a> ,  <a href="http://comonad.com/reader/category/haskell/" title="View all posts in Haskell" rel="category tag">Haskell</a> ,  <a href="http://comonad.com/reader/category/mathematics/" title="View all posts in Mathematics" rel="category tag">Mathematics</a> ,  <a href="http://comonad.com/reader/category/monoids/" title="View all posts in Monoids" rel="category tag">Monoids</a> ,  <a href="http://comonad.com/reader/category/parsing/" title="View all posts in Parsing" rel="category tag">Parsing</a> <br/><a href="http://comonad.com/reader/2009/iteratees-parsec-and-monoid/#comments" title="Comment on Iteratees, Parsec and Monoids (Slides)">[5] Comments</a>&nbsp;</div>
+<div class="post-content">
+	<p>I was asked to give two talks at the <a href="http://groups.google.com/group/bostonhaskell">Boston Area Haskell User Group</a> for this past Tuesday. The first was pitched at a more introductory level and the second was to go deeper into what I have been using monoids for lately.</p>
+<p>The first talk covers an introduction to the mathematical notion of a monoid, introduces some of the features of my Haskell monoids library on hackage, and starts to motivate the use of monoidal parallel/incremental parsing, and the modification use of compression algorithms to recycle monoidal results.</p>
+<p>The second talk covers a way to generate a locally-context sensitive parallel/incremental parser by modifying <a href="http://okmij.org/ftp/Haskell/Iteratee/Iteratee.hs">Iteratees</a> to enable them to drive a <a href="http://hackage.haskell.org/package/parsec-3.0.0">Parsec 3</a> lexer, and then wrapping that in a monoid based on <a href="http://dragonbook.stanford.edu/lecture-notes/Columbia-COMS-W4115/08-03-05.html">error productions</a> in the grammar before recycling these techniques at a higher level to deal with parsing seemingly stateful structures, such as Haskell layout.</p>
+<ol>
+<li><a href='http://comonad.com/reader/wp-content/uploads/2009/08/IntroductionToMonoids.pdf'>Introduction To Monoids (PDF)</a></li>
+<li><a href='http://comonad.com/reader/wp-content/uploads/2009/08/A-Parsing-Trifecta.pdf'>Iteratees, Parsec and Monoids: A Parsing Trifecta (PDF)</a></li>
+</ol>
+<p>Due to a late start, I was unable to give the second talk. However, I did give a quick run through to a few die-hards who stayed late and came to the <a href="http://www.cambrew.com/">Cambridge Brewing Company</a> afterwards. As I promised some people that I would post the slides after the talk, here they are. </p>
+<p>The current plan is to possibly give the second talk in full at either the September or October Boston Haskell User Group sessions, depending on scheduling and availability.</p>
+<p>[ <a href='http://comonad.com/reader/wp-content/uploads/2009/08/Iteratee.hs'>Iteratee.hs</a> ]</p>
+	<div class="post-info">
+			</div>
+	<div class="post-footer">&nbsp;</div>
+</div>
+				
+<!-- You can start editing here. -->
+
+	<h3 id="comments">5 Responses to &#8220;Iteratees, Parsec and Monoids (Slides)&#8221;</h3> 
+
+	<ol class="commentlist">
+
+	
+		<li class="alt" id="comment-11172">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d1ebab09bebbec2202d4cf316d41b548&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://www-ps.informatik.uni-kiel.de/~sebf/' rel='external nofollow' class='url'>Sebastian</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-11172" title="">August 21st, 2009 at 5:01 am</a> </small>
+			<br clear="all"/>
+
+			<p>How is instance MonadPlus Iteratee defined?</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-11175">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=9c51a8b8afa2366a2ef4650c411f187a&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://comonad.com/' rel='external nofollow' class='url'>Edward Kmett</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-11175" title="">August 21st, 2009 at 8:29 am</a> </small>
+			<br clear="all"/>
+
+			<p>@Sebastian: I just added a source link at the bottom of the post for the Iteratee code. It doesn&#8217;t contain the monoidal layer, since that has changed quite a bit since this was written.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-11206">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=ba340386ad2afc76d4a9602410b4e449&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://w3future.com/weblog/' rel='external nofollow' class='url'>Sjoerd Visscher</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-11206" title="">August 22nd, 2009 at 2:32 pm</a> </small>
+			<br clear="all"/>
+
+			<p>Why didn&#8217;t you use monoids in the default implementation of supplyList? (foldMap over Dual Endo I think?)</p>
+<p>Very cool stuff this!</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-11220">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=9c51a8b8afa2366a2ef4650c411f187a&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://comonad.com/' rel='external nofollow' class='url'>Edward Kmett</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-11220" title="">August 23rd, 2009 at 6:04 am</a> </small>
+			<br clear="all"/>
+
+			<p>@Sjoerd</p>
+<p>Mostly to follow the original Iteratee write-up with the flip (.) combinator. That would be a perfectly valid approach as well.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-11263">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=4ee697b9dc2411d50fb66a4f330ba4df&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://porg.es/blog/' rel='external nofollow' class='url'>Porges</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-11263" title="">August 25th, 2009 at 8:40 am</a> </small>
+			<br clear="all"/>
+
+			<p>This is rather nice. I&#8217;m going to need some time to digest it (or should that be osmose?) :)</p>
+		</li>
+
+	
+	
+	</ol>
+
+ 
+
+			</div>
+					<p align="center"></p>		
+	</div>
+	<div id="sidebar">
+		<h2>Archived Entry</h2>
+	<ul>
+	<li><strong>Post Date :</strong></li>
+	<li>Thursday, Aug 20th, 2009 at 11:55 am</li>
+	<li><strong>Category :</strong></li>
+	<li><a href="http://comonad.com/reader/category/algorithms/" title="View all posts in Algorithms" rel="category tag">Algorithms</a> and  <a href="http://comonad.com/reader/category/data-structures/" title="View all posts in Data Structures" rel="category tag">Data Structures</a> and  <a href="http://comonad.com/reader/category/haskell/" title="View all posts in Haskell" rel="category tag">Haskell</a> and  <a href="http://comonad.com/reader/category/mathematics/" title="View all posts in Mathematics" rel="category tag">Mathematics</a> and  <a href="http://comonad.com/reader/category/monoids/" title="View all posts in Monoids" rel="category tag">Monoids</a> and  <a href="http://comonad.com/reader/category/parsing/" title="View all posts in Parsing" rel="category tag">Parsing</a></li>
+	<li><strong>Do More :</strong></li>
+	<li>							Both comments and pings are currently closed.			
+						
+						</li>
+	</ul>
+		
+	<h2><label for="s">Search</label></h2>
+	<ul>
+		<li>
+			<form id="searchform" method="get" action="/reader/index.php">
+				<div style="text-align:center">
+					<p><input type="text" name="s" id="s" size="10" /> <input type="submit" name="submit" value="Search" /></p>
+				</div>
+			</form>
+		</li>
+	</ul>
+<h2>RSS Feeds</h2>
+	<ul>
+		<li>
+			<a title="RSS2 Feed for Posts" href="http://comonad.com/reader/feed/">Posts</a> | <a title="RSS2 Feed for Comments" href="http://comonad.com/reader/comments/feed/">Comments</a></li>	
+	</ul>	
+</div>
+<p id="footer">Design based on <a href="http://www.vanillamist.com" title="Vanilla Mist">www.vanillamist.com</a></p></div>
+</div>
+</body>
+</html>

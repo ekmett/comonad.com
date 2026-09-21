@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Part I: From Theory to Pretty Pictures · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Haskell</span><span>Edward Kmett · <time datetime="2014-11-29">29 November 2014</time></span></div><h1>Part I: From Theory to Pretty Pictures</h1></header><details class="contents"><summary>On this page</summary><ol><li><a href="#minding-the-store">Minding The Store</a></li><li><a href="#a-glimpse-down-the-rabbit-hole">A Glimpse Down the Rabbit Hole</a></li><li><a href="#following-the-rules">Following the Rules</a></li><li><a href="#got-the-memo">Got the Memo?</a></li><li><a href="#let-s-do-the-time-warp-again">Let's Do the Time Warp Again</a></li><li><a href="#pretty-as-a-picture">Pretty as a Picture</a></li><li><a href="#but-is-it-web-scale">But is it Web Scale?</a></li></ol></details><article class="prose"><p>Cellular automata are one of the "go to" examples for comonads in Haskell.</p>
+<p>Dan Piponi wrote his article on <a href="http://blog.sigfpe.com/2006/12/evaluating-cellular-automata-is.html">using comonads to evaluate cellular automata</a> back in 2006, and that was pretty much my introduction to comonads in general. He used a <a href="http://en.wikipedia.org/wiki/Zipper_%28data_structure%29">list zipper</a>.</p>
+<p>Today, I want to use something a little bit more general and maybe draw some pictures.</p>
+<h2 id="minding-the-store">Minding The Store</h2>
+<p>To that end, let's define the <code>Store</code> <code>Comonad</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE DeriveFunctor #-}</span>
+<span class="hljs-keyword">import</span> Control.Comonad
+
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Store</span> s a = <span class="hljs-type">Store</span> (<span class="hljs-title">s</span> -&gt; <span class="hljs-title">a</span>) s <span class="hljs-keyword">deriving</span> <span class="hljs-type">Functor</span></span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Comonad</span> (<span class="hljs-type">Store</span> <span class="hljs-title">s</span>) <span class="hljs-keyword">where</span></span>
+  extract (<span class="hljs-type">Store</span> f s) = f s
+  duplicate (<span class="hljs-type">Store</span> f s) = <span class="hljs-type">Store</span> (<span class="hljs-type">Store</span> f) s
+
+<span class="hljs-title">experiment</span> :: <span class="hljs-type">Functor</span> f =&gt; (s -&gt; f s) -&gt; <span class="hljs-type">Store</span> s a -&gt; f a
+<span class="hljs-title">experiment</span> k (<span class="hljs-type">Store</span> f s) = f &lt;$&gt; k s
+
+<span class="hljs-title">main</span> = putStrLn <span class="hljs-string">"It typechecks, so it must be correct!"</span>
+</code></pre>
+<p>A <code>Store s a</code> describes some "test" that takes a configuration <code>s</code> and will produce a value of type <code>a</code>, where we also have some ambient initial configuration of type <code>s</code> that is known with which we could start the experiment.</p>
+<p>The <code>experiment</code> combinator characterizes a <code>Store</code> completely. It lets you explore variations on the initial conditions of our test.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">experiment</span> :: <span class="hljs-type">Functor</span> f =&gt; (s -&gt; f s) -&gt; <span class="hljs-type">Store</span> s a -&gt; f a
+<span class="hljs-title">experiment</span> k (<span class="hljs-type">Store</span> f s) = f &lt;$&gt; k s
+</code></pre>
+<p><code>Store</code> gives you a little bit more power than we want in a cellular automaton, as you can do both relative <em>and</em> global addressing, but it happens to be a very general construction, so we'll start there. It has the benefit that if we decide we want to play with automata in more than 1 dimension all we have to do is change out the state type.</p>
+<p>The <code>Store</code> comonad has a lot of different uses that aren't immediately obvious. It is used heavily inside of the <a href="https://hackage.haskell.org/package/lens"><code>lens</code></a> library.</p>
+<h2 id="a-glimpse-down-the-rabbit-hole">A Glimpse Down the Rabbit Hole</h2>
+<p><em>(This section is completely skippable and is included as a highly technical aside)</em></p>
+<p>An interesting exercise for the advanced Haskeller is to flip the definition of <code>experiment</code> and take that as the definition for <code>Store</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE DeriveFunctor #-}</span>
+<span class="hljs-meta">{-# LANGUAGE RankNTypes #-}</span>
+<span class="hljs-keyword">import</span> Control.Comonad
+
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Pretext</span> s a = <span class="hljs-type">Pretext</span> {
+    <span class="hljs-title">runPretext</span> :: <span class="hljs-title">forall</span> <span class="hljs-title">f</span>. <span class="hljs-type">Functor</span> <span class="hljs-title">f</span> =&gt; (<span class="hljs-title">s</span> -&gt; <span class="hljs-title">f</span> <span class="hljs-title">s</span>) -&gt; <span class="hljs-title">f</span> <span class="hljs-title">a</span>
+  } <span class="hljs-keyword">deriving</span> <span class="hljs-type">Functor</span></span>
+
+<span class="hljs-title">experiment</span> :: <span class="hljs-type">Functor</span> f =&gt; (s -&gt; f s) -&gt; <span class="hljs-type">Pretext</span> s a -&gt; f a
+<span class="hljs-title">experiment</span> f (<span class="hljs-type">Pretext</span> k) = k f
+
+<span class="hljs-title">main</span> = putStrLn <span class="hljs-string">"It typechecks, so it must be correct!"</span>
+</code></pre>
+<p>Defining the <code>Comonad</code> instance for that type is a particularly enlightening challenge.</p>
+<p>If you replace the <code>Functor</code> constraint in the definition above with <code>Applicative</code> you get a <code>Comonad</code> I call the <code>Bazaar</code>. This <code>Comonad</code> is used to derive many of the most brain-bending <code>Traversal</code> and <code>uniplate</code>-derived combinators in <code>lens</code>.</p>
+<p>The code for its <code>Comonad</code> instance is identical to the instance for <code>Pretext</code> above, but it can also be made <code>Applicative</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE DeriveFunctor #-}</span>
+<span class="hljs-meta">{-# LANGUAGE RankNTypes #-}</span>
+<span class="hljs-keyword">import</span> Control.Comonad
+<span class="hljs-keyword">import</span> Control.Applicative
+
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Bazaar</span> s a = <span class="hljs-type">Bazaar</span> {
+    <span class="hljs-title">runBazaar</span> :: <span class="hljs-title">forall</span> <span class="hljs-title">f</span>. <span class="hljs-type">Applicative</span> <span class="hljs-title">f</span> =&gt; (<span class="hljs-title">s</span> -&gt; <span class="hljs-title">f</span> <span class="hljs-title">s</span>) -&gt; <span class="hljs-title">f</span> <span class="hljs-title">a</span>
+  } <span class="hljs-keyword">deriving</span> <span class="hljs-type">Functor</span></span>
+
+<span class="hljs-title">main</span> = putStrLn <span class="hljs-string">"It typechecks, so it must be correct!"</span>
+</code></pre>
+<p>If you try to search for the <code>Store</code>-like analogue to the <code>Bazaar</code>, you wind up looking at what Twan van Laarhoven called a <code>FunList</code> in <a href="http://twanvl.nl/blog/haskell/non-regular1">"A non-regular data type challenge"</a>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE DeriveFunctor #-}</span>
+<span class="hljs-keyword">import</span> Control.Comonad
+<span class="hljs-keyword">import</span> Control.Applicative
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">FunList</span> s a</span>
+    = <span class="hljs-type">Done</span> a
+    | <span class="hljs-type">More</span> s (<span class="hljs-type">FunList</span> s (s -&gt; a))
+    <span class="hljs-keyword">deriving</span> <span class="hljs-type">Functor</span>
+
+<span class="hljs-title">main</span> = putStrLn <span class="hljs-string">"It typechecks, so it must be correct!"</span>
+</code></pre>
+<p>An interesting exercise is to derive the <code>Applicative</code> and <code>Comonad</code> instances for <code>FunList</code>. This exercise is much easier than the <code>Pretext</code> and <code>Bazaar</code> derivations, but still quite challenging.</p>
+<p>Surprisingly <code>FunList</code> is actually a less powerful type than <code>Bazaar</code> in the presence of infinite traversals as many tools you can build will not terminate when you manipulate an infinite traversal with them built using a <code>FunList</code>, but <em>will</em> terminate when they are constructed using the <code>Bazaar</code>!</p>
+<h2 id="following-the-rules">Following the Rules</h2>
+<p>Stephen Wolfram described a rather concise encoding of 2-color automata that can only look at their neighbors in <a href="http://www.wolframscience.com/">"A New Kind of Science"</a>.</p>
+<p>We can encode his family of 2-color rules as a comonadic action:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">rule</span> :: <span class="hljs-type">Num</span> s =&gt; <span class="hljs-type">Word8</span> -&gt; <span class="hljs-type">Store</span> s <span class="hljs-type">Bool</span> -&gt; <span class="hljs-type">Bool</span>
+<span class="hljs-title">rule</span> w (<span class="hljs-type">Store</span> f s) = testBit w $
+  <span class="hljs-number">0</span> &amp; partsOf (taking <span class="hljs-number">3</span> bits) .~ [f (s+<span class="hljs-number">1</span>), f s, f (s-<span class="hljs-number">1</span>)]
+</code></pre>
+<p>That is rather dense, so let's unpack it.</p>
+<p>Wolfram numbers his rules from 0 to 255 because if you look at the current cell and the neighbor to the left and right of it, we have 3 inputs to consider. Each is a <code>Bool</code> so we have <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>3</mn></msup></mrow><annotation encoding="application/x-tex">2^3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="katex-base"><span class="katex-strut" style="height:0.8141em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="katex-sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span></span></span></span> different results to give. If we bundle all those possible results together as the bits of a <code>Word8</code>, the <code>Word8</code> perfectly describes all of the possible 2-color cellular automata that can look at the current and neighboring cells.</p>
+<p>So now the trick is doing that indexing. To do so, first we need to figure out which bit in our <code>Word8</code> we are interested in. To do that we need to use the 3 booleans we obtain by tweaking our position and asking to perform our "experiment" there at the slightly modified positions instead.</p>
+<p>Now we want to compose 3 bits together into an <code>Int</code>. We could do this with a bunch of conditional logic, etc. but there is a slightly cute encoding we can get when we use <code>lens</code>.</p>
+<p><code>bits</code> provides a <code>Traversal</code> of the individual bits of any instance of <code>Bits</code>. (In the case of <code>Integer</code>, though, because it is infinite sadly the <code>Traversal</code> can never finish reassembling the <code>Integer</code>, and so it devolves to merely a <code>Fold</code>.</p>
+<p><code>taking n t</code> takes a <code>Traversal t</code> and yields a <code>Traversal</code> that only touches the first <code>n</code> targets of the original <code>Traversal</code>.</p>
+<p>Therefore <code>taking 3 bits</code> is the <code>Traversal</code> of the first 3 bits of a number.</p>
+<p><code>partsOf</code> takes a <code>Traversal</code> and gives you a (slightly hinky) <code>Lens</code> to a list of all of the targets of the traversal. You can freely replace that list with a new list (of the same length!). It is only a law abiding <code>Lens</code> if you do not change the length of the list of targets, but even if you violate these assumptions it is well behaved operationally. In fact you can safely remove <code>taking n</code> from the definition of rule above, and its semantics do not change.</p>
+<p>And finally, we can use the fact that every <code>Lens</code> is a valid <code>Setter</code> to make the assignment.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-number">0</span> &amp; partsOf (taking <span class="hljs-number">3</span> bits) .~ [f (s+<span class="hljs-number">1</span>), f s, f (s-<span class="hljs-number">1</span>)]
+</code></pre>
+<p>then builds an <code>Int</code> <em>n</em> between 0 and 7 by starting with a 0 and setting its first 3 bits accordingly.</p>
+<p>With that in hand we can now test the _n_th bit of the rule number and obtain our result.</p>
+<p>Since <code>Store s</code> forms a <code>Comonad</code> though, we can <code>extend</code> our <code>rule n</code> to obtain a new <code>Store s Bool</code> from our existing <code>Store s Bool</code>.</p>
+<p>Now if we, say, <code>extend (rule 110)</code> we get a function from one world to a new world, where that
+rule has been applied uniformly across the entire world at the same time.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">extend</span> (rule <span class="hljs-number">110</span>) :: <span class="hljs-type">Num</span> s =&gt; <span class="hljs-type">Store</span> s <span class="hljs-type">Bool</span> -&gt; <span class="hljs-type">Store</span> s <span class="hljs-type">Bool</span>
+</code></pre>
+<p>By choosing an appropriate number type for <code>s</code> we can choose the topology for our automaton to live on!</p>
+<p>We could repeatedly run our rules with</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">slowLoop</span> :: (<span class="hljs-type">Store</span> s a -&gt; a) -&gt; <span class="hljs-type">Store</span> s a -&gt; [<span class="hljs-type">Store</span> s a]
+<span class="hljs-title">slowLoop</span> f = iterate (extend f)
+</code></pre>
+<figure class="automaton" id="automaton-figure">
+  <div class="automaton-controls"><label>Rule <input id="automaton-rule" type="number" min="0" max="255" step="1" value="110"></label><label>Initial cells <select id="automaton-seed"><option value="single">One cell</option><option value="pair">Two nearby cells</option><option value="alternating">Alternating cells</option></select></label></div>
+  <canvas id="automaton-canvas" width="516" height="320" role="img" aria-label="Cellular automaton, with time running downward"></canvas>
+  <figcaption><span id="automaton-status" aria-live="polite">Loading the Haskell example…</span> Each row is one generation on the integer line; the picture shows its central 129 cells. <a href="../../../source/Automaton.hs">Haskell source</a>.</figcaption>
+  <noscript>This interactive figure needs JavaScript and WebAssembly; the article and original code remain readable below.</noscript>
+</figure>
+<h2 id="got-the-memo">Got the Memo?</h2>
+<p>...but we'd get explosive slowdown. Why?</p>
+<p>After each loop iteration we depend on 3x as many evaluations as we did for the iteration before, because each evaluation is asking for all of the other old versions of the old neighbors, etc.</p>
+<p>So the trick is to memoize our function. The easiest way to do that without reasoning about <code>IO</code> is to use a memo combinator package like <code>data-memocombinators</code> or my own <code>representable-tries</code>. I'll buck my trend and use Luke's package instead of mine.</p>
+<p>But which function?</p>
+<p>We don't want to memoize the comonad algebra itself. The argument to that is of type <code>Store s a</code>, and memoizing function spaces of function spaces gets truly messy. Let's make a function that turns a value in our <code>Store</code> comonad into one that memoizes its answers by memoizing the experiment it contains.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">tab</span> :: <span class="hljs-type">Memo</span> s -&gt; <span class="hljs-type">Store</span> s a -&gt; <span class="hljs-type">Store</span> s a
+<span class="hljs-title">tab</span> opt (<span class="hljs-type">Store</span> f s) = <span class="hljs-type">Store</span> (opt f) s
+</code></pre>
+<p><code>tab</code> takes a way to memoize a function from the context of our <code>Store</code> and a <code>Store</code> and yields a new <code>Store</code> that memoizes its results.</p>
+<p><code>Memo</code> comes from <code>data-memocombinators</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Memo</span> a = forall r. (<span class="hljs-title">a</span> -&gt; <span class="hljs-title">r</span>) -&gt; a -&gt; r</span>
+</code></pre>
+<p>A value of type <code>Memo a</code> describes a memoization strategy for functions from values of type <code>a</code>. It takes a function and turns it into a function that memoizes its results. It does so in a completely pure way that is worth exploring in its own right, but...</p>
+<p>If we just use the fact that <code>integral</code> provides us with such a memoization strategy that works for any <code>Integral</code> type, we can derive a smarter <code>loop</code>!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">loop</span> :: <span class="hljs-type">Integral</span> s =&gt; (<span class="hljs-type">Store</span> s a -&gt; a) -&gt; <span class="hljs-type">Store</span> s a -&gt; [<span class="hljs-type">Store</span> s a]
+<span class="hljs-title">loop</span> f = iterate (extend f . tab integral)
+</code></pre>
+<p>Here when we are given a new <code>Store</code> before each iteration we simply upgrade it to memoize its results for each position as it is asked before handing it to our rule for further evaluation.</p>
+<h2 id="let-s-do-the-time-warp-again">Let's Do the Time Warp Again</h2>
+<p>Now let's timewarp back to the stone age and print out endless reams of paper filled with automaton states.</p>
+<p>To do that we need a way to see what some slice of our world looks like:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">-- <span class="hljs-doctag">TODO:</span> copy the whole program below here</span>
+<span class="hljs-meta">{-# LANGUAGE RankNTypes #-}</span>
+<span class="hljs-meta">{-# LANGUAGE TypeFamilies #-}</span>
+<span class="hljs-meta">{-# LANGUAGE QuasiQuotes #-}</span>
+<span class="hljs-meta">{-# LANGUAGE MultiParamTypeClasses #-}</span>
+<span class="hljs-meta">{-# LANGUAGE TemplateHaskell #-}</span>
+<span class="hljs-meta">{-# LANGUAGE DeriveFunctor #-}</span>
+
+<span class="hljs-keyword">import</span> Control.Comonad
+<span class="hljs-keyword">import</span> Control.Lens <span class="hljs-keyword">as</span> L
+<span class="hljs-keyword">import</span> Data.Bits
+<span class="hljs-keyword">import</span> Data.Bits.Lens <span class="hljs-keyword">as</span> L
+<span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Data.ByteString <span class="hljs-keyword">as</span> Strict
+<span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Data.ByteString.Lazy <span class="hljs-keyword">as</span> Lazy
+<span class="hljs-keyword">import</span> Data.MemoCombinators
+<span class="hljs-keyword">import</span> Data.Word
+<span class="hljs-keyword">import</span> Diagrams.Backend.SVG
+<span class="hljs-keyword">import</span> Diagrams.Prelude <span class="hljs-keyword">as</span> D
+<span class="hljs-keyword">import</span> Text.Blaze.Svg.Renderer.Utf8
+<span class="hljs-keyword">import</span> Yesod
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Store</span> s a = <span class="hljs-type">Store</span> (<span class="hljs-title">s</span> -&gt; <span class="hljs-title">a</span>) s <span class="hljs-keyword">deriving</span> <span class="hljs-type">Functor</span></span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Comonad</span> (<span class="hljs-type">Store</span> <span class="hljs-title">s</span>) <span class="hljs-keyword">where</span></span>
+  extract (<span class="hljs-type">Store</span> f s) = f s
+  duplicate (<span class="hljs-type">Store</span> f s) = <span class="hljs-type">Store</span> (<span class="hljs-type">Store</span> f) s
+
+<span class="hljs-title">experiment</span> :: <span class="hljs-type">Functor</span> f =&gt; (s -&gt; f s) -&gt; <span class="hljs-type">Store</span> s a -&gt; f a
+<span class="hljs-title">experiment</span> k (<span class="hljs-type">Store</span> f s) = f &lt;$&gt; k s
+
+<span class="hljs-title">rule</span> :: <span class="hljs-type">Num</span> s =&gt; <span class="hljs-type">Word8</span> -&gt; <span class="hljs-type">Store</span> s <span class="hljs-type">Bool</span> -&gt; <span class="hljs-type">Bool</span>
+<span class="hljs-title">rule</span> w (<span class="hljs-type">Store</span> f s) = testBit w $
+  <span class="hljs-number">0</span> <span class="hljs-type">L</span>.&amp; partsOf (taking <span class="hljs-number">3</span> <span class="hljs-type">L</span>.bits) .~ [f (s+<span class="hljs-number">1</span>), f s, f (s-<span class="hljs-number">1</span>)]
+
+<span class="hljs-title">tab</span> :: <span class="hljs-type">Memo</span> s -&gt; <span class="hljs-type">Store</span> s a -&gt; <span class="hljs-type">Store</span> s a
+<span class="hljs-title">tab</span> opt (<span class="hljs-type">Store</span> f s) = <span class="hljs-type">Store</span> (opt f) s
+
+<span class="hljs-title">loop</span> :: <span class="hljs-type">Integral</span> s =&gt; (<span class="hljs-type">Store</span> s a -&gt; a) -&gt; <span class="hljs-type">Store</span> s a -&gt; [<span class="hljs-type">Store</span> s a]
+<span class="hljs-title">loop</span> f = iterate (extend f . tab integral)
+
+
+<span class="hljs-title">window</span> :: (<span class="hljs-type">Enum</span> s, <span class="hljs-type">Num</span> s) =&gt; s -&gt; s -&gt; <span class="hljs-type">Store</span> s a -&gt; [a]
+<span class="hljs-title">window</span> l h = experiment $ \ s -&gt; [s-l..s+h]
+
+<span class="hljs-title">xo</span> :: <span class="hljs-type">Bool</span> -&gt; <span class="hljs-type">Char</span>
+<span class="hljs-title">xo</span> <span class="hljs-type">True</span>  = <span class="hljs-string">'X'</span>
+<span class="hljs-title">xo</span> <span class="hljs-type">False</span> = <span class="hljs-string">' '</span>
+
+<span class="hljs-title">main</span> = mapM_ (putStrLn . map xo . window <span class="hljs-number">50</span> <span class="hljs-number">0</span>) $
+       take <span class="hljs-number">50</span> $ loop (rule <span class="hljs-number">110</span>) $ <span class="hljs-type">Store</span> (==<span class="hljs-number">0</span>) <span class="hljs-number">0</span>
+
+</code></pre>
+<p>I probably should have told that thing stop printing a little sooner. Sorry. ;)</p>
+<p><code>window</code> varies our position on the number line up or down a bit so we can see several data points.</p>
+<p><code>xo</code> converts each result into a form we might want to see.</p>
+<p>Then we put it all together and run Wolfram's <a href="http://en.wikipedia.org/wiki/Rule_110">rule 110</a> starting with a single point at position 0 as our initial condition.</p>
+<h2 id="pretty-as-a-picture">Pretty as a Picture</h2>
+<p>It isn't the stone age any more.</p>
+<p>Matt Sottile did a pretty looking <a href="http://syntacticsalt.com/2010/08/30/forest-fire-cellular-automaton-haskell-and-matlab/">forest fire</a> cellular automata example a couple of years back. But he had to render everything by hand using OpenGL.</p>
+<p>Nowadays we can draw pretty pictures using Brent Yorgey's awesome <code>diagrams</code> package rather than carve ASCII <code>X</code>'s into the walls of our cave.</p>
+<p>Now that we have the windows of data we want, all we need to do is turn each <code>window</code> into a a bunch of squares and stitch those rows together into a <code>Diagram</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">grid</span> :: [[<span class="hljs-type">Bool</span>]] -&gt; <span class="hljs-type">Diagram</span> <span class="hljs-type">SVG</span> <span class="hljs-type">R2</span>
+<span class="hljs-title">grid</span> = vcat . map (hcat . cell) <span class="hljs-keyword">where</span>
+  cell b = unitSquare <span class="hljs-type">D</span>.# fc (<span class="hljs-keyword">if</span> b <span class="hljs-keyword">then</span> black <span class="hljs-keyword">else</span> white)
+</code></pre>
+<p>This post was spawned from a discussion with Rein Henrichs on #haskell. He supplied the initial version of the <code>diagrams</code> code. His version was much prettier.</p>
+<p><code>diagrams</code> supports rendering to a ton of formats including SVG, so we can transform our diagram into a document using <code>diagrams-svg</code> and <code>blaze-svg</code>. We could also render it directly to <code>cairo</code> and get out a PNG, get out an HTML canvas, a postscript document, etc.</p>
+<p>We could use the <code>renderSVG</code> function to generate a file on disk, but it also isn't the 80s. Command line tools that spit out files are passé. So lets just get our hands on the file here in memory as a <code>ByteString</code> and make sure it's strict to deal with the impedence mismatch between the tools I'm using.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">svg</span> :: <span class="hljs-type">Diagram</span> <span class="hljs-type">SVG</span> <span class="hljs-type">R2</span> -&gt; <span class="hljs-type">Strict</span>.<span class="hljs-type">ByteString</span>
+<span class="hljs-title">svg</span> = <span class="hljs-type">Strict</span>.concat . <span class="hljs-type">Lazy</span>.toChunks .
+      renderSvg . renderDia <span class="hljs-type">SVG</span> (<span class="hljs-type">SVGOptions</span> (<span class="hljs-type">Width</span> <span class="hljs-number">400</span>) <span class="hljs-type">Nothing</span>)
+</code></pre>
+<h2 id="but-is-it-web-scale">But is it Web Scale?</h2>
+<p>The School of Haskell supports <a href="https://www.fpcomplete.com/blog/2013/08/snap-happstack-anything-else">running</a> full-fledged web-based applications from an "active" Haskell snippet, so lets give it a try.</p>
+<p>If we put them these pieces of code together you should be able to click run below and get out pretty pictures out of a custom web server that all but fits on your screen.</p>
+<p>Click Run!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE RankNTypes #-}</span>
+<span class="hljs-meta">{-# LANGUAGE TypeFamilies #-}</span>
+<span class="hljs-meta">{-# LANGUAGE QuasiQuotes #-}</span>
+<span class="hljs-meta">{-# LANGUAGE MultiParamTypeClasses #-}</span>
+<span class="hljs-meta">{-# LANGUAGE TemplateHaskell #-}</span>
+<span class="hljs-meta">{-# LANGUAGE DeriveFunctor #-}</span>
+
+<span class="hljs-keyword">import</span> Control.Comonad
+<span class="hljs-keyword">import</span> Control.Lens <span class="hljs-keyword">as</span> L
+<span class="hljs-keyword">import</span> Data.Bits
+<span class="hljs-keyword">import</span> Data.Bits.Lens <span class="hljs-keyword">as</span> L
+<span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Data.ByteString <span class="hljs-keyword">as</span> Strict
+<span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Data.ByteString.Lazy <span class="hljs-keyword">as</span> Lazy
+<span class="hljs-keyword">import</span> Data.MemoCombinators
+<span class="hljs-keyword">import</span> Data.Word
+<span class="hljs-keyword">import</span> Diagrams.Backend.SVG
+<span class="hljs-keyword">import</span> Diagrams.Prelude <span class="hljs-keyword">as</span> D
+<span class="hljs-keyword">import</span> Text.Blaze.Svg.Renderer.Utf8
+<span class="hljs-keyword">import</span> Yesod
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Store</span> s a = <span class="hljs-type">Store</span> (<span class="hljs-title">s</span> -&gt; <span class="hljs-title">a</span>) s <span class="hljs-keyword">deriving</span> <span class="hljs-type">Functor</span></span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Comonad</span> (<span class="hljs-type">Store</span> <span class="hljs-title">s</span>) <span class="hljs-keyword">where</span></span>
+  extract (<span class="hljs-type">Store</span> f s) = f s
+  duplicate (<span class="hljs-type">Store</span> f s) = <span class="hljs-type">Store</span> (<span class="hljs-type">Store</span> f) s
+
+<span class="hljs-title">experiment</span> :: <span class="hljs-type">Functor</span> f =&gt; (s -&gt; f s) -&gt; <span class="hljs-type">Store</span> s a -&gt; f a
+<span class="hljs-title">experiment</span> k (<span class="hljs-type">Store</span> f s) = f &lt;$&gt; k s
+
+<span class="hljs-title">rule</span> :: <span class="hljs-type">Num</span> s =&gt; <span class="hljs-type">Word8</span> -&gt; <span class="hljs-type">Store</span> s <span class="hljs-type">Bool</span> -&gt; <span class="hljs-type">Bool</span>
+<span class="hljs-title">rule</span> w (<span class="hljs-type">Store</span> f s) = testBit w $ <span class="hljs-number">0</span> <span class="hljs-type">L</span>.&amp; partsOf (taking <span class="hljs-number">3</span> <span class="hljs-type">L</span>.bits) .~ [f (s+<span class="hljs-number">1</span>), f s, f (s-<span class="hljs-number">1</span>)]
+
+<span class="hljs-title">tab</span> :: <span class="hljs-type">Memo</span> s -&gt; <span class="hljs-type">Store</span> s a -&gt; <span class="hljs-type">Store</span> s a
+<span class="hljs-title">tab</span> opt (<span class="hljs-type">Store</span> f s) = <span class="hljs-type">Store</span> (opt f) s
+
+<span class="hljs-title">loop</span> :: <span class="hljs-type">Integral</span> s =&gt; (<span class="hljs-type">Store</span> s a -&gt; a) -&gt; <span class="hljs-type">Store</span> s a -&gt; [<span class="hljs-type">Store</span> s a]
+<span class="hljs-title">loop</span> f = iterate (extend f . tab integral)
+
+<span class="hljs-title">window</span> :: (<span class="hljs-type">Enum</span> s, <span class="hljs-type">Num</span> s) =&gt; s -&gt; s -&gt; <span class="hljs-type">Store</span> s a -&gt; [a]
+<span class="hljs-title">window</span> l h = experiment $ \ s -&gt; [s-l..s+h]
+
+<span class="hljs-title">grid</span> :: [[<span class="hljs-type">Bool</span>]] -&gt; <span class="hljs-type">Diagram</span> <span class="hljs-type">SVG</span> <span class="hljs-type">R2</span>
+<span class="hljs-title">grid</span> = cat unitY . reverse . map (hcat . map cell) <span class="hljs-keyword">where</span>
+  cell b = unitSquare <span class="hljs-type">D</span>.# fc (<span class="hljs-keyword">if</span> b <span class="hljs-keyword">then</span> black <span class="hljs-keyword">else</span> white)
+
+<span class="hljs-title">svg</span> :: <span class="hljs-type">Diagram</span> <span class="hljs-type">SVG</span> <span class="hljs-type">R2</span> -&gt; <span class="hljs-type">Strict</span>.<span class="hljs-type">ByteString</span>
+<span class="hljs-title">svg</span> = <span class="hljs-type">Strict</span>.concat . <span class="hljs-type">Lazy</span>.toChunks . renderSvg . renderDia <span class="hljs-type">SVG</span> (<span class="hljs-type">SVGOptions</span> (<span class="hljs-type">Width</span> <span class="hljs-number">400</span>) <span class="hljs-type">Nothing</span>)
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">App</span> = <span class="hljs-type">App</span></span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Yesod</span> <span class="hljs-type">App</span>
+
+mkYesod "<span class="hljs-type">App</span>" [parseRoutes| / <span class="hljs-type">ImageR</span> <span class="hljs-type">GET</span> |]
+
+getImageR :: <span class="hljs-type">MonadHandler</span> m =&gt; m <span class="hljs-type">TypedContent</span>
+getImageR = sendResponse $ toTypedContent (<span class="hljs-title">typeSvg</span>, <span class="hljs-title">toContent</span> <span class="hljs-title">img</span>)
+
+img = svg . grid . map (<span class="hljs-title">window</span> 49 0) . take 50 . loop (<span class="hljs-title">rule</span> 110) $ <span class="hljs-type">Store</span> (==0) (0 :: <span class="hljs-type">Int</span>)
+
+main = warpEnv <span class="hljs-type">App</span>
+</span></code></pre>
+<p>That clocks in at 60 lines of code. In that much space we defined the <code>Store</code> comonad, defined a generic evaluator that can handle any of Wolfram's 2-color automata, built a system of memoization to avoid asymptotic slowdown, took a cross section of our universe, and then rendered it to a diagram and built a custom web server to display that content here on the internet.</p>
+<p>Almost all of the components we built are generic. We can define new types of automata, try out new initial conditions, jump around in time, with some work we can support multiple colors, new topologies, render the same diagram to different file formats conditionally based on browser preferences. The code above can be edited live here in your browser or downloaded and run locally on your own machine.</p>
+<p>In the interest of full disclosure, the SVG that is rendered is far from optimal. The <code>diagrams</code> crew is aware of the issue and they are hard at work improving the way <code>diagrams</code> streams primitives to its backends, allowing it to take advantage of all the glorious structure that they have inside the <code>Diagram</code> type described in Brent's <a href="http://www.cis.upenn.edu/~byorgey/pub/monoid-pearl.pdf">excellent functional pearl</a>. Currently the communication process between <code>diagrams</code> and the backend is duplicating the transformation matrix and styling on a per element basis, and this is resulting in a much inflated document. When those changes go into <code>diagrams</code> and <code>diagrams-svg</code>, then this example will become <em>much</em> faster with no changes to this code.</p>
+<p>I hope this shows how you can use a little bit of theory and some of the more practical components of the Haskell ecosystem to accomplish a lot with very little code.</p>
+<p>-- <a href="mailto:ekmett@gmail.com">Edward Kmett</a>
+August 15, 2013</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/lens"><code>lens</code></a> · <a href="https://hackage.haskell.org/package/comonad"><code>comonad</code></a> · <a href="https://hackage.haskell.org/package/representable-tries"><code>representable-tries</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: School of Haskell. Date displayed by School of Haskell; may reflect a later revision.</p><p><a href="../../../source/articles/cellular-automata-part-1.md" download>Article Markdown</a> · <a href="../../../source/articles/cellular-automata-part-1.original.md" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2014/revisiting-matrix-multiplication-part-5/">Part V: Heaps of Performance →</a><a href="../../../reader/2014/fast-circular-substitution/">Fast Circular Substitution →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main><script type="module" src="../../../automaton.js"></script></body></html>

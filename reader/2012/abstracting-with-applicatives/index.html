@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Abstracting with Applicatives · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Category Theory · Data Structures · Monoids</span><span>Gershom Bazerman · <time datetime="2012-12-26">26 December 2012</time></span></div><h1>Abstracting with Applicatives</h1></header><article class="prose"><p>Consider the humble Applicative. More than a functor, less than a monad. It gives us such lovely syntax. Who among us still prefers to write <code>liftM2 foo a b</code> when we could instead write <code>foo &lt;$&gt; a &lt;*&gt; b</code>? But we seldom use the Applicative as such — when Functor is too little, Monad is too much, but a lax monoidal functor is just right. I noticed lately a spate of proper uses of Applicative —<a href="http://groups.inf.ed.ac.uk/links/formlets/">Formlets</a> (and their later incarnation in the <a href="https://hackage.haskell.org/package/reform">reform</a> library), <a href="https://hackage.haskell.org/package/optparse-applicative">OptParse-Applicative</a> (and its competitor library <a href="../../../reader/2012/abstracting-with-applicatives/">CmdTheLine</a>), and a <a href="http://gergo.erdi.hu/blog/2012-12-01-static_analysis_with_applicatives/">post by Gergo Erdi</a> on applicatives for declaring dependencies of computations. I also ran into a very similar genuine use for applicatives in working on the Panels library (part of <a href="https://hackage.haskell.org/package/jmacro-rpc">jmacro-rpc</a>), where I wanted to determine dependencies of a dynamically generated dataflow computation. And then, again, I stumbled into an applicative while cooking up a form validation library, which turned out to be a reinvention of the same ideas as formlets.</p>
+<p>Given all this, It seems post on thinking with applicatives is in order, showing how to build them up and reason about them. One nice thing about the approach we'll be taking is that it uses a "final" encoding of applicatives, rather than building up and then later interpreting a structure. This is in fact how we typically write monads (pace operational, free, etc.), but since we more often only determine our data structures are applicative after the fact, we often get some extra junk lying around (OptParse-Applicative, for example, has a GADT that I think is entirely extraneous).</p>
+<p>So the usual throat clearing:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE TypeOperators, MultiParamTypeClasses, FlexibleInstances,
+StandaloneDeriving, FlexibleContexts, UndecidableInstances,
+GADTs, KindSignatures, RankNTypes #-}</span>
+
+<span class="hljs-keyword">module</span> Main <span class="hljs-keyword">where</span>
+<span class="hljs-keyword">import</span> Control.Applicative <span class="hljs-keyword">hiding</span> (<span class="hljs-type">Const</span>)
+<span class="hljs-keyword">import</span> Data.Monoid <span class="hljs-keyword">hiding</span> (<span class="hljs-type">Sum</span>, <span class="hljs-type">Product</span>)
+<span class="hljs-keyword">import</span> Control.Monad.Identity
+<span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Show</span> a =&gt; <span class="hljs-type">Show</span> (<span class="hljs-type">Identity</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+    show (<span class="hljs-type">Identity</span> x) = <span class="hljs-string">"(Identity "</span> ++ show x ++ <span class="hljs-string">")"</span>
+</code></pre>
+<p>And now, let's start with a classic applicative, going back to the <a href="http://www.soi.city.ac.uk/~ross/papers/Applicative.pdf">Applicative Programming With Effects</a> paper:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Const</span> mo a = <span class="hljs-type">Const</span> mo <span class="hljs-keyword">deriving</span> <span class="hljs-type">Show</span></span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> (<span class="hljs-type">Const</span> <span class="hljs-title">mo</span>) <span class="hljs-keyword">where</span></span>
+    fmap _ (<span class="hljs-type">Const</span> mo) = <span class="hljs-type">Const</span> mo
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monoid</span> mo =&gt; <span class="hljs-type">Applicative</span> (<span class="hljs-type">Const</span> <span class="hljs-title">mo</span>) <span class="hljs-keyword">where</span></span>
+    pure _ = <span class="hljs-type">Const</span> mempty
+    (<span class="hljs-type">Const</span> f) &lt; *&gt; (<span class="hljs-type">Const</span> x) = <span class="hljs-type">Const</span> (f &lt;&gt; x)
+</code></pre>
+<p>(<code>Const</code> lives in <a href="https://hackage.haskell.org/package/transformers">transformers</a> as the <code>Constant</code> functor, or in base as <code>Const</code>)</p>
+<p>Note that <code>Const</code> is not a monad. We've defined it so that its structure is independent of the `a` type. Hence if we try to write <code>(&gt;&gt;=)</code> of type <code>Const mo a -&gt; (a -&gt; Const mo b) -&gt; Const mo b</code>, we'll have no way to "get out" the first `a` and feed it to our second argument.</p>
+<p>One great thing about Applicatives is that there is no distinction between applicative transformers and applicatives themselves. This is to say that the composition of two applicatives is cleanly and naturally always also an applicative. We can capture this like so:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Compose</span> f g a = <span class="hljs-type">Compose</span> (<span class="hljs-title">f</span> (<span class="hljs-title">g</span> <span class="hljs-title">a</span>)) <span class="hljs-keyword">deriving</span> <span class="hljs-type">Show</span></span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Functor</span> <span class="hljs-title">f</span>, <span class="hljs-type">Functor</span> <span class="hljs-title">g</span>) =&gt; <span class="hljs-type">Functor</span> (<span class="hljs-type">Compose</span> <span class="hljs-title">f</span> <span class="hljs-title">g</span>) <span class="hljs-keyword">where</span></span>
+    fmap f (<span class="hljs-type">Compose</span> x) = <span class="hljs-type">Compose</span> $ (fmap . fmap) f x
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Applicative</span> <span class="hljs-title">f</span>, <span class="hljs-type">Applicative</span> <span class="hljs-title">g</span>) =&gt; <span class="hljs-type">Applicative</span> (<span class="hljs-type">Compose</span> <span class="hljs-title">f</span> <span class="hljs-title">g</span>) <span class="hljs-keyword">where</span></span>
+    pure = <span class="hljs-type">Compose</span> . pure . pure
+    (<span class="hljs-type">Compose</span> f) &lt; *&gt; (<span class="hljs-type">Compose</span> x) = <span class="hljs-type">Compose</span> $ (&lt; *&gt;) &lt; $&gt; f &lt; *&gt; x
+</code></pre>
+<p>(<code>Compose</code> also lives in transformers)</p>
+<p>Note that Applicatives compose <strong>two</strong> ways. We can also write:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Product</span> f g a = <span class="hljs-type">Product</span> (<span class="hljs-title">f</span> <span class="hljs-title">a</span>) (<span class="hljs-title">g</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">deriving</span> <span class="hljs-type">Show</span></span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Functor</span> <span class="hljs-title">f</span>, <span class="hljs-type">Functor</span> <span class="hljs-title">g</span>) =&gt; <span class="hljs-type">Functor</span> (<span class="hljs-type">Product</span> <span class="hljs-title">f</span> <span class="hljs-title">g</span>) <span class="hljs-keyword">where</span></span>
+    fmap f (<span class="hljs-type">Product</span>  x y) = <span class="hljs-type">Product</span> (fmap f x) (fmap f y)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Applicative</span> <span class="hljs-title">f</span>, <span class="hljs-type">Applicative</span> <span class="hljs-title">g</span>) =&gt; <span class="hljs-type">Applicative</span> (<span class="hljs-type">Product</span> <span class="hljs-title">f</span> <span class="hljs-title">g</span>) <span class="hljs-keyword">where</span></span>
+    pure x = <span class="hljs-type">Product</span> (pure x) (pure x)
+    (<span class="hljs-type">Product</span> f g) &lt; *&gt; (<span class="hljs-type">Product</span>  x y) = <span class="hljs-type">Product</span> (f &lt; *&gt; x) (g &lt; *&gt; y)
+</code></pre>
+<p>(<code>Product</code> lives in transformers as well)</p>
+<p>This lets us now construct an extremely rich set of applicative structures from humble beginnings. For example, we can reconstruct the Writer Applicative.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Writer</span> mo = <span class="hljs-type">Product</span> (<span class="hljs-type">Const</span> <span class="hljs-title">mo</span>) <span class="hljs-type">Identity</span></span>
+
+<span class="hljs-title">tell</span> :: mo -&gt; <span class="hljs-type">Writer</span> mo ()
+<span class="hljs-title">tell</span> x = <span class="hljs-type">Product</span> (<span class="hljs-type">Const</span> x) (pure ())
+</code></pre>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">-- tell [1] *&gt; tell [2]</span>
+<span class="hljs-comment">-- &gt; Product (Const [1,2]) (Identity ())</span>
+</code></pre>
+<p>Note that if we strip away the newtype noise, Writer turns into <code>(mo,a)</code> which is isomorphic to the Writer monad. However, we've learned something along the way, which is that the monoidal component of Writer (as long as we stay within the rules of applicative) is entirely independent from the "identity" component. However, if we went on to write the Monad instance for our writer (by defining <code>&gt;&gt;=</code>), we'd have to "reach in" to the identity component to grab a value to hand back to the function yielding our monoidal component. Which is to say we would destroy this nice seperation of "trace" and "computational content" afforded by simply taking the product of two Applicatives.</p>
+<p>Now let's make things more interesting. It turns out that just as the composition of two applicatives may be a monad, so too the composition of two monads may be no stronger than an applicative!</p>
+<p>We'll see this by introducing Maybe into the picture, for possibly failing computations.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">FailingWriter</span> mo = <span class="hljs-type">Compose</span> (<span class="hljs-type">Writer</span> <span class="hljs-title">mo</span>) <span class="hljs-type">Maybe</span></span>
+
+<span class="hljs-title">tellFW</span> :: <span class="hljs-type">Monoid</span> mo =&gt; mo -&gt; <span class="hljs-type">FailingWriter</span> mo ()
+<span class="hljs-title">tellFW</span> x = <span class="hljs-type">Compose</span> (tell x *&gt; pure (<span class="hljs-type">Just</span> ()))
+
+<span class="hljs-title">failFW</span> :: <span class="hljs-type">Monoid</span> mo =&gt; <span class="hljs-type">FailingWriter</span> mo a
+<span class="hljs-title">failFW</span> = <span class="hljs-type">Compose</span> (pure <span class="hljs-type">Nothing</span>)
+</code></pre>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">-- tellFW [1] *&gt; tellFW [2]</span>
+<span class="hljs-comment">-- &gt; Compose (Product (Const [1,2]) (Identity Just ()))</span>
+
+<span class="hljs-comment">-- tellFW [1] *&gt; failFW *&gt; tellFW [2]</span>
+<span class="hljs-comment">-- &gt; Compose (Product (Const [1,2]) (Identity Nothing))</span>
+</code></pre>
+<p>Maybe over Writer gives us the same effects we'd get in a Monad — either the entire computation fails, or we get the result and the trace. But Writer over Maybe gives us new behavior. We get the entire trace, even if some computations have failed! This structure, just like Const, cannot be given a proper Monad instance. (In fact if we take Writer over Maybe as a Monad, we get only the trace until the first point of failure).</p>
+<p>This seperation of a monoidal trace from computational effects (either entirely independent of a computation [via a product] or independent between parts of a computation [via Compose]) is the key to lots of neat tricks with applicative functors.</p>
+<p>Next, let's look at Gergo Erdi's "Static Analysis with Applicatives" that is built using free applicatives. We can get essentially the same behavior directly from the product of a constant monad with an arbitrary effectful monad representing our ambient environment of information. As long as we constrain ourselves to only querying it with the takeEnv function, then we can either read the left side of our product to statically read dependencies, or the right side to actually utilize them.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">HasEnv</span> k m = <span class="hljs-type">Product</span> (<span class="hljs-type">Const</span> [<span class="hljs-title">k</span>]) m</span>
+<span class="hljs-title">takeEnv</span> :: (k -&gt; m a) -&gt; k -&gt; <span class="hljs-type">HasEnv</span> k m a
+<span class="hljs-title">takeEnv</span> f x = <span class="hljs-type">Product</span> (<span class="hljs-type">Const</span> [x]) (f x)
+</code></pre>
+<p>If we prefer, we can capture queries of a static environment directly with the standard Reader applicative, which is just a newtype over the function arrow. There are other varients of this that perhaps come closer to exactly how Erdi's post does things, but I think this is enough to demonstrate the general idea.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Reader</span> r a = <span class="hljs-type">Reader</span> (<span class="hljs-title">r</span> -&gt; <span class="hljs-title">a</span>)</span>
+<span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> (<span class="hljs-type">Reader</span> <span class="hljs-title">r</span>) <span class="hljs-keyword">where</span></span>
+    fmap f (<span class="hljs-type">Reader</span> x) = <span class="hljs-type">Reader</span> (f . x)
+<span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Applicative</span> (<span class="hljs-type">Reader</span> <span class="hljs-title">r</span>) <span class="hljs-keyword">where</span></span>
+    pure x = <span class="hljs-type">Reader</span> $ pure x
+    (<span class="hljs-type">Reader</span> f) &lt; *&gt; (<span class="hljs-type">Reader</span> x) = <span class="hljs-type">Reader</span> (f &lt; *&gt; x)
+
+<span class="hljs-title">runReader</span> :: (<span class="hljs-type">Reader</span> r a) -&gt; r -&gt; a
+<span class="hljs-title">runReader</span> (<span class="hljs-type">Reader</span> f) = f
+
+<span class="hljs-title">takeEnvNew</span> :: (env -&gt; k -&gt; a) -&gt; k -&gt; <span class="hljs-type">HasEnv</span> k (<span class="hljs-type">Reader</span> env) a
+<span class="hljs-title">takeEnvNew</span> f x = <span class="hljs-type">Product</span> (<span class="hljs-type">Const</span> [x]) (<span class="hljs-type">Reader</span> $ flip f x)
+</code></pre>
+<p>So, what then is a full formlet? It's something that can be executed in one context as a monoid that builds a form, and in another as a parser. so the top level must be a product.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">FormletOne</span> mo a = <span class="hljs-type">Product</span> (<span class="hljs-type">Const</span> <span class="hljs-title">mo</span>) <span class="hljs-type">Identity</span> a</span>
+</code></pre>
+<p>Below the product, we read from an environment and perhaps get an answer. So that's reader with a maybe.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">FormletTwo</span> mo env a =</span>
+    <span class="hljs-type">Product</span> (<span class="hljs-type">Const</span> mo) (<span class="hljs-type">Compose</span> (<span class="hljs-type">Reader</span> env) <span class="hljs-type">Maybe</span>) a
+</code></pre>
+<p>Now if we fail, we want to have a trace of errors. So we expand out the Maybe into a product as well to get the following, which adds monoidal errors:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">FormletThree</span> mo err env a =</span>
+    <span class="hljs-type">Product</span> (<span class="hljs-type">Const</span> mo)
+            (<span class="hljs-type">Compose</span> (<span class="hljs-type">Reader</span> env) (<span class="hljs-type">Product</span> (<span class="hljs-type">Const</span> err) <span class="hljs-type">Maybe</span>)) a
+</code></pre>
+<p>But now we get errors whether or not the parse succeeds. We want to say either the parse succeeds or we get errors. For this, we can turn to the typical Sum functor, which currently lives as Coproduct in comonad-transformers, but will hopefully be moving as Sum to the transformers library in short order.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Sum</span> f g a = <span class="hljs-type">InL</span> (<span class="hljs-title">f</span> <span class="hljs-title">a</span>) | <span class="hljs-type">InR</span> (<span class="hljs-title">g</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">deriving</span> <span class="hljs-type">Show</span></span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Functor</span> <span class="hljs-title">f</span>, <span class="hljs-type">Functor</span> <span class="hljs-title">g</span>) =&gt; <span class="hljs-type">Functor</span> (<span class="hljs-type">Sum</span> <span class="hljs-title">f</span> <span class="hljs-title">g</span>) <span class="hljs-keyword">where</span></span>
+    fmap f (<span class="hljs-type">InL</span> x) = <span class="hljs-type">InL</span> (fmap f x)
+    fmap f (<span class="hljs-type">InR</span> y) = <span class="hljs-type">InR</span> (fmap f y)
+</code></pre>
+<p>The Functor instance is straightforward for Sum, but the applicative instance is puzzling. What should "pure" do? It needs to inject into either the left or the right, so clearly we need some form of "bias" in the instance. What we really need is the capacity to "work in" one side of the sum until compelled to switch over to the other, at which point we're stuck there. If two functors, F and G are in a relationship such that we can always send <code>f x -&gt; g x</code> in a way that "respects" fmap (that is to say, such that (<code>fmap f . fToG == ftoG . fmap f</code>) then we call this a natural transformation. The action that sends f to g is typically called "eta". (We actually want something slightly stronger called a "monoidal natural transformation" that respects not only the functorial action <code>fmap</code> but the applicative action <code>&lt;*&gt;</code>, but we can ignore that for now).</p>
+<p>Now we can assert that as long as there is a natural transformation between g and f, then Sum f g can be made an Applicative, like so:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Natural</span> f g <span class="hljs-keyword">where</span></span>
+    eta :: f a -&gt; g a
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Applicative</span> <span class="hljs-title">f</span>, <span class="hljs-type">Applicative</span> <span class="hljs-title">g</span>, <span class="hljs-type">Natural</span> <span class="hljs-title">g</span> <span class="hljs-title">f</span>) =&gt;
+  <span class="hljs-type">Applicative</span> (<span class="hljs-type">Sum</span> <span class="hljs-title">f</span> <span class="hljs-title">g</span>) <span class="hljs-keyword">where</span></span>
+    pure x = <span class="hljs-type">InR</span> $ pure x
+    (<span class="hljs-type">InL</span> f) &lt; *&gt; (<span class="hljs-type">InL</span> x) = <span class="hljs-type">InL</span> (f &lt; *&gt; x)
+    (<span class="hljs-type">InR</span> g) &lt; *&gt; (<span class="hljs-type">InR</span> y) = <span class="hljs-type">InR</span> (g &lt; *&gt; y)
+    (<span class="hljs-type">InL</span> f) &lt; *&gt; (<span class="hljs-type">InR</span> x) = <span class="hljs-type">InL</span> (f &lt; *&gt; eta x)
+    (<span class="hljs-type">InR</span> g) &lt; *&gt; (<span class="hljs-type">InL</span> x) = <span class="hljs-type">InL</span> (eta g &lt; *&gt; x)
+</code></pre>
+<p>The natural transformation we'll tend to use simply sends any functor to Const.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Monoid</span> mo =&gt; <span class="hljs-type">Natural</span> f (<span class="hljs-type">Const</span> <span class="hljs-title">mo</span>) <span class="hljs-keyword">where</span></span>
+    eta = const (<span class="hljs-type">Const</span> mempty)
+</code></pre>
+<p>However, there are plenty of other natural transformations that we could potentially make use of, like so:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Applicative</span> f =&gt;
+  <span class="hljs-type">Natural</span> g (<span class="hljs-type">Compose</span> <span class="hljs-title">f</span> <span class="hljs-title">g</span>) <span class="hljs-keyword">where</span></span>
+     eta = <span class="hljs-type">Compose</span> . pure
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Applicative</span> <span class="hljs-title">g</span>, <span class="hljs-type">Functor</span> <span class="hljs-title">f</span>) =&gt; <span class="hljs-type">Natural</span> f (<span class="hljs-type">Compose</span> <span class="hljs-title">f</span> <span class="hljs-title">g</span>) <span class="hljs-keyword">where</span></span>
+     eta = <span class="hljs-type">Compose</span> . fmap pure
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Natural</span> <span class="hljs-title">f</span> <span class="hljs-title">g</span>) =&gt; <span class="hljs-type">Natural</span> f (<span class="hljs-type">Product</span> <span class="hljs-title">f</span> <span class="hljs-title">g</span>) <span class="hljs-keyword">where</span></span>
+    eta x = <span class="hljs-type">Product</span> x (eta x)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Natural</span> <span class="hljs-title">g</span> <span class="hljs-title">f</span>) =&gt; <span class="hljs-type">Natural</span> g (<span class="hljs-type">Product</span> <span class="hljs-title">f</span> <span class="hljs-title">g</span>) <span class="hljs-keyword">where</span></span>
+    eta x = <span class="hljs-type">Product</span> (eta x) x
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Natural</span> (<span class="hljs-type">Product</span> <span class="hljs-title">f</span> <span class="hljs-title">g</span>) f <span class="hljs-keyword">where</span></span>
+    eta (<span class="hljs-type">Product</span> x _ ) = x
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Natural</span> (<span class="hljs-type">Product</span> <span class="hljs-title">f</span> <span class="hljs-title">g</span>) g <span class="hljs-keyword">where</span></span>
+    eta (<span class="hljs-type">Product</span> _ x) = x
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Natural</span> g f =&gt; <span class="hljs-type">Natural</span> (<span class="hljs-type">Sum</span> <span class="hljs-title">f</span> <span class="hljs-title">g</span>) f <span class="hljs-keyword">where</span></span>
+    eta (<span class="hljs-type">InL</span> x) = x
+    eta (<span class="hljs-type">InR</span> y) = eta y
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Natural</span> <span class="hljs-type">Identity</span> (<span class="hljs-type">Reader</span> <span class="hljs-title">r</span>) <span class="hljs-keyword">where</span></span>
+    eta (<span class="hljs-type">Identity</span> x) = pure x
+</code></pre>
+<p>In theory, there should also be a natural transformation that can be built magically from the product of any other two natural transformations, but that will just confuse the Haskell typechecker hopelessly. This is because we know that often different "paths" of typeclass choices will often be isomorphic, but the compiler has to actually pick one "canonical" composition of natural transformations to compute with, although multiple paths will typically be possible.</p>
+<p>For similar reasons of avoiding overlap, we can't both have the terminal homomorphism that sends everything to "Const" <strong>and</strong> the initial homomorphism that sends "Identity" to anything like so:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">-- instance Applicative g =&gt; Natural Identity g where</span>
+<span class="hljs-comment">--     eta (Identity x) = pure x</span>
+</code></pre>
+<p>We choose to keep the terminal transformation around because it is more generally useful for our purposes. As the comments below point out, it turns out that a version of "Sum" with the initial transformation baked in now lives in transformers as <code>Lift</code>.</p>
+<p>In any case we can now write a proper Validation applicative:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Validation</span> mo = <span class="hljs-type">Sum</span> (<span class="hljs-type">Const</span> <span class="hljs-title">mo</span>) <span class="hljs-type">Identity</span></span>
+
+<span class="hljs-title">validationError</span> :: <span class="hljs-type">Monoid</span> mo =&gt; mo -&gt; <span class="hljs-type">Validation</span> mo a
+<span class="hljs-title">validationError</span> x = <span class="hljs-type">InL</span> (<span class="hljs-type">Const</span> x)
+</code></pre>
+<p>This applicative will yield either a single result, or an accumulation of monoidal errors. It exists on hackage in the <a href="https://hackage.haskell.org/package/Validation">Validation</a> package.</p>
+<p>Now, based on the same principles, we can produce a full Formlet.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Formlet</span> mo err env a =</span>
+    <span class="hljs-type">Product</span> (<span class="hljs-type">Const</span> mo)
+            (<span class="hljs-type">Compose</span> (<span class="hljs-type">Reader</span> env)
+                     (<span class="hljs-type">Sum</span> (<span class="hljs-type">Const</span> err) <span class="hljs-type">Identity</span>))
+    a
+</code></pre>
+<p>All the type and newtype noise looks a bit ugly, I'll grant. But the idea is to <strong>think</strong> with structures built with applicatives, which gives guarantees that we're building applicative structures, and furthermore, structures with certain guarantees in terms of which components can be interpreted independently of which others. So, for example, we can strip away the newtype noise and find the following:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">FormletClean</span> mo err env a = (<span class="hljs-title">mo</span>, <span class="hljs-title">env</span> -&gt; <span class="hljs-type">Either</span> <span class="hljs-title">err</span> <span class="hljs-title">a</span>)</span>
+</code></pre>
+<p>Because we built this up from our basic library of applicatives, we also know how to write its applicative instance directly.</p>
+<p>Now that we've gotten a basic algebraic vocabulary of applicatives, and especially now that we've produced this nifty Sum applicative (which I haven't seen presented before), we've gotten to where I intended to stop.</p>
+<p>But lots of other questions arise, on two axes. First, what other typeclasses beyond applicative do our constructions satisfy? Second, what basic pieces of vocabulary are missing from our constructions — what do we need to add to flesh out our universe of discourse? (Fixpoints come to mind).</p>
+<p>Also, what statements can we make about "completeness" — what portion of the space of all applicatives can we enumerate and construct in this way? Finally, why is it that monoids seem to crop up so much in the course of working with Applicatives? I plan to tackle at least some of these questions in future blog posts.</p>
+</article><section class="comments" id="comments"><h2>From the original discussion</h2><p class="editorial">Selected questions, explanations, and corrections. Original wording and dates; spam and automated trackbacks omitted.</p><article class="comment" id="comment-107120"><header><strong>Edward Kmett</strong><a href="../../../reader/2012/abstracting-with-applicatives/#comment-107120">December 26th, 2012 at 8:52 pm</a></header><p>Const c &gt;&gt;= f doesn’t work</p>
+<p>return a &gt;&gt;= f = f a is a Monad law.</p>
+<p>Consider:</p>
+<p>return a &gt;&gt;= \ _ -&gt; Const “hello”</p>
+<p>But from that definition</p>
+<p>return a &gt;&gt;= \ _ -&gt; Const “hello” = Const “”</p>
+<p>but</p>
+<p>(\ _ -&gt; Const “hello”) a = Const “hello”</p>
+<p>Your proposal only works when mempty is the only value of your monoid. It works for Const (), but nothing else really.</p>
+</article><article class="comment" id="comment-107123"><header><strong>Sjoerd Visscher</strong><a href="../../../reader/2012/abstracting-with-applicatives/#comment-107123">December 27th, 2012 at 5:05 am</a></header><p>Great article!</p>
+<p>I came across the Sum applicative for the first time just two days ago in this comment on Stack Overflow by Conor McBride [1]. There he notes Identity is the initial Applicative functor, so you can replace that last Natural instance with:</p>
+<p>instance Applicative g =&gt; Natural Identity g where<br>
+eta (Identity x) = pure x</p>
+<p>[1] <a href="http://stackoverflow.com/questions/14022791/what-is-control-applicative-lift-useful-for/14022871#comment19369023_14022871">http://stackoverflow.com/questions/14022791/what-is-control-applicative-lift-useful-for/14022871#comment19369023_14022871</a></p>
+</article></section><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/abstracting-with-applicatives.md" download>Article Markdown</a> · <a href="../../../source/articles/abstracting-with-applicatives.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2012/natural-deduction-sequent-calculus-and-type-classes/">Natural Deduction, Sequent Calculus and Type Classes →</a><a href="../../../reader/2013/algebras-of-applicatives/">Algebras of Applicatives →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Gershom Bazerman.<br>Comments attributed to their original authors.</p></footer></main></body></html>

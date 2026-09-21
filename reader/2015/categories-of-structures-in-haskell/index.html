@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Categories of Structures in Haskell · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Category Theory · Comonads · Data Structures · Haskell · Kan Extensions · Mathematics · Monads · Type Hackery · Uncategorized</span><span>Dan Doel · <time datetime="2015-05-25">25 May 2015</time></span></div><h1>Categories of Structures in Haskell</h1></header><article class="prose"><p>In the last couple posts I've used some 'free' constructions, and not remarked too much on how they arise. In this post, I'd like to explore them more. This is going to be something of a departure from the previous posts, though, since I'm not going to worry about thinking precisely about bottom/domains. This is more an exercise in applying some category theory to Haskell, "fast and loose".</p>
+<p>(Advance note: for some continuous code to look at see <a href="http://code.haskell.org/~dolio/haskell-share/categories-of-structures/COS.hs">this file</a>.)</p>
+<p>First, it'll help to talk about how some categories can work in Haskell. For any kind <code>k</code> made of <code>*</code> and <code>(-&gt;)</code>, [0] we can define a category of type constructors. Objects of the category will be first-class [1] types of that kind, and arrows will be defined by the following type family:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Transformer</span> f g = <span class="hljs-type">Transform</span> { ($$) :: <span class="hljs-title">forall</span> <span class="hljs-title">i</span>. <span class="hljs-title">f</span> <span class="hljs-title">i</span> ~&gt; <span class="hljs-title">g</span> <span class="hljs-title">i</span> }</span>
+
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-keyword">family</span> (~&gt;) :: k -&gt; k -&gt; * <span class="hljs-keyword">where</span></span>
+  (~&gt;) = (-&gt;)
+  (~&gt;) = <span class="hljs-type">Transformer</span>
+
+<span class="hljs-class"><span class="hljs-keyword">type</span> a &lt; -&gt; b = (<span class="hljs-title">a</span> -&gt; <span class="hljs-title">b</span>, <span class="hljs-title">b</span> -&gt; <span class="hljs-title">a</span>)</span>
+<span class="hljs-class"><span class="hljs-keyword">type</span> a &lt; ~&gt; b = (<span class="hljs-title">a</span> ~&gt; <span class="hljs-title">b</span>, <span class="hljs-title">b</span> ~&gt; <span class="hljs-title">a</span>)</span>
+</code></pre>
+<p>So, for a base case, * has monomorphic functions as arrows, and categories for higher kinds have polymorphic functions that saturate the constructor:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">  <span class="hljs-type">Int</span> ~&gt; <span class="hljs-type">Char</span> = <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Char</span>
+  <span class="hljs-type">Maybe</span> ~&gt; [] = <span class="hljs-keyword">forall</span> a. <span class="hljs-type">Maybe</span> a -&gt; [a]
+  <span class="hljs-type">Either</span> ~&gt; (,) = <span class="hljs-keyword">forall</span> a b. <span class="hljs-type">Either</span> a b -&gt; (a, b)
+  <span class="hljs-type">StateT</span> ~&gt; <span class="hljs-type">ReaderT</span> = <span class="hljs-keyword">forall</span> s m a. <span class="hljs-type">StateT</span> s m a -&gt; <span class="hljs-type">ReaderT</span> s m a
+</code></pre>
+<p>We can of course define identity and composition for these, and it will be handy to do so:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Morph</span> (<span class="hljs-title">p</span> :: <span class="hljs-title">k</span> -&gt; <span class="hljs-title">k</span> -&gt; *) <span class="hljs-keyword">where</span></span>
+  id :: p a a
+  (.) :: p b c -&gt; p a b -&gt; p a c
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Morph</span> (-&gt;) <span class="hljs-keyword">where</span></span>
+  id x = x
+  (g . f) x = g (f x)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Morph</span> ((~&gt;) :: k -&gt; k -&gt; *)
+      =&gt; <span class="hljs-type">Morph</span> (<span class="hljs-type">Transformer</span> :: (<span class="hljs-title">i</span> -&gt; <span class="hljs-title">k</span>) -&gt; (<span class="hljs-title">i</span> -&gt; <span class="hljs-title">k</span>) -&gt; *) <span class="hljs-keyword">where</span></span>
+  id = <span class="hljs-type">Transform</span> id
+  <span class="hljs-type">Transform</span> f . <span class="hljs-type">Transform</span> g = <span class="hljs-type">Transform</span> $ f . g
+</code></pre>
+<p>These categories can be looked upon as the most basic substrates in Haskell. For instance, every type of kind <code>* -&gt; *</code> is an object of the relevant category, even if it's a GADT or has other structure that prevents it from being nicely functorial.</p>
+<p>The category for * is of course just the normal category of types and functions we usually call Hask, and it is fairly analogous to the category of sets. One common activity in category theory is to study categories of sets equipped with extra structure, and it turns out we can do this in Haskell, as well. And it even makes some sense to study categories of structures over any of these type categories.</p>
+<p>When we equip our types with structure, we often use type classes, so that's how I'll do things here. Classes have a special status socially in that we expect people to only define instances that adhere to certain equational rules. This will take the place of equations that we are not able to state in the Haskell type system, because it doesn't have dependent types. So using classes will allow us to define more structures that we normally would, if only by convention.</p>
+<p>So, if we have a kind <code>k</code>, then a corresponding structure will be <code>σ :: k -&gt; Constraint</code>. We can then define the category <code>(k,σ)</code> as having objects <code>t :: k</code> such that there is an instance <code>σ t</code>. Arrows are then taken to be <code>f :: t ~&gt; u</code> such that <code>f</code> "respects" the operations of <code>σ</code>.</p>
+<p>As a simple example, we have:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">  k = *
+  σ = <span class="hljs-type">Monoid</span> :: * -&gt; <span class="hljs-type">Constraint</span>
+
+  <span class="hljs-type">Sum</span> <span class="hljs-type">Integer</span>, <span class="hljs-type">Product</span> <span class="hljs-type">Integer</span>, [<span class="hljs-type">Integer</span>] :: (*, <span class="hljs-type">Monoid</span>)
+
+  f :: (<span class="hljs-type">Monoid</span> m, <span class="hljs-type">Monoid</span> n) =&gt; m -&gt; n
+    <span class="hljs-keyword">if</span> f mempty = mempty
+       f (m &lt;&gt; n) = f m &lt;&gt; f n
+</code></pre>
+<p>This is just the category of monoids in Haskell.</p>
+<p>As a side note, we will sometimes be wanting to quantify over these "categories of structures". There isn't really a good way to package together a kind and a structure such that they work as a unit, but we can just add a constraint to the quantification. So, to quantify over all <code>Monoid</code>s, we'll use '<code>forall m. Monoid m =&gt; ...</code>'.</p>
+<p>Now, once we have these categories of structures, there is an obvious forgetful functor back into the unadorned category. We can then look for free and cofree functors as adjoints to this. More symbolically:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">  <span class="hljs-type">Forget</span> σ :: (k,σ) -&gt; k
+  <span class="hljs-type">Free</span>   σ :: k -&gt; (k,σ)
+  <span class="hljs-type">Cofree</span> σ :: k -&gt; (k,σ)
+
+  <span class="hljs-type">Free</span> σ ⊣ <span class="hljs-type">Forget</span> σ ⊣ <span class="hljs-type">Cofree</span> σ
+</code></pre>
+<p>However, what would be nicer (for some purposes) than having to look for these is being able to construct them all systematically, without having to think much about the structure <code>σ</code>.</p>
+<p>Category theory gives a hint at this, too, in the form of Kan extensions. In category terms they look like:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">  p : <span class="hljs-type">C</span> -&gt; <span class="hljs-type">C'</span>
+  f : <span class="hljs-type">C</span> -&gt; <span class="hljs-type">D</span>
+  <span class="hljs-type">Ran</span> p f : <span class="hljs-type">C'</span> -&gt; <span class="hljs-type">D</span>
+  <span class="hljs-type">Lan</span> p f : <span class="hljs-type">C'</span> -&gt; <span class="hljs-type">D</span>
+
+  <span class="hljs-type">Ran</span> p f c' = end (c : <span class="hljs-type">C</span>). <span class="hljs-type">Hom_C'</span>(c', p c) ⇒ f c
+  <span class="hljs-type">Lan</span> p f c' = coend (c : c). <span class="hljs-type">Hom_C'</span>(p c, c') ⊗ f c
+</code></pre>
+<p>where <code>⇒</code> is a "power" and <code>⊗</code> is a copower, which are like being able to take exponentials and products by sets (or whatever the objects of the hom category are), instead of other objects within the category. Ends and coends are like universal and existential quantifiers (as are limits and colimits, but ends and coends involve mixed-variance).</p>
+<p>Some handy theorems relate Kan extensions and adjoint functors:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">  <span class="hljs-keyword">if</span> <span class="hljs-type">L</span> ⊣ <span class="hljs-type">R</span>
+  <span class="hljs-keyword">then</span> <span class="hljs-type">L</span> = <span class="hljs-type">Ran</span> <span class="hljs-type">R</span> <span class="hljs-type">Id</span> and <span class="hljs-type">R</span> = <span class="hljs-type">Lan</span> <span class="hljs-type">L</span> <span class="hljs-type">Id</span>
+
+  <span class="hljs-keyword">if</span> <span class="hljs-type">Ran</span> <span class="hljs-type">R</span> <span class="hljs-type">Id</span> exists and is absolute
+  <span class="hljs-keyword">then</span> <span class="hljs-type">Ran</span> <span class="hljs-type">R</span> <span class="hljs-type">Id</span> ⊣ <span class="hljs-type">R</span>
+
+  <span class="hljs-keyword">if</span> <span class="hljs-type">Lan</span> <span class="hljs-type">L</span> <span class="hljs-type">Id</span> exists and is absolute
+  <span class="hljs-keyword">then</span> <span class="hljs-type">L</span> ⊣ <span class="hljs-type">Lan</span> <span class="hljs-type">L</span> <span class="hljs-type">Id</span>
+
+  <span class="hljs-type">Kan</span> <span class="hljs-type">P</span> <span class="hljs-type">F</span> is absolute iff <span class="hljs-keyword">forall</span> <span class="hljs-type">G</span>. (<span class="hljs-type">G</span> . <span class="hljs-type">Kan</span> <span class="hljs-type">P</span> <span class="hljs-type">F</span>) ~= <span class="hljs-type">Kan</span> <span class="hljs-type">P</span> (<span class="hljs-type">G</span> . <span class="hljs-type">F</span>)
+</code></pre>
+<p>It turns out we can write down Kan extensions fairly generally in Haskell. Our restricted case is:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">  p = <span class="hljs-type">Forget</span> σ :: (k,σ) -&gt; k
+  f = <span class="hljs-type">Id</span> :: (k,σ) -&gt; (k,σ)
+
+  <span class="hljs-type">Free</span>   σ = <span class="hljs-type">Ran</span> (<span class="hljs-type">Forget</span> σ) <span class="hljs-type">Id</span> :: k -&gt; (k,σ)
+  <span class="hljs-type">Cofree</span> σ = <span class="hljs-type">Lan</span> (<span class="hljs-type">Forget</span> σ) <span class="hljs-type">Id</span> :: k -&gt; (k,σ)
+
+  g :: (k,σ) -&gt; j
+  g . <span class="hljs-type">Free</span>   σ = <span class="hljs-type">Ran</span> (<span class="hljs-type">Forget</span> σ) g
+  g . <span class="hljs-type">Cofree</span> σ = <span class="hljs-type">Lan</span> (<span class="hljs-type">Forget</span> σ) g
+</code></pre>
+<p>As long as the final category is like one of our type constructor categories, ends are universal quantifiers, powers are function types, coends are existential quantifiers and copowers are product spaces. This only breaks down for our purposes when <code>g</code> is contravariant, in which case they are flipped. For higher kinds, these constructions occur point-wise. So, we can break things down into four general cases, each with cases for each arity:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Ran0</span> σ p (<span class="hljs-title">f</span> :: <span class="hljs-title">k</span> -&gt; *) a =</span>
+  <span class="hljs-type">Ran0</span> { ran0 :: <span class="hljs-keyword">forall</span> r. σ r =&gt; (a ~&gt; p r) -&gt; f r }
+
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Ran1</span> σ p (<span class="hljs-title">f</span> :: <span class="hljs-title">k</span> -&gt; <span class="hljs-title">j</span> -&gt; *) a b =</span>
+  <span class="hljs-type">Ran1</span> { ran1 :: <span class="hljs-keyword">forall</span> r. σ r =&gt; (a ~&gt; p r) -&gt; f r b }
+
+<span class="hljs-comment">-- ...</span>
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">RanOp0</span> σ p (<span class="hljs-title">f</span> :: <span class="hljs-title">k</span> -&gt; *) a =</span>
+  <span class="hljs-keyword">forall</span> e. σ e =&gt; <span class="hljs-type">RanOp0</span> (a ~&gt; p e) (f e)
+
+<span class="hljs-comment">-- ...</span>
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Lan0</span> σ p (<span class="hljs-title">f</span> :: <span class="hljs-title">k</span> -&gt; *) a =</span>
+  <span class="hljs-keyword">forall</span> e. σ e =&gt; <span class="hljs-type">Lan0</span> (p e ~&gt; a) (f e)
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Lan1</span> σ p (<span class="hljs-title">f</span> :: <span class="hljs-title">k</span> -&gt; <span class="hljs-title">j</span> -&gt; *) a b =</span>
+  <span class="hljs-keyword">forall</span> e. σ e =&gt; <span class="hljs-type">Lan1</span> (p e ~&gt; a) (f e b)
+
+<span class="hljs-comment">-- ...</span>
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">LanOp0</span> σ p (<span class="hljs-title">f</span> :: <span class="hljs-title">k</span> -&gt; *) a =</span>
+  <span class="hljs-type">LanOp0</span> { lan0 :: <span class="hljs-keyword">forall</span> r. σ r =&gt; (p r -&gt; a) -&gt; f r }
+
+<span class="hljs-comment">-- ...</span>
+</code></pre>
+<p>The more specific proposed (co)free definitions are:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-keyword">family</span> <span class="hljs-type">Free</span>   :: (<span class="hljs-title">k</span> -&gt; <span class="hljs-type">Constraint</span>) -&gt; k -&gt; k</span>
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-keyword">family</span> <span class="hljs-type">Cofree</span> :: (<span class="hljs-title">k</span> -&gt; <span class="hljs-type">Constraint</span>) -&gt; k -&gt; k</span>
+
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Free0</span> σ a = <span class="hljs-type">Free0</span> { <span class="hljs-title">gratis0</span> :: <span class="hljs-title">forall</span> <span class="hljs-title">r</span>. σ <span class="hljs-title">r</span> =&gt; (<span class="hljs-title">a</span> ~&gt; <span class="hljs-title">r</span>) -&gt; <span class="hljs-title">r</span> }</span>
+<span class="hljs-class"><span class="hljs-keyword">type</span> instance <span class="hljs-type">Free</span> = <span class="hljs-type">Free0</span></span>
+
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Free1</span> σ f a = <span class="hljs-type">Free1</span> { <span class="hljs-title">gratis1</span> :: <span class="hljs-title">forall</span> <span class="hljs-title">g</span>. σ <span class="hljs-title">g</span> =&gt; (<span class="hljs-title">f</span> ~&gt; <span class="hljs-title">g</span>) -&gt; <span class="hljs-title">g</span> <span class="hljs-title">a</span> }</span>
+<span class="hljs-class"><span class="hljs-keyword">type</span> instance <span class="hljs-type">Free</span> = <span class="hljs-type">Free1</span></span>
+
+<span class="hljs-comment">-- ...</span>
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Cofree0</span> σ a = forall e. σ e =&gt; <span class="hljs-type">Cofree0</span> (<span class="hljs-title">e</span> ~&gt; <span class="hljs-title">a</span>) e</span>
+<span class="hljs-class"><span class="hljs-keyword">type</span> instance <span class="hljs-type">Cofree</span> = <span class="hljs-type">Cofree0</span></span>
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Cofree1</span> σ f a = forall g. σ g =&gt; <span class="hljs-type">Cofree1</span> (<span class="hljs-title">g</span> ~&gt; <span class="hljs-title">f</span>) (<span class="hljs-title">g</span> <span class="hljs-title">a</span>)</span>
+<span class="hljs-class"><span class="hljs-keyword">type</span> instance <span class="hljs-type">Cofree</span> = <span class="hljs-type">Cofree1</span></span>
+
+<span class="hljs-comment">-- ...</span>
+</code></pre>
+<p>We can define some handly classes and instances for working with these types, several of which generalize existing Haskell concepts:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Covariant</span> (<span class="hljs-title">f</span> :: <span class="hljs-title">i</span> -&gt; <span class="hljs-title">j</span>) <span class="hljs-keyword">where</span></span>
+  comap :: (a ~&gt; b) -&gt; (f a ~&gt; f b)
+<span class="hljs-class">
+<span class="hljs-keyword">class</span> <span class="hljs-type">Contravariant</span> f <span class="hljs-keyword">where</span></span>
+  contramap :: (b ~&gt; a) -&gt; (f a ~&gt; f b)
+<span class="hljs-class">
+<span class="hljs-keyword">class</span> <span class="hljs-type">Covariant</span> m =&gt; <span class="hljs-type">Monad</span> (<span class="hljs-title">m</span> :: <span class="hljs-title">i</span> -&gt; <span class="hljs-title">i</span>) <span class="hljs-keyword">where</span></span>
+  pure :: a ~&gt; m a
+  join :: m (m a) ~&gt; m a
+<span class="hljs-class">
+<span class="hljs-keyword">class</span> <span class="hljs-type">Covariant</span> w =&gt; <span class="hljs-type">Comonad</span> (<span class="hljs-title">w</span> :: <span class="hljs-title">i</span> -&gt; <span class="hljs-title">i</span>) <span class="hljs-keyword">where</span></span>
+  extract :: w a ~&gt; a
+  split :: w a ~&gt; w (w a)
+<span class="hljs-class">
+<span class="hljs-keyword">class</span> <span class="hljs-type">Couniversal</span> σ f | f -&gt; σ <span class="hljs-keyword">where</span></span>
+  couniversal :: σ r =&gt; (a ~&gt; r) -&gt; (f a ~&gt; r)
+<span class="hljs-class">
+<span class="hljs-keyword">class</span> <span class="hljs-type">Universal</span> σ f | f -&gt; σ <span class="hljs-keyword">where</span></span>
+  universal :: σ e =&gt; (e ~&gt; a) -&gt; (e ~&gt; f a)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Covariant</span> (<span class="hljs-type">Free0</span> σ) <span class="hljs-keyword">where</span></span>
+  comap f (<span class="hljs-type">Free0</span> e) = <span class="hljs-type">Free0</span> (e . (.f))
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> (<span class="hljs-type">Free0</span> σ) <span class="hljs-keyword">where</span></span>
+  pure x = <span class="hljs-type">Free0</span> $ \k -&gt; k x
+  join (<span class="hljs-type">Free0</span> e) = <span class="hljs-type">Free0</span> $ \k -&gt; e $ \(<span class="hljs-type">Free0</span> e) -&gt; e k
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Couniversal</span> σ (<span class="hljs-type">Free0</span> σ) <span class="hljs-keyword">where</span></span>
+  couniversal h (<span class="hljs-type">Free0</span> e) = e h
+
+<span class="hljs-comment">-- ...</span>
+</code></pre>
+<p>The only unfamiliar classes here should be <code>(Co)Universal</code>. They are for witnessing the adjunctions that make <code>Free σ</code> the initial <code>σ</code> and <code>Cofree σ</code> the final <code>σ</code> in the relevant way. Only one direction is given, since the opposite is very easy to construct with the (co)monad structure.</p>
+<p><code>Free σ</code> is a monad and couniversal, <code>Cofree σ</code> is a comonad and universal.</p>
+<p>We can now try to convince ourselves that <code>Free σ</code> and <code>Cofree σ</code> are absolute Here are some examples:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">free0Absolute0</span> :: <span class="hljs-keyword">forall</span> g σ a. (<span class="hljs-type">Covariant</span> g, σ (<span class="hljs-type">Free</span> σ a))
+               =&gt; g (<span class="hljs-type">Free0</span> σ a) &lt; -&gt; <span class="hljs-type">Ran</span> σ <span class="hljs-type">Forget</span> g a
+<span class="hljs-title">free0Absolute0</span> = (l, r)
+ <span class="hljs-keyword">where</span>
+ l :: g (<span class="hljs-type">Free</span> σ a) -&gt; <span class="hljs-type">Ran</span> σ <span class="hljs-type">Forget</span> g a
+ l g = <span class="hljs-type">Ran0</span> $ \k -&gt; comap (couniversal $ remember0 . k) g
+
+ r :: <span class="hljs-type">Ran</span> σ <span class="hljs-type">Forget</span> g a -&gt; g (<span class="hljs-type">Free</span> σ a)
+ r (<span class="hljs-type">Ran0</span> e) = e $ <span class="hljs-type">Forget0</span> . pure
+
+<span class="hljs-title">free0Absolute1</span> :: <span class="hljs-keyword">forall</span> (g :: * -&gt; * -&gt; *) σ a x. (<span class="hljs-type">Covariant</span> g, σ (<span class="hljs-type">Free</span> σ a))
+               =&gt; g (<span class="hljs-type">Free0</span> σ a) x &lt; -&gt; <span class="hljs-type">Ran</span> σ <span class="hljs-type">Forget</span> g a x
+<span class="hljs-title">free0Absolute1</span> = (l, r)
+ <span class="hljs-keyword">where</span>
+ l :: g (<span class="hljs-type">Free</span> σ a) x -&gt; <span class="hljs-type">Ran</span> σ <span class="hljs-type">Forget</span> g a x
+ l g = <span class="hljs-type">Ran1</span> $ \k -&gt; comap (couniversal $ remember0 . k) $$ g
+
+ r :: <span class="hljs-type">Ran</span> σ <span class="hljs-type">Forget</span> g a x -&gt; g (<span class="hljs-type">Free</span> σ a) x
+ r (<span class="hljs-type">Ran1</span> e) = e $ <span class="hljs-type">Forget0</span> . pure
+
+<span class="hljs-title">free0Absolute0Op</span> :: <span class="hljs-keyword">forall</span> g σ a. (<span class="hljs-type">Contravariant</span> g, σ (<span class="hljs-type">Free</span> σ a))
+                 =&gt; g (<span class="hljs-type">Free0</span> σ a) &lt; -&gt; <span class="hljs-type">RanOp</span> σ <span class="hljs-type">Forget</span> g a
+<span class="hljs-title">free0Absolute0Op</span> = (l, r)
+ <span class="hljs-keyword">where</span>
+ l :: g (<span class="hljs-type">Free</span> σ a) -&gt; <span class="hljs-type">RanOp</span> σ <span class="hljs-type">Forget</span> g a
+ l = <span class="hljs-type">RanOp0</span> $ <span class="hljs-type">Forget0</span> . pure
+
+ r :: <span class="hljs-type">RanOp</span> σ <span class="hljs-type">Forget</span> g a -&gt; g (<span class="hljs-type">Free</span> σ a)
+ r (<span class="hljs-type">RanOp0</span> h g) = contramap (couniversal $ remember0 . h) g
+
+<span class="hljs-comment">-- ...</span>
+</code></pre>
+<p>As can be seen, the definitions share a lot of structure. I'm quite confident that with the right building blocks these could be defined once for each of the four types of Kan extensions, with types like:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">freeAbsolute</span>
+  :: <span class="hljs-keyword">forall</span> g σ a. (<span class="hljs-type">Covariant</span> g, σ (<span class="hljs-type">Free</span> σ a))
+  =&gt; g (<span class="hljs-type">Free</span> σ a) &lt; ~&gt; <span class="hljs-type">Ran</span> σ <span class="hljs-type">Forget</span> g a
+
+<span class="hljs-title">cofreeAbsolute</span>
+  :: <span class="hljs-keyword">forall</span> g σ a. (<span class="hljs-type">Covariant</span> g, σ (<span class="hljs-type">Cofree</span> σ a))
+  =&gt; g (<span class="hljs-type">Cofree</span> σ a) &lt; ~&gt; <span class="hljs-type">Lan</span> σ <span class="hljs-type">Forget</span> g a
+
+<span class="hljs-title">freeAbsoluteOp</span>
+  :: <span class="hljs-keyword">forall</span> g σ a. (<span class="hljs-type">Contravariant</span> g, σ (<span class="hljs-type">Free</span> σ a))
+  =&gt; g (<span class="hljs-type">Free</span> σ a) &lt; ~&gt; <span class="hljs-type">RanOp</span> σ <span class="hljs-type">Forget</span> g a
+
+<span class="hljs-title">cofreeAbsoluteOp</span>
+  :: <span class="hljs-keyword">forall</span> g σ a. (<span class="hljs-type">Contravariant</span> g, σ (<span class="hljs-type">Cofree</span> σ a))
+  =&gt; g (<span class="hljs-type">Cofree</span> σ a) &lt; ~&gt; <span class="hljs-type">LanOp</span> σ <span class="hljs-type">Forget</span> g a
+</code></pre>
+<p>However, it seems quite difficult to structure things in a way such that GHC will accept the definitions. I've successfully written <code>freeAbsolute</code> using some axioms, but turning those axioms into class definitions and the like seems impossible.</p>
+<p>Anyhow, the punchline is that we can prove absoluteness using only the premise that there is a valid <code>σ</code> instance for <code>Free σ</code> and <code>Cofree σ</code>. This tends to be quite easy; we just borrow the structure of the type we are quantifying over. This means that in all these cases, we are justified in saying that <code>Free σ ⊣ Forget σ ⊣ Cofree σ</code>, and we have a very generic presentations of (co)free structures in Haskell. So let's look at some.</p>
+<p>We've already seen <code>Free Monoid</code>, and last time we talked about <code>Free Applicative</code>, and its relation to traversals. But, <code>Applicative</code> is to traversal as <code>Functor</code> is to lens, so it may be interesting to consider constructions on that. Both <code>Free Functor</code> and <code>Cofree Functor</code> make <code>Functor</code>s:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> (<span class="hljs-type">Free1</span> <span class="hljs-type">Functor</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+  fmap f (<span class="hljs-type">Free1</span> e) = <span class="hljs-type">Free1</span> $ fmap f . e
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> (<span class="hljs-type">Cofree1</span> <span class="hljs-type">Functor</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+  fmap f (<span class="hljs-type">Cofree1</span> h e) = <span class="hljs-type">Cofree1</span> h (fmap f e)
+</code></pre>
+<p>And of course, they are (co)monads, covariant functors and (co)universal among <code>Functor</code>s. But, it happens that I know some other types with these properties:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">CoYo</span> f a = forall e. <span class="hljs-type">CoYo</span> (<span class="hljs-title">e</span> -&gt; <span class="hljs-title">a</span>) (<span class="hljs-title">f</span> <span class="hljs-title">e</span>)</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Covariant</span> <span class="hljs-type">CoYo</span> <span class="hljs-keyword">where</span></span>
+  comap f = <span class="hljs-type">Transform</span> $ \(<span class="hljs-type">CoYo</span> h e) -&gt; <span class="hljs-type">CoYo</span> h (f $$ e)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> <span class="hljs-type">CoYo</span> <span class="hljs-keyword">where</span></span>
+  pure = <span class="hljs-type">Transform</span> $ <span class="hljs-type">CoYo</span> id
+  join = <span class="hljs-type">Transform</span> $ \(<span class="hljs-type">CoYo</span> h (<span class="hljs-type">CoYo</span> h' e)) -&gt; <span class="hljs-type">CoYo</span> (h . h') e
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> (<span class="hljs-type">CoYo</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+  fmap f (<span class="hljs-type">CoYo</span> h e) = <span class="hljs-type">CoYo</span> (f . h) e
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Couniversal</span> <span class="hljs-type">Functor</span> <span class="hljs-type">CoYo</span> <span class="hljs-keyword">where</span></span>
+  couniversal tr = <span class="hljs-type">Transform</span> $ \(<span class="hljs-type">CoYo</span> h e) -&gt; fmap h (tr $$ e)
+
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Yo</span> f a = <span class="hljs-type">Yo</span> { <span class="hljs-title">oy</span> :: <span class="hljs-title">forall</span> <span class="hljs-title">r</span>. (<span class="hljs-title">a</span> -&gt; <span class="hljs-title">r</span>) -&gt; <span class="hljs-title">f</span> <span class="hljs-title">r</span> }</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Covariant</span> <span class="hljs-type">Yo</span> <span class="hljs-keyword">where</span></span>
+  comap f = <span class="hljs-type">Transform</span> $ \(<span class="hljs-type">Yo</span> e) -&gt; <span class="hljs-type">Yo</span> $ (f $$) . e
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Comonad</span> <span class="hljs-type">Yo</span> <span class="hljs-keyword">where</span></span>
+  extract = <span class="hljs-type">Transform</span> $ \(<span class="hljs-type">Yo</span> e) -&gt; e id
+  split = <span class="hljs-type">Transform</span> $ \(<span class="hljs-type">Yo</span> e) -&gt; <span class="hljs-type">Yo</span> $ \k -&gt; <span class="hljs-type">Yo</span> $ \k' -&gt; e $ k' . k
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> (<span class="hljs-type">Yo</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+  fmap f (<span class="hljs-type">Yo</span> e) = <span class="hljs-type">Yo</span> $ \k -&gt; e (k . f)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Universal</span> <span class="hljs-type">Functor</span> <span class="hljs-type">Yo</span> <span class="hljs-keyword">where</span></span>
+  universal tr = <span class="hljs-type">Transform</span> $ \e -&gt; <span class="hljs-type">Yo</span> $ \k -&gt; tr $$ fmap k e
+</code></pre>
+<p>These are the types involved in the (co-)Yoneda lemma. <code>CoYo</code> is a monad, couniversal among functors, and <code>CoYo f</code> is a <code>Functor</code>. <code>Yo</code> is a comonad, universal among functors, and is always a <code>Functor</code>. So, are these equivalent types?</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">coyoIso</span> :: <span class="hljs-type">CoYo</span> &lt; ~&gt; <span class="hljs-type">Free</span> <span class="hljs-type">Functor</span>
+<span class="hljs-title">coyoIso</span> = (<span class="hljs-type">Transform</span> $ couniversal pure, <span class="hljs-type">Transform</span> $ couniversal pure)
+
+<span class="hljs-title">yoIso</span> :: <span class="hljs-type">Yo</span> &lt; ~&gt; <span class="hljs-type">Cofree</span> <span class="hljs-type">Functor</span>
+<span class="hljs-title">yoIso</span> = (<span class="hljs-type">Transform</span> $ universal extract, <span class="hljs-type">Transform</span> $ universal extract)
+</code></pre>
+<p>Indeed they are. And similar identities hold for the contravariant versions of these constructions.</p>
+<p>I don't have much of a use for this last example. I suppose to be perfectly precise, I should point out that these uses of <code>(Co)Yo</code> are not actually part of the (co-)Yoneda lemma. They are two different constructions. The (co-)Yoneda lemma can be given in terms of Kan extensions as:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">yoneda</span> :: <span class="hljs-type">Ran</span> <span class="hljs-type">Id</span> f &lt; ~&gt; f
+
+<span class="hljs-title">coyoneda</span> :: <span class="hljs-type">Lan</span> <span class="hljs-type">Id</span> f &lt; ~&gt; f
+</code></pre>
+<p>But, the use of <code>(Co)Yo</code> to make <code>Functor</code>s out of things that aren't necessarily is properly thought of in other terms. In short, we have some kind of category of Haskell types with only identity arrows---it is discrete. Then any type constructor, even non-functorial ones, is certainly a functor from said category (call it Haskrete) into the normal one (Hask). And there is an inclusion functor from Haskrete into Hask:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">             <span class="hljs-type">F</span>
+ <span class="hljs-type">Haskrete</span> -----&gt; <span class="hljs-type">Hask</span>
+      |        /|
+      |       /
+      |      /
+<span class="hljs-type">Incl</span>  |     /
+      |    /  <span class="hljs-type">Ran</span>/<span class="hljs-type">Lan</span> <span class="hljs-type">Incl</span> <span class="hljs-type">F</span>
+      |   /
+      |  /
+      v /
+    <span class="hljs-type">Hask</span>
+</code></pre>
+<p>So, <code>(Co)Free Functor</code> can also be thought of in terms of these Kan extensions involving the discrete category.</p>
+<p>To see more fleshed out, loadable versions of the code in this post, see <a href="http://code.haskell.org/~dolio/haskell-share/categories-of-structures/COS.hs">this file</a>. I may also try a similar Agda development at a later date, as it may admit the more general absoluteness constructions easier.</p>
+<p>[0]: The reason for restricting ourselves to kinds involving only <code>*</code> and <code>(-&gt;)</code> is that they work much more simply than data kinds. Haskell values can't depend on type-level entities without using type classes. For *, this is natural, but for something like <code>Bool -&gt; *</code>, it is more natural for transformations to be able to inspect the booleans, and so should be something more like <code>forall b. InspectBool b =&gt; f b -&gt; g b</code>.</p>
+<p>[1]: First-class types are what you get by removing type families and synonyms from consideration. The reason for doing so is that these can't be used properly as parameters and the like, except in cases where they reduce to some other type that is first-class. For example, if we define:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">I</span> a = a</span>
+</code></pre>
+<p>even though GHC will report <code>I :: * -&gt; *</code>, it is not legal to write <code>Transform I I</code>.</p>
+</article><section class="comments" id="comments"><h2>From the original discussion</h2><p class="editorial">Selected questions, explanations, and corrections. Original wording and dates; spam and automated trackbacks omitted.</p><article class="comment" id="comment-128614"><header><strong>wren romano</strong><a href="../../../reader/2015/categories-of-structures-in-haskell/#comment-128614">May 26th, 2015 at 9:57 pm</a></header><p>i.e., the category theoretic definitions. The Haskell newtype definitions are fine</p>
+</article></section><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/categories-of-structures-in-haskell.md" download>Article Markdown</a> · <a href="../../../source/articles/categories-of-structures-in-haskell.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2015/heap-of-successes/">How to Replace Failure by a Heap of Successes →</a><a href="../../../reader/2015/moore-for-less/">Moore for Less →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Dan Doel.<br>Comments attributed to their original authors.</p></footer></main></body></html>

@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Monads from Comonads · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Category Theory · Comonads · Haskell · Kan Extensions · Mathematics · Monads</span><span>Edward Kmett · <time datetime="2011-06-27">27 June 2011</time></span></div><h1>Monads from Comonads</h1></header><details class="contents"><summary>On this page</summary><ol><li><a href="#a-monad-sandwich">A Monad Sandwich</a></li><li><a href="#a-contravariant-comonad-sandwich">A Contravariant Comonad Sandwich</a></li><li><a href="#an-end-as-the-means">An End as the Means</a></li><li><a href="#from-comonad-transformers-to-the-mtl">From comonad-transformers to the mtl</a></li><li><a href="#combinators-please">Combinators Please!</a></li><li><a href="#co-density">Co-Density?</a></li><li><a href="#comonads-from-monads">Comonads from Monads?</a></li></ol></details><article class="prose"><span id="more-291"></span><p>Today I'll show that you can derive a <code>Monad</code> from any old <code>Comonad</code> you have lying around.</p>
+<p>But first, we'll need to take a bit of a bit of a detour.</p>
+<h2 id="a-monad-sandwich">A Monad Sandwich</h2>
+<p>We'll need the definition of an <a href="http://en.wikipedia.org/wiki/Adjoint_functors">adjunction</a> on the category of Haskell types, which we can strip down and borrow from my <a href="https://hackage.haskell.org/package/adjunctions">adjunctions</a> package.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> (<span class="hljs-type">Functor</span> <span class="hljs-title">f</span>, <span class="hljs-type">Representable</span> <span class="hljs-title">u</span>) =&gt;
+         <span class="hljs-type">Adjunction</span> f u | f -&gt; u, u -&gt; f <span class="hljs-keyword">where</span></span>
+    leftAdjunct :: (f a -&gt; b) -&gt; a -&gt; u b
+    rightAdjunct :: (a -&gt; u b) -&gt; f a -&gt; b
+</code></pre>
+<p>Here we can define our Adjunction by defining leftAdjunct and rightAdjunct, such that they witness an isomorphism from <code>(f a -&gt; b)</code> to <code>(a -&gt; u b)</code></p>
+<p>Every <a href="https://hackage.haskell.org/packages/archive/adjunctions/1.0.0/doc/html/Data-Functor-Adjunction.html">Adjunction</a> <code>F -| G : C -&gt; D</code>, gives rise to a monad GF on D and a Comonad FG on C.</p>
+<p>In addition to this, you can sandwich an additional monad M on C in between GF to give a monad GMF on D:</p>
+<p><a href="https://hackage.haskell.org/packages/archive/adjunctions/1.0.0/doc/html/Control-Monad-Trans-Adjoint.html">Control.Monad.Trans.Adjoint</a></p>
+<p>and you can sandwich a comonad W on D in between F and G to yield the comonad FWG on C:</p>
+<p><a href="https://hackage.haskell.org/packages/archive/adjunctions/1.0.0/doc/html/Control-Comonad-Trans-Adjoint.html">Control.Comonad.Trans.Adjoint</a></p>
+<h2 id="a-contravariant-comonad-sandwich">A Contravariant Comonad Sandwich</h2>
+<p>As was first shown to me me by Derek Elkins, this construction works even when you C is not the category of Haskell types!</p>
+<p>Consider the <a href="https://hackage.haskell.org/packages/archive/contravariant/0.1.2/doc/html/Data-Functor-Contravariant.html">Contravariant</a> functor <code>Op r</code>:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Op</span> a b = <span class="hljs-type">Op</span> { <span class="hljs-title">getOp</span> :: <span class="hljs-title">b</span> -&gt; <span class="hljs-title">a</span> }</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Contravariant</span> (<span class="hljs-type">Op</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  contramap f g = <span class="hljs-type">Op</span> (getOp g . f)
+</code></pre>
+<p>We can view <code>Op r</code> as a functor from <code>Hask^op -&gt; Hask</code> or as one from <code>Hask -&gt; Hask^op</code>.</p>
+<p>We can define a notion of a contravariant adjunction <code>F -| G : Hask^op -&gt; Hask</code>.</p>
+<p><a href="https://hackage.haskell.org/packages/archive/adjunctions/1.0.0/doc/html/Data-Functor-Contravariant-Adjunction.html">Data.Functor.Contravariant.Adjunction</a></p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> (<span class="hljs-type">Contravariant</span> <span class="hljs-title">f</span>, <span class="hljs-type">Corepresentable</span> <span class="hljs-title">g</span>) =&gt;
+       <span class="hljs-type">Adjunction</span> f g | f -&gt; g, g -&gt; f <span class="hljs-keyword">where</span></span>
+    leftAdjunct :: (b -&gt; f a) -&gt; a -&gt; g b
+    rightAdjunct :: (a -&gt; g b) -&gt; b -&gt; f a
+</code></pre>
+<p>Where, now, <code>leftAdjunct</code> and <code>rightAdjunct</code> witness the isomorphism from <code>(f a &lt; - b)</code> to <code>(a -&gt; g b)</code>, which means once you flip the arrow around both seem to be going the same way. Ultimately any contravariant adjunction on Hask is comprised of two isomorphic functors, each self-adjoint.</p>
+<p>This gives rise to one notion of a comonad-to-monad transformer!</p>
+<p><a href="https://hackage.haskell.org/packages/archive/adjunctions/1.0.0/doc/html/Control-Monad-Trans-Contravariant-Adjoint.html">Control.Monad.Trans.Contravariant.Adjoint</a></p>
+<p>But we can we do better?</p>
+<h2 id="an-end-as-the-means">An End as the Means</h2>
+<p>First, some boilerplate.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE Rank2Types, FlexibleInstances, FlexibleContexts, MultiParamTypeClasses, UndecidableInstances #-}</span>
+
+<span class="hljs-keyword">import</span> Data.Monoid
+<span class="hljs-keyword">import</span> Control.Comonad
+<span class="hljs-keyword">import</span> Control.Applicative
+<span class="hljs-keyword">import</span> Control.Comonad.Store.Class
+<span class="hljs-keyword">import</span> Control.Comonad.Env.Class <span class="hljs-keyword">as</span> Env
+<span class="hljs-keyword">import</span> Control.Comonad.Traced.Class <span class="hljs-keyword">as</span> Traced
+<span class="hljs-keyword">import</span> Control.Monad.Reader.Class
+<span class="hljs-keyword">import</span> Control.Monad.Writer.Class
+<span class="hljs-keyword">import</span> Control.Monad.State.Class
+<span class="hljs-keyword">import</span> Data.Functor.Bind
+</code></pre>
+<p>Our new comonad to monad transformer is given by</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Co</span> w a = <span class="hljs-type">Co</span> { <span class="hljs-title">runCo</span> :: <span class="hljs-title">forall</span> <span class="hljs-title">r</span>. <span class="hljs-title">w</span> (<span class="hljs-title">a</span> -&gt; <span class="hljs-title">r</span>) -&gt; <span class="hljs-title">r</span> }</span>
+</code></pre>
+<p>What we've done is added a quantifier to prevent the use of the type <em>r</em>, as we did when describing <a href="https://hackage.haskell.org/packages/archive/kan-extensions/0.5.1/doc/html/Control-Monad-Codensity.html"><code>Codensity</code></a> and <a href="https://hackage.haskell.org/packages/archive/kan-extensions/0.5.1/doc/html/Data-Functor-KanExtension.html"><code>Ran</code></a>, categorically we've taken some kind of <a href="http://en.wikipedia.org/wiki/End_(category_theory)">end</a>. This idea came to me after an observation was made by Russell O'Connor that <code>Conts (Store s) a</code> was pretty close to a continuation passing style version of <code>State s</code>.</p>
+<p>Now, we can start spitting out instances for this type.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> w =&gt; <span class="hljs-type">Functor</span> (<span class="hljs-type">Co</span> <span class="hljs-title">w</span>) <span class="hljs-keyword">where</span></span>
+   fmap f (<span class="hljs-type">Co</span> w) = <span class="hljs-type">Co</span> (w . fmap (. f))
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Comonad</span> w =&gt; <span class="hljs-type">Monad</span> (<span class="hljs-type">Co</span> <span class="hljs-title">w</span>) <span class="hljs-keyword">where</span></span>
+   return a = <span class="hljs-type">Co</span> (`extract` a)
+   <span class="hljs-type">Co</span> k &gt;&gt;= f = <span class="hljs-type">Co</span> (k .extend (\wa a -&gt; runCo (f a) wa))
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Comonad</span> w =&gt; <span class="hljs-type">Applicative</span> (<span class="hljs-type">Co</span> <span class="hljs-title">w</span>) <span class="hljs-keyword">where</span></span>
+   mf &lt; *&gt; ma = mf &gt;&gt;= \f -&gt; fmap f ma
+   pure a = <span class="hljs-type">Co</span> (`extract` a)
+</code></pre>
+<p>In my break-out of category-extras, I've split off the semigroupoid structure of Kleisli-, co-Kleisli-, and static- arrow composition as <code>Bind</code>, <code>Extend</code> and <code>Apply</code> respectively, so we can make use of slightly less structure and get slightly less structure in turn:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Extend</span> w =&gt; <span class="hljs-type">Bind</span> (<span class="hljs-type">Co</span> <span class="hljs-title">w</span>) <span class="hljs-keyword">where</span></span>
+   <span class="hljs-type">Co</span> k &gt;&gt;- f = <span class="hljs-type">Co</span> (k .extend (\wa a -&gt; runCo (f a) wa))
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Extend</span> w =&gt; <span class="hljs-type">Apply</span> (<span class="hljs-type">Co</span> <span class="hljs-title">w</span>) <span class="hljs-keyword">where</span></span>
+   mf &lt; .&gt; ma = mf &gt;&gt;- \f -&gt; fmap f ma
+</code></pre>
+<h2 id="from-comonad-transformers-to-the-mtl">From comonad-transformers to the mtl</h2>
+<p>We can look at how this transforms some particular comonads.</p>
+<p>The comonadic version of <a href="https://hackage.haskell.org/packages/archive/mtl/2.0.1.0/doc/html/Control-Monad-State-Lazy.html"><code>State</code></a> is <a href="https://hackage.haskell.org/packages/archive/comonad-transformers/1.7/doc/html/Control-Comonad-Trans-Store-Lazy.html"><code>Store</code></a>. Looking at <code>Co (Store s) a</code></p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">Co</span> (<span class="hljs-type">Store</span> s) a ~ <span class="hljs-keyword">forall</span> r. ((s -&gt; a -&gt; r, s) -&gt; r)
+         ~ <span class="hljs-keyword">forall</span> r. (s -&gt; a -&gt; r) -&gt; s -&gt; r
+         ~ <span class="hljs-keyword">forall</span> r. (a -&gt; s -&gt; r) -&gt; s -&gt; r
+         ~ <span class="hljs-type">Codensity</span> ((-&gt;)s) a
+         ~ <span class="hljs-type">State</span> s a
+</code></pre>
+<p>This gives rise to a leap of intuition that we'll motivate further below:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">ComonadStore</span> s m =&gt; <span class="hljs-type">MonadState</span> s (<span class="hljs-type">Co</span> <span class="hljs-title">m</span>) <span class="hljs-keyword">where</span></span>
+   get = <span class="hljs-type">Co</span> (\w -&gt; extract w (pos w))
+   put s = <span class="hljs-type">Co</span> (\w -&gt; peek s w ())
+</code></pre>
+<p>Sadly this breaks down a little for <code>Writer</code> and <code>Reader</code> as the <code>mtl</code> unfortunately has historically included a bunch of extra baggage in these classes. In particular, in reader, the notion of <code>local</code> isn't always available, blocking some otherwise perfectly good <code>MonadReader</code> instances, and I've chosen not to repeat this mistake in <code>comonad-transformers</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">ComonadEnv</span> e m =&gt; <span class="hljs-type">MonadReader</span> e (<span class="hljs-type">Co</span> <span class="hljs-title">m</span>) <span class="hljs-keyword">where</span></span>
+   ask = <span class="hljs-type">Co</span> (\w -&gt; extract w (<span class="hljs-type">Env</span>.ask w))
+   local = error <span class="hljs-string">"local"</span>
+</code></pre>
+<p>Ideally, local belongs in a subclass of <code>MonadReader</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Monad</span> m =&gt; <span class="hljs-type">MonadReader</span> e m | m -&gt; e <span class="hljs-keyword">where</span></span>
+   ask :: m a -&gt; e
+<span class="hljs-class">
+<span class="hljs-keyword">class</span> <span class="hljs-type">MonadReader</span> e m =&gt; <span class="hljs-type">MonadLocal</span> e m | m -&gt; e <span class="hljs-keyword">where</span></span>
+   local :: (e -&gt; e) -&gt; m a -&gt; m a
+</code></pre>
+<p>Similarly there is a lot of baggage in the <code>MonadWriter</code>. The <code>Monoid</code> constraint isnt necessary for the class itself, just for most instances, and the <code>listen</code> and <code>pass</code> members should be a member of a more restricted subclass as well to admit some missing <code>MonadWriter</code> instances, but we can at least provide the notion of tell that is critical to <code>Writer</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> (<span class="hljs-type">Monoid</span> <span class="hljs-title">e</span>, <span class="hljs-type">ComonadTraced</span> <span class="hljs-title">e</span> <span class="hljs-title">m</span>) =&gt; <span class="hljs-type">MonadWriter</span> e (<span class="hljs-type">Co</span> <span class="hljs-title">m</span>) <span class="hljs-keyword">where</span></span>
+   tell m = <span class="hljs-type">Co</span> (\w -&gt; <span class="hljs-type">Traced</span>.trace m w ())
+   listen = error <span class="hljs-string">"listen"</span>
+   pass = error <span class="hljs-string">"pass"</span>
+</code></pre>
+<p>But given the split out</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> m =&gt; <span class="hljs-type">MonadWriter</span> e m | m -&gt; e <span class="hljs-keyword">where</span></span>
+    tell :: e -&gt; m ()
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">MonadWriter</span> e m =&gt; <span class="hljs-type">MonadListen</span> e m | m -&gt; e
+    listen :: m a -&gt; m (<span class="hljs-title">a</span>, <span class="hljs-title">w</span>)
+    pass :: m (<span class="hljs-title">a</span>, <span class="hljs-title">w</span> -&gt; <span class="hljs-title">w</span>) -&gt; m a
+</span></code></pre>
+<p>We could provide this functionality more robustly. (There is a similar subset of <code>Comonad</code>s that can provide listen and pass analogues.)</p>
+<p>While I am now the maintainer of the mtl, I can't really justify making the above corrections to the class hierarchy at this time. They would theoretically break a lot of code. I would be curious to see how much code would break in practice though.</p>
+<h2 id="combinators-please">Combinators Please!</h2>
+<p>There is a recurring pattern in the above code, so we can also improve this construction by providing some automatic lifting combinators that take certain cokleisli arrows and give us monadic values</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">lift0</span> :: <span class="hljs-type">Comonad</span> w =&gt; (<span class="hljs-keyword">forall</span> a. w a -&gt; s) -&gt; <span class="hljs-type">Co</span> w s
+<span class="hljs-title">lift0</span> f = <span class="hljs-type">Co</span> (extract &lt; *&gt; f)
+
+<span class="hljs-title">lift1</span> :: (<span class="hljs-keyword">forall</span> a. w a -&gt; a) -&gt; <span class="hljs-type">Co</span> w ()
+<span class="hljs-title">lift1</span> f = <span class="hljs-type">Co</span> (`f` ())
+</code></pre>
+<p>along with their inverses</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">lower0</span> :: <span class="hljs-type">Functor</span> w =&gt; <span class="hljs-type">Co</span> w s -&gt; w a -&gt; s
+<span class="hljs-title">lower0</span> (<span class="hljs-type">Co</span> f) w = f (id &lt; $ w)
+
+<span class="hljs-title">lower1</span> :: <span class="hljs-type">Functor</span> w =&gt; <span class="hljs-type">Co</span> w () -&gt; w a -&gt; a
+<span class="hljs-title">lower1</span> (<span class="hljs-type">Co</span> f) w = f (fmap const w)
+</code></pre>
+<p>(The proofs that these are inverses are quite hairy, and lean heavily on parametricity.)</p>
+<p>Then in the above, the code simplifies to:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">get</span> = lift0 pos
+<span class="hljs-title">put</span> s = lift1 (peek s)
+<span class="hljs-title">ask</span> = lift0 <span class="hljs-type">Env</span>.ask
+<span class="hljs-title">tell</span> s = lift1 (tell s)
+</code></pre>
+<h2 id="co-density">Co-Density?</h2>
+<p>Co and Codensity are closely related.</p>
+<p>Given any Comonad W, it is given rise to by the composition FG for some adjunction <code>F -| G : Hask -&gt; C</code>.</p>
+<p>Considering only the case where <code>C = Hask</code> for now, we can find that</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">Co</span> w a ~ <span class="hljs-keyword">forall</span> r. (f (g (a -&gt; r)) -&gt; r).
+</code></pre>
+<p>Since <code>f -| g</code>, we know that <code>g</code> is <code>Representable</code> by <code>f ()</code>, as witnessed by:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">tabulateAdjunction</span> :: <span class="hljs-type">Adjunction</span> f u =&gt; (f () -&gt; b) -&gt; u b
+<span class="hljs-title">tabulateAdjunction</span> f = leftAdjunct f ()
+
+<span class="hljs-title">indexAdjunction</span> :: <span class="hljs-type">Adjunction</span> f u =&gt; u b -&gt; f a -&gt; b
+<span class="hljs-title">indexAdjunction</span> = rightAdjunct . const
+</code></pre>
+<p>therefore</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">Co</span> w a ~ f (g (a -&gt; r)) -&gt; r ~ f (f () -&gt; a -&gt; r) -&gt; r
+</code></pre>
+<p>Since <em>f</em> is a left adjoint functor, <code>f a ~ (a, f ())</code> by Sjoerd Visscher's elegant little <code>split</code> combinator:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">split</span> :: <span class="hljs-type">Adjunction</span> f u =&gt; f a -&gt; (a, f ())
+<span class="hljs-title">split</span> = rightAdjunct (flip leftAdjunct () . (,))
+</code></pre>
+<p>which has the simple inverse</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">unsplit</span> :: <span class="hljs-type">Adjunction</span> f g =&gt; a -&gt; f () -&gt; f a
+<span class="hljs-title">unsplit</span> a = fmap (const a)
+</code></pre>
+<p>so we can apply that to our argument:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">Co</span> w a ~ <span class="hljs-keyword">forall</span> r. f (f () -&gt; a -&gt; r) -&gt; r ~
+   <span class="hljs-keyword">forall</span> r. (f () -&gt; a -&gt; r, f ()) -&gt; r
+</code></pre>
+<p>and curry to obtain</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">Co</span> w a ~ <span class="hljs-keyword">forall</span> r. (f () -&gt; a -&gt; r) -&gt; f () -&gt; r
+</code></pre>
+<p>and swap the arguments</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">Co</span> w a ~ <span class="hljs-keyword">forall</span> r. (a -&gt; f () -&gt; r) -&gt; f () -&gt; r
+</code></pre>
+<p>then we can tabulate the two subtypes of the form (f () -&gt; r)</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">Co</span> w a ~ <span class="hljs-keyword">forall</span> r. (a -&gt; g r) -&gt; g r
+</code></pre>
+<p>and so we find that</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">Co</span> w a ~ <span class="hljs-type">Codensity</span> g a
+</code></pre>
+<p>Finally,</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">Codensity</span> g a ~ <span class="hljs-type">Ran</span> g g a
+</code></pre>
+<p>but we showed back in my second article on Kan extensions that given f -| g that</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">Ran</span> g g a ~ g (f a)
+</code></pre>
+<p>So <code>Co w ~ Co (f . g) ~ (g . f)</code>, the monad given rise to by composing our adjunction the other way!</p>
+<h2 id="comonads-from-monads">Comonads from Monads?</h2>
+<p>Now, given all this you might ask</p>
+<blockquote>
+<p>Is there is a similar construction that lets you build a comonad out of a monad?</p>
+</blockquote>
+<p>Sadly, it seems the answer <strong>in Haskell</strong> is no.</p>
+<p>Any adjunction from <code>Hask -&gt; Hask^op</code> would require two functions</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> (<span class="hljs-type">Contravariant</span> <span class="hljs-title">f</span>, <span class="hljs-type">Contravariant</span> <span class="hljs-title">g</span>) =&gt; <span class="hljs-type">DualContravariantAdjunction</span> f g <span class="hljs-keyword">where</span></span>
+    leftAdjunct :: (f a -&gt; b) -&gt; g b -&gt; a
+    rightAdjunct :: (g b -&gt; a) -&gt; f a -&gt; b
+</code></pre>
+<p>where <strong>both functors are contravariant</strong>.</p>
+<p>Surmounting the intuitionistic impossibility of this, then given any such adjunction, there would be a nice coend we could take, letting us sandwich any <code>Monad</code> in the middle as we did above.</p>
+<p>There does exist one such very boring Contravariant Functor.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Absurd</span> a = <span class="hljs-type">Absurd</span> (<span class="hljs-type">Absurd</span> <span class="hljs-title">a</span>)</span>
+
+<span class="hljs-title">absurdity</span> :: <span class="hljs-type">Absurd</span> a -&gt; b
+<span class="hljs-title">absurdity</span> (<span class="hljs-type">Absurd</span> a) = absurdity a
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Contravariant</span> <span class="hljs-type">Absurd</span> <span class="hljs-keyword">where</span></span>
+   contramap f (<span class="hljs-type">Absurd</span> <span class="hljs-keyword">as</span>) = <span class="hljs-type">Absurd</span> (contramap f <span class="hljs-keyword">as</span>)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">DualContravariantAdjunction</span> <span class="hljs-type">Absurd</span> <span class="hljs-type">Absurd</span> <span class="hljs-keyword">where</span></span>
+    leftAdjunct _ = absurdity
+    rightAdjunct _ = absurdity
+</code></pre>
+<p>We can safely sandwich IO within this adjunction from <code>Hask -&gt; Hask^op</code> to obtain a comonad.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Silly</span> m a = <span class="hljs-type">Silly</span> { <span class="hljs-title">runSilly</span> :: <span class="hljs-type">Absurd</span> (<span class="hljs-title">m</span> (<span class="hljs-type">Absurd</span> <span class="hljs-title">a</span>)) }</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> m =&gt; <span class="hljs-type">Extend</span> (<span class="hljs-type">Silly</span> <span class="hljs-title">m</span>) <span class="hljs-keyword">where</span></span>
+    extend f (<span class="hljs-type">Silly</span> m) = absurdity m
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> m =&gt; <span class="hljs-type">Comonad</span> (<span class="hljs-type">Silly</span> <span class="hljs-title">m</span>) <span class="hljs-keyword">where</span></span>
+    extract (<span class="hljs-type">Silly</span> m) = absurdity m
+</code></pre>
+<p>But for any more interesting such type that actually lets us get at its contents, we would be able to derive a circuitous path to <code>unsafePerformIO</code>!</p>
+<p>Since <code>unsafePerformIO</code> should not be constructible without knowing <code>IO</code> specifics, no <strong>useful</strong> <code>DualContravariantAdjunction</code>s should exist.</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/adjunctions"><code>adjunctions</code></a> · <a href="https://hackage.haskell.org/package/comonad-transformers"><code>comonad-transformers</code></a> · <a href="https://hackage.haskell.org/package/contravariant"><code>contravariant</code></a> · <a href="https://hackage.haskell.org/package/kan-extensions"><code>kan-extensions</code></a> · <a href="https://hackage.haskell.org/package/comonad"><code>comonad</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><section class="comments" id="comments"><h2>From the original discussion</h2><p class="editorial">Selected questions, explanations, and corrections. Original wording and dates; spam and automated trackbacks omitted.</p><article class="comment" id="comment-61799"><header><strong>Edward Kmett</strong><a href="../../../reader/2011/monads-from-comonads/#comment-61799">June 28th, 2011 at 12:28 am</a></header><p>@Edward: I can’t find any links to Dominic’s material on the topic other than his subsequent discussions of codo notation. In there the only thing he has that mixes monads with comonads is a notion of ‘bido’ notation, which is pretty much what sigfpe and Uustalu and Vene have independently advocated as ways to deal with distributive laws over monads and comonads. Sadly, I think that approach doesn’t work out well in practice. I prefer working with comonads over a Kleisli category or monads over a Cokleisli category instead, rather than distributing. This lets me get decent computation sharing.</p>
+</article><article class="comment" id="comment-61868"><header><strong>Josef Svenningsson</strong><a href="../../../reader/2011/monads-from-comonads/#comment-61868">June 28th, 2011 at 10:54 am</a></header><p>Thank you for an awesome blog post! Though I wonder where the ‘Co’ data type comes from. You just pull it out of a hat. Is there a story behind it?</p>
+</article><article class="comment" id="comment-61869"><header><strong>Edward Kmett</strong><a href="../../../reader/2011/monads-from-comonads/#comment-61869">June 28th, 2011 at 11:26 am</a></header><p>Acutally, it _was_ pretty much pulled out of a hat. ;)</p>
+<p>It came out as a happy accident in an email discussion with Russell O’Connor and Jacques Carette about exactly in what sense Store and State were dual.</p>
+</article><article class="comment" id="comment-130731"><header><strong>Zemyla</strong><a href="../../../reader/2011/monads-from-comonads/#comment-130731">November 4th, 2015 at 3:30 pm</a></header><p>It occurs to me that the form of Co w:</p>
+<p>Co w a = forall r. w (a -&gt; r) -&gt; r</p>
+<p>is to the Cokleisli arrow as the Yoneda encoding of m:</p>
+<p>Yoneda m a = forall r. (a -&gt; r) -&gt; m r</p>
+<p>is to the Kleisli arrow. Is there a way to generalize this to any ArrowApply?</p>
+</article></section><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/monads-from-comonads.md" download>Article Markdown</a> · <a href="../../../source/articles/monads-from-comonads.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2011/free-monads-for-less-3/">Free Monads for Less (Part 3 of 3): Yielding IO →</a><a href="../../../reader/2011/monad-transformers-from-comonads/">Monad Transformers from Comonads →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

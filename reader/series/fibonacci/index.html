@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fibonacci · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><p class="article-meta">A series by Edward Kmett</p><h1>Fibonacci</h1></header><div class="prose"><p>It is more or less a joke that all that functional programmers care about are ways to compute the Fibonacci numbers.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">fibs</span> = <span class="hljs-number">1</span>:<span class="hljs-number">1</span>:zipWith (+) fibs (tail fibs)
+</code></pre>
+<p>Our primary benchmark suite for Haskell is named <code>nofib</code> after all.</p>
+<p>But what if we embrace this predilection? What tools and powers do we gain?</p>
+</div><div class="article-list"><article><time datetime="2015-04-28">28 April 2015</time><h2><a href="../../../reader/2015/fibonacci-leonardo/">Part 1: Leonardo Random Access Lists</a></h2></article><article><time datetime="2015-10-13">13 October 2015</time><h2><a href="../../../reader/2015/fibonacci-search/">Part 2: Open-Ended Fibonacci Search</a></h2></article></div><nav class="related"><a href="../../../reader/">All writing</a></nav></main></body></html>
