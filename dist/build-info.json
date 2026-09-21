@@ -1,0 +1,22 @@
+{
+  "compiler": "GHC 9.14.1.20260731",
+  "target": "wasm32-wasi",
+  "wasm_bytes": 1644489,
+  "wasm_sha256": "fa67869d6c25de92ee73c7f382c6e8f336f2d8dfb9d01680fad4b26fc8dc6ebd",
+  "source_sha256": {
+    "Browser.hs": "43f58a09966763d65ad2c59518ac3fa59bc78a6a3fa7971d4780f62bdedf0e7b",
+    "CRC.hs": "51024e167fb5119c66053c13208ed88b088058a0ebbc2d65d0867cf185c9c67e",
+    "Server.hs": "0e4417e6f8b8da6173e608861d3901e84816888816800b49cf0588def993f295"
+  },
+  "exports": [
+    "hs_init",
+    "malloc",
+    "free",
+    "crc_direct",
+    "crc_remainder",
+    "crc_factor",
+    "crc_multiply",
+    "crc_combine",
+    "crc_finish"
+  ]
+}

@@ -1,0 +1,10 @@
+.toolchain/
+build/
+dist-newstyle/
+node_modules/
+.DS_Store
+*.hi
+*.o
+*_stub.h
+__pycache__/
+*.pyc

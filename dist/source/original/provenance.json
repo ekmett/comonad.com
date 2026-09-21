@@ -1,0 +1,16 @@
+{
+  "author": "Edward Kmett",
+  "title": "Parallel and Incremental CRCs",
+  "date": "2013-09-11",
+  "retrieved": "2026-09-21",
+  "url": "https://www.schoolofhaskell.com/user/edwardk/parallel-crc",
+  "raw_url": "https://www.schoolofhaskell.com/tutorial-raw/4906/3310c904c4265dd33884d81f64bff43f7f927209",
+  "sha256": "1c8849db6e1aa5c436778b63d63ff02c9a7a7699198808db21a7690d697375f4",
+  "blocks": [
+    "LeftFold.hs",
+    "Polynomial.hs",
+    "MonoidalCRC.hs",
+    "MonoidalFold.hs",
+    "MonoidalFoldExpanded.hs"
+  ]
+}
