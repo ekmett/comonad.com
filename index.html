@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parallel and Incremental CRCs · The Comonad.Reader</title>
+<meta name="description" content="Edward Kmett’s composable CRCs, with interactive Haskell examples running locally in WebAssembly.">
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<header class="masthead"><a class="wordmark" href="./">The Comonad<span>.</span>Reader</a><span class="edition">An executable notebook · 01</span></header>
+<main>
+<div class="article-meta"><span>ALGORITHMS / HASKELL</span><span>Edward Kmett · 11 September 2013</span></div>
+<h1>Parallel and<br><em>Incremental CRCs</em></h1>
+<p class="lede">A checksum needn’t begin at the beginning.<br>Calculate the pieces, then compose their answers.</p>
+<div class="article-links"><a href="https://www.schoolofhaskell.com/user/edwardk/parallel-crc" target="_blank" rel="noreferrer">Read the original article ↗</a><a href="#source">Explore the code ↓</a><span id="runtime" role="status">Loading Haskell…</span></div>
+<noscript><p>This page needs JavaScript to run the interactive examples. The <a href="./source/original/parallel-crc.md">original article</a> and <a href="./source/CRC.hs">Haskell source</a> remain available.</p></noscript>
+<section class="experiment" aria-labelledby="split-title">
+<div class="section-heading"><span class="number">01</span><div><h2 id="split-title">Split anywhere. Get the same CRC.</h2><p>Move the boundary. Each half carries enough information to compose the whole.</p></div></div>
+<div class="input-heading"><label for="message">Your message</label><div class="presets"><button type="button" data-preset="123456789">Test vector</button><button type="button" data-preset="A checksum needn't begin at the beginning.">Sentence</button><button type="button" data-preset="λ → Haskell 🦀">Unicode</button><button type="button" data-preset="">Empty</button></div></div>
+<textarea id="message" rows="2" maxlength="1024" spellcheck="false" disabled>123456789</textarea>
+<div class="slider-label"><label for="split">Split after <strong id="split-position">4</strong> bytes</label><span id="byte-count">9 UTF-8 bytes</span></div>
+<input id="split" type="range" min="0" max="9" value="4" disabled>
+<div class="halves"><div class="half half-a"><div class="half-title"><strong>A</strong><span id="a-count"></span></div><div class="bytes" id="a-bytes"></div><dl><dt>Remainder <i>p</i></dt><dd id="a-p">—</dd><dt>Shift factor <i>m</i></dt><dd id="a-m">—</dd></dl></div><div class="half half-b"><div class="half-title"><strong>B</strong><span id="b-count"></span></div><div class="bytes" id="b-bytes"></div><dl><dt>Remainder <i>q</i></dt><dd id="b-p">—</dd><dt>Shift factor <i>n</i></dt><dd id="b-m">—</dd></dl></div></div>
+<div class="composition"><span class="formula">(p, m) ⊗ (q, n) = (pn + q, mn)</span><span>+ is XOR · multiplication is polynomial multiplication modulo the CRC polynomial</span></div>
+<div class="results"><div><span class="eyebrow">DIRECT CRC-32</span><output id="direct">—</output><small>One pass over the message</small></div><div><span class="eyebrow">COMPOSED CRC-32</span><output id="combined">—</output><small>Two summaries, one composition</small></div><div class="match" id="match" role="status">Waiting for Haskell</div></div>
+<p class="footnote">Bytes are shown in hexadecimal. Splits may fall inside a UTF-8 character; the checksum still works on the exact bytes. Empty pieces are the identity.</p>
+</section>
+<section class="explanation"><div class="margin-note">THE IDEA</div><div><h2>Keep the remainder.<br>Remember the shift.</h2><p>A fragment’s summary stores two polynomials: its remainder starting from zero, and the effect of shifting by its length. When we join fragments, we shift the left remainder by the right length, then add the right remainder.</p><p>Composition is associative. We can change the shape of the computation without changing the answer—and retain intermediate summaries for the next edit.</p><pre class="featured-code"><code>combine (Summary p m) (Summary q n) =
+  Summary (multiply p n `xor` q) (multiply m n)</code></pre><p class="footnote">This pilot uses CRC-32/ISO-HDLC: reflected polynomial <code>0xedb88320</code>, initial and final XOR <code>0xffffffff</code>. In the reflected polynomial representation, <code>0x80000000</code> represents one.</p></div></section>
+<section class="experiment incremental" aria-labelledby="tree-title"><div class="section-heading"><span class="number">02</span><div><h2 id="tree-title">Edit a piece. Keep the rest.</h2><p>Change any chunk. Only that leaf and its ancestors are recalculated.</p></div></div>
+<div class="tree-toolbar"><span><span class="legend-key changed-key"></span>Recalculated <span class="legend-key retained-key"></span>Reused</span><button id="reset-tree" type="button" disabled>Reset chunks</button></div>
+<div class="tree-leaves" id="tree-leaves"></div>
+<svg class="tree-lines" viewBox="0 0 800 42" preserveAspectRatio="none" aria-hidden="true"><path d="M100 0 V16 H200 V42 M300 0 V16 H200 M500 0 V16 H600 V42 M700 0 V16 H600"/></svg>
+<div class="tree-branches"><div class="tree-node" id="branch-0"><span>A ⊗ B</span><code>—</code></div><div class="tree-node" id="branch-1"><span>C ⊗ D</span><code>—</code></div></div>
+<svg class="tree-lines" viewBox="0 0 800 42" preserveAspectRatio="none" aria-hidden="true"><path d="M200 0 V16 H400 V42 M600 0 V16 H400"/></svg>
+<div class="tree-root tree-node" id="tree-root"><span>(A ⊗ B) ⊗ (C ⊗ D)</span><code>—</code></div>
+<div class="tree-summary"><p id="work-count" aria-live="polite">Four leaves. Two branches. One answer.</p><span id="tree-check">—</span></div>
+<p class="footnote">The tree caches real Haskell-computed summaries. Highlighting shows which tree nodes were recalculated. A separate full scan checks the answer after each edit. These examples run on one browser thread; associativity also permits parallel evaluation.</p></section>
+<section class="source-section" id="source"><div class="section-heading"><span class="number">03</span><div><h2>One algorithm. Two ways to run it.</h2><p>The historical examples stay intact. The new server and browser adapters share a Haskell core.</p></div></div>
+<div class="source-tabs" role="tablist" aria-label="Source versions"><button type="button" role="tab" id="tab-core" aria-controls="source-panel" aria-selected="true" data-source="core">Shared core</button><button type="button" role="tab" id="tab-wasm" aria-controls="source-panel" aria-selected="false" tabindex="-1" data-source="wasm">WebAssembly</button><button type="button" role="tab" id="tab-server" aria-controls="source-panel" aria-selected="false" tabindex="-1" data-source="server">HTTP server</button><button type="button" role="tab" id="tab-original" aria-controls="source-panel" aria-selected="false" tabindex="-1" data-source="original">Original · 2013</button></div>
+<div id="source-panel" role="tabpanel" aria-labelledby="tab-core"><div class="source-description"><p id="source-description"></p><a id="source-download" href="./source/CRC.hs" download>Download source ↓</a></div><pre class="source-code" tabindex="0"><code id="source-code">Loading source…</code></pre></div>
+<p class="footnote">The original CRC article contains five runnable console snippets, not a Yesod server. The HTTP adapter here is new. <a href="./source/original/parallel-crc.md" download>Download the untouched article</a> · <a href="./source/original/provenance.json">Source provenance</a></p>
+</section>
+<footer><span>The Comonad.Reader</span><p>A migration pilot. Original writing and code © Edward Kmett.<br>All interactive calculations run locally in your browser.</p></footer>
+</main>
+<script type="module" src="./app.js"></script>
+</body></html>
