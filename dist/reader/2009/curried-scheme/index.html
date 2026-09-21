@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Curried Scheme · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Macros · Scheme</span><span>Edward Kmett · <time datetime="2009-08-29">29 August 2009</time></span></div><h1>Curried Scheme</h1></header><article class="prose"><span id="more-145"></span><p>I've been transcoding a lot of Haskell to Scheme lately and one of the things that I found myself needing was a macro for dealing with Currying of functions in a way that handles partial and over-application cleanly.</p>
+<p>I found a very elegant <a href="http://programming-musings.org/2007/02/03/scheme-code-capsule-currying/">macro by Piet Delport that handles partial application</a>, but that doesn't deal with the partial application of no arguments or that I'd like to also be able to say things like the following and have the extra arguments be passed along to the result.</p>
+<pre tabindex="0" aria-label="scheme code"><code class="language-scheme">(<span class="hljs-name">define-curried</span> (<span class="hljs-name">id</span> x) x)
+(<span class="hljs-name">id</span> + <span class="hljs-number">1</span> <span class="hljs-number">2</span> <span class="hljs-number">3</span>) <span class="hljs-comment">;;=&gt; 6</span>
+</code></pre>
+<p>This of course, becomes more useful for more complicated definitions.</p>
+<pre tabindex="0" aria-label="scheme code"><code class="language-scheme">(<span class="hljs-name">define-curried</span> (<span class="hljs-name">compose</span> f g x) (<span class="hljs-name">f</span> (<span class="hljs-name">g</span> x)))
+(<span class="hljs-name">define-curried</span> (<span class="hljs-name">const</span> a _) a)
+</code></pre>
+<p>While I could manually associate the parentheses to the left and nest lambdas everywhere, Haskell code is rife with these sorts of applications. In the spirit of Scheme, since I couldn't find a macro on the internet that did what I want, I tried my hand at rolling my own.</p>
+<pre tabindex="0" aria-label="scheme code"><code class="language-scheme"><span class="hljs-comment">;; curried lambda</span>
+(<span class="hljs-name"><span class="hljs-built_in">define-syntax</span></span> curried
+  (<span class="hljs-name"><span class="hljs-built_in">syntax-rules</span></span> ()
+    ((<span class="hljs-name">_</span> () body)
+     (<span class="hljs-name"><span class="hljs-built_in">lambda</span></span> <span class="hljs-name">args</span>
+         (if (null? args)
+             body
+             (<span class="hljs-name"><span class="hljs-built_in">apply</span></span> body args))))
+    ((<span class="hljs-name">_</span> (<span class="hljs-name">arg</span>) body)
+      (<span class="hljs-name"><span class="hljs-built_in">letrec</span></span>
+        ((<span class="hljs-name">partial-application</span>
+          (<span class="hljs-name"><span class="hljs-built_in">lambda</span></span> <span class="hljs-name">args</span>
+            (if (null? args)
+                partial-application
+                (<span class="hljs-name"><span class="hljs-built_in">let</span></span> ((<span class="hljs-name">arg</span> (<span class="hljs-name"><span class="hljs-built_in">car</span></span> args))
+                      (<span class="hljs-name">rest</span> (<span class="hljs-name"><span class="hljs-built_in">cdr</span></span> args)))
+                  (<span class="hljs-name"><span class="hljs-built_in">if</span></span> (<span class="hljs-name"><span class="hljs-built_in">null?</span></span> rest)
+                      body
+                      (<span class="hljs-name"><span class="hljs-built_in">apply</span></span> body rest)))))))
+        partial-application))
+    ((<span class="hljs-name">_</span> (<span class="hljs-name">arg</span> args ...) body)
+     (<span class="hljs-name"><span class="hljs-built_in">letrec</span></span>
+       ((<span class="hljs-name">partial-application</span>
+         (<span class="hljs-name"><span class="hljs-built_in">lambda</span></span> <span class="hljs-name">all-args</span>
+           (if (null? all-args)
+               partial-application
+               (<span class="hljs-name"><span class="hljs-built_in">let</span></span> ((<span class="hljs-name">arg</span> (<span class="hljs-name"><span class="hljs-built_in">car</span></span> all-args))
+                     (<span class="hljs-name">rest</span> (<span class="hljs-name"><span class="hljs-built_in">cdr</span></span> all-args)))
+                 (<span class="hljs-name"><span class="hljs-built_in">let</span></span> ((<span class="hljs-name">next</span> (<span class="hljs-name">curried</span> (<span class="hljs-name">args</span> ...) body)))
+                   (<span class="hljs-name"><span class="hljs-built_in">if</span></span> (<span class="hljs-name"><span class="hljs-built_in">null?</span></span> rest)
+                       next
+                       (<span class="hljs-name"><span class="hljs-built_in">apply</span></span> next rest))))))))
+       partial-application))))
+
+<span class="hljs-comment">;; curried defines</span>
+(<span class="hljs-name"><span class="hljs-built_in">define-syntax</span></span> define-curried
+  (<span class="hljs-name"><span class="hljs-built_in">syntax-rules</span></span> ()
+    ((<span class="hljs-name">define-curried</span> (<span class="hljs-name">name</span> args ...) body)
+       (<span class="hljs-name"><span class="hljs-built_in">define</span></span> name (<span class="hljs-name">curried</span> (<span class="hljs-name">args</span> ...) body)))
+    ((<span class="hljs-name">define-curried</span> (<span class="hljs-name">name</span>) body)
+       (<span class="hljs-name"><span class="hljs-built_in">define</span></span> name (<span class="hljs-name">curried</span> () body)))
+    ((<span class="hljs-name">define-curried</span> name body)
+       (<span class="hljs-name"><span class="hljs-built_in">define</span></span> name body))))
+</code></pre>
+<p>While Scheme is not my usual programming language, I love the power of hygienic macros.</p>
+<p>I welcome feedback.</p>
+<p>[Edit: updated to change the base case for define-curried and added the if to the base case of curried to be more consistent with the other cases per the second comment below]</p>
+</article><section class="comments" id="comments"><h2>From the original discussion</h2><p class="editorial">Selected questions, explanations, and corrections. Original wording and dates; spam and automated trackbacks omitted.</p><article class="comment" id="comment-11336"><header><strong>Edward Kmett</strong><a href="../../../reader/2009/curried-scheme/#comment-11336">August 29th, 2009 at 3:24 pm</a></header><p>@Anthony:</p>
+<p>Good point. I was trying to avoid discriminating, so I could just work parametrically, but a quick procedure? check isn’t such a high price to pay to handle the base case more gracefully.</p>
+<p>I have two concerns with this proposed fix though.</p>
+<ol>
+<li>One is that this will silently eat the remaining arguments when you try to handle a non-procedure. Perhaps it should do the null? check on args rather than swallow them in the non-procedure case.</li>
+<li>The other is more subtle and has to do with parametricity. Since we now may or may not invoke the result, I might not be able to use this in a number of situations inside of my toy monad library.</li>
+</ol>
+<p>By redefining (define-curried name body) to just use a define and migrating its current behavior to (define-curried (name) body) this obtains, perhaps a more pleasing result. Patching it thus:</p>
+<pre><code class="language-haskell">((_ () body)
+     (lambda args
+         (<span class="hljs-keyword">if</span> (null? args)
+             body
+             (apply body args))))
+</code></pre>
+<p>yields a result that is identical to the handling of the other two cases in behavior.</p>
+<p>Then (define-curried x 5) does the right thing, and just gives you 5.<br>
+and (define-curried (x) 5) gives you a nullary function that when invoked will give you back 5, but will try to pass any superfluous over-applied arguments to 5 and crash.</p>
+</article><article class="comment" id="comment-11341"><header><strong>Edward Kmett</strong><a href="../../../reader/2009/curried-scheme/#comment-11341">August 29th, 2009 at 9:46 pm</a></header><p>@Phil:</p>
+<p>Nice macro. =) While, alas, it doesn’t handle over or null application, it is really succinct!</p>
+</article><article class="comment" id="comment-11343"><header><strong>Anthony Cowley</strong><a href="../../../reader/2009/curried-scheme/#comment-11343">August 29th, 2009 at 10:42 pm</a></header><p>Edward,</p>
+<p>I like your fix; a definite improvement! Can you offer more detail on your parametricity concern, though? Like many others, I, too, have a toy monad library in my collection, but it’s not obvious to me how this situation with my proposed patch raises a problem in that area.</p>
+</article><article class="comment" id="comment-11358"><header><strong>Edward Kmett</strong><a href="../../../reader/2009/curried-scheme/#comment-11358">August 30th, 2009 at 2:13 pm</a></header><p>@Anthony:</p>
+<p>It looks like my parametricity concern was a bit of a misapprehension. I wasn’t able to concoct a scenario where it led to a problem. ;)</p>
+<p>If we ignore the existence of nullary functions the new version works really well, as would, I suppose, your fix.</p>
+</article><article class="comment" id="comment-11379"><header><strong>Edward Kmett</strong><a href="../../../reader/2009/curried-scheme/#comment-11379">August 31st, 2009 at 2:01 pm</a></header><p>Hi Dan,</p>
+<p>The code above provides both.</p>
+<p>(define id (curried (x) x))</p>
+<p>uses the lambda form (perhaps ‘curried’ should be renamed ‘curried-lambda’ ?)</p>
+<p>On the other hand,</p>
+<p>(define-curried (id x) x)</p>
+<p>provides a definition with a curried argument list in the same fashion that (define (id x) x) desugars to (define id (lambda (x) x)) — a convenience that I seem to recall you don’t like using. ;)</p>
+</article></section><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/curried-scheme.md" download>Article Markdown</a> · <a href="../../../source/articles/curried-scheme.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2009/iteratees-parsec-and-monoid/">Iteratees, Parsec and Monoids (Slides) →</a><a href="../../../reader/2009/remodeling-precision/">Remodeling Precision →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

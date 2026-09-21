@@ -1,0 +1,295 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head profile="http://gmpg.org/xfn/11">
+        <link rel="shortcut icon" href="http://comonad.com/reader/wp-content/themes/connections/favicon.ico" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>The Comonad.Reader &raquo; Slides from Hac Phi: &#8220;All About Monoids&#8221;</title>
+	<meta name="generator" content="WordPress 2.8.4" />
+	<style type="text/css" media="screen">@import url( http://comonad.com/reader/wp-content/themes/connections/style.css );</style>
+	<!--[if IE]><style type="text/css"> img { behavior: url(/reader/pngbehavior/pngbehavior.htc); } </style><![endif]-->
+        <link rel="openid.server" href="https://api.screenname.aol.com/auth/openidServer"/>
+        <link rel="openid.delegate" href="http://openid.aol.com/edwardallankmett"/>
+
+	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://comonad.com/reader/feed/" />
+	<link rel="alternate" type="application/atom+xml" title="Atom 0.3" href="http://comonad.com/reader/feed/atom/" />
+	<link rel="pingback" href="http://comonad.com/reader/xmlrpc.php" />
+    	<link rel='archives' title='October 2022' href='http://comonad.com/reader/2022/10/' />
+	<link rel='archives' title='January 2018' href='http://comonad.com/reader/2018/01/' />
+	<link rel='archives' title='January 2016' href='http://comonad.com/reader/2016/01/' />
+	<link rel='archives' title='September 2015' href='http://comonad.com/reader/2015/09/' />
+	<link rel='archives' title='July 2015' href='http://comonad.com/reader/2015/07/' />
+	<link rel='archives' title='May 2015' href='http://comonad.com/reader/2015/05/' />
+	<link rel='archives' title='April 2015' href='http://comonad.com/reader/2015/04/' />
+	<link rel='archives' title='February 2015' href='http://comonad.com/reader/2015/02/' />
+	<link rel='archives' title='December 2014' href='http://comonad.com/reader/2014/12/' />
+	<link rel='archives' title='August 2014' href='http://comonad.com/reader/2014/08/' />
+	<link rel='archives' title='April 2014' href='http://comonad.com/reader/2014/04/' />
+	<link rel='archives' title='May 2013' href='http://comonad.com/reader/2013/05/' />
+	<link rel='archives' title='April 2013' href='http://comonad.com/reader/2013/04/' />
+	<link rel='archives' title='January 2013' href='http://comonad.com/reader/2013/01/' />
+	<link rel='archives' title='December 2012' href='http://comonad.com/reader/2012/12/' />
+	<link rel='archives' title='September 2012' href='http://comonad.com/reader/2012/09/' />
+	<link rel='archives' title='August 2012' href='http://comonad.com/reader/2012/08/' />
+	<link rel='archives' title='June 2012' href='http://comonad.com/reader/2012/06/' />
+	<link rel='archives' title='May 2012' href='http://comonad.com/reader/2012/05/' />
+	<link rel='archives' title='April 2012' href='http://comonad.com/reader/2012/04/' />
+	<link rel='archives' title='December 2011' href='http://comonad.com/reader/2011/12/' />
+	<link rel='archives' title='November 2011' href='http://comonad.com/reader/2011/11/' />
+	<link rel='archives' title='October 2011' href='http://comonad.com/reader/2011/10/' />
+	<link rel='archives' title='September 2011' href='http://comonad.com/reader/2011/09/' />
+	<link rel='archives' title='July 2011' href='http://comonad.com/reader/2011/07/' />
+	<link rel='archives' title='June 2011' href='http://comonad.com/reader/2011/06/' />
+	<link rel='archives' title='July 2010' href='http://comonad.com/reader/2010/07/' />
+	<link rel='archives' title='May 2010' href='http://comonad.com/reader/2010/05/' />
+	<link rel='archives' title='April 2010' href='http://comonad.com/reader/2010/04/' />
+	<link rel='archives' title='September 2009' href='http://comonad.com/reader/2009/09/' />
+	<link rel='archives' title='August 2009' href='http://comonad.com/reader/2009/08/' />
+	<link rel='archives' title='July 2009' href='http://comonad.com/reader/2009/07/' />
+	<link rel='archives' title='June 2009' href='http://comonad.com/reader/2009/06/' />
+	<link rel='archives' title='March 2009' href='http://comonad.com/reader/2009/03/' />
+	<link rel='archives' title='December 2008' href='http://comonad.com/reader/2008/12/' />
+	<link rel='archives' title='November 2008' href='http://comonad.com/reader/2008/11/' />
+	<link rel='archives' title='June 2008' href='http://comonad.com/reader/2008/06/' />
+	<link rel='archives' title='May 2008' href='http://comonad.com/reader/2008/05/' />
+	<link rel='archives' title='April 2008' href='http://comonad.com/reader/2008/04/' />
+	<link rel='archives' title='March 2008' href='http://comonad.com/reader/2008/03/' />
+	<link rel='archives' title='January 2008' href='http://comonad.com/reader/2008/01/' />
+	<link rel='archives' title='July 2007' href='http://comonad.com/reader/2007/07/' />
+	<link rel='archives' title='May 2007' href='http://comonad.com/reader/2007/05/' />
+	<link rel='archives' title='November 2006' href='http://comonad.com/reader/2006/11/' />
+	<link rel='archives' title='October 2006' href='http://comonad.com/reader/2006/10/' />
+	<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader &raquo; Slides from Hac Phi: &#8220;All About Monoids&#8221; Comments Feed" href="http://comonad.com/reader/2009/hac-phi-slides/feed/" />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://comonad.com/reader/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://comonad.com/reader/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='The Comonad.Reader' href='http://comonad.com/reader' />
+<link rel='start' title='Hello, World!' href='http://comonad.com/reader/2006/hello-world/' />
+<link rel='prev' title='Recursion Schemes: A Field Guide (Redux)' href='http://comonad.com/reader/2009/recursion-schemes/' />
+<link rel='next' title='Clearer Reflections' href='http://comonad.com/reader/2009/clearer-reflection/' />
+<meta name="generator" content="WordPress 2.8.4" />
+</head>
+<body>
+<div id="rap">
+	<div id="header">
+	<ul id="topnav">
+		<li><a href="/reader" id="navHome" title="Posted Recently" accesskey="h">Home |</a></li>
+		<li><a href="/reader/about/" id="navAbout" title="About the Author" accesskey="a">About |</a></li>
+		<li><a href="/reader/source;item=libraries" id="navSource" title="Source Code" accesskey="s">Source |</a></li>
+		<li><a href="mailto:ekmett@gmail.com" id="navContact" title="Contact the Author" accesskey="c">Contact </a></li>
+	</ul>
+	<a href="http://comonad.com/reader" id="logoHome" title="Posted Recently"><img id="logo" src="/reader/pngbehavior/blank.gif" ></a>
+	<h1><a href="http://comonad.com/reader" title="The Comonad.Reader">The Comonad.Reader</a></h1>		
+	<div id="desc">types, (co)monads, substructural logic</div>
+</div>
+	
+	<div id="main">
+	<div id="content">
+
+						<div class="post">
+				<p class="post-date">Fri 31 Jul 2009</p>
+<div class="post-info"><h2 class="post-title"><a href="http://comonad.com/reader/2009/hac-phi-slides/" rel="bookmark" title="Permanent Link: Slides from Hac Phi: &#8220;All About Monoids&#8221;">Slides from Hac Phi: &#8220;All About Monoids&#8221;</a></h2>
+Posted by Edward Kmett under <a href="http://comonad.com/reader/category/haskell/" title="View all posts in Haskell" rel="category tag">Haskell</a> ,  <a href="http://comonad.com/reader/category/mathematics/" title="View all posts in Mathematics" rel="category tag">Mathematics</a> ,  <a href="http://comonad.com/reader/category/monoids/" title="View all posts in Monoids" rel="category tag">Monoids</a> ,  <a href="http://comonad.com/reader/category/parsing/" title="View all posts in Parsing" rel="category tag">Parsing</a> <br/><a href="http://comonad.com/reader/2009/hac-phi-slides/#comments" title="Comment on Slides from Hac Phi: &#8220;All About Monoids&#8221;">[10] Comments</a>&nbsp;</div>
+<div class="post-content">
+	<p>Some people have requested my slides from the short talk I gave about monoids and monoidal parsing at Hac Phi. So, here they are.</p>
+<ul>
+<li><a href='http://comonad.com/reader/wp-content/uploads/2009/07/AllAboutMonoids.pptx'>Hac Phi Slides (Powerpoint 2007)</a></li>
+<li><a href='http://comonad.com/reader/wp-content/uploads/2009/07/AllAboutMonoids.pdf'>Hac Phi Slides (PDF)</a></li>
+</ul>
+<p>There will be more to come at the next Boston Haskell User Group in August, where it looks like I'll be giving two short talks covering monoids. I may use the monoidal parsing engine from Kata as an example for the advanced talk if I have time and will start to cover parsing larger classes of grammars in general (regular languages, CFGs/TIGs, TAGs, PEGs, LALR, attribute-grammars, etc.)</p>
+	<div class="post-info">
+			</div>
+	<div class="post-footer">&nbsp;</div>
+</div>
+				
+<!-- You can start editing here. -->
+
+	<h3 id="comments">10 Responses to &#8220;Slides from Hac Phi: &#8220;All About Monoids&#8221;&#8221;</h3> 
+
+	<ol class="commentlist">
+
+	
+		<li class="alt" id="comment-10767">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=35c769ba065ba312b7d4ae936084cf14&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite>Brett</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-10767" title="">July 31st, 2009 at 1:21 pm</a> </small>
+			<br clear="all"/>
+
+			<p>How does one actually view the slides? The zip file seems to contain a large number of xml and .xml.rels files, but nothing to click on such as a pdf or even a powerpoint file.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-10769">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=7422eb826ffc96d9c76eb40ad80ecdb8&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite>Lee</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-10769" title="">July 31st, 2009 at 1:56 pm</a> </small>
+			<br clear="all"/>
+
+			<p>Brett: Looks like a Powerpoint 2007 file.</p>
+<p>If you have Powerpoint 2003, try <a href="http://www.microsoft.com/downloads/details.aspx?FamilyId=941b3470-3ae9-4aee-8f43-c6bb74cd1466&amp;displaylang=en." rel="nofollow">http://www.microsoft.com/downloads/details.aspx?FamilyId=941b3470-3ae9-4aee-8f43-c6bb74cd1466&amp;displaylang=en.</a></p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-10771">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=211a315db6daac1c6f36e74e6c8b8fb7&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite>Socrates philosophy and hyoptheses can't stop me from doing it monadically.</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-10771" title="">July 31st, 2009 at 2:26 pm</a> </small>
+			<br clear="all"/>
+
+			<p>Can someone dump this to PDF? Or are the transitions too tasty to give up?</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-10772">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=de2ead055a72b5924ba00ba15c6dcf1c&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite>RayNbow</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-10772" title="">July 31st, 2009 at 2:43 pm</a> </small>
+			<br clear="all"/>
+
+			<p>PDF:</p>
+<p><a href="http://www.mediafire.com/file/anifmxlzfgm/AllAboutMonoids.pdf" rel="nofollow">http://www.mediafire.com/file/anifmxlzfgm/AllAboutMonoids.pdf</a></p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-10773">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=4848c84a0136455f5a06ac0d6e094175&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite>wwkeyboard</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-10773" title="">July 31st, 2009 at 3:04 pm</a> </small>
+			<br clear="all"/>
+
+			<p>So when is this August meeting of the Boston Haskell Users Group? I want to attend but can&#8217;t seem to find information about it.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-10775">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=9c51a8b8afa2366a2ef4650c411f187a&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://comonad.com/' rel='external nofollow' class='url'>Edward Kmett</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-10775" title="">July 31st, 2009 at 3:13 pm</a> </small>
+			<br clear="all"/>
+
+			<p>@Raynbow: Thanks!</p>
+<p>@wwkeyboard: It should be around the week of the 17th. Ravi was waiting to see what Norman Ramsey&#8217;s schedule was like before setting it in stone since we keep scheduling it when he can&#8217;t show up!</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-10777">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=de2ead055a72b5924ba00ba15c6dcf1c&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite>RayNbow</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-10777" title="">July 31st, 2009 at 4:18 pm</a> </small>
+			<br clear="all"/>
+
+			<p>@EdwardK:<br />
+np :). Btw, there&#8217;s a small mistake in the definition of Endo&#8217;s mempty in your slides. &#8220;id&#8221; should be wrapped within Endo.</p>
+<p>Also, Gravatars don&#8217;t seem to work on this blog when using capital letters in the email address.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-10782">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=9c51a8b8afa2366a2ef4650c411f187a&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite>Edward Kmett</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-10782" title="">July 31st, 2009 at 10:49 pm</a> </small>
+			<br clear="all"/>
+
+			<p>@RayNBow: Yeah, I spotted it during the talk, but didn&#8217;t fix the slides, woops!</p>
+<p>Re: the gravatar thing, hrmm. It is funny that they should be case insensitive given that at least the portion before the @ should technically be handled case sensitively per RFC 2821 (though requiring this is explicitly called out as not being nice in the RFC).</p>
+<p>The wordpress gravatar php function seems to be implemented along the guidelines of the other examples on gravatar which only trim whitespace and don&#8217;t change case. (i.e. <a href="http://en.gravatar.com/site/implement/textpattern)" rel="nofollow">http://en.gravatar.com/site/implement/textpattern)</a> </p>
+<p>So I&#8217;m thinking that the only way to portably get your gravatar to work on everyone&#8217;s site is to explicitly lowercase it yourself since anyone else doing it could incorrectly mangle an email address. ;)</p>
+<p>I&#8217;d not be adverse to fixing it, since after all case sensitive email addresses don&#8217;t seem to really exist in practice, but currently the fragment looks like < ?php gravatar("R", 40); ?> and calls off to some method in some library somewhere, which already knows the email address in question.  If I ever learned php, I might know where to find it. :)</p>
+<p>[Edit: I did at least tweak your email address to be lowercase. ;) ]</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-10809">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=0e5712b90d7ef14bddd7f0a4ac142488&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite>stulli</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-10809" title="">August 2nd, 2009 at 9:01 am</a> </small>
+			<br clear="all"/>
+
+			<p>Hi, do you have a working code example for the file position example? I get following error:</p>
+<p>`Reducer SourcePosition&#8217; is not applied to enough type arguments<br />
+    Expected kind `*&#8217;, but `Reducer SourcePosition&#8217; has kind `* -&gt; *&#8217;<br />
+    In the instance declaration for `Reducer SourcePosition&#8217;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-10826">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=9c51a8b8afa2366a2ef4650c411f187a&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://comonad.com/' rel='external nofollow' class='url'>Edward Kmeft</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-10826" title="">August 3rd, 2009 at 6:33 am</a> </small>
+			<br clear="all"/>
+
+			<p>@Stulli</p>
+<p>Look on hackage at any revision of monoids before 0.2.0, and it will contain Data.Monoid.Lexical.SourcePosition &#8212; I recently slimmed the package down and plan to move the remaining functionality into a monoid-extras style package so that the core functionality is available without a laundry list of dependencies.</p>
+<p>Your kind error comes from the fact that when I added Pos, I added an argument to the type to make it a Pointed Functor. So you need to make Monoid (SourcePosition f) and Reducer Char (SourcePosition f).</p>
+<p>I explained the extra argument as part of the narrative during the talk, but naked slides do not provide me such opportunity for elaboration. :)</p>
+		</li>
+
+	
+	
+	</ol>
+
+ 
+
+			</div>
+					<p align="center"></p>		
+	</div>
+	<div id="sidebar">
+		<h2>Archived Entry</h2>
+	<ul>
+	<li><strong>Post Date :</strong></li>
+	<li>Friday, Jul 31st, 2009 at 10:41 am</li>
+	<li><strong>Category :</strong></li>
+	<li><a href="http://comonad.com/reader/category/haskell/" title="View all posts in Haskell" rel="category tag">Haskell</a> and  <a href="http://comonad.com/reader/category/mathematics/" title="View all posts in Mathematics" rel="category tag">Mathematics</a> and  <a href="http://comonad.com/reader/category/monoids/" title="View all posts in Monoids" rel="category tag">Monoids</a> and  <a href="http://comonad.com/reader/category/parsing/" title="View all posts in Parsing" rel="category tag">Parsing</a></li>
+	<li><strong>Do More :</strong></li>
+	<li>							Both comments and pings are currently closed.			
+						
+						</li>
+	</ul>
+		
+	<h2><label for="s">Search</label></h2>
+	<ul>
+		<li>
+			<form id="searchform" method="get" action="/reader/index.php">
+				<div style="text-align:center">
+					<p><input type="text" name="s" id="s" size="10" /> <input type="submit" name="submit" value="Search" /></p>
+				</div>
+			</form>
+		</li>
+	</ul>
+<h2>RSS Feeds</h2>
+	<ul>
+		<li>
+			<a title="RSS2 Feed for Posts" href="http://comonad.com/reader/feed/">Posts</a> | <a title="RSS2 Feed for Comments" href="http://comonad.com/reader/comments/feed/">Comments</a></li>	
+	</ul>	
+</div>
+<p id="footer">Design based on <a href="http://www.vanillamist.com" title="Vanilla Mist">www.vanillamist.com</a></p></div>
+</div>
+</body>
+</html>

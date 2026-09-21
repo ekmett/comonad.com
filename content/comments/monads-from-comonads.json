@@ -1,0 +1,2012 @@
+{
+  "reviewed": "2026-09-21",
+  "method": "Explicit reviewed selections; all unselected records preserved in the raw source.",
+  "comments": [
+    {
+      "id": "comment-61799",
+      "author": "Edward Kmett",
+      "date": "June 28th, 2011 at 12:28 am",
+      "markdown": "@Edward: I can’t find any links to Dominic’s material on the topic other than his subsequent discussions of codo notation. In there the only thing he has that mixes monads with comonads is a notion of ‘bido’ notation, which is pretty much what sigfpe and Uustalu and Vene have independently advocated as ways to deal with distributive laws over monads and comonads. Sadly, I think that approach doesn’t work out well in practice. I prefer working with comonads over a Kleisli category or monads over a Cokleisli category instead, rather than distributing. This lets me get decent computation sharing."
+    },
+    {
+      "id": "comment-61868",
+      "author": "Josef Svenningsson",
+      "date": "June 28th, 2011 at 10:54 am",
+      "markdown": "Thank you for an awesome blog post! Though I wonder where the ‘Co’ data type comes from. You just pull it out of a hat. Is there a story behind it?"
+    },
+    {
+      "id": "comment-61869",
+      "author": "Edward Kmett",
+      "date": "June 28th, 2011 at 11:26 am",
+      "markdown": "Acutally, it \\_was\\_ pretty much pulled out of a hat. ;)\n\nIt came out as a happy accident in an email discussion with Russell O’Connor and Jacques Carette about exactly in what sense Store and State were dual."
+    },
+    {
+      "id": "comment-130731",
+      "author": "Zemyla",
+      "date": "November 4th, 2015 at 3:30 pm",
+      "markdown": "It occurs to me that the form of Co w:\n\nCo w a = forall r. w (a -> r) -> r\n\nis to the Cokleisli arrow as the Yoneda encoding of m:\n\nYoneda m a = forall r. (a -> r) -> m r\n\nis to the Kleisli arrow. Is there a way to generalize this to any ArrowApply?"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "comment-61778",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-61799",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-61868",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-61869",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-61870",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-61939",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-62239",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-62284",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-105350",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-130731",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-157359",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211014",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211033",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211041",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211094",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211097",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211153",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211169",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211192",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211199",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211202",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211257",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211271",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211312",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211319",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211335",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211345",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211352",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211424",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211490",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211525",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211545",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211657",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211673",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211680",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211682",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211697",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211735",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211808",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211820",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211846",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211848",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211857",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211892",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211950",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211993",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212000",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212026",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212034",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212086",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212102",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212130",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212183",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212215",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212236",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212290",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212294",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212306",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212369",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212385",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212391",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212424",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212451",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212517",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212521",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212553",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212558",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212612",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212667",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212669",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212671",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212685",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212700",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212724",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212760",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212812",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212814",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212827",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212842",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212867",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212902",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212933",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212948",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212976",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212981",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213016",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213043",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213078",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213081",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213121",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213197",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213221",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213267",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213430",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213433",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213510",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213569",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213589",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213602",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213608",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213621",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213675",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213760",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213776",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213779",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213806",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213812",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213832",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213869",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213948",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213954",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213955",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213968",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213991",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214019",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214074",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214087",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214094",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214096",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214169",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214289",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214292",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214305",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214349",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214457",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214461",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214529",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214531",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214582",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214593",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214632",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214749",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214772",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214800",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214817",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214905",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214937",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214975",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214996",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214999",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215021",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215039",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215052",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215134",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215211",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215250",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215261",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215312",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215315",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215335",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215409",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215437",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215461",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215591",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215620",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215665",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215688",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215816",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215823",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215884",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215887",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215909",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215971",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216049",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216090",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216103",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216119",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216126",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216153",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216159",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216217",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216247",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216267",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216301",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216373",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216399",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216410",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216432",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216578",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216614",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216615",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216662",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216685",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216703",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216793",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216815",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216824",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216855",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216861",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216869",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216877",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216964",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216975",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217105",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217112",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217135",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217139",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217143",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217161",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217212",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217264",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217358",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217369",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217389",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217401",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217407",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217417",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217430",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217484",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217502",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217513",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217531",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217616",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217635",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217648",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217651",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217661",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217669",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217684",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217759",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217780",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217881",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217888",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217890",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217928",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217936",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217964",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218012",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218022",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218042",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218060",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218137",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218139",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218150",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218211",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218226",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218273",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218293",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218314",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218374",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218384",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218394",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218431",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218443",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218445",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218467",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218504",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218530",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218558",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218593",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218614",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218630",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218665",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218681",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218682",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218699",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218732",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218753",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218857",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218933",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218940",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218996",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219055",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219064",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219085",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219136",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219172",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219198",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219200",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219222",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219282",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219312",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219328",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219353",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219359",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219400",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219427",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219431",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219432",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219436",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219472",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219527",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219546",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219563",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219617",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219637",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219645",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219669",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219674",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219769",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219805",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219814",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219862",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219880",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219881",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219892",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219894",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219924",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-220111",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-220113",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-220167",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-220247",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-220302",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-220304",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-220322",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-220363",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-220388",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-220458",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-220485",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-220489",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-220505",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-220532",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-220596",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-220756",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-220818",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-220881",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-220954",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-220984",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-221003",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-221027",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-221060",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-221132",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-221257",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-221322",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-221398",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-221421",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-221446",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-221485",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-221559",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-221587",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-221607",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-221625",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-221683",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-221719",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-221776",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-221859",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-221904",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-221910",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-221983",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-222010",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-222065",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-222081",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-222150",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-222185",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-222204",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-222274",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-222360",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-222364",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-222431",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-222449",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-222504",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-222566",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-222573",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-222647",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-222659",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-222714",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-222791",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-222823",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-222827",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-222982",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-222991",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-223108",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-223110",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-223157",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-223238",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-223253",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-223255",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-223280",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-223347",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-223371",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-223463",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-223554",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-223613",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-223678",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-223816",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-223826",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-223894",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-223956",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-223966",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-224070",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-224114",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-224189",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-224232",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-224371",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-224384",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-224521",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-224648",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-224798",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-224884",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-224885",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-225065",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-225185",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-225328",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-225426",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-225429",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-225450",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    }
+  ]
+}

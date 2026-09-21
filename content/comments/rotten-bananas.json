@@ -1,0 +1,98 @@
+{
+  "reviewed": "2026-09-21",
+  "method": "Explicit reviewed selections; all unselected records preserved in the raw source.",
+  "comments": [
+    {
+      "id": "comment-991",
+      "author": "Edward Kmett",
+      "date": "March 25th, 2008 at 2:14 pm",
+      "markdown": "The Beluga project seems to be focused on the idea of how to represent HOAS in logical frameworks like LF, TWELF, etc.\n\nMy main focus is on using HOAS practically in a compiler in Haskell. Consequently, I wind up with a fair bit less control over exotic terms, because I don’t get to roll nearly as much of my own structure in the meta-language.\n\nAs a result I’m not sure how much what the Beluga folks are doing really helps, beyond the fact that it was fun getting a chance to pick at another HOAS encoding over lunch.\n\nI had hoped that the Washburn/Weirich encoding would give me a ‘no exotic terms other than bottom’ security blanket, but it appears that I just have to suck it up. =)"
+    },
+    {
+      "id": "comment-1020",
+      "author": "Darin Morrison",
+      "date": "April 5th, 2008 at 7:00 am",
+      "markdown": "The idea behind the Beluga project is to develop a dependently typed functional programming language that supports HOAS in a natural way. The connection to LF is that the Beluga language is split into two layers — a data layer which combines LF with constructs from contextual modal type theory in order to encode (open) data objects (which could represent terms in an object languages with binding described by HOAS), and a computation layer where things like recursion and case analysis happen. In Beluga, LF objects serve the same purpose as (G)ADTs in Haskell.\n\nHOAS has been with LF and Twelf (which is just an implementation of LF + a logic programming engine and some other stuff) from the beginning, and Beluga has nothing to do with that specifically. What Beluga is trying to do that is new is to solve the problem of practical functional programming with HOAS. Compiler construction would be an obvious application.\n\nIn any case, it doesn’t really help you program easily with HOAS in Haskell… :)"
+    },
+    {
+      "id": "comment-23412",
+      "author": "Paul Keir",
+      "date": "October 13th, 2010 at 8:24 am",
+      "markdown": "Can you help me with some terminology? You mention that Hutton and Meijer derived a kind of catamorphism for exponential functors. Yet in their paper, they instead talk only about difunctors. They refer to this difunctor as coming from a paper by Peter Freyd: “RECURSIVE TYPES REDUCED TO INDUCTIVE TYPES”. I downloaded that paper, but it doesn’t mention difunctors, and instead discusses bifunctors. (Also, the Hutton/Meijer difunctor looks a lot like the bifunctor from your category-extras package.)"
+    },
+    {
+      "id": "comment-23414",
+      "author": "Edward Kmett",
+      "date": "October 13th, 2010 at 8:55 am",
+      "markdown": "Same thing, different authors, different words. =)\n\nDifunctor often means the same thing as bifunctor, sometimes it is also used to denote a bifunctor that is contravariant in its first category. One use of this terminology is to describe a dinatural transformation.\n\nSadly there is little consistency in this regard."
+    },
+    {
+      "id": "comment-132462",
+      "author": "David Feuer",
+      "date": "March 13th, 2016 at 2:08 am",
+      "markdown": "The Rec type looks exactly like Free, and Rollable like MonadFree. Is this a coincidence of some sort, or does it explain something about the structure?"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "comment-989",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-991",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-992",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-1020",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-1076",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-22301",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-22338",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-23412",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-23414",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-61214",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-132462",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-216829",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    }
+  ]
+}

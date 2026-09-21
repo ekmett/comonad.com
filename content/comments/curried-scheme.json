@@ -1,0 +1,88 @@
+{
+  "reviewed": "2026-09-21",
+  "method": "Explicit reviewed selections; all unselected records preserved in the raw source.",
+  "comments": [
+    {
+      "id": "comment-11336",
+      "author": "Edward Kmett",
+      "date": "August 29th, 2009 at 3:24 pm",
+      "markdown": "@Anthony:\n\nGood point. I was trying to avoid discriminating, so I could just work parametrically, but a quick procedure? check isn’t such a high price to pay to handle the base case more gracefully.\n\nI have two concerns with this proposed fix though.\n\n1.  One is that this will silently eat the remaining arguments when you try to handle a non-procedure. Perhaps it should do the null? check on args rather than swallow them in the non-procedure case.\n2.  The other is more subtle and has to do with parametricity. Since we now may or may not invoke the result, I might not be able to use this in a number of situations inside of my toy monad library.\n\nBy redefining (define-curried name body) to just use a define and migrating its current behavior to (define-curried (name) body) this obtains, perhaps a more pleasing result. Patching it thus:\n\n```haskell\n((_ () body)\n     (lambda args\n         (if (null? args)\n             body\n             (apply body args))))\n```\n\nyields a result that is identical to the handling of the other two cases in behavior.\n\nThen (define-curried x 5) does the right thing, and just gives you 5.  \nand (define-curried (x) 5) gives you a nullary function that when invoked will give you back 5, but will try to pass any superfluous over-applied arguments to 5 and crash."
+    },
+    {
+      "id": "comment-11341",
+      "author": "Edward Kmett",
+      "date": "August 29th, 2009 at 9:46 pm",
+      "markdown": "@Phil:\n\nNice macro. =) While, alas, it doesn’t handle over or null application, it is really succinct!"
+    },
+    {
+      "id": "comment-11343",
+      "author": "Anthony Cowley",
+      "date": "August 29th, 2009 at 10:42 pm",
+      "markdown": "Edward,\n\nI like your fix; a definite improvement! Can you offer more detail on your parametricity concern, though? Like many others, I, too, have a toy monad library in my collection, but it’s not obvious to me how this situation with my proposed patch raises a problem in that area."
+    },
+    {
+      "id": "comment-11358",
+      "author": "Edward Kmett",
+      "date": "August 30th, 2009 at 2:13 pm",
+      "markdown": "@Anthony:\n\nIt looks like my parametricity concern was a bit of a misapprehension. I wasn’t able to concoct a scenario where it led to a problem. ;)\n\nIf we ignore the existence of nullary functions the new version works really well, as would, I suppose, your fix."
+    },
+    {
+      "id": "comment-11379",
+      "author": "Edward Kmett",
+      "date": "August 31st, 2009 at 2:01 pm",
+      "markdown": "Hi Dan,\n\nThe code above provides both.\n\n(define id (curried (x) x))\n\nuses the lambda form (perhaps ‘curried’ should be renamed ‘curried-lambda’ ?)\n\nOn the other hand,\n\n(define-curried (id x) x)\n\nprovides a definition with a curried argument list in the same fashion that (define (id x) x) desugars to (define id (lambda (x) x)) — a convenience that I seem to recall you don’t like using. ;)"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "comment-11333",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-11336",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-11340",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-11341",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-11343",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-11358",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-11378",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-11379",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-17384",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-41360",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    }
+  ]
+}

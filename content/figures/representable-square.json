@@ -1,0 +1,16 @@
+{
+  "id": "representable-square",
+  "objects": [
+    "Haskₘ(a, b)",
+    "Ub",
+    "Haskₘ(a, c)",
+    "Uc"
+  ],
+  "arrows": [
+    "ϕₐ",
+    "Haskₘ(a, f)",
+    "Uf",
+    "ϕₕ"
+  ],
+  "originalTex": " \\bfig\\square&lt;1000,1000>[\\mathbf{Hask}_M(a,b)`Ub`\\mathbf{Hask}_M(a,c)`Uc;\\phi_a`\\mathbf{Hask}_M(a,f)`Uf`\\phi_h]\\efig "
+}

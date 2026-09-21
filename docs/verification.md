@@ -1,39 +1,15 @@
-# Verified 2026-09-21
+# Verification — 21 September 2026
 
-## Browser kernel
+`npm run check` verifies:
 
-- Compiler: GHC 9.14.1.20260731, wasm32-wasi.
-- Actual module size: 1,644,489 bytes, no compiler shipped to readers.
-- Module and source checksums: `dist/build-info.json`.
-- `npm test`: 409 assertions pass against 24 independent Python-zlib fixtures.
-- UTF-8, all 256 byte values, zero bytes, empty inputs, varied sizes through
-  4096 bytes, multiple boundaries, associativity, left/right identity, cached edit.
-- Browser uses the exact engine and WASI shim exercised by the Node checks.
-- GHC compilation and JavaScript syntax checks pass.
+- 149 source snapshot hashes, all acquisition catalog entries represented, and 162 correctly ordered article/talk entries.
+- Published Wasm hash and matching Haskell source hashes.
+- 409 CRC checks against 24 independently generated Python zlib vectors: empty/Unicode/all-byte inputs, splitting, composition, both summary fields, associativity, identities and cached edits.
+- 16 automaton checks: constant rules, identity, both directional shifts, and eleven Pascal-triangle parity generations under rule 90. The displayed window uses a shrinking padded domain, so no arbitrary boundary can reach the picture.
+- 88,570 additional Wasm checks: capture avoidance and alpha-equivalence under binder renaming; all 64 grid cells and six block widths against bit-by-bit Morton encoding; AD gradients against analytic derivatives and central finite differences, including accumulation at shared x; all node pairs in chain, star, balanced, and four deterministic random 64-node trees against ancestor lists, with cached path sizes and old-version queries. Invalid trees are rejected.
+- All 110 article pages: 1,202 source blocks survive highlighting, no unwanted tabs/NBSP padding, one page title, local rendering assets, and resolving local links/anchors. Every original blog code block is compared token-for-token modulo documented whitespace and lambda-escape restoration. All 187 published comments preserve original wording. The original three pilot articles also retain their stronger prose comparisons.
+- 1,014 raw archive checksums, binary/source byte equality, and 15,341 local archive references. Seventeen unavailable historical targets are explicitly accounted for. Old Haddock links into local `/usr` trees are labeled as such; absent historical symbol anchors link to the surviving source page and are recorded in `archive-link-repairs.json`.
 
-## Native companion
+In-session browser checks exercise archive search and talk navigation, the inline automaton controls and rendered output, and article/header layout. The four new figures were exercised in the browser, including capture/binder controls, both Morton traversal orders, both AD input sliders and sweep controls, and LCA growth, earlier versions, and equal-node queries. A 390-pixel viewport check confirmed no document overflow and readable graph labels. Earlier CRC checks covered empty strings, Unicode and both association orders. GitHub-hosted workflow execution and production DNS are not tested because nothing has been deployed.
 
-- GHC 9.10.1 / Cabal 3.16.0.0, frozen WAI/Warp dependencies.
-- `cabal build crc-server` succeeds. macOS linker emits a redundant -U warning.
-- `python3 tests/server.py`: 20 HTTP checks pass against zlib, including Unicode,
-  empty input, split limits, invalid parameters, and 404 responses.
-- Binds `127.0.0.1:8081` only.
-
-## In-session browser
-
-- Opened the static pilot at http://127.0.0.1:4173/ in Codex's in-app browser.
-- Standard input `123456789` gives `CBF43926` through both calculation paths.
-- Unicode preset gives `C57D2569`; split zero works with an empty left summary.
-- Empty input gives `00000000` with identity summaries on both sides.
-- Editing chunk B from `45` to `λ` gives `712B0DAA`; right branch retained,
-  one leaf and two compositions updated, matching the direct scan.
-- Editing chunk C afterwards also updates only its ancestor path.
-- Original, server, and browser source panels checked; keyboard tab navigation
-  exercised. Historical code is labelled as historical, not modernized in place.
-- Browser console had no errors/warnings during the interactions checked.
-- Desktop screenshot inspected. Mobile layout inspected at 390 × 844; after
-  fixing a preformatted code overflow, page scrollWidth = clientWidth = 390.
-- Temporary viewport override restored before handoff.
-
-This is one browser environment, not a full cross-browser conformance matrix.
-No multicore or native-performance claims are made by the pilot.
+Acquisition inventories and unchanged source snapshots provide the audit trail. Full semantic recompilation of historical examples against modern libraries is not claimed.

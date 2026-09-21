@@ -1,0 +1,45 @@
+{
+  "reviewed": "2026-09-21",
+  "method": "Explicit reviewed selections; all unselected records preserved in the raw source.",
+  "comments": [
+    {
+      "id": "comment-11175",
+      "author": "Edward Kmett",
+      "date": "August 21st, 2009 at 8:29 am",
+      "markdown": "@Sebastian: I just added a source link at the bottom of the post for the Iteratee code. It doesn’t contain the monoidal layer, since that has changed quite a bit since this was written."
+    },
+    {
+      "id": "comment-11220",
+      "author": "Edward Kmett",
+      "date": "August 23rd, 2009 at 6:04 am",
+      "markdown": "@Sjoerd\n\nMostly to follow the original Iteratee write-up with the flip (.) combinator. That would be a perfectly valid approach as well."
+    }
+  ],
+  "decisions": [
+    {
+      "id": "comment-11172",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-11175",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-11206",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-11220",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-11263",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    }
+  ]
+}

@@ -1,0 +1,857 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head profile="http://gmpg.org/xfn/11">
+        <link rel="shortcut icon" href="http://comonad.com/reader/wp-content/themes/connections/favicon.ico" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>The Comonad.Reader &raquo; Dynamorphisms as Chronomorphisms</title>
+	<meta name="generator" content="WordPress 2.8.4" />
+	<style type="text/css" media="screen">@import url( http://comonad.com/reader/wp-content/themes/connections/style.css );</style>
+	<!--[if IE]><style type="text/css"> img { behavior: url(/reader/pngbehavior/pngbehavior.htc); } </style><![endif]-->
+        <link rel="openid.server" href="https://api.screenname.aol.com/auth/openidServer"/>
+        <link rel="openid.delegate" href="http://openid.aol.com/edwardallankmett"/>
+
+	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://comonad.com/reader/feed/" />
+	<link rel="alternate" type="application/atom+xml" title="Atom 0.3" href="http://comonad.com/reader/feed/atom/" />
+	<link rel="pingback" href="http://comonad.com/reader/xmlrpc.php" />
+    	<link rel='archives' title='October 2022' href='http://comonad.com/reader/2022/10/' />
+	<link rel='archives' title='January 2018' href='http://comonad.com/reader/2018/01/' />
+	<link rel='archives' title='January 2016' href='http://comonad.com/reader/2016/01/' />
+	<link rel='archives' title='September 2015' href='http://comonad.com/reader/2015/09/' />
+	<link rel='archives' title='July 2015' href='http://comonad.com/reader/2015/07/' />
+	<link rel='archives' title='May 2015' href='http://comonad.com/reader/2015/05/' />
+	<link rel='archives' title='April 2015' href='http://comonad.com/reader/2015/04/' />
+	<link rel='archives' title='February 2015' href='http://comonad.com/reader/2015/02/' />
+	<link rel='archives' title='December 2014' href='http://comonad.com/reader/2014/12/' />
+	<link rel='archives' title='August 2014' href='http://comonad.com/reader/2014/08/' />
+	<link rel='archives' title='April 2014' href='http://comonad.com/reader/2014/04/' />
+	<link rel='archives' title='May 2013' href='http://comonad.com/reader/2013/05/' />
+	<link rel='archives' title='April 2013' href='http://comonad.com/reader/2013/04/' />
+	<link rel='archives' title='January 2013' href='http://comonad.com/reader/2013/01/' />
+	<link rel='archives' title='December 2012' href='http://comonad.com/reader/2012/12/' />
+	<link rel='archives' title='September 2012' href='http://comonad.com/reader/2012/09/' />
+	<link rel='archives' title='August 2012' href='http://comonad.com/reader/2012/08/' />
+	<link rel='archives' title='June 2012' href='http://comonad.com/reader/2012/06/' />
+	<link rel='archives' title='May 2012' href='http://comonad.com/reader/2012/05/' />
+	<link rel='archives' title='April 2012' href='http://comonad.com/reader/2012/04/' />
+	<link rel='archives' title='December 2011' href='http://comonad.com/reader/2011/12/' />
+	<link rel='archives' title='November 2011' href='http://comonad.com/reader/2011/11/' />
+	<link rel='archives' title='October 2011' href='http://comonad.com/reader/2011/10/' />
+	<link rel='archives' title='September 2011' href='http://comonad.com/reader/2011/09/' />
+	<link rel='archives' title='July 2011' href='http://comonad.com/reader/2011/07/' />
+	<link rel='archives' title='June 2011' href='http://comonad.com/reader/2011/06/' />
+	<link rel='archives' title='July 2010' href='http://comonad.com/reader/2010/07/' />
+	<link rel='archives' title='May 2010' href='http://comonad.com/reader/2010/05/' />
+	<link rel='archives' title='April 2010' href='http://comonad.com/reader/2010/04/' />
+	<link rel='archives' title='September 2009' href='http://comonad.com/reader/2009/09/' />
+	<link rel='archives' title='August 2009' href='http://comonad.com/reader/2009/08/' />
+	<link rel='archives' title='July 2009' href='http://comonad.com/reader/2009/07/' />
+	<link rel='archives' title='June 2009' href='http://comonad.com/reader/2009/06/' />
+	<link rel='archives' title='March 2009' href='http://comonad.com/reader/2009/03/' />
+	<link rel='archives' title='December 2008' href='http://comonad.com/reader/2008/12/' />
+	<link rel='archives' title='November 2008' href='http://comonad.com/reader/2008/11/' />
+	<link rel='archives' title='June 2008' href='http://comonad.com/reader/2008/06/' />
+	<link rel='archives' title='May 2008' href='http://comonad.com/reader/2008/05/' />
+	<link rel='archives' title='April 2008' href='http://comonad.com/reader/2008/04/' />
+	<link rel='archives' title='March 2008' href='http://comonad.com/reader/2008/03/' />
+	<link rel='archives' title='January 2008' href='http://comonad.com/reader/2008/01/' />
+	<link rel='archives' title='July 2007' href='http://comonad.com/reader/2007/07/' />
+	<link rel='archives' title='May 2007' href='http://comonad.com/reader/2007/05/' />
+	<link rel='archives' title='November 2006' href='http://comonad.com/reader/2006/11/' />
+	<link rel='archives' title='October 2006' href='http://comonad.com/reader/2006/10/' />
+	<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader &raquo; Dynamorphisms as Chronomorphisms Comments Feed" href="http://comonad.com/reader/2008/dynamorphisms-as-chronomorphisms/feed/" />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://comonad.com/reader/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://comonad.com/reader/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='The Comonad.Reader' href='http://comonad.com/reader' />
+<link rel='start' title='Hello, World!' href='http://comonad.com/reader/2006/hello-world/' />
+<link rel='prev' title='Unnatural Transformations' href='http://comonad.com/reader/2008/unnatural-transformations/' />
+<link rel='next' title='Deriving Strength from Laziness' href='http://comonad.com/reader/2008/deriving-strength-from-laziness/' />
+<meta name="generator" content="WordPress 2.8.4" />
+</head>
+<body>
+<div id="rap">
+	<div id="header">
+	<ul id="topnav">
+		<li><a href="/reader" id="navHome" title="Posted Recently" accesskey="h">Home |</a></li>
+		<li><a href="/reader/about/" id="navAbout" title="About the Author" accesskey="a">About |</a></li>
+		<li><a href="/reader/source;item=libraries" id="navSource" title="Source Code" accesskey="s">Source |</a></li>
+		<li><a href="mailto:ekmett@gmail.com" id="navContact" title="Contact the Author" accesskey="c">Contact </a></li>
+	</ul>
+	<a href="http://comonad.com/reader" id="logoHome" title="Posted Recently"><img id="logo" src="/reader/pngbehavior/blank.gif" ></a>
+	<h1><a href="http://comonad.com/reader" title="The Comonad.Reader">The Comonad.Reader</a></h1>		
+	<div id="desc">types, (co)monads, substructural logic</div>
+</div>
+	
+	<div id="main">
+	<div id="content">
+
+						<div class="post">
+				<p class="post-date">Sat 26 Apr 2008</p>
+<div class="post-info"><h2 class="post-title"><a href="http://comonad.com/reader/2008/dynamorphisms-as-chronomorphisms/" rel="bookmark" title="Permanent Link: Dynamorphisms as Chronomorphisms">Dynamorphisms as Chronomorphisms</a></h2>
+Posted by Edward Kmett under <a href="http://comonad.com/reader/category/category-theory/" title="View all posts in Category Theory" rel="category tag">Category Theory</a> ,  <a href="http://comonad.com/reader/category/comonads/" title="View all posts in Comonads" rel="category tag">Comonads</a> ,  <a href="http://comonad.com/reader/category/haskell/" title="View all posts in Haskell" rel="category tag">Haskell</a> <br/><a href="http://comonad.com/reader/2008/dynamorphisms-as-chronomorphisms/#comments" title="Comment on Dynamorphisms as Chronomorphisms">[48] Comments</a>&nbsp;</div>
+<div class="post-content">
+	<p>In case it wasn't obvious, I thought I should mention that Kabanov and Vene's <a href="http://citeseer.ist.psu.edu/748315.html">dynamorphisms</a> which optimize histomorphisms for dynamic programming can be expressed readily as <a href="http://comonad.com/reader/2008/time-for-chronomorphisms/">chronomorphisms</a>; they just use an <a href="http://en.wikipedia.org/wiki/Anamorphism">anamorphism</a> instead of a <a href="http://www.mii.lt/informatica/pdf/INFO141.pdf">futumorphism</a>. </p>
+<p><span id="more-51"></span></p>
+<pre class="haskell">&nbsp;
+<span style="color: #5d478b; font-style: italic;">-- | dynamorphism</span>
+dyna :: <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Functor"><span style="background-color: #efefbf; font-weight: bold;">Functor</span></a> f =&gt;
+        <span style="color: green;">&#40;</span>f <span style="color: green;">&#40;</span>Cofree f b<span style="color: green;">&#41;</span> -&gt; b<span style="color: green;">&#41;</span> -&gt;
+        <span style="color: green;">&#40;</span>a -&gt; f a<span style="color: green;">&#41;</span> -&gt;
+        <span style="color: green;">&#40;</span>a -&gt; b<span style="color: green;">&#41;</span>
+dyna f g = <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#v:extract"><span style="font-weight: bold;">extract</span></a> . dyna' f g
+&nbsp;
+<span style="color: #5d478b; font-style: italic;">-- | dynamorphism kernel</span>
+dyna' :: <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Functor"><span style="background-color: #efefbf; font-weight: bold;">Functor</span></a> f =&gt;
+        <span style="color: green;">&#40;</span>f <span style="color: green;">&#40;</span>Cofree f b<span style="color: green;">&#41;</span> -&gt; b<span style="color: green;">&#41;</span> -&gt;
+        <span style="color: green;">&#40;</span>a -&gt; f a<span style="color: green;">&#41;</span> -&gt;
+        <span style="color: green;">&#40;</span>a -&gt; Cofree f b<span style="color: green;">&#41;</span>
+<span style="color: #5d478b; font-style: italic;">--dyna' f g = hylo (Cofree . (f &amp;&amp;&amp; id)) g</span>
+dyna' f g = chrono' f <span style="color: green;">&#40;</span><a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fmap"><span style="font-weight: bold;">fmap</span></a> <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:return"><span style="font-weight: bold;">return</span></a> . g<span style="color: green;">&#41;</span> . <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:return"><span style="font-weight: bold;">return</span></a>
+&nbsp;
+<span style="color: #5d478b; font-style: italic;">-- | generalized dynamorphism</span>
+g_dyna :: <span style="color: green;">&#40;</span><a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Functor"><span style="background-color: #efefbf; font-weight: bold;">Functor</span></a> f, <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Functor"><span style="background-color: #efefbf; font-weight: bold;">Functor</span></a> h<span style="color: green;">&#41;</span> =&gt;
+        <span style="color: green;">&#40;</span><span style="color: #06c; font-weight: bold;">forall</span> b. f <span style="color: green;">&#40;</span>h b<span style="color: green;">&#41;</span> -&gt; h <span style="color: green;">&#40;</span>f b<span style="color: green;">&#41;</span><span style="color: green;">&#41;</span> -&gt;
+        <span style="color: green;">&#40;</span>f <span style="color: green;">&#40;</span>Cofree h b<span style="color: green;">&#41;</span> -&gt; b<span style="color: green;">&#41;</span> -&gt;
+        <span style="color: green;">&#40;</span>a -&gt; f a<span style="color: green;">&#41;</span> -&gt;
+        <span style="color: green;">&#40;</span>a -&gt; b<span style="color: green;">&#41;</span>
+g_dyna k f g = <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#v:extract"><span style="font-weight: bold;">extract</span></a> . g_dyna' k f g
+&nbsp;
+<span style="color: #5d478b; font-style: italic;">-- | generalized dynamorphism kernel</span>
+g_dyna' :: <span style="color: green;">&#40;</span><a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Functor"><span style="background-color: #efefbf; font-weight: bold;">Functor</span></a> f, <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Functor"><span style="background-color: #efefbf; font-weight: bold;">Functor</span></a> h<span style="color: green;">&#41;</span> =&gt;
+        <span style="color: green;">&#40;</span><span style="color: #06c; font-weight: bold;">forall</span> b. f <span style="color: green;">&#40;</span>h b<span style="color: green;">&#41;</span> -&gt; h <span style="color: green;">&#40;</span>f b<span style="color: green;">&#41;</span><span style="color: green;">&#41;</span> -&gt;
+        <span style="color: green;">&#40;</span>f <span style="color: green;">&#40;</span>Cofree h b<span style="color: green;">&#41;</span> -&gt; b<span style="color: green;">&#41;</span> -&gt;
+        <span style="color: green;">&#40;</span>a -&gt; f a<span style="color: green;">&#41;</span> -&gt;
+        <span style="color: green;">&#40;</span>a -&gt; Cofree h b<span style="color: green;">&#41;</span>
+g_dyna' k f g = g_chrono' k <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:id"><span style="font-weight: bold;">id</span></a> f <span style="color: green;">&#40;</span><a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fmap"><span style="font-weight: bold;">fmap</span></a> <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:return"><span style="font-weight: bold;">return</span></a> . g<span style="color: green;">&#41;</span> . <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:return"><span style="font-weight: bold;">return</span></a>
+&nbsp;</pre>
+<p>Moreover, as an interesting aside, since one side is an anamorphism, there is no power to be gained for a dynamorphism by <a href="http://comonad.com/reader/2008/unnatural-transformations/">introducing a natural transformation</a> term, even though dynamorphism is a form of chronomorphism, because 'eta' can be folded into the anamorphism side of the chronomorphism, as you do with a normal hylomorphism.</p>
+<p><a href="http://comonad.com/haskell/Chronomorphism.hs">Source Code</a></p>
+	<div class="post-info">
+			</div>
+	<div class="post-footer">&nbsp;</div>
+</div>
+				
+<!-- You can start editing here. -->
+
+	<h3 id="comments">48 Responses to &#8220;Dynamorphisms as Chronomorphisms&#8221;</h3> 
+
+	<ol class="commentlist">
+
+	
+		<li class="alt" id="comment-1083">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=9c51a8b8afa2366a2ef4650c411f187a&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://comonad.com/' rel='external nofollow' class='url'>Edward Kmett</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1083" title="">April 27th, 2008 at 3:09 am</a> </small>
+			<br clear="all"/>
+
+			<p>Another notion of g_dyna could be to allow the composition of a generalized anamorphism with a histomorphism rather than the one above which has a generalized histomorphism with an anamorphism.</p>
+<p>Allowing for them both together yields the near trivial declaration:</p>
+<p>g_dyna k = g_hylo (distCofree k)</p>
+<p>but at that point its not clear that its a whole lot more specific than g_hylo.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-1084">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=7c0834d56bf1fb4644a1f1d652d2433c&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite>Fritz Ruehr</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1084" title="">April 27th, 2008 at 4:58 am</a> </small>
+			<br clear="all"/>
+
+			<p>Up too late and way too tired, I mis-read &#8220;Cofree&#8221; for &#8220;Coffee&#8221; at first glance :) . Hopefully some of the latter, in the morning, will help me digest the former.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-211442">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://500px.com/p/skulogovid/?view=groups' rel='external nofollow' class='url'>dosage for stromectol</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-211442" title="">September 23rd, 2022 at 3:21 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>stromectol children <a href="https://500px.com/p/skulogovid/?view=groups.." rel="nofollow">https://500px.com/p/skulogovid/?view=groups..</a>.</strong></p>
+<p>Nicely put. Thanks&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-211556">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://500px.com/p/bersavahi/?view=groups' rel='external nofollow' class='url'>canadian pharmacies</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-211556" title="">September 23rd, 2022 at 7:28 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>canada rx <a href="https://500px.com/p/bersavahi/?view=groups.." rel="nofollow">https://500px.com/p/bersavahi/?view=groups..</a>.</strong></p>
+<p>Amazing forum posts. Regards!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-211942">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://reallygoodemails.com/canadianpharmaceuticalsonlineusa' rel='external nofollow' class='url'>https://reallygoodemails.com/canadianpharmaceuticalsonlineusa</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-211942" title="">September 24th, 2022 at 12:30 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Cheap viagra <a href="https://reallygoodemails.com/canadianpharmaceuticalsonlineusa.." rel="nofollow">https://reallygoodemails.com/canadianpharmaceuticalsonlineusa..</a>.</strong></p>
+<p>Thank you! I appreciate it&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-212036">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.provenexpert.com/canadian-pharmaceuticals-online-usa/' rel='external nofollow' class='url'>www.provenexpert.comcanadian-pharmaceuticals-online-usa</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-212036" title="">September 24th, 2022 at 4:11 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra reviews <a href="https://www.provenexpert.com/canadian-pharmaceuticals-online-usa/.." rel="nofollow">https://www.provenexpert.com/canadian-pharmaceuticals-online-usa/..</a>.</strong></p>
+<p>Awesome posts. Thank you!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-212174">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://sanangelolive.com/members/pharmaceuticals' rel='external nofollow' class='url'>canadian pharmacy viagra brand</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-212174" title="">September 24th, 2022 at 9:18 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>canada drug pharmacy <a href="https://sanangelolive.com/members/pharmaceuticals.." rel="nofollow">https://sanangelolive.com/members/pharmaceuticals..</a>.</strong></p>
+<p>Many thanks! Helpful stuff!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-213115">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://melaninterest.com/user/canadian-pharmaceuticals-online/?view=likes' rel='external nofollow' class='url'>melaninterest.comusercanadian-pharmaceuticals-online?view=likes</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-213115" title="">September 26th, 2022 at 8:12 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra rezeptfrei <a href="https://melaninterest.com/user/canadian-pharmaceuticals-online/?view=likes.." rel="nofollow">https://melaninterest.com/user/canadian-pharmaceuticals-online/?view=likes..</a>.</strong></p>
+<p>Truly a good deal of superb advice!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-213229">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://haikudeck.com/canadian-pharmaceuticals-online-personal-presentation-827506e003' rel='external nofollow' class='url'>https://haikudeck.com/canadian-pharmaceuticals-online-personal-presentation-827506e003</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-213229" title="">September 26th, 2022 at 12:14 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra from canada <a href="https://haikudeck.com/canadian-pharmaceuticals-online-personal-presentation-827506e003.." rel="nofollow">https://haikudeck.com/canadian-pharmaceuticals-online-personal-presentation-827506e003..</a>.</strong></p>
+<p>Many thanks. Valuable information&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-213346">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://buyersguide.americanbar.org/profile/420642/0' rel='external nofollow' class='url'>canadian viagra</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-213346" title="">September 26th, 2022 at 4:24 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>canadian pharmacies online prescriptions <a href="https://buyersguide.americanbar.org/profile/420642/0.." rel="nofollow">https://buyersguide.americanbar.org/profile/420642/0..</a>.</strong></p>
+<p>You have made your position pretty effectively&#8230;..</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-213515">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://experiment.com/users/canadianpharmacy' rel='external nofollow' class='url'>https://experiment.com/users/canadianpharmacy</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-213515" title="">September 27th, 2022 at 12:06 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra for daily use <a href="https://experiment.com/users/canadianpharmacy.." rel="nofollow">https://experiment.com/users/canadianpharmacy..</a>.</strong></p>
+<p>Thank you! I appreciate it&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-213734">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://challonge.com/esapenti' rel='external nofollow' class='url'>https://challonge.com/esapenti</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-213734" title="">September 27th, 2022 at 9:41 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra 20 mg best price <a href="https://challonge.com/esapenti.." rel="nofollow">https://challonge.com/esapenti..</a>.</strong></p>
+<p>Nicely put, Thank you&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-213857">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://challonge.com/gotsembpertvil' rel='external nofollow' class='url'>https://challonge.com/gotsembpertvil</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-213857" title="">September 27th, 2022 at 2:10 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Buy generic viagra <a href="https://challonge.com/gotsembpertvil.." rel="nofollow">https://challonge.com/gotsembpertvil..</a>.</strong></p>
+<p>Nicely put. Kudos&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-214117">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://challonge.com/citlitigolf' rel='external nofollow' class='url'>buy viagra</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-214117" title="">September 28th, 2022 at 3:57 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra 5mg prix <a href="https://challonge.com/citlitigolf.." rel="nofollow">https://challonge.com/citlitigolf..</a>.</strong></p>
+<p>Kudos, An abundance of posts!<br />
+&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-214220">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://order-stromectol-over-the-counter.estranky.cz/clanky/order-stromectol-over-the-counter.html' rel='external nofollow' class='url'>stromectol for humans</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-214220" title="">September 28th, 2022 at 7:31 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>dose of stromectol <a href="https://order-stromectol-over-the-counter.estranky.cz/clanky/order-stromectol-over-the-counter.html.." rel="nofollow">https://order-stromectol-over-the-counter.estranky.cz/clanky/order-stromectol-over-the-counter.html..</a>.</strong></p>
+<p>You actually mentioned this superbly&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-214374">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://soncheebarxu.estranky.cz/clanky/stromectol-for-head-lice.html' rel='external nofollow' class='url'>soncheebarxu.estranky.czclankystromectol-for-head-lice.html</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-214374" title="">September 28th, 2022 at 1:58 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra generika <a href="https://soncheebarxu.estranky.cz/clanky/stromectol-for-head-lice.html.." rel="nofollow">https://soncheebarxu.estranky.cz/clanky/stromectol-for-head-lice.html..</a>.</strong></p>
+<p>Thanks a lot, Great information!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-214634">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://lehyriwor.estranky.sk/clanky/stromectol-cream.html' rel='external nofollow' class='url'>lehyriwor.estranky.skclankystromectol-cream.html</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-214634" title="">September 29th, 2022 at 3:30 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Tadalafil <a href="https://lehyriwor.estranky.sk/clanky/stromectol-cream.html.." rel="nofollow">https://lehyriwor.estranky.sk/clanky/stromectol-cream.html..</a>.</strong></p>
+<p>Fantastic info. Kudos!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-214724">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://dsdgbvda.zombeek.cz/' rel='external nofollow' class='url'>https://dsdgbvda.zombeek.cz/</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-214724" title="">September 29th, 2022 at 7:17 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra or viagra <a href="https://dsdgbvda.zombeek.cz/.." rel="nofollow">https://dsdgbvda.zombeek.cz/..</a>.</strong></p>
+<p>You&#8217;ve made your stand quite clearly.!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-215089">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.myscrsdirectory.com/profile/421708/0' rel='external nofollow' class='url'>https://www.myscrsdirectory.com/profile/421708/0</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215089" title="">September 30th, 2022 at 8:00 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Tadalafil 20 mg <a href="https://www.myscrsdirectory.com/profile/421708/0.." rel="nofollow">https://www.myscrsdirectory.com/profile/421708/0..</a>.</strong></p>
+<p>Cheers. Loads of material.<br />
+&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-215161">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://supplier.ihrsa.org/profile/421717/0' rel='external nofollow' class='url'>cialis canadian pharmacy</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215161" title="">September 30th, 2022 at 3:10 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>cialis from canada <a href="https://supplier.ihrsa.org/profile/421717/0.." rel="nofollow">https://supplier.ihrsa.org/profile/421717/0..</a>.</strong></p>
+<p>Lovely material, Thanks!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-215287">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://wefbuyersguide.wef.org/profile/421914/0' rel='external nofollow' class='url'>Canadian Pharmacies Shipping to USA</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215287" title="">October 1st, 2022 at 5:32 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>canada drug pharmacy <a href="https://wefbuyersguide.wef.org/profile/421914/0.." rel="nofollow">https://wefbuyersguide.wef.org/profile/421914/0..</a>.</strong></p>
+<p>Truly many of superb data!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-215349">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://legalmarketplace.alanet.org/profile/421920/0' rel='external nofollow' class='url'>canada rx</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215349" title="">October 1st, 2022 at 9:32 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>online pharmacies canada <a href="https://legalmarketplace.alanet.org/profile/421920/0.." rel="nofollow">https://legalmarketplace.alanet.org/profile/421920/0..</a>.</strong></p>
+<p>Kudos. Excellent stuff!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-215476">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://moaamein.nacda.com/profile/422018/0' rel='external nofollow' class='url'>https://moaamein.nacda.com/profile/422018/0</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215476" title="">October 2nd, 2022 at 3:10 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra pills <a href="https://moaamein.nacda.com/profile/422018/0.." rel="nofollow">https://moaamein.nacda.com/profile/422018/0..</a>.</strong></p>
+<p>Incredible loads of great advice!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-215538">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.audiologysolutionsnetwork.org/profile/422019/0' rel='external nofollow' class='url'>www.audiologysolutionsnetwork.orgprofile4220190</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215538" title="">October 2nd, 2022 at 7:37 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Tadalafil 20 mg <a href="https://www.audiologysolutionsnetwork.org/profile/422019/0.." rel="nofollow">https://www.audiologysolutionsnetwork.org/profile/422019/0..</a>.</strong></p>
+<p>Seriously a good deal of great data&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-215590">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://network.myscrs.org/profile/422020/0' rel='external nofollow' class='url'>canada rx</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215590" title="">October 2nd, 2022 at 10:54 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>canadian pharmacy cialis <a href="https://network.myscrs.org/profile/422020/0.." rel="nofollow">https://network.myscrs.org/profile/422020/0..</a>.</strong></p>
+<p>This is nicely put! &#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-215707">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://sanangelolive.com/members/canadianpharmaceuticalsonlineusa' rel='external nofollow' class='url'>canadian pharmacies online</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215707" title="">October 3rd, 2022 at 4:39 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>online canadian pharmacies <a href="https://sanangelolive.com/members/canadianpharmaceuticalsonlineusa.." rel="nofollow">https://sanangelolive.com/members/canadianpharmaceuticalsonlineusa..</a>.</strong></p>
+<p>Wonderful data. Thank you&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-215760">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://sanangelolive.com/members/girsagerea' rel='external nofollow' class='url'>medicaments stromectol</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215760" title="">October 3rd, 2022 at 8:04 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>stromectol for crabs <a href="https://sanangelolive.com/members/girsagerea.." rel="nofollow">https://sanangelolive.com/members/girsagerea..</a>.</strong></p>
+<p>Whoa plenty of superb tips&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-215902">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.ecosia.org/search?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>www.ecosia.orgsearch?q="My Canadian Pharmacy - Extensive Assortment of Medications – 2022"</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215902" title="">October 4th, 2022 at 6:43 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra kaufen <a href="https://www.ecosia.org/search?q=" rel="nofollow">https://www.ecosia.org/search?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>Info effectively considered!!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-215959">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.mojomarketplace.com/user/Canadianpharmaceuticalsonline-EkugcJDMYH' rel='external nofollow' class='url'>www.mojomarketplace.comuserCanadianpharmaceuticalsonline-EkugcJDMYH</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215959" title="">October 4th, 2022 at 10:27 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra coupon <a href="https://www.mojomarketplace.com/user/Canadianpharmaceuticalsonline-EkugcJDMYH.." rel="nofollow">https://www.mojomarketplace.com/user/Canadianpharmaceuticalsonline-EkugcJDMYH..</a>.</strong></p>
+<p>Wow loads of wonderful material!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-216010">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://seedandspark.com/user/canadian-pharmaceuticals-online' rel='external nofollow' class='url'>https://seedandspark.com/user/canadian-pharmaceuticals-online</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-216010" title="">October 4th, 2022 at 2:51 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra 20 mg <a href="https://seedandspark.com/user/canadian-pharmaceuticals-online.." rel="nofollow">https://seedandspark.com/user/canadian-pharmaceuticals-online..</a>.</strong></p>
+<p>You actually explained that wonderfully&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-216239">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.giantbomb.com/profile/canadapharmacy/blog/canadian-pharmaceuticals-online/265652/' rel='external nofollow' class='url'>https://www.giantbomb.com/profile/canadapharmacy/blog/canadian-pharmaceuticals-online/265652/</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-216239" title="">October 5th, 2022 at 2:45 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Generic for viagra <a href="https://www.giantbomb.com/profile/canadapharmacy/blog/canadian-pharmaceuticals-online/265652/.." rel="nofollow">https://www.giantbomb.com/profile/canadapharmacy/blog/canadian-pharmaceuticals-online/265652/..</a>.</strong></p>
+<p>Truly quite a lot of terrific advice&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-216425">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://feeds.feedburner.com/bing/Canadian-pharmaceuticals-online' rel='external nofollow' class='url'>https://feeds.feedburner.com/bing/Canadian-pharmaceuticals-online</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-216425" title="">October 5th, 2022 at 11:44 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra coupon <a href="https://feeds.feedburner.com/bing/Canadian-pharmaceuticals-online.." rel="nofollow">https://feeds.feedburner.com/bing/Canadian-pharmaceuticals-online..</a>.</strong></p>
+<p>Nicely spoken without a doubt! !&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-216848">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://search.seznam.cz/?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>https://search.seznam.cz/?q="My Canadian Pharmacy - Extensive Assortment of Medications – 2022"</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-216848" title="">October 6th, 2022 at 1:41 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra purchasing <a href="https://search.seznam.cz/?q=" rel="nofollow">https://search.seznam.cz/?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>You&#8217;ve made your stand pretty nicely&#8230;..</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-216994">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://sanangelolive.com/members/unsafiri' rel='external nofollow' class='url'>sanangelolive.commembersunsafiri</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-216994" title="">October 6th, 2022 at 5:21 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra reviews <a href="https://sanangelolive.com/members/unsafiri.." rel="nofollow">https://sanangelolive.com/members/unsafiri..</a>.</strong></p>
+<p>Thanks! I like it&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-217165">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://duckduckgo.com/?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>canadian pharmacy online</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-217165" title="">October 6th, 2022 at 9:39 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>best canadian mail order pharmacies &#8230;</strong></p>
+<p>Factor very well regarded.!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-217388">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://swisscows.com/en/web?query=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>canadian pharmacies that ship to us</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-217388" title="">October 6th, 2022 at 3:37 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>canada pharmacies online <a href="https://swisscows.com/en/web?query=" rel="nofollow">https://swisscows.com/en/web?query=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>Effectively expressed truly! !&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-217801">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.dogpile.com/serp?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>cialis from canada</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-217801" title="">October 7th, 2022 at 2:51 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>canada viagra <a href="https://www.dogpile.com/serp?q=" rel="nofollow">https://www.dogpile.com/serp?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>Very well voiced certainly. !&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-218082">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://search.naver.com/search.naver?where=nexearch' rel='external nofollow' class='url'>canadian medications</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-218082" title="">October 7th, 2022 at 10:00 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>global pharmacy canada &#8230;</strong></p>
+<p>Seriously quite a lot of wonderful advice&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-218795">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://search.givewater.com/serp?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>https://search.givewater.com/serp?q="My Canadian Pharmacy - Extensive Assortment of Medications – 2022"</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-218795" title="">October 8th, 2022 at 5:59 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra prices <a href="https://search.givewater.com/serp?q=" rel="nofollow">https://search.givewater.com/serp?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>Thank you! I value it!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-219002">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.bakespace.com/members/profile/Сanadianpharmaceuticalsforusasales/1541108/' rel='external nofollow' class='url'>www.bakespace.commembersprofileСanadian pharmaceuticals for usa sales1541108</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-219002" title="">October 8th, 2022 at 11:27 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra pills <a href="https://www.bakespace.com/members/profile/Сanadian" rel="nofollow">https://www.bakespace.com/members/profile/Сanadian</a> pharmaceuticals for usa sales/1541108/&#8230;</strong></p>
+<p>Thanks, A lot of data!<br />
+&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-219599">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.qwant.com/?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>www.qwant.com?q="My Canadian Pharmacy - Extensive Assortment of Medications – 2022"</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-219599" title="">October 9th, 2022 at 4:36 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra 20 mg &#8230;</strong></p>
+<p>You definitely made your point!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-219789">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://results.excite.com/serp?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>canada drug</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-219789" title="">October 9th, 2022 at 9:44 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>list of reputable canadian pharmacies <a href="https://results.excite.com/serp?q=" rel="nofollow">https://results.excite.com/serp?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>You actually expressed it very well&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-219971">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.infospace.com/serp?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>https://www.infospace.com/serp?q="My Canadian Pharmacy - Extensive Assortment of Medications – 2022"</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-219971" title="">October 9th, 2022 at 2:13 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Cheap viagra <a href="https://www.infospace.com/serp?q=" rel="nofollow">https://www.infospace.com/serp?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>Awesome postings. Thanks a lot&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-220546">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://headwayapp.co/canadianppharmacy-changelog' rel='external nofollow' class='url'>headwayapp.cocanadianppharmacy-changelog</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-220546" title="">October 10th, 2022 at 6:28 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra 20mg <a href="https://headwayapp.co/canadianppharmacy-changelog.." rel="nofollow">https://headwayapp.co/canadianppharmacy-changelog..</a>.</strong></p>
+<p>Thank you, I like this!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-221107">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://results.excite.com/serp?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>canadian pharmacy uk delivery</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-221107" title="">October 11th, 2022 at 4:24 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>most reliable canadian pharmacies <a href="https://results.excite.com/serp?q=" rel="nofollow">https://results.excite.com/serp?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>Really all kinds of very good material!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-221254">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://canadianpharmaceuticalsonline.as.me/schedule.php' rel='external nofollow' class='url'>https://canadianpharmaceuticalsonline.as.me/schedule.php</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-221254" title="">October 11th, 2022 at 9:46 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Generic viagra <a href="https://canadianpharmaceuticalsonline.as.me/schedule.php.." rel="nofollow">https://canadianpharmaceuticalsonline.as.me/schedule.php..</a>.</strong></p>
+<p>With thanks. Plenty of material.<br />
+&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-223387">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://feeds.feedburner.com/bing/stromectolnoprescription' rel='external nofollow' class='url'>cialis from canada</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-223387" title="">October 13th, 2022 at 11:44 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>buy viagra now <a href="https://feeds.feedburner.com/bing/stromectolnoprescription.." rel="nofollow">https://feeds.feedburner.com/bing/stromectolnoprescription..</a>.</strong></p>
+<p>Thanks! An abundance of facts!<br />
+&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-224154">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://reallygoodemails.com/orderstromectoloverthecounterusa' rel='external nofollow' class='url'>https://reallygoodemails.com/orderstromectoloverthecounterusa</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-224154" title="">October 14th, 2022 at 4:15 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra uk <a href="https://reallygoodemails.com/orderstromectoloverthecounterusa.." rel="nofollow">https://reallygoodemails.com/orderstromectoloverthecounterusa..</a>.</strong></p>
+<p>Useful posts. Appreciate it&#8230;.</p>
+		</li>
+
+	
+	
+	</ol>
+
+ 
+
+			</div>
+					<p align="center"></p>		
+	</div>
+	<div id="sidebar">
+		<h2>Archived Entry</h2>
+	<ul>
+	<li><strong>Post Date :</strong></li>
+	<li>Saturday, Apr 26th, 2008 at 8:54 pm</li>
+	<li><strong>Category :</strong></li>
+	<li><a href="http://comonad.com/reader/category/category-theory/" title="View all posts in Category Theory" rel="category tag">Category Theory</a> and  <a href="http://comonad.com/reader/category/comonads/" title="View all posts in Comonads" rel="category tag">Comonads</a> and  <a href="http://comonad.com/reader/category/haskell/" title="View all posts in Haskell" rel="category tag">Haskell</a></li>
+	<li><strong>Do More :</strong></li>
+	<li>							Both comments and pings are currently closed.			
+						
+						</li>
+	</ul>
+		
+	<h2><label for="s">Search</label></h2>
+	<ul>
+		<li>
+			<form id="searchform" method="get" action="/reader/index.php">
+				<div style="text-align:center">
+					<p><input type="text" name="s" id="s" size="10" /> <input type="submit" name="submit" value="Search" /></p>
+				</div>
+			</form>
+		</li>
+	</ul>
+<h2>RSS Feeds</h2>
+	<ul>
+		<li>
+			<a title="RSS2 Feed for Posts" href="http://comonad.com/reader/feed/">Posts</a> | <a title="RSS2 Feed for Comments" href="http://comonad.com/reader/comments/feed/">Comments</a></li>	
+	</ul>	
+</div>
+<p id="footer">Design based on <a href="http://www.vanillamist.com" title="Vanilla Mist">www.vanillamist.com</a></p></div>
+</div>
+</body>
+</html>

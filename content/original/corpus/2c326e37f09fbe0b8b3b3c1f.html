@@ -1,0 +1,442 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head profile="http://gmpg.org/xfn/11">
+        <link rel="shortcut icon" href="http://comonad.com/reader/wp-content/themes/connections/favicon.ico" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>The Comonad.Reader &raquo; What Constraints Entail: Part 1</title>
+	<meta name="generator" content="WordPress 2.8.4" />
+	<style type="text/css" media="screen">@import url( http://comonad.com/reader/wp-content/themes/connections/style.css );</style>
+	<!--[if IE]><style type="text/css"> img { behavior: url(/reader/pngbehavior/pngbehavior.htc); } </style><![endif]-->
+        <link rel="openid.server" href="https://api.screenname.aol.com/auth/openidServer"/>
+        <link rel="openid.delegate" href="http://openid.aol.com/edwardallankmett"/>
+
+	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://comonad.com/reader/feed/" />
+	<link rel="alternate" type="application/atom+xml" title="Atom 0.3" href="http://comonad.com/reader/feed/atom/" />
+	<link rel="pingback" href="http://comonad.com/reader/xmlrpc.php" />
+    	<link rel='archives' title='October 2022' href='http://comonad.com/reader/2022/10/' />
+	<link rel='archives' title='January 2018' href='http://comonad.com/reader/2018/01/' />
+	<link rel='archives' title='January 2016' href='http://comonad.com/reader/2016/01/' />
+	<link rel='archives' title='September 2015' href='http://comonad.com/reader/2015/09/' />
+	<link rel='archives' title='July 2015' href='http://comonad.com/reader/2015/07/' />
+	<link rel='archives' title='May 2015' href='http://comonad.com/reader/2015/05/' />
+	<link rel='archives' title='April 2015' href='http://comonad.com/reader/2015/04/' />
+	<link rel='archives' title='February 2015' href='http://comonad.com/reader/2015/02/' />
+	<link rel='archives' title='December 2014' href='http://comonad.com/reader/2014/12/' />
+	<link rel='archives' title='August 2014' href='http://comonad.com/reader/2014/08/' />
+	<link rel='archives' title='April 2014' href='http://comonad.com/reader/2014/04/' />
+	<link rel='archives' title='May 2013' href='http://comonad.com/reader/2013/05/' />
+	<link rel='archives' title='April 2013' href='http://comonad.com/reader/2013/04/' />
+	<link rel='archives' title='January 2013' href='http://comonad.com/reader/2013/01/' />
+	<link rel='archives' title='December 2012' href='http://comonad.com/reader/2012/12/' />
+	<link rel='archives' title='September 2012' href='http://comonad.com/reader/2012/09/' />
+	<link rel='archives' title='August 2012' href='http://comonad.com/reader/2012/08/' />
+	<link rel='archives' title='June 2012' href='http://comonad.com/reader/2012/06/' />
+	<link rel='archives' title='May 2012' href='http://comonad.com/reader/2012/05/' />
+	<link rel='archives' title='April 2012' href='http://comonad.com/reader/2012/04/' />
+	<link rel='archives' title='December 2011' href='http://comonad.com/reader/2011/12/' />
+	<link rel='archives' title='November 2011' href='http://comonad.com/reader/2011/11/' />
+	<link rel='archives' title='October 2011' href='http://comonad.com/reader/2011/10/' />
+	<link rel='archives' title='September 2011' href='http://comonad.com/reader/2011/09/' />
+	<link rel='archives' title='July 2011' href='http://comonad.com/reader/2011/07/' />
+	<link rel='archives' title='June 2011' href='http://comonad.com/reader/2011/06/' />
+	<link rel='archives' title='July 2010' href='http://comonad.com/reader/2010/07/' />
+	<link rel='archives' title='May 2010' href='http://comonad.com/reader/2010/05/' />
+	<link rel='archives' title='April 2010' href='http://comonad.com/reader/2010/04/' />
+	<link rel='archives' title='September 2009' href='http://comonad.com/reader/2009/09/' />
+	<link rel='archives' title='August 2009' href='http://comonad.com/reader/2009/08/' />
+	<link rel='archives' title='July 2009' href='http://comonad.com/reader/2009/07/' />
+	<link rel='archives' title='June 2009' href='http://comonad.com/reader/2009/06/' />
+	<link rel='archives' title='March 2009' href='http://comonad.com/reader/2009/03/' />
+	<link rel='archives' title='December 2008' href='http://comonad.com/reader/2008/12/' />
+	<link rel='archives' title='November 2008' href='http://comonad.com/reader/2008/11/' />
+	<link rel='archives' title='June 2008' href='http://comonad.com/reader/2008/06/' />
+	<link rel='archives' title='May 2008' href='http://comonad.com/reader/2008/05/' />
+	<link rel='archives' title='April 2008' href='http://comonad.com/reader/2008/04/' />
+	<link rel='archives' title='March 2008' href='http://comonad.com/reader/2008/03/' />
+	<link rel='archives' title='January 2008' href='http://comonad.com/reader/2008/01/' />
+	<link rel='archives' title='July 2007' href='http://comonad.com/reader/2007/07/' />
+	<link rel='archives' title='May 2007' href='http://comonad.com/reader/2007/05/' />
+	<link rel='archives' title='November 2006' href='http://comonad.com/reader/2006/11/' />
+	<link rel='archives' title='October 2006' href='http://comonad.com/reader/2006/10/' />
+	<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader &raquo; What Constraints Entail: Part 1 Comments Feed" href="http://comonad.com/reader/2011/what-constraints-entail-part-1/feed/" />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://comonad.com/reader/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://comonad.com/reader/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='The Comonad.Reader' href='http://comonad.com/reader' />
+<link rel='start' title='Hello, World!' href='http://comonad.com/reader/2006/hello-world/' />
+<link rel='prev' title='Homotopy and Directed Type Theory Slides' href='http://comonad.com/reader/2011/homotopy-and-directed-type-theory-slides/' />
+<link rel='next' title='What Constraints Entail: Part 2' href='http://comonad.com/reader/2011/what-constraints-entail-part-2/' />
+<meta name="generator" content="WordPress 2.8.4" />
+</head>
+<body>
+<div id="rap">
+	<div id="header">
+	<ul id="topnav">
+		<li><a href="/reader" id="navHome" title="Posted Recently" accesskey="h">Home |</a></li>
+		<li><a href="/reader/about/" id="navAbout" title="About the Author" accesskey="a">About |</a></li>
+		<li><a href="/reader/source;item=libraries" id="navSource" title="Source Code" accesskey="s">Source |</a></li>
+		<li><a href="mailto:ekmett@gmail.com" id="navContact" title="Contact the Author" accesskey="c">Contact </a></li>
+	</ul>
+	<a href="http://comonad.com/reader" id="logoHome" title="Posted Recently"><img id="logo" src="/reader/pngbehavior/blank.gif" ></a>
+	<h1><a href="http://comonad.com/reader" title="The Comonad.Reader">The Comonad.Reader</a></h1>		
+	<div id="desc">types, (co)monads, substructural logic</div>
+</div>
+	
+	<div id="main">
+	<div id="content">
+
+						<div class="post">
+				<p class="post-date">Thu 3 Nov 2011</p>
+<div class="post-info"><h2 class="post-title"><a href="http://comonad.com/reader/2011/what-constraints-entail-part-1/" rel="bookmark" title="Permanent Link: What Constraints Entail: Part 1">What Constraints Entail: Part 1</a></h2>
+Posted by Edward Kmett under <a href="http://comonad.com/reader/category/category-theory/" title="View all posts in Category Theory" rel="category tag">Category Theory</a> ,  <a href="http://comonad.com/reader/category/haskell/constraint-kinds/" title="View all posts in Constraint Kinds" rel="category tag">Constraint Kinds</a> ,  <a href="http://comonad.com/reader/category/haskell/" title="View all posts in Haskell" rel="category tag">Haskell</a> ,  <a href="http://comonad.com/reader/category/logic/" title="View all posts in Logic" rel="category tag">Logic</a> ,  <a href="http://comonad.com/reader/category/monads/" title="View all posts in Monads" rel="category tag">Monads</a> ,  <a href="http://comonad.com/reader/category/type-hackery/" title="View all posts in Type Hackery" rel="category tag">Type Hackery</a> ,  <a href="http://comonad.com/reader/category/uncategorized/" title="View all posts in Uncategorized" rel="category tag">Uncategorized</a> <br/><a href="http://comonad.com/reader/2011/what-constraints-entail-part-1/#comments" title="Comment on What Constraints Entail: Part 1">[7] Comments</a>&nbsp;</div>
+<div class="post-content">
+	<p>Max Bolingbroke has done a wonderful job on adding Constraint kinds to GHC.</p>
+<p>Constraint Kinds adds a new kind <code>Constraint</code>, such that <code>Eq :: * -> Constraint</code>, <code>Monad :: (* -> *) -> Constraint</code>, but since it is a kind, we can make type families for constraints, and even parameterize constraints <em>on</em> constraints. </p>
+<p>So, let's play with them and see what we can come up with!</p>
+<p><span id="more-430"></span></p>
+<h2>A Few Extensions</h2>
+<p>First, we'll need a few language features:</p>
+<pre class="haskell">&nbsp;
+<span style="color: #5d478b; font-style: italic;">{-# LANGUAGE
+  CPP,
+  ScopedTypeVariables,
+  FlexibleInstances,
+  FlexibleContexts,
+  ConstraintKinds,
+  KindSignatures,
+  TypeOperators,
+  FunctionalDependencies,
+  Rank2Types,
+  StandaloneDeriving,
+  GADTs
+  #-}</span>
+&nbsp;</pre>
+<p>Because of the particular version of GHC I'm using I'll also need</p>
+<pre class="haskell">&nbsp;
+<span style="color: #5d478b; font-style: italic;">{-# LANGUAGE UndecidableInstances #-}</span>
+#define UNDECIDABLE
+&nbsp;</pre>
+<p>but this bug has been fixed in the current version of GHC Head. I'll be explicit about any instances that need UndecidableInstances by surrounding them in an <code>#ifdef UNDECIDABLE</code> block.</p>
+<h2>Explicit Dictionaries</h2>
+<p>So with that out of the way, let's import some definitions</p>
+<pre class="haskell">&nbsp;
+<span style="color: #06c; font-weight: bold;">import</span> Control.<a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Monad"><span style="background-color: #efefbf; font-weight: bold;">Monad</span></a>
+<span style="color: #06c; font-weight: bold;">import</span> Control.<a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Monad"><span style="background-color: #efefbf; font-weight: bold;">Monad</span></a>.Instances
+<span style="color: #06c; font-weight: bold;">import</span> Control.Applicative
+<span style="color: #06c; font-weight: bold;">import</span> Data.Monoid
+<span style="color: #06c; font-weight: bold;">import</span> Data.Complex
+<span style="color: #06c; font-weight: bold;">import</span> Data.Ratio
+<span style="color: #06c; font-weight: bold;">import</span> Unsafe.Coerce
+&nbsp;</pre>
+<p>and make one of our own that shows what we get out of making Constraints into a kind we can manipulate like any other.</p>
+<pre class="haskell">&nbsp;
+<span style="color: #06c; font-weight: bold;">data</span> Dict a <span style="color: #06c; font-weight: bold;">where</span>
+  Dict :: a =&gt; Dict a
+&nbsp;</pre>
+<p>Previously, we coud make a Dict like data type for any one particular class constraint that we wanted to capture, but now we can write this type once and for all. The act of pattern matching on the Dict constructor will bring the constraint 'a' into scope.</p>
+<p>Of course, in the absence of incoherent and overlapping instances there is at most one dictionary of a given type, so we could make instances, like we can for any other data type, but standalone deriving is smart enough to figure these out for me. (Thanks copumpkin!)</p>
+<pre class="haskell">&nbsp;
+<span style="color: #06c; font-weight: bold;">deriving</span> <span style="color: #06c; font-weight: bold;">instance</span> <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Eq"><span style="background-color: #efefbf; font-weight: bold;">Eq</span></a> <span style="color: green;">&#40;</span>Dict a<span style="color: green;">&#41;</span>
+<span style="color: #06c; font-weight: bold;">deriving</span> <span style="color: #06c; font-weight: bold;">instance</span> <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Ord"><span style="background-color: #efefbf; font-weight: bold;">Ord</span></a> <span style="color: green;">&#40;</span>Dict a<span style="color: green;">&#41;</span>
+<span style="color: #06c; font-weight: bold;">deriving</span> <span style="color: #06c; font-weight: bold;">instance</span> <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Show"><span style="background-color: #efefbf; font-weight: bold;">Show</span></a> <span style="color: green;">&#40;</span>Dict a<span style="color: green;">&#41;</span>
+&nbsp;</pre>
+<p>If we're willing to turn on UndecidableInstances to enable the polymorphic constraint we can even add:</p>
+<pre class="haskell">&nbsp;
+#ifdef UNDECIDABLE
+<span style="color: #06c; font-weight: bold;">deriving</span> <span style="color: #06c; font-weight: bold;">instance</span> a =&gt; <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Read"><span style="background-color: #efefbf; font-weight: bold;">Read</span></a> <span style="color: green;">&#40;</span>Dict a<span style="color: green;">&#41;</span>
+<span style="color: #06c; font-weight: bold;">instance</span> a =&gt; Monoid <span style="color: green;">&#40;</span>Dict a<span style="color: green;">&#41;</span> <span style="color: #06c; font-weight: bold;">where</span>
+  mappend Dict Dict = Dict
+  mempty = Dict
+#endif
+&nbsp;</pre>
+<p>and similar polymorphically constrained instances for <code>Enum</code>, <code>Bounded</code>, etc.</p>
+<h2>Entailment</h2>
+<p>For that we'll need a notion of entailment.</p>
+<pre class="haskell">&nbsp;
+<span style="color: #06c; font-weight: bold;">infixr</span> <span style="color: red;">9</span> :-
+<span style="color: #06c; font-weight: bold;">newtype</span> a :- b = Sub <span style="color: green;">&#40;</span>a =&gt; Dict b<span style="color: green;">&#41;</span>
+&nbsp;
+<span style="color: #06c; font-weight: bold;">instance</span> <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Eq"><span style="background-color: #efefbf; font-weight: bold;">Eq</span></a> <span style="color: green;">&#40;</span>a :- b<span style="color: green;">&#41;</span> <span style="color: #06c; font-weight: bold;">where</span>
+  _ == _ = <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:True"><span style="font-weight: bold;">True</span></a>
+&nbsp;
+<span style="color: #06c; font-weight: bold;">instance</span> <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Ord"><span style="background-color: #efefbf; font-weight: bold;">Ord</span></a> <span style="color: green;">&#40;</span>a :- b<span style="color: green;">&#41;</span> <span style="color: #06c; font-weight: bold;">where</span>
+  <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:compare"><span style="font-weight: bold;">compare</span></a> _ _ = EQ
+&nbsp;
+<span style="color: #06c; font-weight: bold;">instance</span> <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Show"><span style="background-color: #efefbf; font-weight: bold;">Show</span></a> <span style="color: green;">&#40;</span>a :- b<span style="color: green;">&#41;</span> <span style="color: #06c; font-weight: bold;">where</span>
+  showsPrec d _ = <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:showParen"><span style="font-weight: bold;">showParen</span></a> <span style="color: green;">&#40;</span>d &gt; <span style="color: red;">10</span><span style="color: green;">&#41;</span> $
+    <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:showString"><span style="font-weight: bold;">showString</span></a> <span style="color: #3c7331;">&quot;Sub Dict&quot;</span>
+&nbsp;</pre>
+<p>Here we're saying that <code>Sub</code> takes one argument, which is a computation that when implicitly given a constraint of type <em>a</em>, can give me back a dictionary for the type <em>b</em>. Moreover, as a newtype it adds no overhead that isn't aleady present in manipulating terms of type (a => Dict b) directly.</p>
+<p>The simplest thing we can define with this is that entailment is reflexive.</p>
+<pre class="haskell">&nbsp;
+refl :: a :- a
+refl = Sub Dict
+&nbsp;</pre>
+<p>Max has already written up a nice restricted monad example using these, but what I want to play with today is the category of substitutability of constraints, but there are a few observations I need to make, first.</p>
+<p>ConstraintKinds overloads <code>()</code> and <code>(a,b)</code> to represent the trivial constraint and the product of two constraints respectively. </p>
+<p>The latter is done with a bit of a hack, which we'll talk about in a minute, but we can use the former as a terminal object for our category of entailments.</p>
+<pre lang="haskell>
+top :: a :- ()
+top = Sub Dict
+</pre>
+<p>We can weaken the constraint, in a manner similar to fst or snd:</p>
+<pre class="haskell">&nbsp;
+weaken1 :: <span style="color: green;">&#40;</span>a, b<span style="color: green;">&#41;</span> :- a
+weaken1 = Sub Dict
+&nbsp;
+weaken2 :: <span style="color: green;">&#40;</span>a, b<span style="color: green;">&#41;</span> :- b
+weaken2 = Sub Dict
+&nbsp;</pre>
+<p>Constraints are idempotent, so we can duplicate one, perhaps as a prelude to transforming one of them into something else.</p>
+<pre class="haskell">&nbsp;
+contract :: a :- <span style="color: green;">&#40;</span>a, a<span style="color: green;">&#41;</span>
+contract = Sub Dict
+&nbsp;</pre>
+<p>But to do much more complicated, we're going to need a notion of substitution, letting us use our entailment relation to satisfy obligations.</p>
+<pre class="haskell">&nbsp;
+<span style="color: #06c; font-weight: bold;">infixl</span> <span style="color: red;">1</span> \\ <span style="color: #5d478b; font-style: italic;">-- required comment</span>
+<span style="color: green;">&#40;</span>\\<span style="color: green;">&#41;</span> :: a =&gt; <span style="color: green;">&#40;</span>b =&gt; r<span style="color: green;">&#41;</span> -&gt; <span style="color: green;">&#40;</span>a :- b<span style="color: green;">&#41;</span> -&gt; r
+r \\ Sub Dict = r
+&nbsp;</pre>
+<p>The type says that given that a constraint <em>a</em> can be satisfied, a computation that needs a constraint of type <em>b</em> to be satisfied in order to obtain a result, and the fact that <em>a</em> entails <em>b</em>, we can compute the result. </p>
+<p>The constraint <em>a</em> is satisfied by the type signature, and the fact that we get quietly passed whatever dictionary is needed. Pattern matching on Sub brings into scope a computation of type <code>(a => Dict b)</code>, and we are able to discharge the <em>a</em> obligation, using the dictionary we were passed, Pattern matching on <code>Dict</code> forces that computation to happen and brings b into scope, allowing us to meet the obligation of the computation of r. All of this happens for us behind the scenes just by pattern matching.</p>
+<p>So what can we do with this?</p>
+<p>We can use \\ to compose constraints.</p>
+<pre class="haskell">&nbsp;
+trans :: <span style="color: green;">&#40;</span>b :- c<span style="color: green;">&#41;</span> -&gt; <span style="color: green;">&#40;</span>a :- b<span style="color: green;">&#41;</span> -&gt; a :- c
+trans f g = Sub $ Dict \\ f \\ g
+&nbsp;</pre>
+<p>In fact, the way the dictionaries get plumbed around inside the argument to Sub is rather nice, because we can give that same definition different type signatures, letting us make (,) more product-like, giving us the canonical product morphism to go with the weakenings/projections we defined above.</p>
+<pre class="haskell">&nbsp;
+<span style="color: green;">&#40;</span>&amp;&amp;&amp;<span style="color: green;">&#41;</span> :: <span style="color: green;">&#40;</span>a :- b<span style="color: green;">&#41;</span> -&gt; <span style="color: green;">&#40;</span>a :- c<span style="color: green;">&#41;</span> -&gt; a :- <span style="color: green;">&#40;</span>b, c<span style="color: green;">&#41;</span>
+f &amp;&amp;&amp; g = Sub $ Dict \\ f \\ g
+&nbsp;</pre>
+<p>And since we're using it as a product, we can make it act like a bifunctor also using the same definition.</p>
+<pre class="haskell">&nbsp;
+<span style="color: green;">&#40;</span>***<span style="color: green;">&#41;</span> :: <span style="color: green;">&#40;</span>a :- b<span style="color: green;">&#41;</span> -&gt; <span style="color: green;">&#40;</span>c :- d<span style="color: green;">&#41;</span> -&gt; <span style="color: green;">&#40;</span>a, c<span style="color: green;">&#41;</span> :- <span style="color: green;">&#40;</span>b, d<span style="color: green;">&#41;</span>
+f *** g = Sub $ Dict \\ f \\ g
+&nbsp;</pre>
+<h2>Limited Sub-Superkinding?</h2>
+<p>Ideally we'd be able to capture something like that bifunctoriality using a type like</p>
+<pre class="haskell">&nbsp;
+#if <span style="color: red;">0</span>
+<span style="color: #06c; font-weight: bold;">class</span> BifunctorS <span style="color: green;">&#40;</span>p :: Constraint -&gt; Constraint -&gt; Constraint<span style="color: green;">&#41;</span> <span style="color: #06c; font-weight: bold;">where</span>
+  bimapS :: <span style="color: green;">&#40;</span>a :- b<span style="color: green;">&#41;</span> -&gt; <span style="color: green;">&#40;</span>c :- d<span style="color: green;">&#41;</span> -&gt; p a c :- p b d
+#endif
+&nbsp;</pre>
+<p>In an even more ideal world, it would be enriched using something like</p>
+<pre class="haskell">&nbsp;
+#ifdef POLYMORPHIC_KINDS
+<span style="color: #06c; font-weight: bold;">class</span> Category <span style="color: green;">&#40;</span>k :: x -&gt; x -&gt; *<span style="color: green;">&#41;</span> <span style="color: #06c; font-weight: bold;">where</span>
+  <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:id"><span style="font-weight: bold;">id</span></a> :: k a a
+  <span style="color: green;">&#40;</span>.<span style="color: green;">&#41;</span> :: k b c -&gt; k a b -&gt; k a c
+<span style="color: #06c; font-weight: bold;">instance</span> Category <span style="color: green;">&#40;</span>:-<span style="color: green;">&#41;</span> <span style="color: #06c; font-weight: bold;">where</span>
+  <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:id"><span style="font-weight: bold;">id</span></a> = refl
+  <span style="color: green;">&#40;</span>.<span style="color: green;">&#41;</span> = trans
+#endif
+&nbsp;</pre>
+<p>where x is a <strong>kind variable</strong>, then we could obtain a more baroque and admittedly far less thought-out bifunctor class like:</p>
+<pre class="haskell">&nbsp;
+#if <span style="color: red;">0</span>
+<span style="color: #06c; font-weight: bold;">class</span> Bifunctor <span style="color: green;">&#40;</span>p :: x -&gt; y -&gt; z<span style="color: green;">&#41;</span> <span style="color: #06c; font-weight: bold;">where</span>
+  <span style="color: #06c; font-weight: bold;">type</span> <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:Left"><span style="font-weight: bold;">Left</span></a> p :: x -&gt; x -&gt; *
+  <span style="color: #06c; font-weight: bold;">type</span> <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:Left"><span style="font-weight: bold;">Left</span></a> p = <span style="color: green;">&#40;</span>-&gt;<span style="color: green;">&#41;</span>
+  <span style="color: #06c; font-weight: bold;">type</span> <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:Right"><span style="font-weight: bold;">Right</span></a> p :: y -&gt; y -&gt; *
+  <span style="color: #06c; font-weight: bold;">type</span> <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:Right"><span style="font-weight: bold;">Right</span></a> p = <span style="color: green;">&#40;</span>-&gt;<span style="color: green;">&#41;</span>
+  <span style="color: #06c; font-weight: bold;">type</span> Cod p :: z -&gt; z -&gt; *
+  <span style="color: #06c; font-weight: bold;">type</span> Cod p = <span style="color: green;">&#40;</span>-&gt;<span style="color: green;">&#41;</span>
+  bimap :: <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:Left"><span style="font-weight: bold;">Left</span></a> p a b -&gt; <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:Right"><span style="font-weight: bold;">Right</span></a> p c d -&gt; Cod p <span style="color: green;">&#40;</span>p a c<span style="color: green;">&#41;</span> <span style="color: green;">&#40;</span>p b d<span style="color: green;">&#41;</span>
+#endif
+&nbsp;</pre>
+<p>Or even more more ideally, you could use the fact that we can directly define product categories!</p>
+<p>Since they are talking about kind-indexing for classes and type families, we could have separate bifunctors for (,) for both kinds * and Constraint.</p>
+<p>The current constraint kind code uses a hack to let (a,b) be used as a type inhabiting * and as the syntax for constraints. This hack is limited however. It only works when the type (,) is fully applied to its arguments. Otherwise you'd wind up with the fact that the type (,) needs to have both of these kinds:</p>
+<pre class="haskell">&nbsp;
+<span style="color: #5d478b; font-style: italic;">-- (,) :: Constraint -&gt; Constraint -&gt; Constraint and</span>
+<span style="color: #5d478b; font-style: italic;">-- (,) :: * -&gt; * -&gt; *</span>
+&nbsp;</pre>
+<p>What is currently done is that the kind magically switches for <code>()</code> and <code>(,)</code> in certain circumstances. GHC already had some support for this because it parses <code>(Foo a, Bar b)</code> as a type in <code>(Foo a, Bar b) => Baz a b</code> before transforming it into a bunch of constraints.</p>
+<p>Since we already have a notion of sub-kinding at the kind level, we could solve this for <code>()</code> by making up a new kind, say, <code>???</code> which is the subkind of both <code>*</code> and <code>Constraint</code>, but this would break the nice join lattice properties of the current system.</p>
+<p>[Edit: in the initial draft, I had said superkind]</p>
+<pre class="haskell">&nbsp;
+<span style="color: #5d478b; font-style: italic;">--    ?</span>
+<span style="color: #5d478b; font-style: italic;">--   / \</span>
+<span style="color: #5d478b; font-style: italic;">-- (#)  ??</span>
+<span style="color: #5d478b; font-style: italic;">--     /  \</span>
+<span style="color: #5d478b; font-style: italic;">--    #    *  Constraint</span>
+<span style="color: #5d478b; font-style: italic;">--          \ /</span>
+<span style="color: #5d478b; font-style: italic;">--          ???</span>
+&nbsp;</pre>
+<p>But this doesn't address the kind of <code>(,)</code> above. With the new polymorphic kinds that Brent Yorgey and company have been working on and a limited notion of sub-superkinding, this could be resolved by making a new super-kind <code>@</code> that is the super-kind of both <code>*</code> and <code>Constraint</code>, and which is a sub-superkind of the usual unnamed Box superkind. </p>
+<pre class="haskell">&nbsp;
+<span style="color: #5d478b; font-style: italic;">-- Box</span>
+<span style="color: #5d478b; font-style: italic;">--  |</span>
+<span style="color: #5d478b; font-style: italic;">--  @</span>
+&nbsp;</pre>
+<p>Then we can have:</p>
+<pre class="haskell">&nbsp;
+<span style="color: #5d478b; font-style: italic;">-- (,) :: forall (k :: @). k -&gt; k -&gt; k</span>
+<span style="color: #5d478b; font-style: italic;">-- () :: forall (k :: @). k</span>
+&nbsp;</pre>
+<p>and kind checking/inference will do the right thing about keeping the kind ambiguous for types like <code>(,) () :: forall (k :: @). k</code></p>
+<p>This would get rid of the hack and let me make a proper bifunctor for <code>(,)</code> in the category of entailments.</p>
+<p>The version of GHC head I'm working with right now doesn't support polymorphic kinds, so I've only been playing with these in a toy type checker, but I'm really looking forward to being able to have product categories!</p>
+<h2>Stay Tuned</h2>
+<p><a href="http://comonad.com/reader/2011/what-constraints-entail-part-2/">Next</a>, we'll go over how to reflect the class and instance declarations so we can derive entailment of a superclass for a class, and the entailment of instances.</p>
+<p>[<a href="https://github.com/ekmett/constraints/blob/master/Data/Constraint.hs">Source</a>]</p>
+	<div class="post-info">
+			</div>
+	<div class="post-footer">&nbsp;</div>
+</div>
+				
+<!-- You can start editing here. -->
+
+	<h3 id="comments">7 Responses to &#8220;What Constraints Entail: Part 1&#8221;</h3> 
+
+	<ol class="commentlist">
+
+	
+		<li class="alt" id="comment-81888">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=af6ee853a79ce70a9ce68ae1e1fc852c&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite>Dan Doel</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-81888" title="">November 3rd, 2011 at 10:23 am</a> </small>
+			<br clear="all"/>
+
+			<p>I don&#8217;t think your subtyping scheme fixes the problem for (), either. If ??? includes both Constraint and *, then making () : ??? doesn&#8217;t help, because that doesn&#8217;t imply the judgments of both () : * and () : Constraint. What you would need is to make ??? a common lower bound for * and Constraint that contains ().</p>
+<p>And of course, this is a long way to go to resolve a single case of overloading.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-81890">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=9c51a8b8afa2366a2ef4650c411f187a&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://comonad.com' rel='external nofollow' class='url'>Edward Kmett</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-81890" title="">November 3rd, 2011 at 10:28 am</a> </small>
+			<br clear="all"/>
+
+			<p>@Dan, </p>
+<p>Good catch. I&#8217;d had it drawn that way on the whiteboard at work, but somewhere along the way got it flipped.</p>
+<p>In practice, I think just doing the right thing and adding @ so we can do the bounded quantification at the kind level is a better idea than trying to preserve the bandaid.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-84922">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=6b5276e65cb7a7417188c9a035953cee&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite>Doug McClean</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-84922" title="">November 16th, 2011 at 4:13 pm</a> </small>
+			<br clear="all"/>
+
+			<p>This overloading problem with (,) and () seems like it&#8217;s just yet another case of there be insufficiently many kinds of bracketing characters that (a) Unicode encodes, (b) can be typed (keyboarded) easily, and (c) are visually distinguishable.</p>
+<p>The same problem arises with {} signifying the empty set and the record with no attributes. Basically the same thing clutters up the possibility of having a nice concrete syntax for all of: lists, sets, bags, vectors, matrices.</p>
+<p>At the same time, it adds a lot more noise to require writing Set { 3, 7, 2 } everywhere since just { 3, 7, 2 } doesn&#8217;t overlap with the concrete syntax for records like { frog := 2, apple := &#8220;moose&#8221; }.</p>
+<p>It seems like the middle ground approach is to make a lot of granular &#8220;re-bindable syntax&#8221; type classes for all of the different literals.</p>
+<p>Following that approach seems to work well, and ordinary type ascription expressions suffice to resolve the empty cases. Committing to it fully does feel a little silly in some cases though.</p>
+<p>For example, zero is more polymorphic than other numeric literals. This arises because zero may have any dimension, but 3.7 is always dimensionless. The only language I know of that encodes this is CSS, although I&#8217;m sure there are others.</p>
+<p>This sort of thing is leading to my pet language having a large number of type classes which play a role in desugaring, but I think that&#8217;s a tradeoff I&#8217;m willing to make.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-105339">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=556f4ac7e166daeedb1b8968e228480b&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite>zzo38</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-105339" title="">June 26th, 2012 at 1:59 pm</a> </small>
+			<br clear="all"/>
+
+			<p>What I have decided for Ibtlfmm it does not use this kind of superkinds (and Constraint is named &amp; while @ is used for program modules, although you can give them alphabetic names if you want using kind synonyms), rather I would think (,) and () and so on are macros that decide the corresponding types according to what fits. There could also be &#8220;kind classes&#8221; to rebind the syntax, although I prefer using macros. But yes () should be a constraint too. I do not think making up the new superkiind for this purpose is such a good idea (including for the reasons you have described).</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-122018">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=765a0d6880973a0e95e2700e11786c3a&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite>Conal Elliott</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-122018" title="">March 19th, 2014 at 2:57 pm</a> </small>
+			<br clear="all"/>
+
+			<p>Lovely! Have you thought about a coproduct for constraint entailment? Is there anything like disjunctive constraints?</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-127337">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://dogirardo.wordpress.com/2014/11/20/mathematics-fast-and-loose-part-1-functional-programming/' rel='external nofollow' class='url'>Mathematics Fast and Loose Part 1: Functional Programming | Categorical Imperative</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-127337" title="">November 20th, 2014 at 12:48 am</a> </small>
+			<br clear="all"/>
+
+			<p>[...] don&#8217;t have values, but we won&#8217;t concern ourselves with them. If you are interested, see constraintkinds, datakinds, and unboxedtypes [...]</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-148646">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=9c51a8b8afa2366a2ef4650c411f187a&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite>Edward Kmett</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-148646" title="">September 2nd, 2017 at 9:01 pm</a> </small>
+			<br clear="all"/>
+
+			<p>Conal: The category of constraints has coproducts, or at least, they are admissable, even if not expressed in Haskell today, but they are more like a greatest lower bound than the disjunction you are looking for.</p>
+<p>(p \/ q) :- r  given p :- r and q :- r</p>
+<p>But because of the thinness of the category, the &#8216;r&#8217; dictionary that results will be the same result given either path.</p>
+<p>e.g. (Ord [a]\/ Eq a) :- Eq [[[a]]]</p>
+<p>would let you produce Eq [[[a]]] given either Eq a or an Ord [a]</p>
+<p>Giving you the ability to do true general &#8216;Either&#8217; constraints would compromise the thinness of the category and the safety of global instance resolution. (Mind you, incoherent instances also do that.)</p>
+		</li>
+
+	
+	
+	</ol>
+
+ 
+
+			</div>
+					<p align="center"></p>		
+	</div>
+	<div id="sidebar">
+		<h2>Archived Entry</h2>
+	<ul>
+	<li><strong>Post Date :</strong></li>
+	<li>Thursday, Nov 3rd, 2011 at 12:46 am</li>
+	<li><strong>Category :</strong></li>
+	<li><a href="http://comonad.com/reader/category/category-theory/" title="View all posts in Category Theory" rel="category tag">Category Theory</a> and  <a href="http://comonad.com/reader/category/haskell/constraint-kinds/" title="View all posts in Constraint Kinds" rel="category tag">Constraint Kinds</a> and  <a href="http://comonad.com/reader/category/haskell/" title="View all posts in Haskell" rel="category tag">Haskell</a> and  <a href="http://comonad.com/reader/category/logic/" title="View all posts in Logic" rel="category tag">Logic</a> and  <a href="http://comonad.com/reader/category/monads/" title="View all posts in Monads" rel="category tag">Monads</a> and  <a href="http://comonad.com/reader/category/type-hackery/" title="View all posts in Type Hackery" rel="category tag">Type Hackery</a> and  <a href="http://comonad.com/reader/category/uncategorized/" title="View all posts in Uncategorized" rel="category tag">Uncategorized</a></li>
+	<li><strong>Do More :</strong></li>
+	<li>							Both comments and pings are currently closed.			
+						
+						</li>
+	</ul>
+		
+	<h2><label for="s">Search</label></h2>
+	<ul>
+		<li>
+			<form id="searchform" method="get" action="/reader/index.php">
+				<div style="text-align:center">
+					<p><input type="text" name="s" id="s" size="10" /> <input type="submit" name="submit" value="Search" /></p>
+				</div>
+			</form>
+		</li>
+	</ul>
+<h2>RSS Feeds</h2>
+	<ul>
+		<li>
+			<a title="RSS2 Feed for Posts" href="http://comonad.com/reader/feed/">Posts</a> | <a title="RSS2 Feed for Comments" href="http://comonad.com/reader/comments/feed/">Comments</a></li>	
+	</ul>	
+</div>
+<p id="footer">Design based on <a href="http://www.vanillamist.com" title="Vanilla Mist">www.vanillamist.com</a></p></div>
+</div>
+</body>
+</html>

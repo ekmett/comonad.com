@@ -33,3 +33,19 @@ const right = engine.combine(leaves[2], leaves[3]);
 leaves[1] = engine.summarize(new TextEncoder().encode('λ'));
 assert.equal(engine.finish(engine.combine(engine.combine(leaves[0], leaves[1]), right)), engine.direct(new TextEncoder().encode('123λ6789'))); checks++;
 console.log(`${checks} checks passed against ${fixtures.length} independent zlib vectors; real GHC/Wasm + browser WASI shim.`);
+// Independent identities of elementary automata, including asymmetric bit order.
+const cells=Uint8Array.from([0,0,1,1,0,1,0,0,1,0,1,1,1]);
+assert.deepEqual(engine.automatonStep(0,cells),new Uint8Array(cells.length-2));
+assert.deepEqual(engine.automatonStep(255,cells),new Uint8Array(cells.length-2).fill(1));
+assert.deepEqual(engine.automatonStep(204,cells),cells.slice(1,-1),'rule 204 is identity');
+assert.deepEqual(engine.automatonStep(240,cells),cells.slice(0,-2),'rule 240 copies left');
+assert.deepEqual(engine.automatonStep(170,cells),cells.slice(2),'rule 170 copies right');
+let row=new Uint8Array(41);row[20]=1;
+for(let t=0;t<=10;t++){
+  // Rule 90 equals Pascal's triangle modulo two (Lucas's theorem).
+  const expected=new Uint8Array(41-2*t),centre=20-t;
+  for(let k=0;k<=t;k++)if((k&t)===k)expected[centre-t+2*k]=1;
+  assert.deepEqual(row,expected,`rule 90 Pascal row ${t}`);
+  row=engine.automatonStep(90,row);
+}
+console.log('16 automaton checks passed: constant rules, identity, both shifts, and Pascal triangle parity.');

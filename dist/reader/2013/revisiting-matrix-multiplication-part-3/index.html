@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Part III: Extending Vector · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Haskell</span><span>Edward Kmett · <time datetime="2013-08-25">25 August 2013</time></span></div><h1>Part III: Extending Vector</h1></header><details class="contents"><summary>On this page</summary><ol><li><a href="#vector">Vector</a></li><li><a href="#sorting-out-vectors">Sorting out Vectors</a></li><li><a href="#unboxed-vectors">Unboxed Vectors</a></li><li><a href="#hybrid-vectors">Hybrid Vectors</a></li><li><a href="#custom-stream-fusion">Custom Stream Fusion</a></li><li><a href="#matrices-not-vectors">Matrices, not Vectors</a></li></ol></details><article class="prose"><p>As before, if you haven't already, I'd highly recommend reading parts <a href="../../../reader/2013/revisiting-matrix-multiplication-part-1/">1</a> and <a href="../../../reader/2013/revisiting-matrix-multiplication-part-2/">2</a> before proceeding. That said, if you ignore the motivation for the sorting, this post largely stands alone as a practicum on how to extend the <code>vector</code> package with a custom <code>Vector</code> type and custom stream fusion combinators.</p>
+<p><strong>All</strong> of the No-Prizes from the previous post are still available! That said, <a href="http://www.reddit.com/user/ssylvan">ssyvlan</a> on reddit was quite helpful in discussions about how to do the leading zero count more efficiently.</p>
+<p>There is only one No-Prize opportunity in this post simply because it otherwise is a fairly simple engineering exercise, and other than that one point I can't think of open questions I have about this code.</p>
+<h2 id="vector">Vector</h2>
+<p>Now that we have Morton keys, I finally want to at least be able to <em>represent</em> a sparse matrix.</p>
+<p>When I think speed in Haskell, I think <code>vector</code>, <code>repa</code>, or <code>accelerate</code>. Today I'm going to focus on <code>vector</code>, because I think it is the easiest to adapt to suit my purposes.</p>
+<p>Roman Leshchinskiy, author of <code>vector</code> is probably the single most dedicated disciple of speed I can think of in the Haskell community today. I pay lip service to speed, but he'll sit there and spend weeks fixing any single thing that he can't optimize away into a tight c-like loop. If we're going to try to be competitive with a more traditonal language implementation in the end, we'll want to piggyback on his efforts. Any loss of speed due to stupid misuses of his tools, on the other hand, will entirely be my fault.</p>
+<p>One of the main things that <code>vector</code> gives us is the power of <a href="http://citeseer.ist.psu.edu/viewdoc/summary?doi=10.1.1.104.7401">stream fusion</a>. That is to say that if you build a <code>Vector</code> and then immediately consume it, the <code>vector</code> library is often smart enough to never bother to construct the intermediate <code>Vector</code> at all! As we multiply we'll be merging and concatenating streams of values. It is nice to know we can avoid building huge arrays in the interim.</p>
+<p>Again, as I merely pay lip service to the speed God and don't attend services regularly, I'll be going through the motions with a couple of custom stream fusion combinators later on, but I've done rather poor software engineering in that I haven't bothered to check that I needed them. I'd be truly surprised if that turned out not to be the case though.</p>
+<p>Sadly, the vocabulary of <code>Vector</code> here is somewhat overloaded, so from here out when I talk about a <code>Vector</code>, unless I explicitly state otherwise, I mean the concept of <code>Vector</code> from <code>Data.Vector</code>. If it isn't clear from context then, I'll try to pretend the following imports are in scope:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">
+<span class="hljs-keyword">import</span> Data.Vector <span class="hljs-keyword">as</span> Boxed
+<span class="hljs-keyword">import</span> Data.Vector.Generic <span class="hljs-keyword">as</span> Generic
+<span class="hljs-keyword">import</span> Data.Vector.Unboxed <span class="hljs-keyword">as</span> Unboxed
+<span class="hljs-keyword">import</span> Data.Vector.Primitive <span class="hljs-keyword">as</span> Primitive
+<span class="hljs-keyword">import</span> Data.Vector.Storable <span class="hljs-keyword">as</span> Storable
+
+<span class="hljs-comment">-- show These will also occur in code samples</span>
+<span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Data.Vector.Generic.Mutable <span class="hljs-keyword">as</span> GM
+<span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Data.Vector.Generic <span class="hljs-keyword">as</span> G
+<span class="hljs-keyword">import</span> Data.Vector.Fusion.Stream <span class="hljs-keyword">as</span> Stream
+
+
+<span class="hljs-title">main</span> = putStrLn <span class="hljs-string">"Those modules still exist!"</span>
+</code></pre>
+<p>... that way if I talk about an <code>Unboxed.Vector</code> it should make some sense.</p>
+<h2 id="sorting-out-vectors">Sorting out Vectors</h2>
+<p>The reason I want to use <code>vector</code> is that I want my storage to be arranged contiguously in memory whenever possible. Moreover, it enables me to use Dan Doel's excellent <code>vector-algorithms</code> to manipulate the the Vector of <code>(Key,Value)</code> pairs in our sparse matrices.</p>
+<p>This comes up right away when we start to try to build a sparse matrix, as I want to sort my sparse matrices by <code>Key</code> in Morton order, and <code>vector-algorithms</code> provides me with a large number of sorting algorithms to experiment with, including the fastest <a href="https://hackage.haskell.org/packages/archive/vector-algorithms/0.5.4.2/doc/html/Data-Vector-Algorithms-Intro.html">intro sort</a> available in Haskell today. Moreover, it also includes an <a href="https://hackage.haskell.org/packages/archive/vector-algorithms/0.5.4.2/doc/html/Data-Vector-Algorithms-AmericanFlag.html">american flag</a> sort that could be used to gain asymptotically on the initial insertion by using the fact that we can not only compare but tell you the bit position at which our keys differ, even if we use variable length keys. This means we're not limited to the asymptotics of a <code>comparison sort</code> when constructing our initial matrices.</p>
+<p>Dan's sorts rely very heavily on aggressive inlining to get worker-wrapper transforms to fire and to ensure that things like the comparisons done inside the sorting routine are being passed unboxed values.</p>
+<p>Using <code>vector</code> and <code>vector-algorithms</code> leads to our first stumbling block.</p>
+<p>What I want to do is store a <code>Vector (Key, a)</code> in such a way that I can have unboxed keys. However, I don't want to lose the flexibility to have unboxed values!</p>
+<p>To that end, when I started this project about a week ago, I pushed out a <a href="https://hackage.haskell.org/package/hybrid-vectors"><code>hybrid-vectors</code></a> package to <a href="https://hackage.haskell.org/packages/hackage.html">hackage</a>.</p>
+<p>As it'll be the glue that holds together our matrix representation until I find something better, I felt it made sense to say a few words motivating its construction.</p>
+<h2 id="unboxed-vectors">Unboxed Vectors</h2>
+<p><code>vector</code> is already quite smart about managing storage. In particular an unboxed <code>Vector</code> of pairs is managed as a pair of vectors of the individual parts. Anybody who has done much GPU work will recognize this as the <em>structure of arrays</em> (<strong>SoA</strong>) approach that is often used there rather than <em>array of structures</em> (<strong>AoS</strong>) approach used more traditionally throughout the rest of the industry.</p>
+<p>In case you've never thought about it before, it is worth mentioning that it has many benefits. One of those benefits is that you don't pay cache storage for parts of the structure you don't look at. You also don't incur unnecessary time/space trade-offs for alignment issues, etc. The cache dominates most concerns about slightly more complicated addressing logic, and if you look at things like the x86 instruction set, the addressing logic usually simplifies as well! We can calculate the <code>\*{1,2,4,8}</code> multiplier in the index <em>en passant</em>, but the odd sizes you get in "array of structures" are usually not so easy to use.</p>
+<p>All of this is well and good, but I can't just use <a href="https://hackage.haskell.org/packages/archive/vector/0.10.0.1/doc/html/Data-Vector-Unboxed.html"><code>Data.Vector.Unboxed</code></a>.</p>
+<p>My particular motivation for working on this code in the first place requires me to be able to do matrix multiplication over certain fairly complicated ring-like structures that I can't <a href="https://hackage.haskell.org/packages/archive/vector/0.10.0.1/doc/html/Data-Vector-Unboxed.html#t:Unbox"><code>Unbox</code></a>. I say "ring-like" because right seminearrings without <a href="http://en.wikipedia.org/wiki/Zero_divisor">zero-divisors</a> arise in various forms of <a href="http://en.wikipedia.org/wiki/Chart_parser">chart parsing</a>, and <a href="http://www.cse.chalmers.se/~bernardy/PP.pdf">some</a> are even <a href="http://en.wikipedia.org/wiki/Nonassociative_ring">non-associative</a>!</p>
+<h2 id="hybrid-vectors">Hybrid Vectors</h2>
+<p>Fortunately, in a great feat of engineering, Roman left the entire <code>Vector</code> framework open to extension with new <code>Vector</code> types, by providing us with <a href="https://hackage.haskell.org/packages/archive/vector/0.10.0.1/doc/html/Data-Vector-Generic.html"><code>Data.Vector.Generic</code></a> and moreover, he made it so that the entire stream fusion framework he uses will just magically work with any instance of <a href="https://hackage.haskell.org/packages/archive/vector/0.10.0.1/doc/html/Data-Vector-Generic.html#t:Vector"><code>Generic.Vector</code></a>.</p>
+<p>So all we need to do is define our own <code>Vector</code> (and <code>MVector</code>) type for the kinds of "hybrid" vectors we need.</p>
+<p>Then Dan's fast sorting algorithms can be used out of the box and we can steal and extend Roman's fusion framework.</p>
+<p><code>Data.Vector.Unboxed</code> has already shown us the way to build an SoA-style vector. We just need it to be more permissive about what kind of <code>Generic.Vector</code> vectors are allowed to comprise each side.</p>
+<p>To define a <code>Generic.Vector</code>, first we must define <code>Generic.MVector</code> that'll be used for most operations involved in building or manipulating it behind the scenes.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE CPP #-}</span>
+<span class="hljs-meta">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span>
+<span class="hljs-meta">{-# LANGUAGE KindSignatures #-}</span>
+<span class="hljs-meta">{-# LANGUAGE GADTs #-}</span>
+<span class="hljs-meta">{-# LANGUAGE MultiParamTypeClasses #-}</span>
+<span class="hljs-meta">{-# LANGUAGE UndecidableInstances #-}</span>
+<span class="hljs-meta">{-# LANGUAGE FlexibleInstances #-}</span>
+<span class="hljs-meta">{-# LANGUAGE TypeFamilies #-}</span>
+<span class="hljs-meta">{-# LANGUAGE DeriveDataTypeable #-}</span>
+<span class="hljs-meta">{-# LANGUAGE ScopedTypeVariables #-}</span>
+
+<span class="hljs-keyword">import</span> Control.Monad
+<span class="hljs-keyword">import</span> Data.Monoid
+<span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Data.Vector.Generic.Mutable <span class="hljs-keyword">as</span> GM
+<span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Data.Vector.Generic <span class="hljs-keyword">as</span> G
+<span class="hljs-keyword">import</span> Data.Vector.Fusion.Stream <span class="hljs-keyword">as</span> Stream
+<span class="hljs-keyword">import</span> Data.Data
+<span class="hljs-keyword">import</span> Prelude <span class="hljs-keyword">hiding</span> ( <span class="hljs-title">length</span>, <span class="hljs-title">null</span>, <span class="hljs-title">replicate</span>, <span class="hljs-title">reverse</span>, <span class="hljs-title">map</span>, <span class="hljs-title">read</span>, <span class="hljs-title">take</span>, <span class="hljs-title">drop</span>, <span class="hljs-title">init</span>, <span class="hljs-title">tail</span> )
+<span class="hljs-keyword">import</span> Text.Read
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">MVector</span> :: (* -&gt; * -&gt; *) -&gt; (* -&gt; * -&gt; *) -&gt; * -&gt; * -&gt; * <span class="hljs-keyword">where</span></span>
+  <span class="hljs-type">MV</span> :: !(u s a) -&gt; !(v s b) -&gt; <span class="hljs-type">MVector</span> u v s (a, b)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">GM</span>.<span class="hljs-type">MVector</span> <span class="hljs-title">u</span> <span class="hljs-title">a</span>, <span class="hljs-type">GM</span>.<span class="hljs-type">MVector</span> <span class="hljs-title">v</span> <span class="hljs-title">b</span>) =&gt; <span class="hljs-type">GM</span>.<span class="hljs-type">MVector</span> (<span class="hljs-type">MVector</span> <span class="hljs-title">u</span> <span class="hljs-title">v</span>) (<span class="hljs-title">a</span>, <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+  basicLength (<span class="hljs-type">MV</span> ks _) = <span class="hljs-type">GM</span>.basicLength ks
+  basicUnsafeSlice s e (<span class="hljs-type">MV</span> ks vs) = <span class="hljs-type">MV</span> (<span class="hljs-type">GM</span>.basicUnsafeSlice s e ks) (<span class="hljs-type">GM</span>.basicUnsafeSlice s e vs)
+  basicOverlaps (<span class="hljs-type">MV</span> ks vs) (<span class="hljs-type">MV</span> ks' vs') = <span class="hljs-type">GM</span>.basicOverlaps ks ks' || <span class="hljs-type">GM</span>.basicOverlaps vs vs'
+  basicUnsafeNew n = liftM2 <span class="hljs-type">MV</span> (<span class="hljs-type">GM</span>.basicUnsafeNew n) (<span class="hljs-type">GM</span>.basicUnsafeNew n)
+  basicUnsafeReplicate n (k,v) = liftM2 <span class="hljs-type">MV</span> (<span class="hljs-type">GM</span>.basicUnsafeReplicate n k) (<span class="hljs-type">GM</span>.basicUnsafeReplicate n v)
+  basicUnsafeRead (<span class="hljs-type">MV</span> ks vs) n = liftM2 (,) (<span class="hljs-type">GM</span>.basicUnsafeRead ks n) (<span class="hljs-type">GM</span>.basicUnsafeRead vs n)
+  basicUnsafeWrite (<span class="hljs-type">MV</span> ks vs) n (k,v) = <span class="hljs-type">GM</span>.basicUnsafeWrite ks n k &gt;&gt; <span class="hljs-type">GM</span>.basicUnsafeWrite vs n v
+  basicClear (<span class="hljs-type">MV</span> ks vs) = <span class="hljs-type">GM</span>.basicClear ks &gt;&gt; <span class="hljs-type">GM</span>.basicClear vs
+  basicSet (<span class="hljs-type">MV</span> ks vs) (k,v) = <span class="hljs-type">GM</span>.basicSet ks k &gt;&gt; <span class="hljs-type">GM</span>.basicSet vs v
+  basicUnsafeCopy (<span class="hljs-type">MV</span> ks vs) (<span class="hljs-type">MV</span> ks' vs') = <span class="hljs-type">GM</span>.basicUnsafeCopy ks ks' &gt;&gt; <span class="hljs-type">GM</span>.basicUnsafeCopy vs vs'
+  basicUnsafeMove (<span class="hljs-type">MV</span> ks vs) (<span class="hljs-type">MV</span> ks' vs') = <span class="hljs-type">GM</span>.basicUnsafeMove ks ks' &gt;&gt; <span class="hljs-type">GM</span>.basicUnsafeMove vs vs'
+  basicUnsafeGrow (<span class="hljs-type">MV</span> ks vs) n = liftM2 <span class="hljs-type">MV</span> (<span class="hljs-type">GM</span>.basicUnsafeGrow ks n) (<span class="hljs-type">GM</span>.basicUnsafeGrow vs n)
+
+<span class="hljs-title">main</span> = putStrLn <span class="hljs-string">"It typechecks, so it must be correct."</span>
+</code></pre>
+<p>All we've done is say that our <code>Hybrid.MVector u v s (a,b)</code> is going to be comprised (strictly!) of two other vectors <code>u s a</code> and <code>v s b</code> so long as we have appropriate <code>Generic.MVector</code> instances to rely upon, and so long as they can both be manipulated in the same <a href="https://hackage.haskell.org/packages/archive/primitive/0.5.0.1/doc/html/Control-Monad-Primitive.html#t:PrimMonad"><code>PrimMonad</code></a>.</p>
+<p>All we've done is borrow from similar operations from the vectors that comprise our constituent parts.</p>
+<p>In the real code we then proceed to <code>INLINE</code> everything in sight, so that any inlined combinators from <code>Data.Vector.Generic</code> can "see through" our <code>instance</code> and <code>INLINE</code> the bodies of our methods.</p>
+<p>We can construct a custom <code>Generic.Vector</code> similarly.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# START_FILE Hybrid.hs #-}</span>
+<span class="hljs-meta">{-# LANGUAGE CPP #-}</span>
+<span class="hljs-meta">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span>
+<span class="hljs-meta">{-# LANGUAGE KindSignatures #-}</span>
+<span class="hljs-meta">{-# LANGUAGE GADTs #-}</span>
+<span class="hljs-meta">{-# LANGUAGE MultiParamTypeClasses #-}</span>
+<span class="hljs-meta">{-# LANGUAGE UndecidableInstances #-}</span>
+<span class="hljs-meta">{-# LANGUAGE FlexibleInstances #-}</span>
+<span class="hljs-meta">{-# LANGUAGE TypeFamilies #-}</span>
+<span class="hljs-meta">{-# LANGUAGE DeriveDataTypeable #-}</span>
+<span class="hljs-meta">{-# LANGUAGE ScopedTypeVariables #-}</span>
+<span class="hljs-keyword">module</span> Hybrid <span class="hljs-keyword">where</span>
+
+<span class="hljs-keyword">import</span> Control.Monad
+<span class="hljs-keyword">import</span> Data.Monoid
+<span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Data.Vector.Generic.Mutable <span class="hljs-keyword">as</span> GM
+<span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Data.Vector.Generic <span class="hljs-keyword">as</span> G
+<span class="hljs-keyword">import</span> Data.Vector.Fusion.Stream <span class="hljs-keyword">as</span> Stream
+<span class="hljs-keyword">import</span> Data.Data
+<span class="hljs-keyword">import</span> Prelude <span class="hljs-keyword">hiding</span> ( <span class="hljs-title">length</span>, <span class="hljs-title">null</span>, <span class="hljs-title">replicate</span>, <span class="hljs-title">reverse</span>, <span class="hljs-title">map</span>, <span class="hljs-title">read</span>, <span class="hljs-title">take</span>, <span class="hljs-title">drop</span>, <span class="hljs-title">init</span>, <span class="hljs-title">tail</span> )
+<span class="hljs-keyword">import</span> Text.Read
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">MVector</span> :: (* -&gt; * -&gt; *) -&gt; (* -&gt; * -&gt; *) -&gt; * -&gt; * -&gt; * <span class="hljs-keyword">where</span></span>
+  <span class="hljs-type">MV</span> :: !(u s a) -&gt; !(v s b) -&gt; <span class="hljs-type">MVector</span> u v s (a, b)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">GM</span>.<span class="hljs-type">MVector</span> <span class="hljs-title">u</span> <span class="hljs-title">a</span>, <span class="hljs-type">GM</span>.<span class="hljs-type">MVector</span> <span class="hljs-title">v</span> <span class="hljs-title">b</span>) =&gt; <span class="hljs-type">GM</span>.<span class="hljs-type">MVector</span> (<span class="hljs-type">MVector</span> <span class="hljs-title">u</span> <span class="hljs-title">v</span>) (<span class="hljs-title">a</span>, <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+  basicLength (<span class="hljs-type">MV</span> ks _) = <span class="hljs-type">GM</span>.basicLength ks
+  basicUnsafeSlice s e (<span class="hljs-type">MV</span> ks vs) = <span class="hljs-type">MV</span> (<span class="hljs-type">GM</span>.basicUnsafeSlice s e ks) (<span class="hljs-type">GM</span>.basicUnsafeSlice s e vs)
+  basicOverlaps (<span class="hljs-type">MV</span> ks vs) (<span class="hljs-type">MV</span> ks' vs') = <span class="hljs-type">GM</span>.basicOverlaps ks ks' || <span class="hljs-type">GM</span>.basicOverlaps vs vs'
+  basicUnsafeNew n = liftM2 <span class="hljs-type">MV</span> (<span class="hljs-type">GM</span>.basicUnsafeNew n) (<span class="hljs-type">GM</span>.basicUnsafeNew n)
+  basicUnsafeReplicate n (k,v) = liftM2 <span class="hljs-type">MV</span> (<span class="hljs-type">GM</span>.basicUnsafeReplicate n k) (<span class="hljs-type">GM</span>.basicUnsafeReplicate n v)
+  basicUnsafeRead (<span class="hljs-type">MV</span> ks vs) n = liftM2 (,) (<span class="hljs-type">GM</span>.basicUnsafeRead ks n) (<span class="hljs-type">GM</span>.basicUnsafeRead vs n)
+  basicUnsafeWrite (<span class="hljs-type">MV</span> ks vs) n (k,v) = <span class="hljs-keyword">do</span>
+    <span class="hljs-type">GM</span>.basicUnsafeWrite ks n k
+    <span class="hljs-type">GM</span>.basicUnsafeWrite vs n v
+  basicClear (<span class="hljs-type">MV</span> ks vs) = <span class="hljs-keyword">do</span>
+    <span class="hljs-type">GM</span>.basicClear ks
+    <span class="hljs-type">GM</span>.basicClear vs
+  basicSet (<span class="hljs-type">MV</span> ks vs) (k,v) = <span class="hljs-keyword">do</span>
+    <span class="hljs-type">GM</span>.basicSet ks k
+    <span class="hljs-type">GM</span>.basicSet vs v
+  basicUnsafeCopy (<span class="hljs-type">MV</span> ks vs) (<span class="hljs-type">MV</span> ks' vs') = <span class="hljs-keyword">do</span>
+    <span class="hljs-type">GM</span>.basicUnsafeCopy ks ks'
+    <span class="hljs-type">GM</span>.basicUnsafeCopy vs vs'
+  basicUnsafeMove (<span class="hljs-type">MV</span> ks vs) (<span class="hljs-type">MV</span> ks' vs') = <span class="hljs-keyword">do</span>
+    <span class="hljs-type">GM</span>.basicUnsafeMove ks ks'
+    <span class="hljs-type">GM</span>.basicUnsafeMove vs vs'
+  basicUnsafeGrow (<span class="hljs-type">MV</span> ks vs) n = liftM2 <span class="hljs-type">MV</span> (<span class="hljs-type">GM</span>.basicUnsafeGrow ks n) (<span class="hljs-type">GM</span>.basicUnsafeGrow vs n)
+
+  <span class="hljs-meta">{-# INLINE basicLength #-}</span>
+  <span class="hljs-meta">{-# INLINE basicUnsafeSlice #-}</span>
+  <span class="hljs-meta">{-# INLINE basicOverlaps #-}</span>
+  <span class="hljs-meta">{-# INLINE basicUnsafeNew #-}</span>
+  <span class="hljs-meta">{-# INLINE basicUnsafeReplicate #-}</span>
+  <span class="hljs-meta">{-# INLINE basicUnsafeRead #-}</span>
+  <span class="hljs-meta">{-# INLINE basicUnsafeWrite #-}</span>
+  <span class="hljs-meta">{-# INLINE basicClear #-}</span>
+  <span class="hljs-meta">{-# INLINE basicSet #-}</span>
+  <span class="hljs-meta">{-# INLINE basicUnsafeCopy #-}</span>
+  <span class="hljs-meta">{-# INLINE basicUnsafeMove #-}</span>
+  <span class="hljs-meta">{-# INLINE basicUnsafeGrow #-}</span>
+
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Vector</span> :: (* -&gt; *) -&gt; (* -&gt; *) -&gt; * -&gt; * <span class="hljs-keyword">where</span></span>
+  <span class="hljs-type">V</span> :: !(u a) -&gt; !(v b) -&gt; <span class="hljs-type">Vector</span> u v (a, b)
+
+<span class="hljs-class"><span class="hljs-keyword">type</span> instance <span class="hljs-type">G</span>.<span class="hljs-type">Mutable</span> (<span class="hljs-type">Vector</span> <span class="hljs-title">u</span> <span class="hljs-title">v</span>) = <span class="hljs-type">MVector</span> (<span class="hljs-type">G</span>.<span class="hljs-type">Mutable</span> <span class="hljs-title">u</span>) (<span class="hljs-type">G</span>.<span class="hljs-type">Mutable</span> <span class="hljs-title">v</span>)</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">G</span>.<span class="hljs-type">Vector</span> <span class="hljs-title">u</span> <span class="hljs-title">a</span>, <span class="hljs-type">G</span>.<span class="hljs-type">Vector</span> <span class="hljs-title">v</span> <span class="hljs-title">b</span>) =&gt; <span class="hljs-type">G</span>.<span class="hljs-type">Vector</span> (<span class="hljs-type">Vector</span> <span class="hljs-title">u</span> <span class="hljs-title">v</span>) (<span class="hljs-title">a</span>, <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+  basicUnsafeFreeze (<span class="hljs-type">MV</span> ks vs) = liftM2 <span class="hljs-type">V</span> (<span class="hljs-type">G</span>.basicUnsafeFreeze ks) (<span class="hljs-type">G</span>.basicUnsafeFreeze vs)
+  basicUnsafeThaw (<span class="hljs-type">V</span> ks vs) = liftM2 <span class="hljs-type">MV</span> (<span class="hljs-type">G</span>.basicUnsafeThaw ks) (<span class="hljs-type">G</span>.basicUnsafeThaw vs)
+  basicLength (<span class="hljs-type">V</span> ks _) = <span class="hljs-type">G</span>.basicLength ks
+  basicUnsafeSlice i j (<span class="hljs-type">V</span> ks vs) = <span class="hljs-type">V</span> (<span class="hljs-type">G</span>.basicUnsafeSlice i j ks) (<span class="hljs-type">G</span>.basicUnsafeSlice i j vs)
+  basicUnsafeIndexM (<span class="hljs-type">V</span> ks vs) n = liftM2 (,) (<span class="hljs-type">G</span>.basicUnsafeIndexM ks n) (<span class="hljs-type">G</span>.basicUnsafeIndexM vs n)
+  basicUnsafeCopy (<span class="hljs-type">MV</span> ks vs) (<span class="hljs-type">V</span> ks' vs') = <span class="hljs-keyword">do</span>
+    <span class="hljs-type">G</span>.basicUnsafeCopy ks ks'
+    <span class="hljs-type">G</span>.basicUnsafeCopy vs vs'
+  elemseq (<span class="hljs-type">V</span> ks vs) (k,v) b = <span class="hljs-type">G</span>.elemseq ks k (<span class="hljs-type">G</span>.elemseq vs v b)
+
+  <span class="hljs-meta">{-# INLINE basicUnsafeFreeze #-}</span>
+  <span class="hljs-meta">{-# INLINE basicUnsafeThaw #-}</span>
+  <span class="hljs-meta">{-# INLINE basicLength #-}</span>
+  <span class="hljs-meta">{-# INLINE basicUnsafeSlice #-}</span>
+  <span class="hljs-meta">{-# INLINE basicUnsafeIndexM #-}</span>
+  <span class="hljs-meta">{-# INLINE basicUnsafeCopy #-}</span>
+  <span class="hljs-meta">{-# INLINE elemseq #-}</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">G</span>.<span class="hljs-type">Vector</span> <span class="hljs-title">u</span> <span class="hljs-title">a</span>, <span class="hljs-type">G</span>.<span class="hljs-type">Vector</span> <span class="hljs-title">v</span> <span class="hljs-title">b</span>, <span class="hljs-title">c</span> ~ (<span class="hljs-title">a</span>, <span class="hljs-title">b</span>)) =&gt; <span class="hljs-type">Monoid</span> (<span class="hljs-type">Vector</span> <span class="hljs-title">u</span> <span class="hljs-title">v</span> <span class="hljs-title">c</span>) <span class="hljs-keyword">where</span></span>
+  mappend = (<span class="hljs-type">G</span>.++)
+  <span class="hljs-meta">{-# INLINE mappend #-}</span>
+  mempty = <span class="hljs-type">G</span>.empty
+  <span class="hljs-meta">{-# INLINE mempty #-}</span>
+  mconcat = <span class="hljs-type">G</span>.concat
+  <span class="hljs-meta">{-# INLINE mconcat #-}</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">G</span>.<span class="hljs-type">Vector</span> <span class="hljs-title">u</span> <span class="hljs-title">a</span>, <span class="hljs-type">G</span>.<span class="hljs-type">Vector</span> <span class="hljs-title">v</span> <span class="hljs-title">b</span>, <span class="hljs-type">Show</span> <span class="hljs-title">a</span>, <span class="hljs-type">Show</span> <span class="hljs-title">b</span>, <span class="hljs-title">c</span> ~ (<span class="hljs-title">a</span>, <span class="hljs-title">b</span>)) =&gt; <span class="hljs-type">Show</span> (<span class="hljs-type">Vector</span> <span class="hljs-title">u</span> <span class="hljs-title">v</span> <span class="hljs-title">c</span>) <span class="hljs-keyword">where</span></span>
+  showsPrec = <span class="hljs-type">G</span>.showsPrec
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">G</span>.<span class="hljs-type">Vector</span> <span class="hljs-title">u</span> <span class="hljs-title">a</span>, <span class="hljs-type">G</span>.<span class="hljs-type">Vector</span> <span class="hljs-title">v</span> <span class="hljs-title">b</span>, <span class="hljs-type">Read</span> <span class="hljs-title">a</span>, <span class="hljs-type">Read</span> <span class="hljs-title">b</span>, <span class="hljs-title">c</span> ~ (<span class="hljs-title">a</span>, <span class="hljs-title">b</span>)) =&gt; <span class="hljs-type">Read</span> (<span class="hljs-type">Vector</span> <span class="hljs-title">u</span> <span class="hljs-title">v</span> <span class="hljs-title">c</span>) <span class="hljs-keyword">where</span></span>
+  readPrec = <span class="hljs-type">G</span>.readPrec
+  readListPrec = readListPrecDefault
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">G</span>.<span class="hljs-type">Vector</span> <span class="hljs-title">u</span> <span class="hljs-title">a</span>, <span class="hljs-type">G</span>.<span class="hljs-type">Vector</span> <span class="hljs-title">v</span> <span class="hljs-title">b</span>, <span class="hljs-type">Eq</span> <span class="hljs-title">a</span>, <span class="hljs-type">Eq</span> <span class="hljs-title">b</span>, <span class="hljs-title">c</span> ~ (<span class="hljs-title">a</span>, <span class="hljs-title">b</span>)) =&gt; <span class="hljs-type">Eq</span> (<span class="hljs-type">Vector</span> <span class="hljs-title">u</span> <span class="hljs-title">v</span> <span class="hljs-title">c</span>) <span class="hljs-keyword">where</span></span>
+  xs == ys = <span class="hljs-type">Stream</span>.eq (<span class="hljs-type">G</span>.stream xs) (<span class="hljs-type">G</span>.stream ys)
+  xs /= ys = not (<span class="hljs-type">Stream</span>.eq (<span class="hljs-type">G</span>.stream xs) (<span class="hljs-type">G</span>.stream ys))
+  <span class="hljs-meta">{-# INLINE (==) #-}</span>
+  <span class="hljs-meta">{-# INLINE (/=) #-}</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">G</span>.<span class="hljs-type">Vector</span> <span class="hljs-title">u</span> <span class="hljs-title">a</span>, <span class="hljs-type">G</span>.<span class="hljs-type">Vector</span> <span class="hljs-title">v</span> <span class="hljs-title">b</span>, <span class="hljs-type">Ord</span> <span class="hljs-title">a</span>, <span class="hljs-type">Ord</span> <span class="hljs-title">b</span>, <span class="hljs-title">c</span> ~ (<span class="hljs-title">a</span>, <span class="hljs-title">b</span>)) =&gt; <span class="hljs-type">Ord</span> (<span class="hljs-type">Vector</span> <span class="hljs-title">u</span> <span class="hljs-title">v</span> <span class="hljs-title">c</span>) <span class="hljs-keyword">where</span></span>
+  compare xs ys = <span class="hljs-type">Stream</span>.cmp (<span class="hljs-type">G</span>.stream xs) (<span class="hljs-type">G</span>.stream ys)
+  <span class="hljs-meta">{-# INLINE compare #-}</span>
+
+<span class="hljs-meta">{-# START_FILE Main.hs #-}</span>
+
+<span class="hljs-keyword">module</span> Main <span class="hljs-keyword">where</span>
+<span class="hljs-keyword">import</span> Hybrid
+<span class="hljs-keyword">import</span> Data.Vector.Unboxed <span class="hljs-keyword">as</span> Unboxed
+<span class="hljs-keyword">import</span> Data.Vector
+<span class="hljs-keyword">import</span> Data.Vector <span class="hljs-keyword">as</span> Boxed
+<span class="hljs-keyword">import</span> Data.Vector.Generic <span class="hljs-keyword">as</span> Generic
+<span class="hljs-keyword">import</span> Data.Vector.Unboxed <span class="hljs-keyword">as</span> Unboxed
+<span class="hljs-keyword">import</span> Data.Vector.Primitive <span class="hljs-keyword">as</span> Primitive
+<span class="hljs-keyword">import</span> Data.Vector.Storable <span class="hljs-keyword">as</span> Storable
+<span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Data.Vector.Generic.Mutable <span class="hljs-keyword">as</span> GM
+<span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Data.Vector.Generic <span class="hljs-keyword">as</span> G
+<span class="hljs-keyword">import</span> Data.Vector.Fusion.Stream <span class="hljs-keyword">as</span> Stream
+
+
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">V</span> = <span class="hljs-type">Hybrid</span>.<span class="hljs-type">Vector</span> <span class="hljs-type">Unboxed</span>.<span class="hljs-type">Vector</span> <span class="hljs-type">Boxed</span>.<span class="hljs-type">Vector</span> (<span class="hljs-type">Int</span>,<span class="hljs-type">Integer</span>)</span>
+<span class="hljs-title">main</span> = <span class="hljs-keyword">do</span>
+  print (<span class="hljs-type">G</span>.fromList [(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>),(<span class="hljs-number">3</span>,<span class="hljs-number">4</span>)] :: <span class="hljs-type">V</span>)
+  print $ <span class="hljs-type">G</span>.slice <span class="hljs-number">2</span> <span class="hljs-number">3</span> (<span class="hljs-type">G</span>.fromList (<span class="hljs-type">Prelude</span>.zip [<span class="hljs-number">1</span>..<span class="hljs-number">10</span>] [<span class="hljs-number">11</span>..<span class="hljs-number">20</span>]) :: <span class="hljs-type">V</span>)
+
+</code></pre>
+<p>It is worth taking a couple of minutes to talk about the instances, though.</p>
+<p><code>Generic.Vector</code> types typically provide the obvious <code>Monoid</code>, <code>Show</code>, <code>Read</code>, <code>Eq</code>, and <code>Ord</code> instances we've come to expect.</p>
+<p>But if we were not careful and wrote</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> (<span class="hljs-type">G</span>.<span class="hljs-type">Vector</span> <span class="hljs-title">u</span> <span class="hljs-title">a</span>, <span class="hljs-type">G</span>.<span class="hljs-type">Vector</span> <span class="hljs-title">v</span> <span class="hljs-title">b</span>) =&gt; <span class="hljs-type">Monoid</span> (<span class="hljs-type">Vector</span> <span class="hljs-title">u</span> <span class="hljs-title">v</span> (<span class="hljs-title">a</span>,<span class="hljs-title">b</span>))
+</span></code></pre>
+<p>then the compiler would be unduly reticent to use the instance. That is, it won't realize that the moment it can see that we have a <code>Hybrid.Vector</code>, that the argument must be a pair as, after all, our GADT only has one constructor!</p>
+<p>So instead we need to write the remaining instances to abuse the power of <a href="http://research.microsoft.com/en-us/um/people/simonpj/papers/ext-f/">system Fc</a> and modern Haskell to say that once the compiler figures out it needs one of these instances for a <code>Hybrid.Vector u v c</code> it can infer <code>c</code> must be of the form <code>(a,b)</code> by writing these instances as</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> (<span class="hljs-type">G</span>.<span class="hljs-type">Vector</span> <span class="hljs-title">u</span> <span class="hljs-title">a</span>, <span class="hljs-type">G</span>.<span class="hljs-type">Vector</span> <span class="hljs-title">v</span> <span class="hljs-title">b</span>, <span class="hljs-title">c</span> ~ (<span class="hljs-title">a</span>, <span class="hljs-title">b</span>)) =&gt; <span class="hljs-type">Monoid</span> (<span class="hljs-type">Vector</span> <span class="hljs-title">u</span> <span class="hljs-title">v</span> <span class="hljs-title">c</span>) <span class="hljs-keyword">where</span></span>
+  mappend = (<span class="hljs-type">G</span>.++)
+  mempty = <span class="hljs-type">G</span>.empty
+  mconcat = <span class="hljs-type">G</span>.concat
+</code></pre>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> (<span class="hljs-type">G</span>.<span class="hljs-type">Vector</span> <span class="hljs-title">u</span> <span class="hljs-title">a</span>, <span class="hljs-type">G</span>.<span class="hljs-type">Vector</span> <span class="hljs-title">v</span> <span class="hljs-title">b</span>, <span class="hljs-type">Show</span> <span class="hljs-title">a</span>, <span class="hljs-type">Show</span> <span class="hljs-title">b</span>, <span class="hljs-title">c</span> ~ (<span class="hljs-title">a</span>, <span class="hljs-title">b</span>)) =&gt; <span class="hljs-type">Show</span> (<span class="hljs-type">Vector</span> <span class="hljs-title">u</span> <span class="hljs-title">v</span> <span class="hljs-title">c</span>) <span class="hljs-keyword">where</span></span>
+  showsPrec = <span class="hljs-type">G</span>.showsPrec
+</code></pre>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> (<span class="hljs-type">G</span>.<span class="hljs-type">Vector</span> <span class="hljs-title">u</span> <span class="hljs-title">a</span>, <span class="hljs-type">G</span>.<span class="hljs-type">Vector</span> <span class="hljs-title">v</span> <span class="hljs-title">b</span>, <span class="hljs-type">Read</span> <span class="hljs-title">a</span>, <span class="hljs-type">Read</span> <span class="hljs-title">b</span>, <span class="hljs-title">c</span> ~ (<span class="hljs-title">a</span>, <span class="hljs-title">b</span>)) =&gt; <span class="hljs-type">Read</span> (<span class="hljs-type">Vector</span> <span class="hljs-title">u</span> <span class="hljs-title">v</span> <span class="hljs-title">c</span>) <span class="hljs-keyword">where</span></span>
+  readPrec = <span class="hljs-type">G</span>.readPrec
+  readListPrec = readListPrecDefault
+</code></pre>
+<p>With <code>Eq</code> and <code>Ord</code> we need to lean a little bit on the fusion machinery, just because no such defaults are provided for us.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> (<span class="hljs-type">G</span>.<span class="hljs-type">Vector</span> <span class="hljs-title">u</span> <span class="hljs-title">a</span>, <span class="hljs-type">G</span>.<span class="hljs-type">Vector</span> <span class="hljs-title">v</span> <span class="hljs-title">b</span>, <span class="hljs-type">Eq</span> <span class="hljs-title">a</span>, <span class="hljs-type">Eq</span> <span class="hljs-title">b</span>, <span class="hljs-title">c</span> ~ (<span class="hljs-title">a</span>, <span class="hljs-title">b</span>)) =&gt; <span class="hljs-type">Eq</span> (<span class="hljs-type">Vector</span> <span class="hljs-title">u</span> <span class="hljs-title">v</span> <span class="hljs-title">c</span>) <span class="hljs-keyword">where</span></span>
+  xs == ys = <span class="hljs-type">Stream</span>.eq (<span class="hljs-type">G</span>.stream xs) (<span class="hljs-type">G</span>.stream ys)
+  xs /= ys = not (<span class="hljs-type">Stream</span>.eq (<span class="hljs-type">G</span>.stream xs) (<span class="hljs-type">G</span>.stream ys))
+</code></pre>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> (<span class="hljs-type">G</span>.<span class="hljs-type">Vector</span> <span class="hljs-title">u</span> <span class="hljs-title">a</span>, <span class="hljs-type">G</span>.<span class="hljs-type">Vector</span> <span class="hljs-title">v</span> <span class="hljs-title">b</span>, <span class="hljs-type">Ord</span> <span class="hljs-title">a</span>, <span class="hljs-type">Ord</span> <span class="hljs-title">b</span>, <span class="hljs-title">c</span> ~ (<span class="hljs-title">a</span>, <span class="hljs-title">b</span>)) =&gt; <span class="hljs-type">Ord</span> (<span class="hljs-type">Vector</span> <span class="hljs-title">u</span> <span class="hljs-title">v</span> <span class="hljs-title">c</span>) <span class="hljs-keyword">where</span></span>
+  compare xs ys = <span class="hljs-type">Stream</span>.cmp (<span class="hljs-type">G</span>.stream xs) (<span class="hljs-type">G</span>.stream ys)
+</code></pre>
+<p>Now, we finally have everything we need for our <code>Hybrid.Vector</code> type to feel like a real <code>Vector</code>.</p>
+<p>OK, not quite <em>everything</em>, for reasons that I'm sure make sense to Roman, he goes and duplicates the entire <code>vector</code> API individually customized to each vector subtype within their own modules. Admittedly, it does help with inference in the presence of such an all encompassing API that can both produce and consume values of the same type. To that end, <code>hybrid-vectors</code> includes a couple thousand lines of boilerplate as well to make a <code>vector</code> programmer feel at home. It also contains another, related notion, that of a <a href="https://hackage.haskell.org/packages/archive/hybrid-vectors/0.1/doc/html/Data-Vector-Mixed.html"><code>Mixed.Vector</code></a> that permits more operations to cooperate across vector types, as it was something that was easy to implement while I had all of the <code>vector</code> internals paged in mentally.</p>
+<p>However, the details of that implementation is entirely mechanical.</p>
+<p>Similarly, we need to go through a similar boilerplate exercise making an instance of <code>Unbox</code> for <code>Key</code>, but nothing new is learned.</p>
+<h2 id="custom-stream-fusion">Custom Stream Fusion</h2>
+<p>Before we move on, we are going to need at least one custom stream fusion combinator for adding two matrices together.</p>
+<p>I don't want to pre-judge that all addition will fall under the purview of the <code>Num</code> typeclass, as for instance since we're sparse we can use <code>Mat Unboxed.Vector ()</code> as a Boolean matrix and pay surprisingly little overhead as an <code>Unboxed.Vector</code> of <code>()</code>s is represented simply by its <code>size</code>!</p>
+<p>Consequently, let's define a generalized merge operation that can permit values to cancel.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">mergeStreamsWith</span>
+  :: (<span class="hljs-type">Monad</span> m, <span class="hljs-type">Ord</span> i)
+  =&gt; (a -&gt; a -&gt; <span class="hljs-type">Maybe</span> a)
+  -&gt; <span class="hljs-type">Stream</span> m (i, a)
+  -&gt; <span class="hljs-type">Stream</span> m (i, a)
+  -&gt; <span class="hljs-type">Stream</span> m (i, a)
+</code></pre>
+<p>In <code>Vector</code>'s current version of monadic stream fusion, a <code>Stream</code> consists of a step function, a state, and any knowledge we have about the <code>Size</code> of the <code>Stream</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Stream</span> m a = forall s . <span class="hljs-type">Stream</span> (<span class="hljs-title">s</span> -&gt; <span class="hljs-title">m</span> (<span class="hljs-type">Step</span> <span class="hljs-title">s</span> <span class="hljs-title">a</span>)) s <span class="hljs-type">Size</span></span>
+</code></pre>
+<p>Therefore with an appropriate new <code>step</code> function, we can write:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">mergeStreamsWith</span> f (<span class="hljs-type">Stream</span> stepa sa0 na) (<span class="hljs-type">Stream</span> stepb sb0 nb)
+  = <span class="hljs-type">Stream</span> step (<span class="hljs-type">MergeStart</span> sa0 sb0) (toMax na + toMax nb)
+</code></pre>
+<p>Here our starting state <code>MergeStart</code> is described below, and we convert the bounds we know on the input streams into a conservative upper bound on our new stream size.</p>
+<p>Stream fusion works by ensuring that each <code>Step</code> you take does not recurse, so the compiler is able to move all of the iteration to one outer-most loop.</p>
+<p>At each <code>Step</code>, we can <code>Yield</code> a new answer and switch to a new state, simply switch to a new state or terminate our <code>Stream</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Step</span> s a = <span class="hljs-type">Yield</span> a s | <span class="hljs-type">Skip</span> s | <span class="hljs-type">Done</span></span>
+</code></pre>
+<p>In our case we need to consume from two other streams, but we can only afford to ask for a bounded amount of work from each at each <code>Step</code>. So let's build a custom state type for our <code>Stream</code>:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">MergeState</span> sa sb i a</span>
+  = <span class="hljs-type">MergeL</span> sa sb i a
+  | <span class="hljs-type">MergeR</span> sa sb i a
+  | <span class="hljs-type">MergeLeftEnded</span> sb
+  | <span class="hljs-type">MergeRightEnded</span> sa
+  | <span class="hljs-type">MergeStart</span> sa sb
+</code></pre>
+<p>We'll want to reason through our <code>step</code> function by cases as it is rather tedious.</p>
+<p><code>MergeStart</code> is our initial state, consisting of the initial states of both of our input streams.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">  step (<span class="hljs-type">MergeStart</span> sa sb) = <span class="hljs-keyword">do</span>
+    r &lt;- stepa sa
+    return $ <span class="hljs-keyword">case</span> r <span class="hljs-keyword">of</span>
+      <span class="hljs-type">Yield</span> (i, a) sa' -&gt; <span class="hljs-type">Skip</span> (<span class="hljs-type">MergeL</span> sa' sb i a)
+      <span class="hljs-type">Skip</span> sa'         -&gt; <span class="hljs-type">Skip</span> (<span class="hljs-type">MergeStart</span> sa' sb)
+      <span class="hljs-type">Done</span>             -&gt; <span class="hljs-type">Skip</span> (<span class="hljs-type">MergeLeftEnded</span> sb)
+</code></pre>
+<p>We try to read from the left stream. If it succeeds we know the value from the left stream (and are in state <code>MergeL</code>). If it skips we have to try again. If it says it has no more content, we should fast forward through the right hand stream with <code>MergeLeftEnded</code>.</p>
+<p>The rest of the logic follows similarly.</p>
+<p>Once we have a value from our left <code>Stream</code>, we should try to read from our right, merging values if their indices are equal, and otherwise putting them in order. Depending on which candidate was merged, we proceed to <code>MergeR</code> or <code>MergeL</code>. If during the <code>Merge</code>, we determine that our elements cancelled out, e.g. <code>5 + (-5)</code>, thn rather than recurse into start to ensure a bounded amount of work is done, we <code>Skip</code> back there.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">  step (<span class="hljs-type">MergeL</span> sa sb i a) = <span class="hljs-keyword">do</span>
+    r &lt;- stepb sb
+    return $ <span class="hljs-keyword">case</span> r <span class="hljs-keyword">of</span>
+      <span class="hljs-type">Yield</span> (j, b) sb' -&gt; <span class="hljs-keyword">case</span> compare i j <span class="hljs-keyword">of</span>
+        <span class="hljs-type">LT</span> -&gt; <span class="hljs-type">Yield</span> (i, a)     (<span class="hljs-type">MergeR</span> sa sb' j b)
+        <span class="hljs-type">EQ</span> -&gt; <span class="hljs-keyword">case</span> f a b <span class="hljs-keyword">of</span>
+           <span class="hljs-type">Just</span> c  -&gt; <span class="hljs-type">Yield</span> (i, c) (<span class="hljs-type">MergeStart</span> sa sb')
+           <span class="hljs-type">Nothing</span> -&gt; <span class="hljs-type">Skip</span> (<span class="hljs-type">MergeStart</span> sa sb')
+        <span class="hljs-type">GT</span> -&gt; <span class="hljs-type">Yield</span> (j, b)     (<span class="hljs-type">MergeL</span> sa sb' i a)
+      <span class="hljs-type">Skip</span> sb' -&gt; <span class="hljs-type">Skip</span> (<span class="hljs-type">MergeL</span> sa sb' i a)
+      <span class="hljs-type">Done</span>     -&gt; <span class="hljs-type">Yield</span> (i, a) (<span class="hljs-type">MergeRightEnded</span> sa)
+</code></pre>
+<p><code>MergeR</code> is entirely symmetric to <code>MergeL</code>:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">  step (<span class="hljs-type">MergeR</span> sa sb j b) = <span class="hljs-keyword">do</span>
+    r &lt;- stepa sa
+    return $ <span class="hljs-keyword">case</span> r <span class="hljs-keyword">of</span>
+      <span class="hljs-type">Yield</span> (i, a) sa' -&gt; <span class="hljs-keyword">case</span> compare i j <span class="hljs-keyword">of</span>
+        <span class="hljs-type">LT</span> -&gt; <span class="hljs-type">Yield</span> (i, a)     (<span class="hljs-type">MergeR</span> sa' sb j b)
+        <span class="hljs-type">EQ</span> -&gt; <span class="hljs-keyword">case</span> f a b <span class="hljs-keyword">of</span>
+          <span class="hljs-type">Just</span> c  -&gt; <span class="hljs-type">Yield</span> (i, c) (<span class="hljs-type">MergeStart</span> sa' sb)
+          <span class="hljs-type">Nothing</span> -&gt; <span class="hljs-type">Skip</span> (<span class="hljs-type">MergeStart</span> sa' sb)
+        <span class="hljs-type">GT</span> -&gt; <span class="hljs-type">Yield</span> (j, b)     (<span class="hljs-type">MergeL</span> sa' sb i a)
+      <span class="hljs-type">Skip</span> sa' -&gt; <span class="hljs-type">Skip</span> (<span class="hljs-type">MergeR</span> sa' sb j b)
+      <span class="hljs-type">Done</span>     -&gt; <span class="hljs-type">Yield</span> (j, b) (<span class="hljs-type">MergeLeftEnded</span> sb)
+</code></pre>
+<p>and then we just have to deal with fast forwarding:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">  step (<span class="hljs-type">MergeLeftEnded</span> sb) = <span class="hljs-keyword">do</span>
+    r &lt;- stepb sb
+    return $ <span class="hljs-keyword">case</span> r <span class="hljs-keyword">of</span>
+      <span class="hljs-type">Yield</span> (j, b) sb' -&gt; <span class="hljs-type">Yield</span> (j, b) (<span class="hljs-type">MergeLeftEnded</span> sb')
+      <span class="hljs-type">Skip</span> sb'         -&gt; <span class="hljs-type">Skip</span> (<span class="hljs-type">MergeLeftEnded</span> sb')
+      <span class="hljs-type">Done</span>             -&gt; <span class="hljs-type">Done</span>
+  step (<span class="hljs-type">MergeRightEnded</span> sa) = <span class="hljs-keyword">do</span>
+    r &lt;- stepa sa
+    return $ <span class="hljs-keyword">case</span> r <span class="hljs-keyword">of</span>
+      <span class="hljs-type">Yield</span> (i, a) sa' -&gt; <span class="hljs-type">Yield</span> (i, a) (<span class="hljs-type">MergeRightEnded</span> sa')
+      <span class="hljs-type">Skip</span> sa'         -&gt; <span class="hljs-type">Skip</span> (<span class="hljs-type">MergeRightEnded</span> sa')
+      <span class="hljs-type">Done</span>             -&gt; <span class="hljs-type">Done</span>
+</code></pre>
+<p>Putting it all together we get:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">
+<span class="hljs-keyword">import</span> Data.Vector.Fusion.Stream.Monadic (<span class="hljs-type">Step(..)</span>, <span class="hljs-type">Stream(..)</span>)
+<span class="hljs-keyword">import</span> Data.Vector.Fusion.Stream.Size
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">MergeState</span> sa sb i a</span>
+  = <span class="hljs-type">MergeL</span> sa sb i a
+  | <span class="hljs-type">MergeR</span> sa sb i a
+  | <span class="hljs-type">MergeLeftEnded</span> sb
+  | <span class="hljs-type">MergeRightEnded</span> sa
+  | <span class="hljs-type">MergeStart</span> sa sb
+
+<span class="hljs-title">mergeStreamsWith</span>
+  :: (<span class="hljs-type">Monad</span> m, <span class="hljs-type">Ord</span> i)
+  =&gt; (a -&gt; a -&gt; <span class="hljs-type">Maybe</span> a)
+  -&gt; <span class="hljs-type">Stream</span> m (i, a)
+  -&gt; <span class="hljs-type">Stream</span> m (i, a)
+  -&gt; <span class="hljs-type">Stream</span> m (i, a)
+<span class="hljs-title">mergeStreamsWith</span> f (<span class="hljs-type">Stream</span> stepa sa0 na) (<span class="hljs-type">Stream</span> stepb sb0 nb)
+  = <span class="hljs-type">Stream</span> step (<span class="hljs-type">MergeStart</span> sa0 sb0) (toMax na + toMax nb) <span class="hljs-keyword">where</span>
+  step (<span class="hljs-type">MergeStart</span> sa sb) = <span class="hljs-keyword">do</span>
+    r &lt;- stepa sa
+    return $ <span class="hljs-keyword">case</span> r <span class="hljs-keyword">of</span>
+      <span class="hljs-type">Yield</span> (i, a) sa' -&gt; <span class="hljs-type">Skip</span> (<span class="hljs-type">MergeL</span> sa' sb i a)
+      <span class="hljs-type">Skip</span> sa'         -&gt; <span class="hljs-type">Skip</span> (<span class="hljs-type">MergeStart</span> sa' sb)
+      <span class="hljs-type">Done</span>             -&gt; <span class="hljs-type">Skip</span> (<span class="hljs-type">MergeLeftEnded</span> sb)
+  step (<span class="hljs-type">MergeL</span> sa sb i a) = <span class="hljs-keyword">do</span>
+    r &lt;- stepb sb
+    return $ <span class="hljs-keyword">case</span> r <span class="hljs-keyword">of</span>
+      <span class="hljs-type">Yield</span> (j, b) sb' -&gt; <span class="hljs-keyword">case</span> compare i j <span class="hljs-keyword">of</span>
+        <span class="hljs-type">LT</span> -&gt; <span class="hljs-type">Yield</span> (i, a)     (<span class="hljs-type">MergeR</span> sa sb' j b)
+        <span class="hljs-type">EQ</span> -&gt; <span class="hljs-keyword">case</span> f a b <span class="hljs-keyword">of</span>
+           <span class="hljs-type">Just</span> c  -&gt; <span class="hljs-type">Yield</span> (i, c) (<span class="hljs-type">MergeStart</span> sa sb')
+           <span class="hljs-type">Nothing</span> -&gt; <span class="hljs-type">Skip</span> (<span class="hljs-type">MergeStart</span> sa sb')
+        <span class="hljs-type">GT</span> -&gt; <span class="hljs-type">Yield</span> (j, b)     (<span class="hljs-type">MergeL</span> sa sb' i a)
+      <span class="hljs-type">Skip</span> sb' -&gt; <span class="hljs-type">Skip</span> (<span class="hljs-type">MergeL</span> sa sb' i a)
+      <span class="hljs-type">Done</span>     -&gt; <span class="hljs-type">Yield</span> (i, a) (<span class="hljs-type">MergeRightEnded</span> sa)
+  step (<span class="hljs-type">MergeR</span> sa sb j b) = <span class="hljs-keyword">do</span>
+    r &lt;- stepa sa
+    return $ <span class="hljs-keyword">case</span> r <span class="hljs-keyword">of</span>
+      <span class="hljs-type">Yield</span> (i, a) sa' -&gt; <span class="hljs-keyword">case</span> compare i j <span class="hljs-keyword">of</span>
+        <span class="hljs-type">LT</span> -&gt; <span class="hljs-type">Yield</span> (i, a)     (<span class="hljs-type">MergeR</span> sa' sb j b)
+        <span class="hljs-type">EQ</span> -&gt; <span class="hljs-keyword">case</span> f a b <span class="hljs-keyword">of</span>
+          <span class="hljs-type">Just</span> c  -&gt; <span class="hljs-type">Yield</span> (i, c) (<span class="hljs-type">MergeStart</span> sa' sb)
+          <span class="hljs-type">Nothing</span> -&gt; <span class="hljs-type">Skip</span> (<span class="hljs-type">MergeStart</span> sa' sb)
+        <span class="hljs-type">GT</span> -&gt; <span class="hljs-type">Yield</span> (j, b)     (<span class="hljs-type">MergeL</span> sa' sb i a)
+      <span class="hljs-type">Skip</span> sa' -&gt; <span class="hljs-type">Skip</span> (<span class="hljs-type">MergeR</span> sa' sb j b)
+      <span class="hljs-type">Done</span>     -&gt; <span class="hljs-type">Yield</span> (j, b) (<span class="hljs-type">MergeLeftEnded</span> sb)
+  step (<span class="hljs-type">MergeLeftEnded</span> sb) = <span class="hljs-keyword">do</span>
+    r &lt;- stepb sb
+    return $ <span class="hljs-keyword">case</span> r <span class="hljs-keyword">of</span>
+      <span class="hljs-type">Yield</span> (j, b) sb' -&gt; <span class="hljs-type">Yield</span> (j, b) (<span class="hljs-type">MergeLeftEnded</span> sb')
+      <span class="hljs-type">Skip</span> sb'         -&gt; <span class="hljs-type">Skip</span> (<span class="hljs-type">MergeLeftEnded</span> sb')
+      <span class="hljs-type">Done</span>             -&gt; <span class="hljs-type">Done</span>
+  step (<span class="hljs-type">MergeRightEnded</span> sa) = <span class="hljs-keyword">do</span>
+    r &lt;- stepa sa
+    return $ <span class="hljs-keyword">case</span> r <span class="hljs-keyword">of</span>
+      <span class="hljs-type">Yield</span> (i, a) sa' -&gt; <span class="hljs-type">Yield</span> (i, a) (<span class="hljs-type">MergeRightEnded</span> sa')
+      <span class="hljs-type">Skip</span> sa'         -&gt; <span class="hljs-type">Skip</span> (<span class="hljs-type">MergeRightEnded</span> sa')
+      <span class="hljs-type">Done</span>             -&gt; <span class="hljs-type">Done</span>
+  <span class="hljs-meta">{-# INLINE [0] step #-}</span>
+<span class="hljs-meta">{-# INLINE [1] mergeStreamsWith #-}</span>
+
+<span class="hljs-title">main</span> = putStrLn <span class="hljs-string">"That compiles, too."</span>
+</code></pre>
+<p>It is worth noting the phase-controlled <code>INLINE</code> pragmas in the final definition as well. Without them you really won't see much benefit from stream fusion! They ensure that the compiler is careful to hold onto the steps uninlined until the right moment.</p>
+<blockquote>
+<p><strong>No-Prize #6</strong></p>
+<p>It'd probably be much more efficient for us to us an efficient <code>k-merge</code> or, even better, a cache-oblivious
+variant that is careful to make no assumptions about our caches. The only two operations we'll be using
+<code>Stream</code> fusion for are concatenation and <code>mergeStreamsWith</code> for now. Is there a more efficient fusion form we should be using that can exploit this structure?</p>
+</blockquote>
+<h2 id="matrices-not-vectors">Matrices, not Vectors</h2>
+<p>Now that we have <code>hybrid-vectors</code>, we can <em>finally</em> peek at what our matrix representation can look like.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Mat</span> v a = <span class="hljs-type">Mat</span> { <span class="hljs-title">runMat</span> :: <span class="hljs-type">Hybrid</span>.<span class="hljs-type">Vector</span> <span class="hljs-type">Unboxed</span>.<span class="hljs-type">Vector</span> <span class="hljs-title">v</span> (<span class="hljs-type">Key</span>, <span class="hljs-title">a</span>) }</span>
+</code></pre>
+<p>and how we could build one:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">fromList</span> :: <span class="hljs-type">Generic</span>.<span class="hljs-type">Vector</span> v a =&gt; [(<span class="hljs-type">Key</span>, a)] -&gt; <span class="hljs-type">Mat</span> v a
+<span class="hljs-title">fromList</span> xs
+  = <span class="hljs-type">Mat</span>
+  $ <span class="hljs-type">Generic</span>.modify (<span class="hljs-type">Intro</span>.sortBy (compare `on` fst))
+  $ <span class="hljs-type">Generic</span>.fromList xs
+</code></pre>
+<p>As we'll see next time don't need type parameters for the number of dimensions and we don't need to store information on the dimensionality of the contents as well as we'll be able to turn back to the notions of "most significant most significant difference" and 2-fattest numbers a second time.</p>
+<p>And you'd hoped the bit-twiddling was behind us. Hah!</p>
+<p>-<a href="mailto:ekmett@gmail.com">Edward Kmett</a></p>
+<p>August 18, 2013</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/hybrid-vectors"><code>hybrid-vectors</code></a> · <a href="https://hackage.haskell.org/package/lens"><code>lens</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: School of Haskell. Date displayed by School of Haskell; may reflect a later revision.</p><p><a href="../../../source/articles/revisiting-matrix-multiplication-part-3.md" download>Article Markdown</a> · <a href="../../../source/articles/revisiting-matrix-multiplication-part-3.original.md" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2013/revisiting-matrix-multiplication-part-4/">Part IV: IntMap!? →</a><a href="../../../reader/2013/revisiting-matrix-multiplication-part-2/">Part II: The Zen of Z-Ordering →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

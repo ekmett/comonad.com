@@ -1,0 +1,9 @@
+<figure class="experiment incremental" aria-labelledby="tree-title"><div class="section-heading"><div><h3 id="tree-title">Try editing a chunk</h3><p>Change any chunk. Only that leaf and its ancestors are recalculated.</p></div></div>
+<div class="tree-toolbar"><span><span class="legend-key changed-key"></span>Recalculated <span class="legend-key retained-key"></span>Reused</span><button id="reset-tree" type="button" disabled>Reset chunks</button></div>
+<div class="tree-leaves" id="tree-leaves"></div>
+<svg class="tree-lines" viewBox="0 0 800 42" preserveAspectRatio="none" aria-hidden="true"><path d="M100 0 V16 H200 V42 M300 0 V16 H200 M500 0 V16 H600 V42 M700 0 V16 H600"/></svg>
+<div class="tree-branches"><div class="tree-node" id="branch-0"><span>A ⊗ B</span><code>—</code></div><div class="tree-node" id="branch-1"><span>C ⊗ D</span><code>—</code></div></div>
+<svg class="tree-lines" viewBox="0 0 800 42" preserveAspectRatio="none" aria-hidden="true"><path d="M200 0 V16 H400 V42 M600 0 V16 H400"/></svg>
+<div class="tree-root tree-node" id="tree-root"><span>(A ⊗ B) ⊗ (C ⊗ D)</span><code>—</code></div>
+<div class="tree-summary"><p id="work-count" aria-live="polite">Four leaves. Two branches. One answer.</p><span id="tree-check">—</span></div>
+<p class="footnote">Each node displays the finished CRC of its fragment. Composition uses the cached (remainder, shift) pairs, not these displayed CRCs. Highlighting shows which tree nodes were recalculated. A separate full scan checks the answer after each edit. These examples run on one browser thread; associativity also permits parallel evaluation.</p></figure>

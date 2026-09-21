@@ -1,0 +1,962 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head profile="http://gmpg.org/xfn/11">
+        <link rel="shortcut icon" href="http://comonad.com/reader/wp-content/themes/connections/favicon.ico" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>The Comonad.Reader &raquo; The Pointed-Set Comonad</title>
+	<meta name="generator" content="WordPress 2.8.4" />
+	<style type="text/css" media="screen">@import url( http://comonad.com/reader/wp-content/themes/connections/style.css );</style>
+	<!--[if IE]><style type="text/css"> img { behavior: url(/reader/pngbehavior/pngbehavior.htc); } </style><![endif]-->
+        <link rel="openid.server" href="https://api.screenname.aol.com/auth/openidServer"/>
+        <link rel="openid.delegate" href="http://openid.aol.com/edwardallankmett"/>
+
+	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://comonad.com/reader/feed/" />
+	<link rel="alternate" type="application/atom+xml" title="Atom 0.3" href="http://comonad.com/reader/feed/atom/" />
+	<link rel="pingback" href="http://comonad.com/reader/xmlrpc.php" />
+    	<link rel='archives' title='October 2022' href='http://comonad.com/reader/2022/10/' />
+	<link rel='archives' title='January 2018' href='http://comonad.com/reader/2018/01/' />
+	<link rel='archives' title='January 2016' href='http://comonad.com/reader/2016/01/' />
+	<link rel='archives' title='September 2015' href='http://comonad.com/reader/2015/09/' />
+	<link rel='archives' title='July 2015' href='http://comonad.com/reader/2015/07/' />
+	<link rel='archives' title='May 2015' href='http://comonad.com/reader/2015/05/' />
+	<link rel='archives' title='April 2015' href='http://comonad.com/reader/2015/04/' />
+	<link rel='archives' title='February 2015' href='http://comonad.com/reader/2015/02/' />
+	<link rel='archives' title='December 2014' href='http://comonad.com/reader/2014/12/' />
+	<link rel='archives' title='August 2014' href='http://comonad.com/reader/2014/08/' />
+	<link rel='archives' title='April 2014' href='http://comonad.com/reader/2014/04/' />
+	<link rel='archives' title='May 2013' href='http://comonad.com/reader/2013/05/' />
+	<link rel='archives' title='April 2013' href='http://comonad.com/reader/2013/04/' />
+	<link rel='archives' title='January 2013' href='http://comonad.com/reader/2013/01/' />
+	<link rel='archives' title='December 2012' href='http://comonad.com/reader/2012/12/' />
+	<link rel='archives' title='September 2012' href='http://comonad.com/reader/2012/09/' />
+	<link rel='archives' title='August 2012' href='http://comonad.com/reader/2012/08/' />
+	<link rel='archives' title='June 2012' href='http://comonad.com/reader/2012/06/' />
+	<link rel='archives' title='May 2012' href='http://comonad.com/reader/2012/05/' />
+	<link rel='archives' title='April 2012' href='http://comonad.com/reader/2012/04/' />
+	<link rel='archives' title='December 2011' href='http://comonad.com/reader/2011/12/' />
+	<link rel='archives' title='November 2011' href='http://comonad.com/reader/2011/11/' />
+	<link rel='archives' title='October 2011' href='http://comonad.com/reader/2011/10/' />
+	<link rel='archives' title='September 2011' href='http://comonad.com/reader/2011/09/' />
+	<link rel='archives' title='July 2011' href='http://comonad.com/reader/2011/07/' />
+	<link rel='archives' title='June 2011' href='http://comonad.com/reader/2011/06/' />
+	<link rel='archives' title='July 2010' href='http://comonad.com/reader/2010/07/' />
+	<link rel='archives' title='May 2010' href='http://comonad.com/reader/2010/05/' />
+	<link rel='archives' title='April 2010' href='http://comonad.com/reader/2010/04/' />
+	<link rel='archives' title='September 2009' href='http://comonad.com/reader/2009/09/' />
+	<link rel='archives' title='August 2009' href='http://comonad.com/reader/2009/08/' />
+	<link rel='archives' title='July 2009' href='http://comonad.com/reader/2009/07/' />
+	<link rel='archives' title='June 2009' href='http://comonad.com/reader/2009/06/' />
+	<link rel='archives' title='March 2009' href='http://comonad.com/reader/2009/03/' />
+	<link rel='archives' title='December 2008' href='http://comonad.com/reader/2008/12/' />
+	<link rel='archives' title='November 2008' href='http://comonad.com/reader/2008/11/' />
+	<link rel='archives' title='June 2008' href='http://comonad.com/reader/2008/06/' />
+	<link rel='archives' title='May 2008' href='http://comonad.com/reader/2008/05/' />
+	<link rel='archives' title='April 2008' href='http://comonad.com/reader/2008/04/' />
+	<link rel='archives' title='March 2008' href='http://comonad.com/reader/2008/03/' />
+	<link rel='archives' title='January 2008' href='http://comonad.com/reader/2008/01/' />
+	<link rel='archives' title='July 2007' href='http://comonad.com/reader/2007/07/' />
+	<link rel='archives' title='May 2007' href='http://comonad.com/reader/2007/05/' />
+	<link rel='archives' title='November 2006' href='http://comonad.com/reader/2006/11/' />
+	<link rel='archives' title='October 2006' href='http://comonad.com/reader/2006/10/' />
+	<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader &raquo; The Pointed-Set Comonad Comments Feed" href="http://comonad.com/reader/2008/the-pointed-set-comonad/feed/" />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://comonad.com/reader/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://comonad.com/reader/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='The Comonad.Reader' href='http://comonad.com/reader' />
+<link rel='start' title='Hello, World!' href='http://comonad.com/reader/2006/hello-world/' />
+<link rel='prev' title='Still Alive' href='http://comonad.com/reader/2008/still-alive/' />
+<link rel='next' title='Reflecting On Incremental Folds' href='http://comonad.com/reader/2009/incremental-folds/' />
+<meta name="generator" content="WordPress 2.8.4" />
+</head>
+<body>
+<div id="rap">
+	<div id="header">
+	<ul id="topnav">
+		<li><a href="/reader" id="navHome" title="Posted Recently" accesskey="h">Home |</a></li>
+		<li><a href="/reader/about/" id="navAbout" title="About the Author" accesskey="a">About |</a></li>
+		<li><a href="/reader/source;item=libraries" id="navSource" title="Source Code" accesskey="s">Source |</a></li>
+		<li><a href="mailto:ekmett@gmail.com" id="navContact" title="Contact the Author" accesskey="c">Contact </a></li>
+	</ul>
+	<a href="http://comonad.com/reader" id="logoHome" title="Posted Recently"><img id="logo" src="/reader/pngbehavior/blank.gif" ></a>
+	<h1><a href="http://comonad.com/reader" title="The Comonad.Reader">The Comonad.Reader</a></h1>		
+	<div id="desc">types, (co)monads, substructural logic</div>
+</div>
+	
+	<div id="main">
+	<div id="content">
+
+						<div class="post">
+				<p class="post-date">Thu 4 Dec 2008</p>
+<div class="post-info"><h2 class="post-title"><a href="http://comonad.com/reader/2008/the-pointed-set-comonad/" rel="bookmark" title="Permanent Link: The Pointed-Set Comonad">The Pointed-Set Comonad</a></h2>
+Posted by Edward Kmett under <a href="http://comonad.com/reader/category/comonads/" title="View all posts in Comonads" rel="category tag">Comonads</a> ,  <a href="http://comonad.com/reader/category/haskell/" title="View all posts in Haskell" rel="category tag">Haskell</a> ,  <a href="http://comonad.com/reader/category/uncategorized/" title="View all posts in Uncategorized" rel="category tag">Uncategorized</a> <br/><a href="http://comonad.com/reader/2008/the-pointed-set-comonad/#comments" title="Comment on The Pointed-Set Comonad">[50] Comments</a>&nbsp;</div>
+<div class="post-content">
+	<p>Last night, Chung-Chieh Shan posted an example of a <a href="http://conway.rutgers.edu/~ccshan/wiki/blog/posts/Pointed_set/">pointed-set monad</a> on his blog, which happens to be isomorphic to a non-empty stream monad with a different emphasis. </p>
+<p>But, I thought I should point out that the pointed set that he posted also has a comonadic structure, which may be exploited since it is just a variation on the "zipper comonad," a structure that is perhaps more correctly called a "pointing comonad."</p>
+<p><span id="more-80"></span></p>
+<p>But first, a little background:</p>
+<p>With <a href="http://en.wikipedia.org/wiki/Combinatorial_species">combinatorial species</a> you point a data structure by marking a single element in it as special. We can represent that with the product of an element and the <a href="http://en.wikipedia.org/wiki/Derivative_(generalizations)#Set_theory_and_logic">derivative</a> of the original type.</p>
+<pre>
+F*[A] = A * F'[A]
+</pre>
+<p>So, then looking at Shan's pointed set, we can ask what combinatorial species has a list as its derivative? </p>
+<p>The answer is a cycle, not a set. </p>
+<p>This fact doesn't matter to the monad, since the only way a monadic action interacts with that extra structure is safely through bind, but does for the comonad where every comonadic action has access to that structure, but no control over the shape of the result.</p>
+<p>However, we don't really have a way to represent an unordered set in Haskell, so if you are treating a list as a set, the derivative of a set is another set then we can also view the a * [a] as a pointed set, so long as we don't depend on the order of the elements in the list in any way in obtaining the result of our comonadic actions.</p>
+<p>I've changed the name of his data type to <code>PointedSet</code> to avoid conflicting with the definitions of <code>Pointed</code> and <code>Copointed</code> functors in category extras.</p>
+<pre class="haskell">&nbsp;
+<span style="color: #06c; font-weight: bold;">module</span> PointedSet <span style="color: #06c; font-weight: bold;">where</span>
+&nbsp;
+<span style="color: #06c; font-weight: bold;">import</span> Control.<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#t:Comonad"><span style="background-color: #efefbf; font-weight: bold;">Comonad</span></a> <span style="color: #5d478b; font-style: italic;">-- from my category-extras library</span>
+<span style="color: #06c; font-weight: bold;">import</span> Data.List <span style="color: green;">&#40;</span>inits,tails<span style="color: green;">&#41;</span> <span style="color: #5d478b; font-style: italic;">-- used much later below</span>
+&nbsp;
+<span style="color: #06c; font-weight: bold;">data</span> PointedSet a = PointedSet a <span style="color: green;">&#91;</span>a<span style="color: green;">&#93;</span> <span style="color: #06c; font-weight: bold;">deriving</span> <span style="color: green;">&#40;</span><a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Eq"><span style="background-color: #efefbf; font-weight: bold;">Eq</span></a>, <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Ord"><span style="background-color: #efefbf; font-weight: bold;">Ord</span></a>, <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Show"><span style="background-color: #efefbf; font-weight: bold;">Show</span></a>, <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Read"><span style="background-color: #efefbf; font-weight: bold;">Read</span></a><span style="color: green;">&#41;</span>
+&nbsp;
+<span style="color: #06c; font-weight: bold;">instance</span> <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Functor"><span style="background-color: #efefbf; font-weight: bold;">Functor</span></a> PointedSet <span style="color: #06c; font-weight: bold;">where</span>
+    <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fmap"><span style="font-weight: bold;">fmap</span></a> f <span style="color: green;">&#40;</span>PointedSet x xs<span style="color: green;">&#41;</span> = PointedSet <span style="color: green;">&#40;</span>f x<span style="color: green;">&#41;</span> $ <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fmap"><span style="font-weight: bold;">fmap</span></a> f xs
+&nbsp;</pre>
+<p>The definition for extract is obvious, since you have already selected a point, just return it. </p>
+<pre class="haskell">&nbsp;
+<span style="color: #06c; font-weight: bold;">instance</span> Copointed PointedSet <span style="color: #06c; font-weight: bold;">where</span>
+    <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#v:extract"><span style="font-weight: bold;">extract</span></a> <span style="color: green;">&#40;</span>PointedSet x _<span style="color: green;">&#41;</span> = x
+&nbsp;</pre>
+<p>On the other hand, for duplicate we have a couple of options. An obvious and correct, but boring implementation transforms a value as follows:</p>
+<pre class="haskell">&nbsp;
+boring_duplicate :: PointedSet a -&gt; PointedSet <span style="color: green;">&#40;</span>PointedSet a<span style="color: green;">&#41;</span>
+boring_duplicate xxs@<span style="color: green;">&#40;</span>PointedSet x xs<span style="color: green;">&#41;</span> =
+    PointedSet xxs $ <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fmap"><span style="font-weight: bold;">fmap</span></a> <span style="color: green;">&#40;</span><a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:flip"><span style="font-weight: bold;">flip</span></a> PointedSet <span style="color: green;">&#91;</span><span style="color: green;">&#93;</span><span style="color: green;">&#41;</span> xs
+&nbsp;</pre>
+<pre class="haskell">&nbsp;
+*PointedSet&gt; boring_duplicate $ PointedSet <span style="color: red;">0</span> <span style="color: green;">&#91;</span><span style="color: red;">1</span>..<span style="color: red;">3</span><span style="color: green;">&#93;</span>
+PointedSet <span style="color: green;">&#40;</span>PointedSet <span style="color: red;">0</span> <span style="color: green;">&#91;</span><span style="color: red;">1</span>..<span style="color: red;">3</span><span style="color: green;">&#93;</span><span style="color: green;">&#41;</span> <span style="color: green;">&#91;</span>
+    PointedSet <span style="color: red;">1</span> <span style="color: green;">&#91;</span><span style="color: green;">&#93;</span>,
+    PointedSet <span style="color: red;">2</span> <span style="color: green;">&#91;</span><span style="color: green;">&#93;</span>,
+    PointedSet <span style="color: red;">3</span> <span style="color: green;">&#91;</span><span style="color: green;">&#93;</span>
+<span style="color: green;">&#93;</span>
+&nbsp;</pre>
+<p>but that just abuses the fact that we can always return an empty list. </p>
+<p>Another fairly boring interpretation is to just use the guts of the definition of the Stream comonad, but that doesn't model a set with a single memory singled out.</p>
+<p>A more interesting version refocuses on each element of the list in turn, which makes the connection to the zipper comonad much more obvious. Since we want a pointed set and not a pointed cycle, we can focus on an element just by swapping out the element in the list in that position for the focus.</p>
+<p>Again, since we can't specify general species in Haskell, this is as close as we can come to the correct comonadic structure for a pointed set. Due to the limitations of our type system, the comonadic action can still see the order of elements in the set, but it shouldn't use that information. </p>
+<p>Since we don't care to preserve the order of the miscellaneous set elements, the <code>refocus</code> helper function below can just accumulate preceding elements in an accumulating parameter in reverse order.</p>
+<pre class="haskell">&nbsp;
+<span style="color: #06c; font-weight: bold;">instance</span> <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#t:Comonad"><span style="background-color: #efefbf; font-weight: bold;">Comonad</span></a> PointedSet <span style="color: #06c; font-weight: bold;">where</span>
+    <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#v:duplicate"><span style="font-weight: bold;">duplicate</span></a> xxs@<span style="color: green;">&#40;</span>PointedSet x xs<span style="color: green;">&#41;</span> = PointedSet xxs $ refocus <span style="color: green;">&#91;</span><span style="color: green;">&#93;</span> x xs
+      <span style="color: #06c; font-weight: bold;">where</span>
+        refocus :: <span style="color: green;">&#91;</span>a<span style="color: green;">&#93;</span> -&gt; a -&gt; <span style="color: green;">&#91;</span>a<span style="color: green;">&#93;</span> -&gt; <span style="color: green;">&#91;</span>PointedSet a<span style="color: green;">&#93;</span>
+        refocus acc x <span style="color: green;">&#40;</span>y:ys<span style="color: green;">&#41;</span> =
+            PointedSet y <span style="color: green;">&#40;</span>acc ++ <span style="color: green;">&#40;</span>x:ys<span style="color: green;">&#41;</span><span style="color: green;">&#41;</span> : refocus <span style="color: green;">&#40;</span>y:acc<span style="color: green;">&#41;</span> x ys
+        refocus acc x <span style="color: green;">&#91;</span><span style="color: green;">&#93;</span> = <span style="color: green;">&#91;</span><span style="color: green;">&#93;</span>
+&nbsp;</pre>
+<p>Now,</p>
+<pre class="haskell">&nbsp;
+*PointedSet&gt; <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#v:duplicate"><span style="font-weight: bold;">duplicate</span></a> $ PointedSet <span style="color: red;">0</span> <span style="color: green;">&#91;</span><span style="color: red;">1</span>..<span style="color: red;">3</span><span style="color: green;">&#93;</span> =
+PointedSet <span style="color: green;">&#40;</span>PointedSet <span style="color: red;">0</span> <span style="color: green;">&#91;</span><span style="color: red;">1</span>,<span style="color: red;">2</span>,<span style="color: red;">3</span><span style="color: green;">&#93;</span><span style="color: green;">&#41;</span> <span style="color: green;">&#91;</span>
+    PointedSet <span style="color: red;">1</span> <span style="color: green;">&#91;</span><span style="color: red;">0</span>,<span style="color: red;">2</span>,<span style="color: red;">3</span><span style="color: green;">&#93;</span>,
+    PointedSet <span style="color: red;">2</span> <span style="color: green;">&#91;</span><span style="color: red;">1</span>,<span style="color: red;">0</span>,<span style="color: red;">3</span><span style="color: green;">&#93;</span>,
+    PointedSet <span style="color: red;">3</span> <span style="color: green;">&#91;</span><span style="color: red;">2</span>,<span style="color: red;">1</span>,<span style="color: red;">0</span><span style="color: green;">&#93;</span>
+<span style="color: green;">&#93;</span>
+&nbsp;</pre>
+<p>With that in hand we can define comonadic actions that can look at an entire <code>PointedSet</code> and return a value, then extend them comonadically to generate new pointed sets.</p>
+<p>For instance, if we had a numerical pointed set and wanted to blur our focus somewhat we could weight an average between the focused and unfocused elements:</p>
+<pre>
+smooth :: Fractional a => a -> PointedSet a -> a
+smooth w (PointedSet a as) =
+    w * a +
+    (1 - w) * sum as / fromIntegral (length as)
+</pre>
+<p>Smoothing is a safe pointed-set comonadic operation because it doesn't care about the order of the elements in the list.</p>
+<p>And so now we can blur the distinction between the focused element and the rest of the set: </p>
+<pre class="haskell">&nbsp;
+*PointedSet&gt; <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#v:extend"><span style="font-weight: bold;">extend</span></a> <span style="color: green;">&#40;</span>smooth <span style="color: red;">0.5</span><span style="color: green;">&#41;</span> $ PointedSet <span style="color: red;">10</span> <span style="color: green;">&#91;</span><span style="color: red;">1</span>..<span style="color: red;">5</span><span style="color: green;">&#93;</span>
+PointedSet <span style="color: red;">6.5</span> <span style="color: green;">&#91;</span><span style="color: red;">2.9</span>,<span style="color: red;">3.3</span>,<span style="color: red;">3.7</span>,<span style="color: red;">4.1</span>,<span style="color: red;">4.5</span><span style="color: green;">&#93;</span>
+&nbsp;</pre>
+<p>A quick pass over the comonad laws shows that they all check out.</p>
+<p>As noted above, if your comonadic action uses the order of the elements in the list beyond the selection of the focus, then it isn't really a valid pointed set comonadic operation. This is because we are abusing a list to approximate a (multi)set.</p>
+<p><b>The Pointed-Cycle Comonad</b></p>
+<p>A slight variation on this theme keeps the order of the elements the same in exchange for a more expensive refocusing operation and just rotates them through the focus. </p>
+<pre class="haskell">&nbsp;
+<span style="color: #06c; font-weight: bold;">data</span> PointedCycle a = PointedCycle a <span style="color: green;">&#91;</span>a<span style="color: green;">&#93;</span> <span style="color: #06c; font-weight: bold;">deriving</span> <span style="color: green;">&#40;</span><a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Eq"><span style="background-color: #efefbf; font-weight: bold;">Eq</span></a>, <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Ord"><span style="background-color: #efefbf; font-weight: bold;">Ord</span></a>, <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Show"><span style="background-color: #efefbf; font-weight: bold;">Show</span></a>,<a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Read"><span style="background-color: #efefbf; font-weight: bold;">Read</span></a><span style="color: green;">&#41;</span>
+&nbsp;
+<span style="color: #06c; font-weight: bold;">instance</span> <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Functor"><span style="background-color: #efefbf; font-weight: bold;">Functor</span></a> PointedCycle <span style="color: #06c; font-weight: bold;">where</span>
+    <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fmap"><span style="font-weight: bold;">fmap</span></a> f <span style="color: green;">&#40;</span>PointedCycle x xs<span style="color: green;">&#41;</span> = PointedCycle <span style="color: green;">&#40;</span>f x<span style="color: green;">&#41;</span> $ <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fmap"><span style="font-weight: bold;">fmap</span></a> f xs
+&nbsp;
+<span style="color: #06c; font-weight: bold;">instance</span> Copointed PointedCycle <span style="color: #06c; font-weight: bold;">where</span>
+    <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#v:extract"><span style="font-weight: bold;">extract</span></a> <span style="color: green;">&#40;</span>PointedCycle x _<span style="color: green;">&#41;</span> = x
+&nbsp;
+<span style="color: #06c; font-weight: bold;">instance</span> <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#t:Comonad"><span style="background-color: #efefbf; font-weight: bold;">Comonad</span></a> PointedCycle <span style="color: #06c; font-weight: bold;">where</span>
+   <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#v:duplicate"><span style="font-weight: bold;">duplicate</span></a> xxs@<span style="color: green;">&#40;</span>PointedCycle x xs<span style="color: green;">&#41;</span> =
+        PointedCycle xxs . <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fmap"><span style="font-weight: bold;">fmap</span></a> listToCycle . <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:tail"><span style="font-weight: bold;">tail</span></a> $ rotations <span style="color: green;">&#40;</span>x:xs<span style="color: green;">&#41;</span>
+     <span style="color: #06c; font-weight: bold;">where</span>
+        rotations :: <span style="color: green;">&#91;</span>a<span style="color: green;">&#93;</span> -&gt; <span style="color: green;">&#91;</span><span style="color: green;">&#91;</span>a<span style="color: green;">&#93;</span><span style="color: green;">&#93;</span>
+        rotations xs = <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:init"><span style="font-weight: bold;">init</span></a> $ <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:zipWith"><span style="font-weight: bold;">zipWith</span></a> <span style="color: green;">&#40;</span>++<span style="color: green;">&#41;</span> <span style="color: green;">&#40;</span>tails xs<span style="color: green;">&#41;</span> <span style="color: green;">&#40;</span>inits xs<span style="color: green;">&#41;</span>
+        listToCycle <span style="color: green;">&#40;</span>x:xs<span style="color: green;">&#41;</span> = PointedCycle x xs
+&nbsp;</pre>
+<p>With that you acknowledge that you really have a pointed cycle and the writer of the comonadic action can safely use the ordering information intrinsic to the list as a natural consequence of having taken the derivative of a cycle.</p>
+<pre class="haskell">&nbsp;
+*PointedSet&gt; <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#v:duplicate"><span style="font-weight: bold;">duplicate</span></a> $ PointedCycle <span style="color: red;">0</span> <span style="color: green;">&#91;</span><span style="color: red;">1</span>..<span style="color: red;">3</span><span style="color: green;">&#93;</span>
+PointedCycle <span style="color: green;">&#40;</span>PointedCycle <span style="color: red;">0</span> <span style="color: green;">&#91;</span><span style="color: red;">1</span>,<span style="color: red;">2</span>,<span style="color: red;">3</span><span style="color: green;">&#93;</span><span style="color: green;">&#41;</span> <span style="color: green;">&#91;</span>
+    PointedCycle <span style="color: red;">1</span> <span style="color: green;">&#91;</span><span style="color: red;">2</span>,<span style="color: red;">3</span>,<span style="color: red;">0</span><span style="color: green;">&#93;</span>,
+    PointedCycle <span style="color: red;">2</span> <span style="color: green;">&#91;</span><span style="color: red;">3</span>,<span style="color: red;">0</span>,<span style="color: red;">1</span><span style="color: green;">&#93;</span>,
+    PointedCycle <span style="color: red;">3</span> <span style="color: green;">&#91;</span><span style="color: red;">0</span>,<span style="color: red;">1</span>,<span style="color: red;">2</span><span style="color: green;">&#93;</span>
+<span style="color: green;">&#93;</span>
+&nbsp;</pre>
+	<div class="post-info">
+			</div>
+	<div class="post-footer">&nbsp;</div>
+</div>
+				
+<!-- You can start editing here. -->
+
+	<h3 id="comments">50 Responses to &#8220;The Pointed-Set Comonad&#8221;</h3> 
+
+	<ol class="commentlist">
+
+	
+		<li class="alt" id="comment-5481">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=29610e29af62d73918d3e6adcae1fe00&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite>BMeph</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-5481" title="">January 12th, 2009 at 4:40 am</a> </small>
+			<br clear="all"/>
+
+			<p>Sorry for asking this so late after your writing, but I have been looking at a lot of info that I should have learned in my mid-twenties &#8211; plus, I&#8217;m slow ;)</p>
+<p>Anyway, I was wondering if you know of a class of objects categories that work like monads, but have no &#8220;zero&#8221; (a la MonadZero in Haskell), and seem to work just fine as comonads &#8211; in fact they are comonads?</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-5484">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=9c51a8b8afa2366a2ef4650c411f187a&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://comonad.com/' rel='external nofollow' class='url'>Edward Kmett</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-5484" title="">January 12th, 2009 at 10:04 am</a> </small>
+			<br clear="all"/>
+
+			<p>Do you mean that have no return, just bind? Monads without mzero are er.. just monads. ;)</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-101828">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=432b14624c692e7a24b7ce1c1ec8db50&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://example.org/' rel='external nofollow' class='url'>anonymous</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-101828" title="">February 22nd, 2012 at 3:02 pm</a> </small>
+			<br clear="all"/>
+
+			<p>Anything with mzero (or empty) cannot be a comonad, as far as I can tell; extract and mzero are mutually exclusive.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-131134">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://www.paydayloansrn.com/' rel='external nofollow' class='url'>Instant Payday Loans</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-131134" title="">December 1st, 2015 at 7:05 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>&#8230;Recent Blogroll Additions&#8230;</strong></p>
+<p>[...]The whole look of your web site is fantastic, let well as the content material![...]&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-211588">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://500px.com/p/bersavahi/?view=groups' rel='external nofollow' class='url'>500px.compbersavahi?view=groups</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-211588" title="">September 23rd, 2022 at 8:25 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra tablets australia <a href="https://500px.com/p/bersavahi/?view=groups.." rel="nofollow">https://500px.com/p/bersavahi/?view=groups..</a>.</strong></p>
+<p>Kudos! Numerous data!<br />
+&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-211964">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://reallygoodemails.com/canadianpharmaceuticalsonlineusa' rel='external nofollow' class='url'>canada drug pharmacy</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-211964" title="">September 24th, 2022 at 1:29 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>cialis canadian pharmacy <a href="https://reallygoodemails.com/canadianpharmaceuticalsonlineusa.." rel="nofollow">https://reallygoodemails.com/canadianpharmaceuticalsonlineusa..</a>.</strong></p>
+<p>Nicely put. Many thanks&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-212068">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.provenexpert.com/canadian-pharmaceuticals-online-usa/' rel='external nofollow' class='url'>https://www.provenexpert.com/canadian-pharmaceuticals-online-usa/</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-212068" title="">September 24th, 2022 at 5:07 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra generico <a href="https://www.provenexpert.com/canadian-pharmaceuticals-online-usa/.." rel="nofollow">https://www.provenexpert.com/canadian-pharmaceuticals-online-usa/..</a>.</strong></p>
+<p>Helpful forum posts. Cheers!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-212197">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://sanangelolive.com/members/pharmaceuticals' rel='external nofollow' class='url'>https://sanangelolive.com/members/pharmaceuticals</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-212197" title="">September 24th, 2022 at 10:13 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra for sale <a href="https://sanangelolive.com/members/pharmaceuticals.." rel="nofollow">https://sanangelolive.com/members/pharmaceuticals..</a>.</strong></p>
+<p>Nicely put, Regards&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-213147">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://melaninterest.com/user/canadian-pharmaceuticals-online/?view=likes' rel='external nofollow' class='url'>https://melaninterest.com/user/canadian-pharmaceuticals-online/?view=likes</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-213147" title="">September 26th, 2022 at 9:10 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Buy generic viagra <a href="https://melaninterest.com/user/canadian-pharmaceuticals-online/?view=likes.." rel="nofollow">https://melaninterest.com/user/canadian-pharmaceuticals-online/?view=likes..</a>.</strong></p>
+<p>Truly quite a lot of useful information&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-213258">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://haikudeck.com/canadian-pharmaceuticals-online-personal-presentation-827506e003' rel='external nofollow' class='url'>canadian discount pharmacies</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-213258" title="">September 26th, 2022 at 1:12 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>canadian pharmacys <a href="https://haikudeck.com/canadian-pharmaceuticals-online-personal-presentation-827506e003.." rel="nofollow">https://haikudeck.com/canadian-pharmaceuticals-online-personal-presentation-827506e003..</a>.</strong></p>
+<p>You suggested this superbly!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-213368">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://buyersguide.americanbar.org/profile/420642/0' rel='external nofollow' class='url'>buyersguide.americanbar.orgprofile4206420</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-213368" title="">September 26th, 2022 at 5:21 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra coupon <a href="https://buyersguide.americanbar.org/profile/420642/0.." rel="nofollow">https://buyersguide.americanbar.org/profile/420642/0..</a>.</strong></p>
+<p>Thanks, A good amount of tips.<br />
+&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-213533">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://experiment.com/users/canadianpharmacy' rel='external nofollow' class='url'>experiment.comuserscanadianpharmacy</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-213533" title="">September 27th, 2022 at 1:03 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Interactions for viagra <a href="https://experiment.com/users/canadianpharmacy.." rel="nofollow">https://experiment.com/users/canadianpharmacy..</a>.</strong></p>
+<p>Incredible quite a lot of helpful material!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-213677">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://slides.com/canadianpharmaceuticalsonline' rel='external nofollow' class='url'>slides.comcanadianpharmaceuticalsonline</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-213677" title="">September 27th, 2022 at 7:00 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra pills <a href="https://slides.com/canadianpharmaceuticalsonline.." rel="nofollow">https://slides.com/canadianpharmaceuticalsonline..</a>.</strong></p>
+<p>You actually expressed this really well!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-213757">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://challonge.com/esapenti' rel='external nofollow' class='url'>https://challonge.com/esapenti</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-213757" title="">September 27th, 2022 at 10:39 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Generic for viagra <a href="https://challonge.com/esapenti.." rel="nofollow">https://challonge.com/esapenti..</a>.</strong></p>
+<p>You said it nicely.!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-213885">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://challonge.com/gotsembpertvil' rel='external nofollow' class='url'>https://challonge.com/gotsembpertvil</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-213885" title="">September 27th, 2022 at 3:07 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Interactions for viagra <a href="https://challonge.com/gotsembpertvil.." rel="nofollow">https://challonge.com/gotsembpertvil..</a>.</strong></p>
+<p>Many thanks. I enjoy this!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-214143">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://challonge.com/citlitigolf' rel='external nofollow' class='url'>challonge.comcitlitigolf</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-214143" title="">September 28th, 2022 at 4:52 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra tablets <a href="https://challonge.com/citlitigolf.." rel="nofollow">https://challonge.com/citlitigolf..</a>.</strong></p>
+<p>Seriously loads of terrific information&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-214242">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://order-stromectol-over-the-counter.estranky.cz/clanky/order-stromectol-over-the-counter.html' rel='external nofollow' class='url'>order-stromectol-over-the-counter.estranky.czclankyorder-stromectol-over-the-counter.html</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-214242" title="">September 28th, 2022 at 8:25 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Buy viagra online <a href="https://order-stromectol-over-the-counter.estranky.cz/clanky/order-stromectol-over-the-counter.html.." rel="nofollow">https://order-stromectol-over-the-counter.estranky.cz/clanky/order-stromectol-over-the-counter.html..</a>.</strong></p>
+<p>Nicely put. Thank you&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-214389">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://soncheebarxu.estranky.cz/clanky/stromectol-for-head-lice.html' rel='external nofollow' class='url'>soncheebarxu.estranky.czclankystromectol-for-head-lice.html</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-214389" title="">September 28th, 2022 at 2:52 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra tablets australia <a href="https://soncheebarxu.estranky.cz/clanky/stromectol-for-head-lice.html.." rel="nofollow">https://soncheebarxu.estranky.cz/clanky/stromectol-for-head-lice.html..</a>.</strong></p>
+<p>Thanks! Ample stuff.<br />
+&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-214663">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://lehyriwor.estranky.sk/clanky/stromectol-cream.html' rel='external nofollow' class='url'>lehyriwor.estranky.skclankystromectol-cream.html</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-214663" title="">September 29th, 2022 at 4:23 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra tablets <a href="https://lehyriwor.estranky.sk/clanky/stromectol-cream.html.." rel="nofollow">https://lehyriwor.estranky.sk/clanky/stromectol-cream.html..</a>.</strong></p>
+<p>Really a good deal of wonderful data&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-214748">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://dsdgbvda.zombeek.cz/' rel='external nofollow' class='url'>dsdgbvda.zombeek.cz</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-214748" title="">September 29th, 2022 at 8:11 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Tadalafil <a href="https://dsdgbvda.zombeek.cz/.." rel="nofollow">https://dsdgbvda.zombeek.cz/..</a>.</strong></p>
+<p>Thanks a lot. A good amount of info.<br />
+&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-214886">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://inflavnena.zombeek.cz/' rel='external nofollow' class='url'>https://inflavnena.zombeek.cz/</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-214886" title="">September 29th, 2022 at 2:37 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>How does viagra work <a href="https://inflavnena.zombeek.cz/.." rel="nofollow">https://inflavnena.zombeek.cz/..</a>.</strong></p>
+<p>Whoa tons of superb material&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-215103">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.myscrsdirectory.com/profile/421708/0' rel='external nofollow' class='url'>www.myscrsdirectory.comprofile4217080</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215103" title="">September 30th, 2022 at 8:53 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Cheap viagra <a href="https://www.myscrsdirectory.com/profile/421708/0.." rel="nofollow">https://www.myscrsdirectory.com/profile/421708/0..</a>.</strong></p>
+<p>Nicely put. With thanks!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-215178">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://supplier.ihrsa.org/profile/421717/0' rel='external nofollow' class='url'>supplier.ihrsa.orgprofile4217170</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215178" title="">September 30th, 2022 at 4:05 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra 5 mg funziona <a href="https://supplier.ihrsa.org/profile/421717/0.." rel="nofollow">https://supplier.ihrsa.org/profile/421717/0..</a>.</strong></p>
+<p>Terrific stuff. Many thanks!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-215306">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://wefbuyersguide.wef.org/profile/421914/0' rel='external nofollow' class='url'>https://wefbuyersguide.wef.org/profile/421914/0</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215306" title="">October 1st, 2022 at 6:26 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Buy viagra online <a href="https://wefbuyersguide.wef.org/profile/421914/0.." rel="nofollow">https://wefbuyersguide.wef.org/profile/421914/0..</a>.</strong></p>
+<p>You actually explained this fantastically&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-215365">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://legalmarketplace.alanet.org/profile/421920/0' rel='external nofollow' class='url'>canadian pharmacy uk delivery</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215365" title="">October 1st, 2022 at 10:27 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>northwest pharmacies <a href="https://legalmarketplace.alanet.org/profile/421920/0.." rel="nofollow">https://legalmarketplace.alanet.org/profile/421920/0..</a>.</strong></p>
+<p>Whoa loads of wonderful info&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-215489">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://moaamein.nacda.com/profile/422018/0' rel='external nofollow' class='url'>moaamein.nacda.comprofile4220180</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215489" title="">October 2nd, 2022 at 4:03 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra canada <a href="https://moaamein.nacda.com/profile/422018/0.." rel="nofollow">https://moaamein.nacda.com/profile/422018/0..</a>.</strong></p>
+<p>Wonderful write ups. Many thanks!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-215552">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.audiologysolutionsnetwork.org/profile/422019/0' rel='external nofollow' class='url'>www.audiologysolutionsnetwork.orgprofile4220190</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215552" title="">October 2nd, 2022 at 8:30 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra cost <a href="https://www.audiologysolutionsnetwork.org/profile/422019/0.." rel="nofollow">https://www.audiologysolutionsnetwork.org/profile/422019/0..</a>.</strong></p>
+<p>With thanks, I appreciate it!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-215605">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://network.myscrs.org/profile/422020/0' rel='external nofollow' class='url'>https://network.myscrs.org/profile/422020/0</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215605" title="">October 2nd, 2022 at 11:47 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra for sale <a href="https://network.myscrs.org/profile/422020/0.." rel="nofollow">https://network.myscrs.org/profile/422020/0..</a>.</strong></p>
+<p>Many thanks, Numerous write ups!<br />
+&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-215723">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://sanangelolive.com/members/canadianpharmaceuticalsonlineusa' rel='external nofollow' class='url'>https://sanangelolive.com/members/canadianpharmaceuticalsonlineusa</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215723" title="">October 3rd, 2022 at 5:33 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra from canada <a href="https://sanangelolive.com/members/canadianpharmaceuticalsonlineusa.." rel="nofollow">https://sanangelolive.com/members/canadianpharmaceuticalsonlineusa..</a>.</strong></p>
+<p>With thanks. I enjoy this!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-215773">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://sanangelolive.com/members/girsagerea' rel='external nofollow' class='url'>https://sanangelolive.com/members/girsagerea</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215773" title="">October 3rd, 2022 at 8:58 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra vs viagra <a href="https://sanangelolive.com/members/girsagerea.." rel="nofollow">https://sanangelolive.com/members/girsagerea..</a>.</strong></p>
+<p>You definitely made your point!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-215919">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.ecosia.org/search?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>Canadian Pharmacies Shipping to USA</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215919" title="">October 4th, 2022 at 7:43 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>top rated online canadian pharmacies <a href="https://www.ecosia.org/search?q=" rel="nofollow">https://www.ecosia.org/search?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>Beneficial material. Many thanks&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-215973">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.mojomarketplace.com/user/Canadianpharmaceuticalsonline-EkugcJDMYH' rel='external nofollow' class='url'>www.mojomarketplace.comuserCanadianpharmaceuticalsonline-EkugcJDMYH</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215973" title="">October 4th, 2022 at 11:32 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra 5 mg funziona <a href="https://www.mojomarketplace.com/user/Canadianpharmaceuticalsonline-EkugcJDMYH.." rel="nofollow">https://www.mojomarketplace.com/user/Canadianpharmaceuticalsonline-EkugcJDMYH..</a>.</strong></p>
+<p>Appreciate it, Quite a lot of info.<br />
+&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-216026">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://seedandspark.com/user/canadian-pharmaceuticals-online' rel='external nofollow' class='url'>online pharmacy canada</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-216026" title="">October 4th, 2022 at 3:51 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>canada drugs <a href="https://seedandspark.com/user/canadian-pharmaceuticals-online.." rel="nofollow">https://seedandspark.com/user/canadian-pharmaceuticals-online..</a>.</strong></p>
+<p>You suggested it really well&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-216354">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.giantbomb.com/profile/canadapharmacy/blog/canadian-pharmaceuticals-online/265652/' rel='external nofollow' class='url'>www.giantbomb.comprofilecanadapharmacyblogcanadian-pharmaceuticals-online265652</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-216354" title="">October 5th, 2022 at 8:54 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra rezeptfrei <a href="https://www.giantbomb.com/profile/canadapharmacy/blog/canadian-pharmaceuticals-online/265652/.." rel="nofollow">https://www.giantbomb.com/profile/canadapharmacy/blog/canadian-pharmaceuticals-online/265652/..</a>.</strong></p>
+<p>Regards! Ample data.<br />
+&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-216561">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://search.gmx.com/web/result?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>search.gmx.comwebresult?q="My Canadian Pharmacy - Extensive Assortment of Medications – 2022"</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-216561" title="">October 5th, 2022 at 5:32 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra tablets australia <a href="https://search.gmx.com/web/result?q=" rel="nofollow">https://search.gmx.com/web/result?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>Nicely put. Thanks!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-216881">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://search.seznam.cz/?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>https://search.seznam.cz/?q="My Canadian Pharmacy - Extensive Assortment of Medications – 2022"</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-216881" title="">October 6th, 2022 at 2:38 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra or viagra <a href="https://search.seznam.cz/?q=" rel="nofollow">https://search.seznam.cz/?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>With thanks, Numerous material!<br />
+&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-217029">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://sanangelolive.com/members/unsafiri' rel='external nofollow' class='url'>ivermectina dosis</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-217029" title="">October 6th, 2022 at 6:19 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>stromectol cream <a href="https://sanangelolive.com/members/unsafiri.." rel="nofollow">https://sanangelolive.com/members/unsafiri..</a>.</strong></p>
+<p>Terrific postings. Regards!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-217204">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://duckduckgo.com/?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>canadian pharmacies online</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-217204" title="">October 6th, 2022 at 10:36 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>canadian drug &#8230;</strong></p>
+<p>Incredible many of fantastic data&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-217427">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://swisscows.com/en/web?query=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>canadian mail order pharmacies</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-217427" title="">October 6th, 2022 at 4:33 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>discount canadian pharmacies <a href="https://swisscows.com/en/web?query=" rel="nofollow">https://swisscows.com/en/web?query=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>Truly plenty of great material!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-217842">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.dogpile.com/serp?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>www.dogpile.comserp?q="My Canadian Pharmacy - Extensive Assortment of Medications – 2022"</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-217842" title="">October 7th, 2022 at 3:52 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra 20mg <a href="https://www.dogpile.com/serp?q=" rel="nofollow">https://www.dogpile.com/serp?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>Wow loads of amazing data!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-218123">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://search.naver.com/search.naver?where=nexearch' rel='external nofollow' class='url'>search.naver.comsearch.naver?where=nexearch</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-218123" title="">October 7th, 2022 at 11:02 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Buy viagra online &#8230;</strong></p>
+<p>Helpful tips. Thank you&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-218836">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://search.givewater.com/serp?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>canadian pharmacy world</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-218836" title="">October 8th, 2022 at 7:01 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>canadian drug <a href="https://search.givewater.com/serp?q=" rel="nofollow">https://search.givewater.com/serp?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>Thank you! Numerous stuff!<br />
+&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-219049">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.bakespace.com/members/profile/Сanadianpharmaceuticalsforusasales/1541108/' rel='external nofollow' class='url'>www.bakespace.commembersprofileСanadian pharmaceuticals for usa sales1541108</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-219049" title="">October 8th, 2022 at 12:30 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra canada <a href="https://www.bakespace.com/members/profile/Сanadian" rel="nofollow">https://www.bakespace.com/members/profile/Сanadian</a> pharmaceuticals for usa sales/1541108/&#8230;</strong></p>
+<p>Many thanks! I appreciate this!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-219831">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://results.excite.com/serp?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>results.excite.comserp?q="My Canadian Pharmacy - Extensive Assortment of Medications – 2022"</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-219831" title="">October 9th, 2022 at 10:45 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra vs viagra vs levitra <a href="https://results.excite.com/serp?q=" rel="nofollow">https://results.excite.com/serp?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>You said it nicely&#8230;..</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-220016">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.infospace.com/serp?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>canadian pharmacies online prescriptions</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-220016" title="">October 9th, 2022 at 3:14 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>canadian medications <a href="https://www.infospace.com/serp?q=" rel="nofollow">https://www.infospace.com/serp?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>Appreciate it. A lot of data.<br />
+&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-220590">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://headwayapp.co/canadianppharmacy-changelog' rel='external nofollow' class='url'>canada pharmacies</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-220590" title="">October 10th, 2022 at 7:31 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>canada drugs online <a href="https://headwayapp.co/canadianppharmacy-changelog.." rel="nofollow">https://headwayapp.co/canadianppharmacy-changelog..</a>.</strong></p>
+<p>Nicely put, Thanks a lot&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-221142">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://results.excite.com/serp?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>results.excite.comserp?q="My Canadian Pharmacy - Extensive Assortment of Medications – 2022"</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-221142" title="">October 11th, 2022 at 5:29 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Tadalafil tablets <a href="https://results.excite.com/serp?q=" rel="nofollow">https://results.excite.com/serp?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>You actually explained it perfectly&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-221296">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://canadianpharmaceuticalsonline.as.me/schedule.php' rel='external nofollow' class='url'>online pharmacy canada</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-221296" title="">October 11th, 2022 at 10:52 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>canadian rx <a href="https://canadianpharmaceuticalsonline.as.me/schedule.php.." rel="nofollow">https://canadianpharmaceuticalsonline.as.me/schedule.php..</a>.</strong></p>
+<p>Thanks. Loads of data!<br />
+&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-223448">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://feeds.feedburner.com/bing/stromectolnoprescription' rel='external nofollow' class='url'>feeds.feedburner.combingstromectolnoprescription</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-223448" title="">October 13th, 2022 at 12:48 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra online <a href="https://feeds.feedburner.com/bing/stromectolnoprescription.." rel="nofollow">https://feeds.feedburner.com/bing/stromectolnoprescription..</a>.</strong></p>
+<p>Nicely put. Appreciate it&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-224202">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://reallygoodemails.com/orderstromectoloverthecounterusa' rel='external nofollow' class='url'>https://reallygoodemails.com/orderstromectoloverthecounterusa</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-224202" title="">October 14th, 2022 at 5:14 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra pills <a href="https://reallygoodemails.com/orderstromectoloverthecounterusa.." rel="nofollow">https://reallygoodemails.com/orderstromectoloverthecounterusa..</a>.</strong></p>
+<p>You said it perfectly&#8230;..</p>
+		</li>
+
+	
+	
+	</ol>
+
+ 
+
+			</div>
+					<p align="center"></p>		
+	</div>
+	<div id="sidebar">
+		<h2>Archived Entry</h2>
+	<ul>
+	<li><strong>Post Date :</strong></li>
+	<li>Thursday, Dec 4th, 2008 at 1:56 pm</li>
+	<li><strong>Category :</strong></li>
+	<li><a href="http://comonad.com/reader/category/comonads/" title="View all posts in Comonads" rel="category tag">Comonads</a> and  <a href="http://comonad.com/reader/category/haskell/" title="View all posts in Haskell" rel="category tag">Haskell</a> and  <a href="http://comonad.com/reader/category/uncategorized/" title="View all posts in Uncategorized" rel="category tag">Uncategorized</a></li>
+	<li><strong>Do More :</strong></li>
+	<li>							Both comments and pings are currently closed.			
+						
+						</li>
+	</ul>
+		
+	<h2><label for="s">Search</label></h2>
+	<ul>
+		<li>
+			<form id="searchform" method="get" action="/reader/index.php">
+				<div style="text-align:center">
+					<p><input type="text" name="s" id="s" size="10" /> <input type="submit" name="submit" value="Search" /></p>
+				</div>
+			</form>
+		</li>
+	</ul>
+<h2>RSS Feeds</h2>
+	<ul>
+		<li>
+			<a title="RSS2 Feed for Posts" href="http://comonad.com/reader/feed/">Posts</a> | <a title="RSS2 Feed for Comments" href="http://comonad.com/reader/comments/feed/">Comments</a></li>	
+	</ul>	
+</div>
+<p id="footer">Design based on <a href="http://www.vanillamist.com" title="Vanilla Mist">www.vanillamist.com</a></p></div>
+</div>
+</body>
+</html>

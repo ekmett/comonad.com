@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head profile="http://gmpg.org/xfn/11">
+        <link rel="shortcut icon" href="http://comonad.com/reader/wp-content/themes/connections/favicon.ico" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>The Comonad.Reader &raquo; Hello, World!</title>
+	<meta name="generator" content="WordPress 2.8.4" />
+	<style type="text/css" media="screen">@import url( http://comonad.com/reader/wp-content/themes/connections/style.css );</style>
+	<!--[if IE]><style type="text/css"> img { behavior: url(/reader/pngbehavior/pngbehavior.htc); } </style><![endif]-->
+        <link rel="openid.server" href="https://api.screenname.aol.com/auth/openidServer"/>
+        <link rel="openid.delegate" href="http://openid.aol.com/edwardallankmett"/>
+
+	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://comonad.com/reader/feed/" />
+	<link rel="alternate" type="application/atom+xml" title="Atom 0.3" href="http://comonad.com/reader/feed/atom/" />
+	<link rel="pingback" href="http://comonad.com/reader/xmlrpc.php" />
+    	<link rel='archives' title='October 2022' href='http://comonad.com/reader/2022/10/' />
+	<link rel='archives' title='January 2018' href='http://comonad.com/reader/2018/01/' />
+	<link rel='archives' title='January 2016' href='http://comonad.com/reader/2016/01/' />
+	<link rel='archives' title='September 2015' href='http://comonad.com/reader/2015/09/' />
+	<link rel='archives' title='July 2015' href='http://comonad.com/reader/2015/07/' />
+	<link rel='archives' title='May 2015' href='http://comonad.com/reader/2015/05/' />
+	<link rel='archives' title='April 2015' href='http://comonad.com/reader/2015/04/' />
+	<link rel='archives' title='February 2015' href='http://comonad.com/reader/2015/02/' />
+	<link rel='archives' title='December 2014' href='http://comonad.com/reader/2014/12/' />
+	<link rel='archives' title='August 2014' href='http://comonad.com/reader/2014/08/' />
+	<link rel='archives' title='April 2014' href='http://comonad.com/reader/2014/04/' />
+	<link rel='archives' title='May 2013' href='http://comonad.com/reader/2013/05/' />
+	<link rel='archives' title='April 2013' href='http://comonad.com/reader/2013/04/' />
+	<link rel='archives' title='January 2013' href='http://comonad.com/reader/2013/01/' />
+	<link rel='archives' title='December 2012' href='http://comonad.com/reader/2012/12/' />
+	<link rel='archives' title='September 2012' href='http://comonad.com/reader/2012/09/' />
+	<link rel='archives' title='August 2012' href='http://comonad.com/reader/2012/08/' />
+	<link rel='archives' title='June 2012' href='http://comonad.com/reader/2012/06/' />
+	<link rel='archives' title='May 2012' href='http://comonad.com/reader/2012/05/' />
+	<link rel='archives' title='April 2012' href='http://comonad.com/reader/2012/04/' />
+	<link rel='archives' title='December 2011' href='http://comonad.com/reader/2011/12/' />
+	<link rel='archives' title='November 2011' href='http://comonad.com/reader/2011/11/' />
+	<link rel='archives' title='October 2011' href='http://comonad.com/reader/2011/10/' />
+	<link rel='archives' title='September 2011' href='http://comonad.com/reader/2011/09/' />
+	<link rel='archives' title='July 2011' href='http://comonad.com/reader/2011/07/' />
+	<link rel='archives' title='June 2011' href='http://comonad.com/reader/2011/06/' />
+	<link rel='archives' title='July 2010' href='http://comonad.com/reader/2010/07/' />
+	<link rel='archives' title='May 2010' href='http://comonad.com/reader/2010/05/' />
+	<link rel='archives' title='April 2010' href='http://comonad.com/reader/2010/04/' />
+	<link rel='archives' title='September 2009' href='http://comonad.com/reader/2009/09/' />
+	<link rel='archives' title='August 2009' href='http://comonad.com/reader/2009/08/' />
+	<link rel='archives' title='July 2009' href='http://comonad.com/reader/2009/07/' />
+	<link rel='archives' title='June 2009' href='http://comonad.com/reader/2009/06/' />
+	<link rel='archives' title='March 2009' href='http://comonad.com/reader/2009/03/' />
+	<link rel='archives' title='December 2008' href='http://comonad.com/reader/2008/12/' />
+	<link rel='archives' title='November 2008' href='http://comonad.com/reader/2008/11/' />
+	<link rel='archives' title='June 2008' href='http://comonad.com/reader/2008/06/' />
+	<link rel='archives' title='May 2008' href='http://comonad.com/reader/2008/05/' />
+	<link rel='archives' title='April 2008' href='http://comonad.com/reader/2008/04/' />
+	<link rel='archives' title='March 2008' href='http://comonad.com/reader/2008/03/' />
+	<link rel='archives' title='January 2008' href='http://comonad.com/reader/2008/01/' />
+	<link rel='archives' title='July 2007' href='http://comonad.com/reader/2007/07/' />
+	<link rel='archives' title='May 2007' href='http://comonad.com/reader/2007/05/' />
+	<link rel='archives' title='November 2006' href='http://comonad.com/reader/2006/11/' />
+	<link rel='archives' title='October 2006' href='http://comonad.com/reader/2006/10/' />
+	<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader &raquo; Hello, World! Comments Feed" href="http://comonad.com/reader/2006/hello-world/feed/" />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://comonad.com/reader/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://comonad.com/reader/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='The Comonad.Reader' href='http://comonad.com/reader' />
+<link rel='start' title='Hello, World!' href='http://comonad.com/reader/2006/hello-world/' />
+<link rel='next' title='WikiPress' href='http://comonad.com/reader/2006/wikipress/' />
+<meta name="generator" content="WordPress 2.8.4" />
+</head>
+<body>
+<div id="rap">
+	<div id="header">
+	<ul id="topnav">
+		<li><a href="/reader" id="navHome" title="Posted Recently" accesskey="h">Home |</a></li>
+		<li><a href="/reader/about/" id="navAbout" title="About the Author" accesskey="a">About |</a></li>
+		<li><a href="/reader/source;item=libraries" id="navSource" title="Source Code" accesskey="s">Source |</a></li>
+		<li><a href="mailto:ekmett@gmail.com" id="navContact" title="Contact the Author" accesskey="c">Contact </a></li>
+	</ul>
+	<a href="http://comonad.com/reader" id="logoHome" title="Posted Recently"><img id="logo" src="/reader/pngbehavior/blank.gif" ></a>
+	<h1><a href="http://comonad.com/reader" title="The Comonad.Reader">The Comonad.Reader</a></h1>		
+	<div id="desc">types, (co)monads, substructural logic</div>
+</div>
+	
+	<div id="main">
+	<div id="content">
+
+						<div class="post">
+				<p class="post-date">Tue 17 Oct 2006</p>
+<div class="post-info"><h2 class="post-title"><a href="http://comonad.com/reader/2006/hello-world/" rel="bookmark" title="Permanent Link: Hello, World!">Hello, World!</a></h2>
+Posted by Edward Kmett under <a href="http://comonad.com/reader/category/meta/" title="View all posts in Meta" rel="category tag">Meta</a> <br/><a href="http://comonad.com/reader/2006/hello-world/#comments" title="Comment on Hello, World!">1 Comment</a>&nbsp;</div>
+<div class="post-content">
+	<pre class="haskell">&nbsp;
+&nbsp;
+<span style="color: #06c; font-weight: bold;">import</span> <span style="color: #06c; font-weight: bold;">qualified</span> Control.<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#t:Comonad"><span style="background-color: #efefbf; font-weight: bold;">Comonad</span></a> <span style="color: #06c; font-weight: bold;">as</span> <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#t:Comonad"><span style="background-color: #efefbf; font-weight: bold;">Comonad</span></a>
+<span style="color: #06c; font-weight: bold;">import</span> <span style="color: #06c; font-weight: bold;">qualified</span> Edward <span style="color: #06c; font-weight: bold;">hiding</span> <span style="color: green;">&#40;</span>personal_details<span style="color: green;">&#41;</span>
+<span style="color: #06c; font-weight: bold;">import</span> Blog.Software
+&nbsp;
+<span style="color: #5d478b; font-style: italic;">-- Hello, World!</span>
+&nbsp;
+<span style="color: #06c; font-weight: bold;">instance</span> Blog <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#t:Comonad"><span style="background-color: #efefbf; font-weight: bold;">Comonad</span></a>.Reader <span style="color: #06c; font-weight: bold;">where</span>
+    url = <span style="color: #3c7331;">&quot;http://comonad.com/reader&quot;</span>
+    author = Edward.Kmett
+&nbsp;
+main = forever $ post stuff
+&nbsp;</pre>
+<p>Syntax highlighting works.</p>
+<div class="codeblock">
+<p align="center"><img src='http://comonad.com/latex/e645c5ec70f37ece72dd6cfe28d4f4e6.png' title=' \inference{}{\Gamma, x:\tau \vdash x:\tau}[var]' alt=' \inference{}{\Gamma, x:\tau \vdash x:\tau}[var]' align=absmiddle></p>
+<p align="center"><img src='http://comonad.com/latex/05f05269088d58a918791c0832838cb5.png' title=' \inference{\Gamma,x:\sigma \vdash M:\tau}{\Gamma \vdash \lambda x : \sigma. M : \sigma \rightarrow \tau}[abs]' alt=' \inference{\Gamma,x:\sigma \vdash M:\tau}{\Gamma \vdash \lambda x : \sigma. M : \sigma \rightarrow \tau}[abs]' align=absmiddle></p>
+<p align="center"><img src='http://comonad.com/latex/6b489a895eb7d0e43a552fdda5bd3a6a.png' title=' \inference{\Gamma \vdash M : \sigma \rightarrow \tau &amp; \Gamma \vdash N:\sigma}{\Gamma \vdash M N : \tau}[app]' alt=' \inference{\Gamma \vdash M : \sigma \rightarrow \tau &amp; \Gamma \vdash N:\sigma}{\Gamma \vdash M N : \tau}[app]' align=absmiddle></p>
+</div>
+<p>Apparently, <img src='http://comonad.com/latex/c51d7e23458ca0e7373a8ed6ab56b2b9.png' title='\LaTeX' alt='\LaTeX' align=absmiddle> works.</p>
+<div class="codeblock" align="center">
+<img src='http://comonad.com/latex/4fd5bd37f2fbd56aafb426d35dafa6d9.png' title='\bfig \square/&gt;&gt;`&gt;`&gt;` &gt;-&gt;/[A`B`C`D;e`f`g`m] \morphism(500,500)|m|/.&gt;/&lt; -500,-500&gt;[B`C;h] \efig ' alt='\bfig \square/&gt;&gt;`&gt;`&gt;` &gt;-&gt;/[A`B`C`D;e`f`g`m] \morphism(500,500)|m|/.&gt;/&lt; -500,-500&gt;[B`C;h] \efig ' align=absmiddle>
+</div>
+<p>Commutative diagrams, check.</p>
+<p>All systems go.</p>
+<p>World, meet blog; blog, meet world.</p>
+	<div class="post-info">
+			</div>
+	<div class="post-footer">&nbsp;</div>
+</div>
+				
+<!-- You can start editing here. -->
+
+	<h3 id="comments">One Response to &#8220;Hello, World!&#8221;</h3> 
+
+	<ol class="commentlist">
+
+	
+		<li class="alt" id="comment-2">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=9c51a8b8afa2366a2ef4650c411f187a&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://comonad.com/' rel='external nofollow' class='url'>Edward Kmett</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-2" title="">October 18th, 2006 at 2:12 pm</a> </small>
+			<br clear="all"/>
+
+			<p>If at first you don&#8217;t succeed: blog, blog again.</p>
+		</li>
+
+	
+	
+	</ol>
+
+ 
+
+			</div>
+					<p align="center"></p>		
+	</div>
+	<div id="sidebar">
+		<h2>Archived Entry</h2>
+	<ul>
+	<li><strong>Post Date :</strong></li>
+	<li>Tuesday, Oct 17th, 2006 at 6:03 pm</li>
+	<li><strong>Category :</strong></li>
+	<li><a href="http://comonad.com/reader/category/meta/" title="View all posts in Meta" rel="category tag">Meta</a></li>
+	<li><strong>Do More :</strong></li>
+	<li>							Both comments and pings are currently closed.			
+						
+						</li>
+	</ul>
+		
+	<h2><label for="s">Search</label></h2>
+	<ul>
+		<li>
+			<form id="searchform" method="get" action="/reader/index.php">
+				<div style="text-align:center">
+					<p><input type="text" name="s" id="s" size="10" /> <input type="submit" name="submit" value="Search" /></p>
+				</div>
+			</form>
+		</li>
+	</ul>
+<h2>RSS Feeds</h2>
+	<ul>
+		<li>
+			<a title="RSS2 Feed for Posts" href="http://comonad.com/reader/feed/">Posts</a> | <a title="RSS2 Feed for Comments" href="http://comonad.com/reader/comments/feed/">Comments</a></li>	
+	</ul>	
+</div>
+<p id="footer">Design based on <a href="http://www.vanillamist.com" title="Vanilla Mist">www.vanillamist.com</a></p></div>
+</div>
+</body>
+</html>

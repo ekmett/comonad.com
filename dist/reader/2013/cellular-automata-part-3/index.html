@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Part III: A World in a Bottle · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Haskell</span><span>Edward Kmett · <time datetime="2013-11-16">16 November 2013</time></span></div><h1>Part III: A World in a Bottle</h1></header><details class="contents"><summary>On this page</summary><ol><li><a href="#moves-like-jagger">Moves like Jagger</a></li><li><a href="#act-upon-the-world">Act Upon The World</a></li><li><a href="#i-dream-of-genie">I Dream of Genie</a></li><li><a href="#thats-all-for-now">Thats All For Now</a></li></ol></details><article class="prose"><p>In <a href="../../../reader/2014/cellular-automata-part-1/">Part I</a>, I showed how we can build up cellular automata in Haskell and render them to the web as custom SVGs. In <a href="../../../reader/2015/cellular-automata-part-2/">Part II</a>, I replaced the SVG writer with a hand-rolled PNG writer.</p>
+<p>The last article got lost in the weeds playing with PNG writing and the comonadic structure of folds. This time around I want to go back to focusing on the automata themselves. If you haven't read those yet, I'd highly recommend at least skimming at least the first one to familiarize yourself with its contents before proceeding.</p>
+<p>One of the issues I raised back in part I was that <code>Store</code> was in some sense too big to describe automata because the automata could know and use their absolute position information when computing their answers. I'd like to fix that.</p>
+<p>Another thing I hinted at was that it was possible to build automata on strange topologies. I'd like to show how we can enable interesting topologies through the very act of fixing the previous problem.</p>
+<h2 id="moves-like-jagger">Moves like Jagger</h2>
+<p>The problem that we had was that the <code>Store</code>/<code>Context</code> comonad gave you direct access to the current location. So nothing prevents a rule from acting very differently in position 34 than it does anywhere else in the space.</p>
+<p>We can fix that by introducing a notion of a relative movement rather than just having absolute positioning.</p>
+<p>Now, we an define our notion of a rule as something that can use relative position information alone, and can combine answers to questions about nearby locations to generate a local answer.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Rule</span> m a = (<span class="hljs-title">m</span> -&gt; <span class="hljs-title">a</span>) -&gt; a</span>
+</code></pre>
+<p>Under this scheme, our old 2-color Wolfram-style <a href="http://mathworld.wolfram.com/ElementaryCellularAutomaton.html">elementary cellular automata</a> rules look like:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Move</span> = <span class="hljs-type">R</span> | <span class="hljs-type">S</span> | <span class="hljs-type">L</span> <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Eq</span>, <span class="hljs-type">Enum</span>, <span class="hljs-type">Bounded</span>, <span class="hljs-type">Show</span>, <span class="hljs-type">Read</span>)</span>
+
+<span class="hljs-title">rule</span> :: <span class="hljs-type">Word8</span> -&gt; <span class="hljs-type">Rule</span> <span class="hljs-type">Move</span> <span class="hljs-type">Bool</span>
+<span class="hljs-title">rule</span> w f = testBit w $ <span class="hljs-number">0</span> <span class="hljs-type">L</span>.&amp; partsOf <span class="hljs-type">L</span>.bits .~ (f &lt;$&gt; [minBound .. maxBound])
+</code></pre>
+<p>If we want to increase the "speed of light" we can make a new <code>Move</code> type, and generalize <code>rule</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Move2</span> = <span class="hljs-type">RR</span> | <span class="hljs-type">R</span> | <span class="hljs-type">S</span> | <span class="hljs-type">L</span> | <span class="hljs-type">LL</span> <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Eq</span>, <span class="hljs-type">Enum</span>, <span class="hljs-type">Bounded</span>, <span class="hljs-type">Show</span>, <span class="hljs-type">Read</span>)</span>
+
+<span class="hljs-title">rule</span> :: (<span class="hljs-type">Enum</span> m, <span class="hljs-type">Bounded</span> m, <span class="hljs-type">Num</span> n, <span class="hljs-type">Bits</span> n) =&gt; n -&gt; <span class="hljs-type">Rule</span> m <span class="hljs-type">Bool</span>
+<span class="hljs-title">rule</span> w f = testBit w $ <span class="hljs-number">0</span> <span class="hljs-type">L</span>.&amp; partsOf <span class="hljs-type">L</span>.bits .~ (f &lt;$&gt; [minBound .. maxBound])
+</code></pre>
+<p>Now <code>rule</code> can work for pretty much any enumerable, bounded move type and provide you with Wolfram-like rules.</p>
+<p>Now we just need some way to act on a <code>Rule</code>!</p>
+<h2 id="act-upon-the-world">Act Upon The World</h2>
+<p>It turns out it is better to think of our rules as acting upon our automaton's topology rather than vice versa.</p>
+<p>We can do that by describing the <a href="http://en.wikipedia.org/wiki/Semigroup_action">"action"</a> of our movements on our position. If our movements were always composable, then we would want this to be a "semigroup action", or even a "monoid action" if we had a unit. If you are curious to know more about monoid actions, I'd encourage you to read <a href="http://www.cis.upenn.edu/~byorgey/pub/monoid-pearl.pdf">Brent's Pearl</a>, but then if you've been following all of the myriad links I've been throwing out from the beginning, then you may already have done so. I cited it for other reasons back in Part I.</p>
+<p>However, since we want to ensure we have a discrete "speed of light" governing information travel in our automaton and we don't want to deal with relativistic effects, for now, let's just not let them compose for now.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Act</span> m s = m -&gt; s -&gt; s</span>
+</code></pre>
+<p>If we wanted to be more correct, we should likely have different universe types for each action, but it'll suffice to let the action define our topology instead.</p>
+<p>An action transforms a move into a function that transforms the current location.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">flat</span> :: <span class="hljs-type">Act</span> <span class="hljs-type">Move</span> <span class="hljs-type">Int</span>
+<span class="hljs-title">flat</span> <span class="hljs-type">L</span> i = i-<span class="hljs-number">1</span>
+<span class="hljs-title">flat</span> <span class="hljs-type">S</span> i = i
+<span class="hljs-title">flat</span> <span class="hljs-type">R</span> i = i+<span class="hljs-number">1</span>
+</code></pre>
+<p>Another example topology for the first <code>Move</code> type we started with would be to just treat the movement as relative in a world.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">modulo</span> :: <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Act</span> <span class="hljs-type">Move</span> <span class="hljs-type">Int</span>
+<span class="hljs-title">modulo</span> n m i = flat m i `mod` n
+</code></pre>
+<p>Now we just need to define the step function:</p>
+<h2 id="i-dream-of-genie">I Dream of Genie</h2>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">step</span> :: <span class="hljs-type">Act</span> m s -&gt; <span class="hljs-type">Rule</span> m a -&gt; <span class="hljs-type">Context</span> s s a -&gt; a
+</code></pre>
+<p>Let's say for a minute that we didn't know how to write this! What could we do?</p>
+<p>Back in 2005, Lennart Augustsson <a href="http://permalink.gmane.org/gmane.comp.lang.haskell.general/12747">wrote</a> a wonderful tool named <code>djinn</code> for doing just this sort of thing.</p>
+<p>From the release announcement:</p>
+<blockquote>
+<p>For the curious, Djinn uses a decision procedure for intuitionistic
+propositional calculus due to Roy Dyckhoff.  It's a variation of
+Gentzen's LJ system.  This means that (in theory) Djinn will always
+find a function if one exists, and if one doesn't exist Djinn will
+terminate telling you so.</p>
+</blockquote>
+<p>So let's use it!</p>
+<p>On <a href="https://webchat.freenode.net/?channels=haskell&uio=d4">irc.freenode.net</a>, our well-loved mechanical assistant <code>lambdabot</code> has a version of <code>djinn</code> installed, which is available via the <code>@djinn</code> command.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">[<span class="hljs-number">03</span>:<span class="hljs-number">35</span>] edwardk:   @djinn a -&gt; a
+[<span class="hljs-number">03</span>:<span class="hljs-number">35</span>] lambdabot: f a = a
+[<span class="hljs-number">03</span>:<span class="hljs-number">35</span>] edwardk:   @djinn a -&gt; b -&gt; c
+[<span class="hljs-number">03</span>:<span class="hljs-number">35</span>] lambdabot: <span class="hljs-comment">-- f cannot be realized.</span>
+[<span class="hljs-number">03</span>:<span class="hljs-number">35</span>] edwardk:   @djinn a -&gt; b -&gt; a
+[<span class="hljs-number">03</span>:<span class="hljs-number">35</span>] lambdabot: f a _ = a
+</code></pre>
+<p>She doesn't know anything about our <code>Context</code>, though, so let's help her out.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">[<span class="hljs-number">03</span>:<span class="hljs-number">35</span>] edwardk: @djinn-add <span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Context</span> a b t = <span class="hljs-type">Context</span> (<span class="hljs-title">b</span> -&gt; <span class="hljs-title">t</span>) a</span>
+</code></pre>
+<p>Now she's fully capable of deriving for us the definitions for extract:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">[<span class="hljs-number">03</span>:<span class="hljs-number">37</span>] edwardk:   @djinn <span class="hljs-type">Context</span> a a t -&gt; t
+[<span class="hljs-number">03</span>:<span class="hljs-number">37</span>] lambdabot: f a =
+[<span class="hljs-number">03</span>:<span class="hljs-number">37</span>] lambdabot:  <span class="hljs-keyword">case</span> a <span class="hljs-keyword">of</span>
+[<span class="hljs-number">03</span>:<span class="hljs-number">37</span>] lambdabot:  <span class="hljs-type">Context</span> b c -&gt; b c
+</code></pre>
+<p>and even how to <code>extend</code> <code>Context</code> as an indexed comonad:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">[<span class="hljs-number">03</span>:<span class="hljs-number">39</span>] edwardk:   @djinn (<span class="hljs-type">Context</span> b c t -&gt; r) -&gt; <span class="hljs-type">Context</span> a c t -&gt; <span class="hljs-type">Context</span> a b r
+[<span class="hljs-number">03</span>:<span class="hljs-number">39</span>] lambdabot: f a b =
+[<span class="hljs-number">03</span>:<span class="hljs-number">39</span>] lambdabot:  <span class="hljs-keyword">case</span> b <span class="hljs-keyword">of</span>
+[<span class="hljs-number">03</span>:<span class="hljs-number">39</span>] lambdabot:  <span class="hljs-type">Context</span> c d -&gt; <span class="hljs-type">Context</span> (\ e -&gt; a (<span class="hljs-type">Context</span> c e)) d
+</code></pre>
+<p>So, let's teach her about rules and actions.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">[<span class="hljs-number">03</span>:<span class="hljs-number">42</span>] edwardk: @djinn-add <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Rule</span> m a = (<span class="hljs-title">m</span> -&gt; <span class="hljs-title">a</span>) -&gt; a</span>
+[<span class="hljs-number">03</span>:<span class="hljs-number">42</span>] edwardk: @djinn-add <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Act</span> m s = m -&gt; s -&gt; s</span>
+</code></pre>
+<p>and ask her for a definition for <code>step</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">[<span class="hljs-number">03</span>:<span class="hljs-number">43</span>] edwardk:   @djinn <span class="hljs-type">Act</span> m s -&gt; <span class="hljs-type">Rule</span> m a -&gt; <span class="hljs-type">Context</span> s s a -&gt; a
+[<span class="hljs-number">03</span>:<span class="hljs-number">43</span>] lambdabot: f _ a b =
+[<span class="hljs-number">03</span>:<span class="hljs-number">43</span>] lambdabot:  <span class="hljs-keyword">case</span> b <span class="hljs-keyword">of</span>
+[<span class="hljs-number">03</span>:<span class="hljs-number">43</span>] lambdabot:  <span class="hljs-type">Context</span> c d -&gt; a (\ _ -&gt; c d)
+</code></pre>
+<p>Ack! Something went wrong.</p>
+<p>What happened was that the problem was under-constrained.</p>
+<p>She didn't have to apply the action, so she didn't.</p>
+<p>Similarly, if we try for the unindexed version of <code>extend</code>, we run into the same problem!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">[<span class="hljs-number">03</span>:<span class="hljs-number">45</span>] edwardk:   @djinn (<span class="hljs-type">Context</span> a a t -&gt; r) -&gt; <span class="hljs-type">Context</span> a a t -&gt; <span class="hljs-type">Context</span> a a r
+[<span class="hljs-number">03</span>:<span class="hljs-number">45</span>] lambdabot: f a b =
+[<span class="hljs-number">03</span>:<span class="hljs-number">45</span>] lambdabot:      <span class="hljs-keyword">case</span> b <span class="hljs-keyword">of</span>
+[<span class="hljs-number">03</span>:<span class="hljs-number">45</span>] lambdabot:      <span class="hljs-type">Context</span> c d -&gt; <span class="hljs-type">Context</span> (\ e -&gt; a (<span class="hljs-type">Context</span> (\ _ -&gt; c d) e)) d
+</code></pre>
+<p>So, let's split apart the positive and negative uses of 's' in our original problem.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">[<span class="hljs-number">03</span>:<span class="hljs-number">46</span>] edwardk:   @djinn-add <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Acts</span> m s t = m -&gt; s -&gt; t</span>
+[<span class="hljs-number">03</span>:<span class="hljs-number">46</span>] edwardk:   @djinn <span class="hljs-type">Acts</span> m s t -&gt; <span class="hljs-type">Rule</span> m a -&gt; <span class="hljs-type">Context</span> s t a -&gt; a
+[<span class="hljs-number">03</span>:<span class="hljs-number">46</span>] lambdabot: f a b c =
+[<span class="hljs-number">03</span>:<span class="hljs-number">46</span>] lambdabot:  <span class="hljs-keyword">case</span> c <span class="hljs-keyword">of</span>
+[<span class="hljs-number">03</span>:<span class="hljs-number">46</span>] lambdabot:  <span class="hljs-type">Context</span> d e -&gt; b (\ f -&gt; d (a f e))
+</code></pre>
+<p>There we have it!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">step</span> :: <span class="hljs-type">Act</span> m s -&gt; <span class="hljs-type">Rule</span> m a -&gt; <span class="hljs-type">Context</span> s s a -&gt; a
+<span class="hljs-title">step</span> a b (<span class="hljs-type">Context</span> d e) = b (\f -&gt; d (a f e))
+</code></pre>
+<p>If we want to clean that up a bit:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">step</span> :: <span class="hljs-type">Act</span> m s -&gt; <span class="hljs-type">Rule</span> m a -&gt; <span class="hljs-type">Context</span> s s a -&gt; a
+<span class="hljs-title">step</span> top r (<span class="hljs-type">Context</span> f s) = r (f . flip top s)
+</code></pre>
+<h2 id="thats-all-for-now">Thats All For Now</h2>
+<p>Putting all of that together a greyscale version of the PNG writer from my Mandelbrot snippet yields the following code.</p>
+<p>Click Run!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE RankNTypes #-}</span>
+<span class="hljs-meta">{-# LANGUAGE TypeFamilies #-}</span>
+<span class="hljs-meta">{-# LANGUAGE QuasiQuotes #-}</span>
+<span class="hljs-meta">{-# LANGUAGE MultiParamTypeClasses #-}</span>
+<span class="hljs-meta">{-# LANGUAGE OverloadedStrings #-}</span>
+<span class="hljs-meta">{-# LANGUAGE TemplateHaskell #-}</span>
+<span class="hljs-meta">{-# LANGUAGE DeriveFunctor #-}</span>
+<span class="hljs-keyword">import</span> Codec.Compression.Zlib
+<span class="hljs-keyword">import</span> Control.Comonad
+<span class="hljs-keyword">import</span> Control.Lens <span class="hljs-keyword">as</span> L
+<span class="hljs-keyword">import</span> Control.Lens.Internal.Context
+<span class="hljs-keyword">import</span> Data.Binary
+<span class="hljs-keyword">import</span> Data.Binary.Put
+<span class="hljs-keyword">import</span> Data.Bits
+<span class="hljs-keyword">import</span> Data.Bits.Lens <span class="hljs-keyword">as</span> L
+<span class="hljs-keyword">import</span> Data.ByteString.Lazy <span class="hljs-keyword">as</span> Lazy
+<span class="hljs-keyword">import</span> Data.Foldable <span class="hljs-keyword">as</span> F
+<span class="hljs-keyword">import</span> Data.List <span class="hljs-keyword">as</span> List
+<span class="hljs-keyword">import</span> Data.MemoCombinators
+<span class="hljs-keyword">import</span> Data.Monoid
+<span class="hljs-keyword">import</span> Data.Vector.Unboxed <span class="hljs-keyword">as</span> Unboxed
+<span class="hljs-keyword">import</span> Yesod
+
+
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Rule</span> m a = (<span class="hljs-title">m</span> -&gt; <span class="hljs-title">a</span>) -&gt; a</span>
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Move</span> = <span class="hljs-type">R</span> | <span class="hljs-type">S</span> | <span class="hljs-type">L</span> <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Eq</span>, <span class="hljs-type">Enum</span>, <span class="hljs-type">Bounded</span>, <span class="hljs-type">Show</span>, <span class="hljs-type">Read</span>)</span>
+
+<span class="hljs-title">rule</span> :: (<span class="hljs-type">Enum</span> m, <span class="hljs-type">Bounded</span> m) =&gt; <span class="hljs-type">Word8</span> -&gt; <span class="hljs-type">Rule</span> m <span class="hljs-type">Bool</span>
+<span class="hljs-title">rule</span> w f = testBit w $ <span class="hljs-number">0</span> <span class="hljs-type">L</span>.&amp; partsOf <span class="hljs-type">L</span>.bits .~ (f &lt;$&gt; [minBound .. maxBound])
+
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Act</span> m s = m -&gt; s -&gt; s</span>
+
+<span class="hljs-title">modulo</span> :: <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Act</span> <span class="hljs-type">Move</span> <span class="hljs-type">Int</span>
+<span class="hljs-title">modulo</span> m <span class="hljs-type">L</span> i = (i-<span class="hljs-number">1</span>) `mod` m
+<span class="hljs-title">modulo</span> _ <span class="hljs-type">S</span> i = i
+<span class="hljs-title">modulo</span> m <span class="hljs-type">R</span> i = (i+<span class="hljs-number">1</span>) `mod` m
+
+<span class="hljs-title">step</span> :: <span class="hljs-type">Act</span> m s -&gt; <span class="hljs-type">Rule</span> m a -&gt; <span class="hljs-type">Context</span> s s a -&gt; a
+<span class="hljs-title">step</span> top r (<span class="hljs-type">Context</span> f s) = r (f . flip top s)
+
+<span class="hljs-title">loop</span> :: <span class="hljs-type">Integral</span> s =&gt; (<span class="hljs-type">Context</span> s s a -&gt; a) -&gt; <span class="hljs-type">Context</span> s s a -&gt; [<span class="hljs-type">Context</span> s s a]
+<span class="hljs-title">loop</span> f = <span class="hljs-type">List</span>.iterate (tab . extend f) . tab <span class="hljs-keyword">where</span>
+  tab (<span class="hljs-type">Context</span> g s) = <span class="hljs-type">Context</span> (integral g) s
+
+<span class="hljs-title">run</span> :: <span class="hljs-type">Word8</span> -&gt; <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Int</span> -&gt; [[<span class="hljs-type">Word8</span>]]
+<span class="hljs-title">run</span> r x m0 = fmap line $ loop (step (modulo m0) (rule r)) $ <span class="hljs-type">Context</span> (==<span class="hljs-number">0</span>) <span class="hljs-number">0</span> <span class="hljs-keyword">where</span>
+  line = fmap bw . window (x `div` <span class="hljs-number">2</span>)
+  bw <span class="hljs-type">True</span>  = <span class="hljs-number">0</span>
+  bw <span class="hljs-type">False</span> = <span class="hljs-number">255</span>
+  window w = iexperiment $ \ s -&gt; [s-w..s+w]
+
+<span class="hljs-title">crc32</span> :: <span class="hljs-type">Lazy</span>.<span class="hljs-type">ByteString</span> -&gt; <span class="hljs-type">Word32</span>
+<span class="hljs-title">crc32</span> = complement . <span class="hljs-type">Lazy</span>.foldl' f <span class="hljs-number">0xffffffff</span> <span class="hljs-keyword">where</span>
+  f r b = unsafeShiftR r <span class="hljs-number">8</span> `xor` crcs <span class="hljs-type">Unboxed</span>.! fromIntegral (xor r (fromIntegral b) .&amp;. <span class="hljs-number">0xff</span>)
+  crcs = <span class="hljs-type">Unboxed</span>.generate <span class="hljs-number">256</span> (go.go.go.go.go.go.go.go.fromIntegral)
+  go c = unsafeShiftR c <span class="hljs-number">1</span> `xor` <span class="hljs-keyword">if</span> c .&amp;. <span class="hljs-number">1</span> /= <span class="hljs-number">0</span> <span class="hljs-keyword">then</span> <span class="hljs-number">0xedb88320</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span>
+
+<span class="hljs-title">putChunk</span> :: <span class="hljs-type">Lazy</span>.<span class="hljs-type">ByteString</span> -&gt; <span class="hljs-type">Lazy</span>.<span class="hljs-type">ByteString</span> -&gt; <span class="hljs-type">Put</span>
+<span class="hljs-title">putChunk</span> h b = <span class="hljs-keyword">do</span>
+  putWord32be $ fromIntegral (<span class="hljs-type">Lazy</span>.length b)
+  putLazyByteString h
+  putLazyByteString b
+  putWord32be $ crc32 (h &lt;&gt; b)
+
+<span class="hljs-title">png</span> :: <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Int</span> -&gt; [[<span class="hljs-type">Word8</span>]] -&gt; <span class="hljs-type">Lazy</span>.<span class="hljs-type">ByteString</span>
+<span class="hljs-title">png</span> w h fs = runPut $ <span class="hljs-keyword">do</span>
+  putLazyByteString <span class="hljs-string">"\x89PNG\r\n\x1a\n"</span>
+  putChunk <span class="hljs-string">"IHDR"</span> $ runPut $ <span class="hljs-keyword">do</span>
+    putWord32be (fromIntegral w)
+    putWord32be (fromIntegral h)
+    putWord8 <span class="hljs-number">8</span> <span class="hljs-comment">-- 8 bit</span>
+    putWord8 <span class="hljs-number">0</span> <span class="hljs-comment">-- greyscale</span>
+    putWord8 <span class="hljs-number">0</span>
+    putWord8 <span class="hljs-number">0</span>
+    putWord8 <span class="hljs-number">0</span>
+  putChunk <span class="hljs-string">"IDAT"</span> $
+    compressWith defaultCompressParams { compressLevel = bestSpeed } $
+    runPut $ <span class="hljs-type">F</span>.forM_ (<span class="hljs-type">Prelude</span>.take h fs) $ \xs -&gt; <span class="hljs-keyword">do</span>
+      putWord8 <span class="hljs-number">0</span>
+      <span class="hljs-type">F</span>.forM_ (<span class="hljs-type">Prelude</span>.take w xs) put
+  putChunk <span class="hljs-string">"IEND"</span> mempty
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">App</span> = <span class="hljs-type">App</span></span>
+<span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Yesod</span> <span class="hljs-type">App</span>
+mkYesod "<span class="hljs-type">App</span>" [parseRoutes| / <span class="hljs-type">ImageR</span> <span class="hljs-type">GET</span> |]
+
+main :: <span class="hljs-type">IO</span> ()
+main = warpEnv <span class="hljs-type">App</span>
+
+
+getImageR :: <span class="hljs-type">MonadHandler</span> m =&gt; m <span class="hljs-type">TypedContent</span>
+getImageR = sendResponse $ toTypedContent (<span class="hljs-title">typePng</span>, <span class="hljs-title">toContent</span> <span class="hljs-title">img</span>) <span class="hljs-keyword">where</span></span>
+  img = png <span class="hljs-number">280</span> <span class="hljs-number">280</span> $ run <span class="hljs-number">110</span> <span class="hljs-number">280</span> <span class="hljs-number">30</span>
+
+</code></pre>
+<p>With all of that we're still well under a hundred lines.</p>
+<p>We're not limited to simple small world topologies, but if you want to connect random points in space, you're probably better off doing so in a 2d automaton, simply because there are more interesting combinations.</p>
+<p>In the interest of full disclosure, Djinn isn't perfect. It can't deal with rank-n types. It also doesn't really understand typeclasses as they behind the scenes <em>also</em> involve rank-n types. It is however, an incredibly useful tool that helps showcase the power of <a href="http://ttic.uchicago.edu/~dreyer/course/papers/wadler.pdf">free theorems</a> to constrain down the space of possible implementations to the point where only reasonable programs can type check at all.</p>
+<p>By making our programs <em>more</em> generic we are able to restrict them to fewer possible implementations, leaving us with only one reasonable thing that typechecks.</p>
+<p>-<a href="mailto:ekmett@gmail.com">Edward Kmett</a></p>
+<p>September 15th, 2013</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/lens"><code>lens</code></a> · <a href="https://hackage.haskell.org/package/comonad"><code>comonad</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: School of Haskell. Date displayed by School of Haskell; may reflect a later revision.</p><p><a href="../../../source/articles/cellular-automata-part-3.md" download>Article Markdown</a> · <a href="../../../source/articles/cellular-automata-part-3.original.md" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2013/oblivious-deamortized-st/">Part I: Deamortized ST →</a><a href="../../../reader/2013/phoas/">PHOAS For Free →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

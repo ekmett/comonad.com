@@ -1,0 +1,680 @@
+{
+  "verified": "2026-09-21",
+  "membershipSource": "https://hackage.haskell.org/user/EdwardKmett",
+  "membershipSnapshot": "content/references/hackage-EdwardKmett.html",
+  "policy": "Reviewed topic links. A current Hackage page does not assert compatibility with historical examples. Original version-specific documentation links remain intact. Membership does not imply sole authorship.",
+  "packages": {
+    "ad": {
+      "url": "https://hackage.haskell.org/package/ad"
+    },
+    "adjunctions": {
+      "url": "https://hackage.haskell.org/package/adjunctions"
+    },
+    "algebra": {
+      "url": "https://hackage.haskell.org/package/algebra"
+    },
+    "bound": {
+      "url": "https://hackage.haskell.org/package/bound"
+    },
+    "category-extras": {
+      "url": "https://hackage.haskell.org/package/category-extras"
+    },
+    "comonad": {
+      "url": "https://hackage.haskell.org/package/comonad"
+    },
+    "comonad-transformers": {
+      "url": "https://hackage.haskell.org/package/comonad-transformers"
+    },
+    "comonads-fd": {
+      "url": "https://hackage.haskell.org/package/comonads-fd"
+    },
+    "concurrent-supply": {
+      "url": "https://hackage.haskell.org/package/concurrent-supply"
+    },
+    "constraints": {
+      "url": "https://hackage.haskell.org/package/constraints"
+    },
+    "contravariant": {
+      "url": "https://hackage.haskell.org/package/contravariant"
+    },
+    "data-lens": {
+      "url": "https://hackage.haskell.org/package/data-lens"
+    },
+    "discrimination": {
+      "url": "https://hackage.haskell.org/package/discrimination"
+    },
+    "distributive": {
+      "url": "https://hackage.haskell.org/package/distributive"
+    },
+    "folds": {
+      "url": "https://hackage.haskell.org/package/folds"
+    },
+    "free": {
+      "url": "https://hackage.haskell.org/package/free"
+    },
+    "heaps": {
+      "url": "https://hackage.haskell.org/package/heaps"
+    },
+    "hybrid-vectors": {
+      "url": "https://hackage.haskell.org/package/hybrid-vectors"
+    },
+    "kan-extensions": {
+      "url": "https://hackage.haskell.org/package/kan-extensions"
+    },
+    "lca": {
+      "url": "https://hackage.haskell.org/package/lca"
+    },
+    "lens": {
+      "url": "https://hackage.haskell.org/package/lens"
+    },
+    "machines": {
+      "url": "https://hackage.haskell.org/package/machines"
+    },
+    "monad-param": {
+      "url": "https://hackage.haskell.org/package/monad-param"
+    },
+    "monoids": {
+      "url": "https://hackage.haskell.org/package/monoids"
+    },
+    "parsers": {
+      "url": "https://hackage.haskell.org/package/parsers"
+    },
+    "prelude-extras": {
+      "url": "https://hackage.haskell.org/package/prelude-extras"
+    },
+    "profunctors": {
+      "url": "https://hackage.haskell.org/package/profunctors"
+    },
+    "rad": {
+      "url": "https://hackage.haskell.org/package/rad"
+    },
+    "recursion-schemes": {
+      "url": "https://hackage.haskell.org/package/recursion-schemes"
+    },
+    "reducers": {
+      "url": "https://hackage.haskell.org/package/reducers"
+    },
+    "reflection": {
+      "url": "https://hackage.haskell.org/package/reflection"
+    },
+    "representable-functors": {
+      "url": "https://hackage.haskell.org/package/representable-functors"
+    },
+    "representable-tries": {
+      "url": "https://hackage.haskell.org/package/representable-tries"
+    },
+    "speculation": {
+      "url": "https://hackage.haskell.org/package/speculation"
+    },
+    "tables": {
+      "url": "https://hackage.haskell.org/package/tables"
+    },
+    "trifecta": {
+      "url": "https://hackage.haskell.org/package/trifecta"
+    }
+  },
+  "articles": {
+    "bound": [
+      {
+        "package": "bound",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "concurrent-supply",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "prelude-extras",
+        "basis": "Package explicitly named in article prose."
+      }
+    ],
+    "online-lca": [
+      {
+        "package": "concurrent-supply",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "lca",
+        "basis": "Named package link in the original article."
+      }
+    ],
+    "cellular-automata-part-2": [
+      {
+        "package": "profunctors",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "recursion-schemes",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "lens",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      },
+      {
+        "package": "comonad",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "moore-for-less": [
+      {
+        "package": "folds",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "free",
+        "basis": "Named package link in the original article."
+      }
+    ],
+    "fast-circular-substitution": [
+      {
+        "package": "bound",
+        "basis": "Named package link in the original article."
+      }
+    ],
+    "revisiting-matrix-multiplication-part-5": [
+      {
+        "package": "free",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "lens",
+        "basis": "Named package link in the original article."
+      }
+    ],
+    "phoas": [
+      {
+        "package": "bound",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "free",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "lens",
+        "basis": "Named package link in the original article."
+      }
+    ],
+    "parallel-crc": [
+      {
+        "package": "folds",
+        "basis": "Named package link in the original article."
+      }
+    ],
+    "revisiting-matrix-multiplication-part-3": [
+      {
+        "package": "hybrid-vectors",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "lens",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "representing-applicatives": [
+      {
+        "package": "comonads-fd",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "distributive",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "representable-functors",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "representable-tries",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "adjunctions",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "japanese-workshop-1": [
+      {
+        "package": "free",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "lens",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "machines",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "tables",
+        "basis": "Named package link in the original article."
+      }
+    ],
+    "mirrored-lenses": [
+      {
+        "package": "data-lens",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "lens",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "a-parsec-full-of-rats": [
+      {
+        "package": "trifecta",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "parsers",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "free-modules-and-functional-linear-functionals": [
+      {
+        "package": "algebra",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "representable-tries",
+        "basis": "Named package link in the original article."
+      }
+    ],
+    "a-product-of-an-imperfect-union": [
+      {
+        "package": "comonad-transformers",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "comonad",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "more-on-comonads-as-monad-transformers": [
+      {
+        "package": "adjunctions",
+        "basis": "Named package link in the original article."
+      }
+    ],
+    "monad-transformers-from-comonads": [
+      {
+        "package": "kan-extensions",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "comonad",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "monads-from-comonads": [
+      {
+        "package": "adjunctions",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "comonad-transformers",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "contravariant",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "kan-extensions",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "comonad",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "free-monads-for-less-3": [
+      {
+        "package": "kan-extensions",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "free",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "free-monads-for-less": [
+      {
+        "package": "comonad-transformers",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "comonads-fd",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "kan-extensions",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "free",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "free-monads-for-less-2": [
+      {
+        "package": "kan-extensions",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "free",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "introducing-speculation": [
+      {
+        "package": "speculation",
+        "basis": "Named package link in the original article."
+      }
+    ],
+    "brodal-okasaki-heaps-in-haskell": [
+      {
+        "package": "heaps",
+        "basis": "Named package link in the original article."
+      }
+    ],
+    "reverse-mode-automatic-differentiation-in-haskell": [
+      {
+        "package": "rad",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "ad",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "clearer-reflection": [
+      {
+        "package": "reflection",
+        "basis": "Named package link in the original article."
+      }
+    ],
+    "recursion-schemes": [
+      {
+        "package": "category-extras",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "recursion-schemes",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "incremental-folds": [
+      {
+        "package": "monoids",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "reflection",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "reducers",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "representing-adjunctions": [
+      {
+        "package": "category-extras",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "adjunctions",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "kan-extension-iii": [
+      {
+        "package": "category-extras",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "kan-extensions",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      },
+      {
+        "package": "adjunctions",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "kan-extensions-ii": [
+      {
+        "package": "category-extras",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "kan-extensions",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      },
+      {
+        "package": "adjunctions",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "elgot-coalgebras": [
+      {
+        "package": "category-extras",
+        "basis": "Named package link in the original article."
+      },
+      {
+        "package": "recursion-schemes",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "towards-formal-power-series-for-functors": [
+      {
+        "package": "category-extras",
+        "basis": "Named package link in the original article."
+      }
+    ],
+    "zipping-and-unzipping-functors": [
+      {
+        "package": "category-extras",
+        "basis": "Named package link in the original article."
+      }
+    ],
+    "kan-extensions": [
+      {
+        "package": "kan-extensions",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      },
+      {
+        "package": "adjunctions",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "zapping-strong-adjunctions": [
+      {
+        "package": "adjunctions",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "monads-for-free": [
+      {
+        "package": "free",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "the-cofree-comonad-and-the-expression-problem": [
+      {
+        "package": "free",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "recursion-schemes-catamorphisms": [
+      {
+        "package": "recursion-schemes",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "catamorphism-knol": [
+      {
+        "package": "recursion-schemes",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "elgot-algebras": [
+      {
+        "package": "recursion-schemes",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "generalized-hylomorphisms": [
+      {
+        "package": "recursion-schemes",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "rotten-bananas": [
+      {
+        "package": "recursion-schemes",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "time-for-chronomorphisms": [
+      {
+        "package": "recursion-schemes",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "dynamorphisms-as-chronomorphisms": [
+      {
+        "package": "recursion-schemes",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "higher-order-abstract-syntax-a-la-carte": [
+      {
+        "package": "bound",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "revisiting-matrix-multiplication-part-1": [
+      {
+        "package": "lens",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "revisiting-matrix-multiplication-part-2": [
+      {
+        "package": "lens",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "revisiting-matrix-multiplication-part-4": [
+      {
+        "package": "lens",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "revisiting-matrix-multiplication-part-6": [
+      {
+        "package": "lens",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "cellular-automata-part-1": [
+      {
+        "package": "lens",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      },
+      {
+        "package": "comonad",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      },
+      {
+        "package": "representable-tries",
+        "basis": "Package explicitly named in article prose."
+      }
+    ],
+    "cellular-automata-part-3": [
+      {
+        "package": "lens",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      },
+      {
+        "package": "comonad",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "what-constraints-entail-part-1": [
+      {
+        "package": "constraints",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "what-constraints-entail-part-2": [
+      {
+        "package": "constraints",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "conquering-folds": [
+      {
+        "package": "folds",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "hac-phi-slides": [
+      {
+        "package": "reducers",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "a-parsec-full-of-rats-part-2": [
+      {
+        "package": "trifecta",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      },
+      {
+        "package": "parsers",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "parameterized-monads-in-haskell": [
+      {
+        "package": "monad-param",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "the-state-comonad": [
+      {
+        "package": "comonad",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "the-pointed-set-comonad": [
+      {
+        "package": "comonad",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "unnatural-transformations": [
+      {
+        "package": "recursion-schemes",
+        "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ]
+  },
+  "talks": {
+    "discrimination-zurihac-2015": [
+      "discrimination"
+    ],
+    "kmett-2013-haskellcast-lenses": [
+      "lens"
+    ],
+    "kmett-2012-lenses-nyc": [
+      "lens"
+    ],
+    "kmett-2011-lenses-functional-imperative": [
+      "lens"
+    ]
+  }
+}

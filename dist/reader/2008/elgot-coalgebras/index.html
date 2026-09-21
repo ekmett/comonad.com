@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Elgot (Co)Algebras · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Category Theory · Comonads · Haskell · Mathematics · Monads · Squiggol</span><span>Edward Kmett · <time datetime="2008-05-19">19 May 2008</time></span></div><h1>Elgot (Co)Algebras</h1></header><details class="contents"><summary>On this page</summary><ol><li><a href="#the-good">The Good</a></li><li><a href="#the-bad">The Bad</a></li><li><a href="#the-ugly">The Ugly</a></li></ol></details><article class="prose"><span id="more-60"></span><pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-keyword">import</span> Control.Arrow ((|||),(&amp;&amp;&amp;),left)
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Mu</span> f = <span class="hljs-type">InF</span> { <span class="hljs-title">outF</span> :: <span class="hljs-title">f</span> (<span class="hljs-type">Mu</span> <span class="hljs-title">f</span>) }</span>
+</code></pre>
+<p>I want to talk about a novel recursion scheme that hasn't received a lot of attention from the Haskell community and its even more obscure dual -- which is necessarily more obscure because I believe this is the first time anyone has talked about it.</p>
+<p><a href="http://www.iti.cs.tu-bs.de/~adamek/adamek.html">Jiri Adámek</a>, <a href="http://www.iti.cs.tu-bs.de/~milius/">Stefan Milius</a> and <a href="http://math.feld.cvut.cz/velebil/">Jiri Velebil</a> have done a lot of work on <a href="http://arxiv.org/abs/cs/0609040">Elgot algebras</a>. Here I'd like to translate them into Haskell, dualize them, observe that the dual can encode primitive recursion, and provide some observations.</p>
+<p>You can kind of think an Elgot algebra as a hylomorphism that cheats.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">elgot</span> :: <span class="hljs-type">Functor</span> f =&gt; (f b -&gt; b) -&gt; (a -&gt; <span class="hljs-type">Either</span> b (f a)) -&gt; a -&gt; b
+<span class="hljs-title">elgot</span> phi psi = h <span class="hljs-keyword">where</span> h = (id ||| phi . fmap h) . psi
+</code></pre>
+<p>If you look at the signature for a hylomorphism:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">hylo</span> :: <span class="hljs-type">Functor</span> f =&gt; (f b -&gt; b) -&gt; (a -&gt; f a) -&gt; a -&gt; b
+<span class="hljs-title">hylo</span> phi psi = h <span class="hljs-keyword">where</span> h = phi . fmap h . psi
+</code></pre>
+<p>Then you can see that an Elgot algebra is basically a hylomorphism that is allowed to shortcircuit the infinite tower of fmaps and return an intermediate result directly.</p>
+<p>In some sense you can say that the coalgebra-like side of the hylomorphism is no longer oblivious to the algebra used to deconstruct the intermediate result.</p>
+<p>We can take the Elgot algebra and dualize it to get a novel construction where the algebra-like side is no longer oblivious to the coalgebra. This allows your algebra to cheat and just use the intermediate results constructed by the anamorphism to return an answer. I'll choose to call this co-(Elgot algebra) an Elgot coalgebra in the sequel.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">coelgot</span> :: <span class="hljs-type">Functor</span> f =&gt; ((a, f b) -&gt; b) -&gt; (a -&gt; f a) -&gt; a -&gt; b
+<span class="hljs-title">coelgot</span> phi psi = h <span class="hljs-keyword">where</span> h = phi . (id &amp;&amp;&amp; fmap h . psi)
+</code></pre>
+<p>In a lot of ways an Elgot algebra resembles Vene and Uustalu's <a href="http://citeseer.ist.psu.edu/vene98functional.html">apomorphism</a>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">apo</span> :: <span class="hljs-type">Functor</span> f =&gt; (a -&gt; f (<span class="hljs-type">Either</span> (<span class="hljs-type">Mu</span> f) a)) -&gt; a -&gt; <span class="hljs-type">Mu</span> f
+<span class="hljs-title">apo</span> psi = h <span class="hljs-keyword">where</span> h = <span class="hljs-type">InF</span> . fmap h . (fmap <span class="hljs-type">Left</span> . outF ||| psi) . <span class="hljs-type">Right</span>
+</code></pre>
+<p>However, we have 'unfixed' the algebra to be used from InF to something more general and the layering of Either and f is different.</p>
+<p>Now, a generalized apomorphism does something similar entangling two coalgebras, but the signature doesn't quite match up either, since a generalized apomorphism uses an F-coalgebras and an F-(b + _)-monadic coalgebra.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">g_apo</span> :: <span class="hljs-type">Functor</span> f =&gt; (b -&gt; f b) -&gt; (a -&gt; f (<span class="hljs-type">Either</span> b a)) -&gt; a -&gt; <span class="hljs-type">Mu</span> f
+<span class="hljs-title">g_apo</span> g f = h <span class="hljs-keyword">where</span> h = <span class="hljs-type">InF</span> . fmap h . (fmap <span class="hljs-type">Left</span> . g ||| f) . <span class="hljs-type">Right</span>
+</code></pre>
+<p>Similarly a zygomorphism, or more generally a <a href="http://dbappl.cs.utwente.nl/Publications/PaperStore/db-utwente-0000003537.pdf">mutumorphism</a> entangles two algebras.</p>
+<p>An Elgot algebra occupies a somewhat rare spot in the theory of constructive algorithmics or recursion schemes in that it while it mixes an algebra with a coalgebra like a hylomorphism or metamorphisms, it entangles them in a novel way.</p>
+<p>If we specialize the Elgot algebra by fixing its algebra to InF we get:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">elgot_apo</span> :: <span class="hljs-type">Functor</span> f =&gt; (a -&gt; <span class="hljs-type">Either</span> (<span class="hljs-type">Mu</span> f) (f a)) -&gt; a -&gt; <span class="hljs-type">Mu</span> f
+<span class="hljs-title">elgot_apo</span> psi = h <span class="hljs-keyword">where</span> h = (id ||| <span class="hljs-type">InF</span> . fmap h) . psi
+</code></pre>
+<p>We can see that the type is now closely related to that of an apomorphism with some slight changes in design decisions. Instead of wrapping a functor around further seeds, a, or a finished structure, this specialized Elgot algebra returns the finished structure directly or an f wrapped around seeds.</p>
+<h2 id="the-good">The Good</h2>
+<p>So can we convert between an apomorphism and an Elgot algebra? For a somewhat circuitous path to that answer lets recall the <a href="../../../reader/2008/deriving-strength-from-laziness/">definition of strength</a> from my post a couple of weeks ago. Flipping the arguments and direction of application for strength to simplify what is coming we get:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">strength'</span> :: <span class="hljs-type">Functor</span> f =&gt; t -&gt; f a -&gt; f (t, a)
+<span class="hljs-title">strength'</span> fa b = fmap ((,)b) fa
+</code></pre>
+<p>With that in hand we quickly find that we can rederive <a href="http://en.wikipedia.org/wiki/Paramorphism">paramorphisms</a> (and hence primitive recursion) from the novel notion of an Elgot coalgebra that we defined above by leaning on the strength of our functor.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">para</span> :: <span class="hljs-type">Functor</span> f =&gt; (f (<span class="hljs-type">Mu</span> f, c) -&gt; c) -&gt; <span class="hljs-type">Mu</span> f -&gt; c
+<span class="hljs-title">para</span> f = coelgot (f . uncurry strength') outF
+</code></pre>
+<p>This result tells us that the shiny new Elgot coalgebras we defined above are strong enough to encode primitive recursion when working in Haskell.</p>
+<h2 id="the-bad">The Bad</h2>
+<p>This tempts us to try to derive apomorphisms from Elgot algebras using the dual case, costrength. However, if you'll recall from my previous post on comonadic costrength, we can't do that in general. The result is only defined for Traversable functors; not every functor is costrong in Haskell!</p>
+<p>Consequently and counterintuitively, though we can define a paramorphism in terms of Elgot coalgebras, we can only define an apomorphism in terms of Elgot algebras for traversable functors.</p>
+<h2 id="the-ugly">The Ugly</h2>
+<p>Now, worse news. Since the tower of functors we build up doesn't run off to infinity we lose the ability to generalize Elgot (co)algebras using the same machinery we can use to generalize the various traditional recursion schemes by parameterizing it by a (co)monad and distributive law.</p>
+<p>At least the straightforward translation fails. For instance in the case of an Elgot algebra, the obvious addition would be to allow for the algebra (f a -&gt; a) to be replaced with a F-W-comonadic algebra (f (w a) -&gt; a) for some comonad w. However, attempts to do so run afoul of the fact that the coalgebra-like structure feeds us an 'a' not a 'w a'. We can of course change the signature of the coalgebra to give us the comonad, but the breakdown of modularity is unfortunate.</p>
+<p>Similary, parameterizing the coalgebra-like structure with a monad requires the ability to distribute the monad over Either b to get to where it can apply the distributive law for the base functor f. Interestingly the Either monad works, which gives us ways to compose Elgot (co)algebras, but that is a story for another day.</p>
+<p>As usual there is a tradeoff in expressivity in one area to compensate for gains in another, but this manner of entangling provides us with a new set of possibilities to explore.</p>
+<p>Code for Elgot algebras and Elgot coalgebras has been included in <a href="https://hackage.haskell.org/package/category-extras-0.50.3">category-extras</a> as of release 0.50.3 as <a href="../../../haskell/category-extras/src/Control/Functor/Algebra/">Control.Functor.Algebra.Elgot</a>.</p>
+<p>Now available from hackage.</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/category-extras"><code>category-extras</code></a> · <a href="https://hackage.haskell.org/package/recursion-schemes"><code>recursion-schemes</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><section class="comments" id="comments"><h2>From the original discussion</h2><p class="editorial">Selected questions, explanations, and corrections. Original wording and dates; spam and automated trackbacks omitted.</p><article class="comment" id="comment-106277"><header><strong>Jan Bessai</strong><a href="../../../reader/2008/elgot-coalgebras/#comment-106277">October 12th, 2012 at 4:41 am</a></header><p>This is rather old, but apo and g_apo need a small fix:<br>
+&gt; apo psi = h .Right where h = InF . fmap h . (fmap Left . outF ||| psi)<br>
+&gt; g_apo g f = h .Right where h = InF . fmap h . (fmap Left . g ||| f)<br>
+otherwise they will not typecheck.</p>
+</article><article class="comment" id="comment-106278"><header><strong>JanBessai</strong><a href="../../../reader/2008/elgot-coalgebras/#comment-106278">October 12th, 2012 at 4:54 am</a></header><p>The type signature of strength’ needs to be flipped<br>
+&gt; strength’ :: Functor f =&gt; f a -&gt; t -&gt; f (t, a)</p>
+</article></section><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/elgot-coalgebras.md" download>Article Markdown</a> · <a href="../../../source/articles/elgot-coalgebras.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2008/forgetful-laziness/">Forgetful Laziness →</a><a href="../../../reader/2008/kan-extensions/">Kan Extensions →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

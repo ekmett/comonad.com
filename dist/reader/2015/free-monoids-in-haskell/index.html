@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free Monoids in Haskell · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Category Theory · Haskell · Mathematics</span><span>Dan Doel · <time datetime="2015-02-21">21 February 2015</time></span></div><h1>Free Monoids in Haskell</h1></header><article class="prose"><p>It is often stated that <code>Foldable</code> is effectively the <code>toList</code> class. However, this turns out to be wrong. The real fundamental member of <code>Foldable</code> is <code>foldMap</code> (which should look suspiciously like <code>traverse</code>, incidentally). To understand exactly why this is, it helps to understand another surprising fact: lists are not free monoids in Haskell.</p>
+<p>This latter fact can be seen relatively easily by considering another list-like type:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">SL</span> a = <span class="hljs-type">Empty</span> | <span class="hljs-type">SL</span> a :&gt; a</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monoid</span> (<span class="hljs-type">SL</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  mempty = <span class="hljs-type">Empty</span>
+  mappend ys <span class="hljs-type">Empty</span> = ys
+  mappend ys (xs :&gt; x) = (mappend ys xs) :&gt; x
+
+<span class="hljs-title">single</span> :: a -&gt; <span class="hljs-type">SL</span> a
+<span class="hljs-title">single</span> x = <span class="hljs-type">Empty</span> :&gt; x
+</code></pre>
+<p>So, we have a type <code>SL a</code> of snoc lists, which are a monoid, and a function that embeds <code>a</code> into <code>SL a</code>. If (ordinary) lists were the free monoid, there would be a unique monoid homomorphism from lists to snoc lists. Such a homomorphism (call it <code>h</code>) would have the following properties:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">h</span> [] = <span class="hljs-type">Empty</span>
+<span class="hljs-title">h</span> (xs &lt;&gt; ys) = h xs &lt;&gt; h ys
+<span class="hljs-title">h</span> [x] = single x
+</code></pre>
+<p>And in fact, this (together with some general facts about Haskell functions) should be enough to define <code>h</code> for our purposes (or any purposes, really). So, let's consider its behavior on two values:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">h</span> [<span class="hljs-number">1</span>] = single <span class="hljs-number">1</span>
+
+<span class="hljs-title">h</span> [<span class="hljs-number">1</span>,<span class="hljs-number">1</span>..] = h ([<span class="hljs-number">1</span>] &lt;&gt; [<span class="hljs-number">1</span>,<span class="hljs-number">1</span>..]) <span class="hljs-comment">-- [1,1..] is an infinite list of 1s</span>
+    = h [<span class="hljs-number">1</span>] &lt;&gt; h [<span class="hljs-number">1</span>,<span class="hljs-number">1</span>..]
+</code></pre>
+<p>This second equation can tell us what the value of <code>h</code> is at this infinite value, since we can consider it the definition of a possibly infinite value:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">x</span> = h [<span class="hljs-number">1</span>] &lt;&gt; x = fix (single <span class="hljs-number">1</span> &lt;&gt;)
+<span class="hljs-title">h</span> [<span class="hljs-number">1</span>,<span class="hljs-number">1</span>..] = x
+</code></pre>
+<p><code>(single 1 &lt;&gt;)</code> is a strict function, so the fixed point theorem tells us that <code>x = ⊥</code>.</p>
+<p>This is a problem, though. Considering some additional equations:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">[<span class="hljs-number">1</span>,<span class="hljs-number">1</span>..] &lt;&gt; [n] = [<span class="hljs-number">1</span>,<span class="hljs-number">1</span>..] <span class="hljs-comment">-- true for all n</span>
+<span class="hljs-title">h</span> [<span class="hljs-number">1</span>,<span class="hljs-number">1</span>..] = ⊥
+<span class="hljs-title">h</span> ([<span class="hljs-number">1</span>,<span class="hljs-number">1</span>..] &lt;&gt; [<span class="hljs-number">1</span>]) = h [<span class="hljs-number">1</span>,<span class="hljs-number">1</span>..] &lt;&gt; h [<span class="hljs-number">1</span>]
+       = ⊥ &lt;&gt; single <span class="hljs-number">1</span>
+       = ⊥ :&gt; <span class="hljs-number">1</span>
+       ≠ ⊥
+</code></pre>
+<p>So, our requirements for <code>h</code> are contradictory, and no such homomorphism can exist.</p>
+<p>The issue is that Haskell types are domains. They contain these extra partially defined values and infinite values. The monoid structure on (cons) lists has infinite lists absorbing all right-hand sides, while the snoc lists are just the opposite.</p>
+<p>This also means that finite lists (or any method of implementing finite sequences) are not free monoids in Haskell. They, as domains, still contain the additional bottom element, and it absorbs all other elements, which is incorrect behavior for the free monoid:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">pure</span> x &lt;&gt; ⊥ = ⊥
+<span class="hljs-title">h</span> ⊥ = ⊥
+<span class="hljs-title">h</span> (pure x &lt;&gt; ⊥) = [x] &lt;&gt; h ⊥
+    = [x] ++ ⊥
+    = x:⊥
+    ≠ ⊥
+</code></pre>
+<p>So, what is the free monoid? In a sense, it can't be written down at all in Haskell, because we cannot enforce value-level equations, and because we don't have quotients. But, if conventions are good enough, there is a way. First, suppose we have a free monoid type <code>FM a</code>. Then for any other monoid <code>m</code> and embedding <code>a -&gt; m</code>, there must be a monoid homomorphism from <code>FM a</code> to <code>m</code>. We can model this as a Haskell type:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">forall</span> a m. <span class="hljs-type">Monoid</span> m =&gt; (a -&gt; m) -&gt; <span class="hljs-type">FM</span> a -&gt; m
+</code></pre>
+<p>Where we consider the <code>Monoid m</code> constraint to be enforcing that <code>m</code> actually has valid monoid structure. Now, a trick is to recognize that this sort of universal property can be used to <em>define</em> types in Haskell (or, GHC at least), due to polymorphic types being first class; we just rearrange the arguments and quantifiers, and take <code>FM a</code> to be the polymorphic type:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">FM</span> a = <span class="hljs-type">FM</span> { <span class="hljs-title">unFM</span> :: <span class="hljs-title">forall</span> <span class="hljs-title">m</span>. <span class="hljs-type">Monoid</span> <span class="hljs-title">m</span> =&gt; (<span class="hljs-title">a</span> -&gt; <span class="hljs-title">m</span>) -&gt; <span class="hljs-title">m</span> }</span>
+</code></pre>
+<p>Types defined like this are automatically universal in the right sense. <a href="../../../reader/2015/free-monoids-in-haskell/#footnote-1">[1]</a> The only thing we have to check is that <code>FM a</code> is actually a monoid over <code>a</code>. But that turns out to be easily witnessed:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">embed</span> :: a -&gt; <span class="hljs-type">FM</span> a
+<span class="hljs-title">embed</span> x = <span class="hljs-type">FM</span> $ \k -&gt; k x
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monoid</span> (<span class="hljs-type">FM</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  mempty = <span class="hljs-type">FM</span> $ \_ -&gt; mempty
+  mappend (<span class="hljs-type">FM</span> e1) (<span class="hljs-type">FM</span> e2) = <span class="hljs-type">FM</span> $ \k -&gt; e1 k &lt;&gt; e2 k
+</code></pre>
+<p>Demonstrating that the above is a proper monoid delegates to instances of <code>Monoid</code> being proper monoids. So as long as we trust that convention, we have a free monoid.</p>
+<p>However, one might wonder what a free monoid would look like as something closer to a traditional data type. To construct that, first ignore the required equations, and consider only the generators; we get:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">FMG</span> a = <span class="hljs-type">None</span> | <span class="hljs-type">Single</span> a | <span class="hljs-type">FMG</span> a :&lt;&gt; <span class="hljs-type">FMG</span> a</span>
+</code></pre>
+<p>Now, the proper <code>FM a</code> is the quotient of this by the equations:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">None</span> :&lt;&gt; x = x = x :&lt;&gt; <span class="hljs-type">None</span>
+<span class="hljs-title">x</span> :&lt;&gt; (y :&lt;&gt; z) = (x :&lt;&gt; y) :&lt;&gt; z
+</code></pre>
+<p>One way of mimicking this in Haskell is to hide the implementation in a module, and only allow elimination into <code>Monoid</code>s (again, using the convention that <code>Monoid</code> ensures actual monoid structure) using the function:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">unFMG</span> :: <span class="hljs-keyword">forall</span> a m. <span class="hljs-type">Monoid</span> m =&gt; <span class="hljs-type">FMG</span> a -&gt; (a -&gt; m) -&gt; m
+<span class="hljs-title">unFMG</span> <span class="hljs-type">None</span> _ = mempty
+<span class="hljs-title">unFMG</span> (<span class="hljs-type">Single</span> x) k = k x
+<span class="hljs-title">unFMG</span> (x :&lt;&gt; y) k = unFMG x k &lt;&gt; unFMG y k
+</code></pre>
+<p>This is actually how quotients can be thought of in richer languages; the quotient does not eliminate any of the generated structure internally, it just restricts the way in which the values can be consumed. Those richer languages just allow us to prove equations, and enforce properties by proof obligations, rather than conventions and structure hiding. Also, one should note that the above should look pretty similar to our encoding of <code>FM a</code> using universal quantification earlier.</p>
+<p>Now, one might look at the above and have some objections. For one, we'd normally think that the quotient of the above type is just <code>[a]</code>. Second, it seems like the type is revealing something about the associativity of the operations, because defining recursive values via left nesting is different from right nesting, and this difference is observable by extracting into different monoids. But aren't monoids supposed to remove associativity as a concern? For instance:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">ones1</span> = embed <span class="hljs-number">1</span> &lt;&gt; ones1
+<span class="hljs-title">ones2</span> = ones2 &lt;&gt; embed <span class="hljs-number">1</span>
+</code></pre>
+<p>Shouldn't we be able to prove these are the same, becuase of an argument like:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">ones1</span> = embed <span class="hljs-number">1</span> &lt;&gt; (embed <span class="hljs-number">1</span> &lt;&gt; ...)
+      ... reassociate ...
+      = (... &lt;&gt; embed <span class="hljs-number">1</span>) &lt;&gt; embed <span class="hljs-number">1</span>
+      = ones2
+</code></pre>
+<p>The answer is that the equation we have only specifies the behavior of associating three values:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">x</span> &lt;&gt; (y &lt;&gt; z) = (x &lt;&gt; y) &lt;&gt; z
+</code></pre>
+<p>And while this is sufficient to nail down the behavior of <em>finite</em> values, and <em>finitary</em> reassociating, it does not tell us that <em>infinitary</em> reassociating yields the same value back. And the "... reassociate ..." step in the argument above was decidedly infinitary. And while the rules tell us that we can peel any finite number of copies of <code>embed 1</code> to the front of <code>ones1</code> or the end of <code>ones2</code>, it does not tell us that <code>ones1 = ones2</code>. And in fact it is vital for <code>FM a</code> to have distinct values for these two things; it is what makes it the free monoid when we're dealing with domains of lazy values.</p>
+<p>Finally, we can come back to <code>Foldable</code>. If we look at <code>foldMap</code>:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">foldMap</span> :: (<span class="hljs-type">Foldable</span> f, <span class="hljs-type">Monoid</span> m) =&gt; (a -&gt; m) -&gt; f a -&gt; m
+</code></pre>
+<p>we can rearrange things a bit, and get the type:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">Foldable</span> f =&gt; f a -&gt; (<span class="hljs-keyword">forall</span> m. <span class="hljs-type">Monoid</span> m =&gt; (a -&gt; m) -&gt; m)
+</code></pre>
+<p>And thus, the most fundamental operation of <code>Foldable</code> is not <code>toList</code>, but <code>toFreeMonoid</code>, and lists are not free monoids in Haskell.</p>
+<p><span id="footnote-1"></span>[1]: What we are doing here is noting that (co)limits are objects that internalize natural transformations, but the natural transformations expressible by quantification in GHC are already automatically internalized using quantifiers. However, one has to be careful that the quantifiers are actually enforcing the relevant naturality conditions. In many simple cases they are.</p>
+</article><section class="comments" id="comments"><h2>From the original discussion</h2><p class="editorial">Selected questions, explanations, and corrections. Original wording and dates; spam and automated trackbacks omitted.</p><article class="comment" id="comment-128414"><header><strong>Olaf</strong><a href="../../../reader/2015/free-monoids-in-haskell/#comment-128414">February 26th, 2015 at 7:51 am</a></header><p>Incidentally, (a -&gt; m) -&gt; m is the free algebra for the continuation monad. The monoid instance for (FM a) corresponds to what I think should be the MonadPlus instance of the continuation monad. By the way: Which of the existing Monoid instances are actually `proper’ instances in the sense that the denotational semantics of mempty and make the semantic domain (including bottom and infinite values) a monoid?</p>
+</article><article class="comment" id="comment-128415"><header><strong>Olaf</strong><a href="../../../reader/2015/free-monoids-in-haskell/#comment-128415">February 26th, 2015 at 8:46 am</a></header><p>Is FM a monad? It seems yes: Just use return (=embed) and &gt;&gt;= of the continuation monad. Also, monoids should now be FM-algebras. What is the algebra structure map Monoid a =&gt; FM a -&gt; a? The first thing that comes to mind is:<br>
+structure :: Monoid a =&gt; FM a -&gt; a;<br>
+structure (FM f) = f id<br>
+At least struct.embed = id is true.</p>
+</article><article class="comment" id="comment-128416"><header><strong>Dan Doel</strong><a href="../../../reader/2015/free-monoids-in-haskell/#comment-128416">February 27th, 2015 at 6:23 pm</a></header><p>Imm: in a total language, this does not apply. Types are set-like, and the free monoid is a type of finite sequences. Types containing infinite sequences would not be free, because there is no means to map them correctly into other monoids, because you are not allowed to fold them.</p>
+<p>dramforever: The point of this post was to show that the free monoid in Haskell is a type that contains infinite values. It is incorrect to use set-theoretic intuition and say that the free monoid only contains finite sequences (at least, if you care about things beyond a “fast and loose” level).</p>
+<p>This is the same reason that data types contain infinite values in Haskell. They are still inductive definitions, but the induction is properly understood to be on domains, not sets. The domain structure induces the infinite values, despite induction ‘normally’ only giving you finite values in set theory. The same thing happens for free things.</p>
+<p>Olaf: I think most Monoid instances are fine. The thing you usually have to be careful of is not being too lazy. For instance, if you write ‘mappend _ _ = ()’ for the unit monoid, it is wrong, because then ‘mappend mempty undefined = ()’, when it should be undefined. Most definitions can’t get away without looking at the arguments, though, so they don’t have this problem. (Monoid a, Monoid b) =&gt; Monoid (a,b) is another case where you’d have to be careful, though.</p>
+<p>FM is a monad, and you have the relevant structure correct. It’s also a MonadPlus that does the ‘obvious’ thing.</p>
+</article><article class="comment" id="comment-145073"><header><strong>Tom</strong><a href="../../../reader/2015/free-monoids-in-haskell/#comment-145073">June 14th, 2017 at 8:36 am</a></header><p>Olaf pointed out that FM is indeed a Monad. For my own masochistic pleasure, I’ve been trying to write an `Extend` instance for FM (as comonad is impossible with the presence of `None`).</p>
+<p>To borrow Haskell notation:</p>
+<p>None =&gt;&gt; f = None<br>
+l : r =&gt;&gt; f = ???<br>
+x =&gt;&gt; f = Single $ f x</p>
+<p>I seem to have hit a BST branch without a root node; is there any way to implement `Extend` for the `:` case? The best attempt I’ve made leads to `(l =&gt;&gt; f) : (r =&gt;&gt; f)`, but this seems to be “skipping” a step.</p>
+</article><article class="comment" id="comment-191664"><header><strong>Olaf</strong><a href="../../../reader/2015/free-monoids-in-haskell/#comment-191664">June 19th, 2018 at 4:57 pm</a></header><p>Could the following be the monad bind for FM?</p>
+<p>bind :: FM x -&gt; (x -&gt; FM y) -&gt; FM y<br>
+bind phi k = unFM phi k</p>
+<p>It uses the fact that FM has a Monoid instance, so phi can be applied to the Kleisli map k. This looks quite different from the Continuation monad’s bind.</p>
+</article></section><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/free-monoids-in-haskell.md" download>Article Markdown</a> · <a href="../../../source/articles/free-monoids-in-haskell.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2015/snippets-fmap/">The free theorem for fmap →</a><a href="../../../reader/2015/fibonacci-leonardo/">Part 1: Leonardo Random Access Lists →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Dan Doel.<br>Comments attributed to their original authors.</p></footer></main></body></html>

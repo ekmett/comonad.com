@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>On-line Lowest Common Ancestor · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Haskell</span><span>Edward Kmett · <time datetime="2015-08-27">27 August 2015</time></span></div><h1>On-line Lowest Common Ancestor</h1></header><details class="contents"><summary>On this page</summary><ol><li><a href="#lowest-common-ancestor">Lowest Common Ancestor</a></li><li><a href="#off-line-lca">Off-line LCA</a></li><li><a href="#functional-lca">Functional LCA</a></li><li><a href="#the-dumbest-thing-that-could-work">The Dumbest Thing That Could Work</a></li><li><a href="#types-from-number-systems">Types from Number Systems</a></li><li><a href="#unary">Unary</a></li><li><a href="#binary">Binary</a></li><li><a href="#skew-binary">Skew Binary</a></li><li><a href="#cleaning-up">Cleaning Up</a></li><li><a href="#keep-on-trimming">Keep On Trimming</a></li><li><a href="#observations">Observations</a></li><li><a href="#comparing-node-ids">Comparing Node IDs</a></li><li><a href="#monotonicity">Monotonicity</a></li><li><a href="#unique-representation">Unique Representation</a></li><li><a href="#all-together-now">All Together Now</a></li><li><a href="#recap">Recap</a></li></ol></details><article class="prose"><p>On-line <a href="http://en.wikipedia.org/wiki/Lowest_common_ancestor">lowest common ancestor</a> (LCA) search and the on-line version of the <a href="http://en.wikipedia.org/wiki/Level_ancestor_problem">level ancestor problem</a> have been traditionally viewed as having <em>O(h)</em> solutions.</p>
+<p>Last year, I improved both of those bounds to <em>O(log h)</em> while using only purely functional data structures, when I was working on another problem, and I figured I should do a write-up on how that worked, as I'm going to use some of the same componentry in future posts.</p>
+<p>Like most of my posts of late this one will dip a little bit into how we can use this abstruse theory to get improved distribution and parallelism as well.</p>
+<p>In future posts, I'll talk about how this can be used to derive an efficient revision control monad and I've been using the same skew binary arithmetic to derive an efficient cache-oblivious unboxable version of the venerable <code>Data.Map</code>.</p>
+<h2 id="lowest-common-ancestor">Lowest Common Ancestor</h2>
+<p>Given a tree and two nodes in the tree, find the lowest entry in the tree that is an ancestor to both.</p>
+<p>Consider this tree:</p>
+<img alt="Illustration from On-line Lowest Common Ancestor" loading="lazy" src="../../../assets/imported/314613275adb-lca-example-1.png">
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">lca</span> <span class="hljs-type">D</span> <span class="hljs-type">E</span> = <span class="hljs-type">A</span>
+<span class="hljs-title">lca</span> <span class="hljs-type">F</span> <span class="hljs-type">I</span> = <span class="hljs-type">E</span>
+<span class="hljs-title">lca</span> <span class="hljs-type">G</span> <span class="hljs-type">H</span> = <span class="hljs-type">G</span>
+<span class="hljs-title">lca</span> <span class="hljs-type">H</span> <span class="hljs-type">J</span> = <span class="hljs-type">E</span>
+</code></pre>
+<p>There has been a lot written about the version of this problem, where there tree is fixed and unchanging, but not much about it in the case where it is allowed to continue to evolve.</p>
+<p>There are a lot of applications for LCA.</p>
+<ul>
+<li>Computing dominators in flow graphs</li>
+<li>Three-Way merge algorithms</li>
+<li>Finding common word roots/suffixes</li>
+<li>Range-Min Query (RMQ) problems</li>
+<li>Computing distances in a tree</li>
+</ul>
+<p><a href="http://dl.acm.org/citation.cfm?id=804056">Aho, Hopcraft and Ullman</a> originally formulated the lowest common ancestor problem 40 years ago, back in 1973.</p>
+<p>They provided both on-line and off-line versions of the problem, defined around two operations <code>link</code> and <code>lca</code>, but their specification has a distinctly imperative flavor.</p>
+<p>LCA was defined in terms of two operations <code>link x y</code> and <code>lca x y</code>. <code>link x y</code> grafts an "unattached tree" <code>x</code> on as a new child of <code>y</code>, while <code>lca x y</code> computes the lowest common ancestor of <code>x</code> and <code>y</code>.</p>
+<p>The difference betwen on-line and off-line has classically been whether the set of <code>link</code> and <code>lca</code> commands was fixed a priori.</p>
+<p>Research has largely focused on the slightly more permissive off-line version of the problem where you are given the entire tree <em>a priori</em>. The original off-line version of the algorithm required time <em>O(n log* n)</em> for a precanned set of <code>lca</code> and <code>link</code> operations, and their on-line version required <em>O(n log n)</em>. These have since been improved.</p>
+<h3 id="off-line-lca">Off-line LCA</h3>
+<p>In general, these days if you're able to set up the tree you want in advance, and are willing to spend <code>O(n)</code> time preprocessing it, then you can answer subsequent <code>lca</code> queries on it in <code>O(1)</code>! However, if you make <em>any</em> edits, then you have to reprocess the entire tree in <code>O(n)</code> time. This renders these algorithms unsuitable for things like computing LCAs in version control graphs.</p>
+<p>These algorithms are actually pretty complicated. They involve tricks like round-tripping to and from a <a href="http://en.wikipedia.org/wiki/Range_Minimum_Query">Range-Minimum-Query</a> (RMQ) formulation twice.</p>
+<p>There is <a href="http://community.topcoder.com/tc?module=Static&d1=tutorials&d2=lowestCommonAncestor">an excellent writeup</a> that covers these classical techniques on this on top-coder. In the notation used there, the solution I'm going to explore is <code>&lt;O(1),O(log H)&gt;</code>, where <code>H</code> is the height of the tree, not the full size <code>N</code> that has to be used for all the other algorithms explored.</p>
+<h3 id="functional-lca">Functional LCA</h3>
+<p>Notice in Aho, Hopcraft and Ullman's specification, <code>link</code> doesn't return anything! It is an inherently mutation-oriented approach to the problem statement. Instead I'm going to replace <code>link x y</code> with <code>cons a y</code>, which returns a new extended version of the path <code>y</code>, grown downward with the new <em>globally unique</em> node ID <code>a</code>.</p>
+<p>We could also choose to replace <code>cons a y</code> with a monadic <code>grow y</code>, which tracks some kind of variable supply internally. By using a concurrent variable supply like the one in my <a href="https://hackage.haskell.org/package/concurrent-supply"><code>concurrent-supply</code> package</a>, we can grow the tree in parallel across multiple cores.</p>
+<h3 id="the-dumbest-thing-that-could-work">The Dumbest Thing That Could Work</h3>
+<p>We can define a path to be just a a list with an associated length.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Id</span> = <span class="hljs-type">Int</span></span>
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Path</span> = [<span class="hljs-type">Id</span>] :# !<span class="hljs-type">Int</span></span>
+</code></pre>
+<p>and we can build them up:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">empty</span> :: <span class="hljs-type">Path</span>
+<span class="hljs-title">empty</span> = [] :# <span class="hljs-number">0</span>
+
+<span class="hljs-title">cons</span> :: <span class="hljs-type">Id</span> -&gt; <span class="hljs-type">Path</span> -&gt; <span class="hljs-type">Path</span>
+<span class="hljs-title">cons</span> a (ys :# n) = (a:ys) :# (n + <span class="hljs-number">1</span>)
+</code></pre>
+<p>With that paths look like:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">x</span> = [<span class="hljs-number">5</span>,<span class="hljs-number">4</span>,<span class="hljs-number">3</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1</span>] :# <span class="hljs-number">5</span>
+<span class="hljs-title">y</span> =   [<span class="hljs-number">6</span>,<span class="hljs-number">3</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1</span>] :# <span class="hljs-number">4</span>
+</code></pre>
+<p>Now we can compute the lowest common ancestor of two paths by just cutting them off at the same height and marching down them in lock-step, comparing for equality as we go.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">x'</span> = [<span class="hljs-number">4</span>,<span class="hljs-number">3</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1</span>] :# <span class="hljs-number">4</span>
+<span class="hljs-title">y'</span> = [<span class="hljs-number">6</span>,<span class="hljs-number">3</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1</span>] :# <span class="hljs-number">4</span>
+</code></pre>
+<p>Then</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">lca</span> x y = [<span class="hljs-number">3</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1</span>] :# <span class="hljs-number">3</span>
+</code></pre>
+<p>Scribbling that out we get this algorithm.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">lca</span> :: <span class="hljs-type">Path</span> -&gt; <span class="hljs-type">Path</span> -&gt; <span class="hljs-type">Path</span>
+<span class="hljs-title">lca</span> (xs0 :# i) (ys0 :# j) = go k (drop (i-k) xs0) (drop (j-k) ys0) <span class="hljs-keyword">where</span>
+  k = min i j
+  go !n xxs@(x:xs) (y:ys)
+    | x == y   = xxs :# n
+    | otherwse = go (n - <span class="hljs-number">1</span>) xs ys
+</code></pre>
+<p>Already it has a number of pros and cons.</p>
+<p>1.) It requires no preprocessing step.</p>
+<p>2.) It is only <em>O(1)</em> to extend a path, and did I mention there is no recomputation necessary?</p>
+<p>3.) There is no need to store the entire tree! You only ever have to store the paths you are actively considering. This helps with distribution and parallelization.</p>
+<p>4.) On one hand, it is <em>O(h)</em> in the height <code>h</code> of our tree to compute and this is bad in that <em>O(h)</em> is a lot more than the <em>O(1)</em> <code>lca</code> calculations of the standard toolbox.</p>
+<p>5.) On the other hand, <em>O(h)</em> is still often a lot less than a full <em>O(n)</em> recalculation required by other approaches as your tree changes. This permits the use of this algorithm when we care about on-line edits being made to the tree, and where we need to be able to roll with the punches rather than stop the world for a single calculation.</p>
+<p>The bottleneck here is obviously the suffix extraction. It takes potentially <em>O(h)</em> to trim the two lists to the same length, then it takes <em>O(h)</em> to scan the trimmed lists in parallel.</p>
+<p>As is usually my wont, I'll turn to Okasaki for at least part of the answer.</p>
+<h2 id="types-from-number-systems">Types from Number Systems</h2>
+<p>One tool in the functional programming tool-box is the trick of turning a number system into a data structure.</p>
+<h3 id="unary">Unary</h3>
+<p>We're actually quite familiar with one such structure:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Nat</span>    = <span class="hljs-type">Zero</span> | <span class="hljs-type">Succ</span>    <span class="hljs-type">Nat</span></span>
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">IdList</span> = <span class="hljs-type">Nil</span>  | <span class="hljs-type">Cons</span> <span class="hljs-type">Id</span> <span class="hljs-type">IdList</span></span>
+</code></pre>
+<p>Here, we can think of <code>Nat</code> as a unary encoding of the natural numbers. (Technically they are extended here via their one-point compactification with infinity due to laziness.)</p>
+<p>If we augment each <code>Succ</code> with a piece of data, this gives us the well known list data structure.</p>
+<p>Here the fact that we can increment a unary number in <em>O(1)</em> leads to the observation that we can <code>cons</code> onto our list in <em>O(1)</em> as well.</p>
+<p>The cost of adding numbers in unary and the costs of appending lists are related as well.</p>
+<p>The asymptotics of <code>take</code> and <code>drop</code> can be related to the complexity of calculating similar clamped operations involving <code>min</code> on the naturals.</p>
+<h3 id="binary">Binary</h3>
+<p>It worked with unary, so we could try to do this with binary, but it wouldn't work well. We could use a bunch of arrays with sizes based on powers of 2, where each array is present or absent such that the total of all of the array sizes is our number of elements, but when we're done we'd still have to do a bunch of array merging. Incrementing our counter may cause a 'carry' that affects all <em>O(log n)</em> such arrays!</p>
+<p>This leads us to search for a number system where carries lead to less work.</p>
+<h3 id="skew-binary">Skew Binary</h3>
+<p>Skew Binary is a type of "almost binary" number system, where our digits are either 0 or 1... or 2.</p>
+<p>It differs from ternary in the value of eachdigits, and in the fact that we're only going to allow ourselves at most a single 2, and we'll use it to defeat the need for multiple carries.</p>
+<p>In skew binary, the _n_th digit is worth 2^(k+1)-1, rather than 2^k like in binary.</p>
+<p>This leads to the progression:</p>
+<p>1,3,7,15,31,63,127...</p>
+<p>rather than the binary progression so familiar to programmers.</p>
+<p>1,2,4,8,16,32,64...</p>
+<p>If we say the <code>2</code> can only occur as the least significant non-zero in our number, then every natural can be <em>uniquely</em> represented in skew binary. We'll need this uniqueness later!</p>
+<pre tabindex="0" aria-label="text code"><code class="language-text">n     731                      n
+--    ---                      --
+ 0:   000 --                    0
+ 1:   001 --             1*1 =  1
+ 2:   002 --             2*1 =  2
+ 3:   010 --       1*3       =  3
+ 4:   011 --       1*3 + 1*1 =  4
+ 5:   012 --       1*3 + 2*1 =  5
+ 6:   020 --       2*3       =  6
+ 7:   100 -- 1*7             =  7
+ 8:   101 -- 1*7    +    1*1 =  8
+ 9:   102 -- 1*7    +    2*1 =  9
+10:   110 -- 1*7 + 1*3       = 10
+11:   111 -- 1*7 + 1*3 + 1*1 = 11
+12:   112 -- 1*7 + 1*3 + 2*1 = 12
+13:   120 -- 1*7 + 2*3       = 13
+14:   200 -- 2*7             = 14
+...
+</code></pre>
+<p>If we represent a skew binary number as a linked list of digits from least to most significant, such that we just don't store the zeros and just store the number of inhabitants by storing the size we can write:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Skew</span> = <span class="hljs-type">Two</span> !<span class="hljs-type">Int</span> <span class="hljs-type">Skew</span> | <span class="hljs-type">One</span> !<span class="hljs-type">Int</span> <span class="hljs-type">Skew</span> | <span class="hljs-type">Zero</span></span>
+</code></pre>
+<p>By inspection, incrementing the counter is an <code>O(1)</code> operation, (if we ignore the price of manipulating the size).</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">succ</span> :: <span class="hljs-type">Skew</span> -&gt; <span class="hljs-type">Skew</span>
+<span class="hljs-title">succ</span> (<span class="hljs-type">Two</span> x (<span class="hljs-type">One</span> y ys)) | x*<span class="hljs-number">2</span>+<span class="hljs-number">1</span> == y = <span class="hljs-type">Two</span> y ys
+<span class="hljs-title">succ</span> (<span class="hljs-type">Two</span> x xs) = <span class="hljs-type">One</span> (x*<span class="hljs-number">2</span>+<span class="hljs-number">1</span>) xs
+<span class="hljs-title">succ</span> (<span class="hljs-type">One</span> <span class="hljs-number">1</span> xs) = <span class="hljs-type">Two</span> <span class="hljs-number">1</span> xs
+<span class="hljs-title">succ</span> xs         = <span class="hljs-type">One</span> <span class="hljs-number">1</span> xs
+</code></pre>
+<p>We can greatly simplify this by just saying that a 'Two' is really two ones of the same size in a list. Due to our constraints, such a <code>Two</code> will only occur at the front of the list.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Skew</span> = <span class="hljs-type">One</span> !<span class="hljs-type">Int</span> <span class="hljs-type">Skew</span> | <span class="hljs-type">Zero</span></span>
+</code></pre>
+<p>Then we can observe that <code>Skew</code> is just <code>[Int]</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Skew</span> = [<span class="hljs-type">Int</span>]</span>
+
+<span class="hljs-title">succ</span> :: <span class="hljs-type">Skew</span> -&gt; <span class="hljs-type">Skew</span>
+<span class="hljs-title">succ</span> (x:y:zs) | x == y = x+y+<span class="hljs-number">1</span> : zs
+<span class="hljs-title">succ</span> xs = <span class="hljs-number">1</span>:xs
+</code></pre>
+<p>So what happens when we turn this into a data structure?</p>
+<p>Now all we want to do is replace our digits with a data structure that has the same size. Our digits are sized like: 1,3,7,15... Those look familiar. That is the number of children in complete binary trees of a heights 1,2,3,4...</p>
+<p>If only we had some operation that took one element, and two complete binary trees and gave us a new binary tree, like making that element the new root...</p>
+<p>We could get fancy and enforce the completeness of these trees bottom up
+or top down with invariants, but I leave that to you to do efficiently.</p>
+<p>We'll need a size as well, so let's shoehorn that in too.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Tree</span></span>
+  = <span class="hljs-type">Tip</span>
+  | <span class="hljs-type">Bin</span> !<span class="hljs-type">Int</span> !<span class="hljs-type">Id</span> <span class="hljs-type">Tree</span> <span class="hljs-type">Tree</span>
+
+<span class="hljs-title">size</span> :: <span class="hljs-type">Tree</span> -&gt; <span class="hljs-type">Int</span>
+<span class="hljs-title">size</span> (<span class="hljs-type">Tip</span> _) = <span class="hljs-number">1</span>
+<span class="hljs-title">size</span> (<span class="hljs-type">Bin</span> n _ _ _) = n
+</code></pre>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Path</span> = [<span class="hljs-type">Tree</span>]</span>
+</code></pre>
+<p>Corresponding to <code>succ</code>, we could now implement <code>cons</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">cons</span> :: <span class="hljs-type">Id</span> -&gt; <span class="hljs-type">Path</span> -&gt; <span class="hljs-type">Path</span>
+<span class="hljs-title">cons</span> a (x:y:zs) | size x == size y = <span class="hljs-type">Bin</span> (size x*<span class="hljs-number">2</span>+<span class="hljs-number">1</span>) a x y : zs
+<span class="hljs-title">cons</span> a xs = <span class="hljs-type">Tip</span> a : xs
+</code></pre>
+<p>All we've done is maintain the invariant that a "digit" worth <code>n</code> is associated with <code>n</code> entries worth of data.</p>
+<p>With that <code>cons</code> for our paths is now <code>O(1)</code>. You can similarly generate <code>pred</code> and <code>tail</code>.</p>
+<h2 id="cleaning-up">Cleaning Up</h2>
+<p>For sake of convenience I'm going to want to know the total number of elements in the whole list of trees. This is technically a matter of convenience rather than necessity, as it doesn't affect us asymptotically, so let's go back and redefine <code>Path</code> to be a real data type. While we're at it, we can switch the size annotation to the list node as well, so we don't have to store it recursively in the trees. Finally, I'm going to fix the type of the IDs to <code>Int</code>.</p>
+<p>With those gymnastics out of the way we're left with:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Path</span></span>
+  = <span class="hljs-type">Nil</span>
+  | <span class="hljs-type">Cons</span> !<span class="hljs-type">Int</span> <span class="hljs-comment">-- `n` entries in this path</span>
+         !<span class="hljs-type">Int</span> <span class="hljs-comment">-- `w` entries in this particular tree</span>
+         <span class="hljs-type">Tree</span> <span class="hljs-comment">-- a complete tree with @w@ elements</span>
+         <span class="hljs-type">Path</span>
+  <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Show</span>, <span class="hljs-type">Read</span>)
+</code></pre>
+<p>Now our Trees are storing an <code>Int</code> key / <code>a</code> value pair rather than a size and a value:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Tree</span></span>
+  = <span class="hljs-type">Bin</span> !<span class="hljs-type">Id</span> <span class="hljs-type">Tree</span> <span class="hljs-type">Tree</span>
+  | <span class="hljs-type">Tip</span> !<span class="hljs-type">Id</span>
+  <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Show</span>, <span class="hljs-type">Read</span>)
+</code></pre>
+<p>And with a for-internal-use-only helper:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">consT</span> :: <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Tree</span> -&gt; <span class="hljs-type">Path</span> -&gt; <span class="hljs-type">Path</span>
+<span class="hljs-title">consT</span> w t ts = <span class="hljs-type">Cons</span> (w + size ts) w t ts
+</code></pre>
+<p>we can define <code>cons</code> and <code>uncons</code>:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">cons</span> :: <span class="hljs-type">Id</span> -&gt; <span class="hljs-type">Path</span> -&gt; <span class="hljs-type">Path</span>
+<span class="hljs-title">cons</span> k (<span class="hljs-type">Cons</span> n w t (<span class="hljs-type">Cons</span> _ w' t2 ts))
+  | w == w' = <span class="hljs-type">Cons</span> (n + <span class="hljs-number">1</span>) (<span class="hljs-number">2</span> * w + <span class="hljs-number">1</span>) (<span class="hljs-type">Bin</span> k t t2) ts
+<span class="hljs-title">cons</span> k ts = <span class="hljs-type">Cons</span> (size ts + <span class="hljs-number">1</span>) <span class="hljs-number">1</span> (<span class="hljs-type">Tip</span> k) ts
+
+<span class="hljs-title">uncons</span> :: <span class="hljs-type">Path</span> -&gt; <span class="hljs-type">Maybe</span> (<span class="hljs-type">Id</span>, <span class="hljs-type">Path</span>)
+<span class="hljs-title">uncons</span> <span class="hljs-type">Nil</span> = <span class="hljs-type">Nothing</span>
+<span class="hljs-title">uncons</span> (<span class="hljs-type">Cons</span> _ _ (<span class="hljs-type">Tip</span> k) ts)     = <span class="hljs-type">Just</span> (k, ts)
+<span class="hljs-title">uncons</span> (<span class="hljs-type">Cons</span> _ w (<span class="hljs-type">Bin</span> k l r) ts) = <span class="hljs-type">Just</span> (k, consT w2 l (consT w2 r ts))
+  <span class="hljs-keyword">where</span> w2 = div w <span class="hljs-number">2</span>
+</code></pre>
+<p>If you prefer, you can go implement <code>cons</code>/<code>uncons</code> using the <code>_Cons</code> <code>Prism</code> from <code>lens</code> instead.</p>
+<p>This gives us a pretty basic "skew binary random access list" of identifiers.</p>
+<h2 id="keep-on-trimming">Keep On Trimming</h2>
+<p>All we need to do is address the <code>O(h)</code> cost of trimming and the <code>O(h)</code> cost of scanning.</p>
+<p>Rather than talk about dropping, it is easier to switch to tracking how much we want to <code>keep</code>. The transformation to the original list code is trivial.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">keep</span> k (xs :# n) = drop (n-k) xs :# max <span class="hljs-number">0</span> (n-k)
+</code></pre>
+<p>So, now the issue becomes how to define a faster <code>keep</code> to deal with the trimming.</p>
+<p>To define a faster <code>keep</code>, we need to work smarter. We have at most <code>O(log h)</code> trees in our skew binary random access list.</p>
+<p>So we can run along our list of trees until we find the tree we need to cut up to get a skew binary random access list of the right size.</p>
+<p>When we're done, we can just cut off the tops of our tree to keep the right number of entries.</p>
+<p>Consider what happens when we have the <code>Path</code> of identifiers <code>[6,5,4,3,2,1]</code> and we want to <code>keep</code> only the top 2.</p>
+<p>Recall our digits are worth 1,3,7,15..., so since 6 = 2*3, our path would be represented by two complete binary trees each with three elements in them.</p>
+<p>Running down the spine: we see <code>Cons 6 3 tree1 (Cons 3 1 tree2 Nil)</code>, so we can just drop the first tree wholesale: (Cons 3 1 tree2 Nil), so we know we're going to cut up <code>tree2</code> to get our new list.</p>
+<img alt="Illustration from On-line Lowest Common Ancestor" loading="lazy" src="../../../assets/imported/c64eac66f308-tree-keeping.gif">
+<p>If we had a bigger structure we'd be getting out new complete trees to cons onto the rest of the list... but recall, later trees are always bigger than ones that came before with the possible exception of the first two trees, and if we cut off the top of a tree, we're going to wind up smaller still.</p>
+<p>Turning that into code:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">keep</span> :: <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Path</span> -&gt; <span class="hljs-type">Path</span>
+<span class="hljs-title">keep</span> _ <span class="hljs-type">Nil</span> = <span class="hljs-type">Nil</span>
+<span class="hljs-title">keep</span> k xs@(<span class="hljs-type">Cons</span> n w t ts)
+  | k &gt;= n = xs
+  | otherwise = <span class="hljs-keyword">case</span> compare k (n - w) <span class="hljs-keyword">of</span>
+     <span class="hljs-type">GT</span> -&gt; keepT (k - n + w) w t ts
+     <span class="hljs-type">EQ</span> -&gt; ts
+     <span class="hljs-type">LT</span> -&gt; keep k ts
+
+<span class="hljs-title">keepT</span> :: <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Tree</span> -&gt; <span class="hljs-type">Path</span> -&gt; <span class="hljs-type">Path</span>
+<span class="hljs-title">keepT</span> n w (<span class="hljs-type">Bin</span> _ l r) ts = <span class="hljs-keyword">case</span> compare n w2 <span class="hljs-keyword">of</span>
+  <span class="hljs-type">LT</span> -&gt; keepT n w2 r ts
+  <span class="hljs-type">EQ</span> -&gt; consT w2 r ts
+  <span class="hljs-type">GT</span> | n == w - <span class="hljs-number">1</span> -&gt; consT w2 l (consT w2 r ts)
+     | otherwise -&gt; keepT (n - w2) w2 l (consT w2 r ts)
+ <span class="hljs-keyword">where</span> w2 = div w <span class="hljs-number">2</span>
+<span class="hljs-title">keepT</span> _ _ _ ts = ts
+</code></pre>
+<p><code>keepT</code> is used when we know we're taking at least one element off the top of a Tree, and that that tree is at most as tall as the shortest tree in a <code>Path</code>, AND we can know that the path has at most one element of its shorest length, so after we cut off the top, we can at most produce 2 nodes of the same size, but they'll be shorter than everything in the Path.</p>
+<p>Putting all of that together, we can prove <code>keep</code> takes <code>O(log h)</code>, but I leave that to you to do to convince yourself.</p>
+<p>The notion that <code>keep</code> or <code>drop</code> can be implemented in logarithmic time in a skew binary random access list had previously been unpublished.</p>
+<p>This is sufficient to yield an improvement in the known asymptotics for the on-line version of the <a href="http://en.wikipedia.org/wiki/Level_ancestor_problem">level ancestor</a> problem. Just take your <code>Path</code> and <code>keep</code> how ever many levels you want!</p>
+<h2 id="observations">Observations</h2>
+<p>To implement a faster <code>trim</code> we need a few observations on the nature of a skew binary random access list.</p>
+<h3 id="comparing-node-ids">Comparing Node IDs</h3>
+<p>We can check to see if two paths have the same head or are both empty in <em>O(1)</em>. We'll use <code>(==)</code> for this under the assumption that we mentioned early on that all identifiers that we use in the paths will be <em>globally unique</em>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Eq</span> <span class="hljs-type">Path</span> <span class="hljs-keyword">where</span></span>
+  <span class="hljs-type">Nil</span> == <span class="hljs-type">Nil</span> = <span class="hljs-type">True</span>
+  <span class="hljs-type">Cons</span> _ _ s _ == <span class="hljs-type">Cons</span> _ _ t _ = s == t
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Eq</span> <span class="hljs-type">Tree</span> <span class="hljs-keyword">where</span></span>
+  <span class="hljs-type">Tip</span> a     == <span class="hljs-type">Tip</span> b     = a == b
+  <span class="hljs-type">Bin</span> a _ _ == <span class="hljs-type">Bin</span> b _ _ = a == b
+  _         == _         = <span class="hljs-type">False</span>
+</code></pre>
+<p>These are each <em>O(1)</em> to compute.</p>
+<h3 id="monotonicity">Monotonicity</h3>
+<p>We can modify the algorithm for <code>keep</code> to work with any monotone predicate that transitions from <code>False</code> to <code>True</code> at most once during the walk up the path to the root.</p>
+<p>As with <code>keep</code>, the resulting algorithm will take at most <em>O(log h)</em> applications of the predicate and can run in <em>O(log h)</em> time if the predicate is <em>O(1)</em>.</p>
+<h3 id="unique-representation">Unique Representation</h3>
+<p>There are many number systems we could have chosen to use for our paths. One of the nice properties of skew binary that I alluded to earlier is that there is precisely one representation for each natural number in skew binary. Other number systems often give up this property to get other properties.</p>
+<p>Let's use it.</p>
+<p>By knowing that we have a unique representation for a given number in skew binary, we can know that our skew binary random access list has a unique <em>shape</em> for a given number of entries!</p>
+<p>This means that we can walk the spine of two random access lists of the same length at the same time in lock-step, and we'll visit the same number of trees, of the exact same size.</p>
+<p>So, if we go back to <code>keep</code>, we can modify the algorithm to work with a pair of paths, computing <code>(==)</code> which is <em>O(1)</em>. The fact that our identifiers are globally unique mean that once we find a match, all the parents from then on up the tree should also match.</p>
+<p>We effectively gallop along the spines of our two lists of trees, searching for a match, then back up and search through the two trees we have searching for the first match.</p>
+<p>Monotonicity was required to let us overshoot, and then go back.</p>
+<p>Now we can define <code>lca'</code>, which requires the two paths to have the same length:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">lca'</span> :: <span class="hljs-type">Path</span> -&gt; <span class="hljs-type">Path</span> -&gt; <span class="hljs-type">Path</span>
+<span class="hljs-title">lca'</span> h@(<span class="hljs-type">Cons</span> _ w x xs) (<span class="hljs-type">Cons</span> _ _ y ys)
+  | x == y = h
+  | xs == ys = lcaT w x y ys
+  | otherwise = lca' xs ys
+<span class="hljs-title">lca'</span> _ _ = <span class="hljs-type">Nil</span>
+
+<span class="hljs-title">lcaT</span> :: <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Tree</span> -&gt; <span class="hljs-type">Tree</span> -&gt; <span class="hljs-type">Path</span> -&gt; <span class="hljs-type">Path</span>
+<span class="hljs-title">lcaT</span> w (<span class="hljs-type">Bin</span> _ la ra) (<span class="hljs-type">Bin</span> _ lb rb) ts
+  | la == lb = consT w2 la (consT w2 ra ts)
+  | ra == rb = lcaT w2 la lb (consT w ra ts)
+  | otherwise = lcaT w2 ra rb ts
+  <span class="hljs-keyword">where</span> w2 = div w <span class="hljs-number">2</span>
+<span class="hljs-title">lcaT</span> _ _ _ ts = ts
+</code></pre>
+<p>Then a full <code>lca</code> just trims first:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">lca</span> :: <span class="hljs-type">Path</span> -&gt; <span class="hljs-type">Path</span> -&gt; <span class="hljs-type">Path</span>
+<span class="hljs-title">lca</span> xs ys = <span class="hljs-keyword">case</span> compare nxs nys <span class="hljs-keyword">of</span>
+  <span class="hljs-type">LT</span> -&gt; lca' xs (keep nxs ys)
+  <span class="hljs-type">EQ</span> -&gt; lca' xs ys
+  <span class="hljs-type">GT</span> -&gt; lca' (keep nys xs) ys
+ <span class="hljs-keyword">where</span>
+  nxs = size xs
+  nys = size ys
+</code></pre>
+<figure class="interactive-figure" id="lca-figure" data-demo="lca">
+  <div class="figure-controls"><label>Node A <select data-control="a"></select></label><label>Node B <select data-control="b"></select></label><button type="button" data-control="grow">Add child to A</button><label>Tree version <select data-control="version"></select></label></div>
+  <div class="figure-diagram"><svg data-view="tree" class="lca-tree" viewBox="0 0 500 400" role="img" aria-label="Rooted tree with selected nodes and their common ancestor" /></div>
+  <p data-view="answer" aria-live="polite"></p>
+  <details open><summary>Compare the searches</summary><p data-view="digits"></p><div class="lca-searches"><div><span class="figure-label">Skew-binary paths</span><output data-view="skew"></output></div><div><span class="figure-label">Parent-by-parent</span><output data-view="naive"></output></div></div><p class="figure-editorial">The companion corrects a subtree-width bookkeeping error in the historical <code>lcaT</code> (using <code>w2</code> for <code>ra</code>); the original sample is retained for review.</p></details>
+  <figcaption><span data-view="status" role="status">Loading the Haskell figure…</span> Each pair is an actual node-ID comparison after aligning depths; trimming work is excluded. Add up to 24 nodes; earlier versions remain selectable. <a href="../../../source/LCADemo.hs">Haskell source</a> · <a href="../../../source/browser-sources.zip">All Haskell sources</a>.</figcaption>
+  <noscript>Enable JavaScript and WebAssembly to grow a tree and compare the two ancestor searches.</noscript>
+</figure>
+<h2 id="all-together-now">All Together Now</h2>
+<p>To show that I'm not just talking nonsense, let's take all of that and put it in an active haskell snippet that you can play with.</p>
+<p>Click Run to see it in action.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-keyword">import</span> Data.List (<span class="hljs-title">unfoldr</span>)
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Id</span> = <span class="hljs-type">Int</span></span>
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Tree</span></span>
+  = <span class="hljs-type">Bin</span> <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Id</span> <span class="hljs-type">Tree</span> <span class="hljs-type">Tree</span>
+  | <span class="hljs-type">Tip</span> <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Id</span>
+  <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Show</span>, <span class="hljs-type">Read</span>)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Eq</span> <span class="hljs-type">Tree</span> <span class="hljs-keyword">where</span></span>
+  <span class="hljs-type">Tip</span> a     == <span class="hljs-type">Tip</span> b     = a == b
+  <span class="hljs-type">Bin</span> a _ _ == <span class="hljs-type">Bin</span> b _ _ = a == b
+  _         == _         = <span class="hljs-type">False</span>
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Path</span></span>
+  = <span class="hljs-type">Nil</span>
+  | <span class="hljs-type">Cons</span> <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Int</span>
+         <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Int</span>
+         <span class="hljs-type">Tree</span>
+         <span class="hljs-type">Path</span>
+  <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Show</span>, <span class="hljs-type">Read</span>)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Eq</span> <span class="hljs-type">Path</span> <span class="hljs-keyword">where</span></span>
+  <span class="hljs-type">Nil</span> == <span class="hljs-type">Nil</span> = <span class="hljs-type">True</span>
+  <span class="hljs-type">Cons</span> _ _ s _ == <span class="hljs-type">Cons</span> _ _ t _ = s == t
+
+<span class="hljs-title">size</span> :: <span class="hljs-type">Path</span> -&gt; <span class="hljs-type">Int</span>
+<span class="hljs-title">size</span> <span class="hljs-type">Nil</span> = <span class="hljs-number">0</span>
+<span class="hljs-title">size</span> (<span class="hljs-type">Cons</span> n _ _ _) = n
+
+<span class="hljs-title">consT</span> :: <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Tree</span> -&gt; <span class="hljs-type">Path</span> -&gt; <span class="hljs-type">Path</span>
+<span class="hljs-title">consT</span> w t ts = <span class="hljs-type">Cons</span> (w + size ts) w t ts
+
+<span class="hljs-title">cons</span> :: <span class="hljs-type">Id</span> -&gt; <span class="hljs-type">Path</span> -&gt; <span class="hljs-type">Path</span>
+<span class="hljs-title">cons</span> k (<span class="hljs-type">Cons</span> n w t (<span class="hljs-type">Cons</span> _ w' t2 ts))
+  | w == w' = <span class="hljs-type">Cons</span> (n + <span class="hljs-number">1</span>) (<span class="hljs-number">2</span> * w + <span class="hljs-number">1</span>) (<span class="hljs-type">Bin</span> k t t2) ts
+<span class="hljs-title">cons</span> k ts = <span class="hljs-type">Cons</span> (size ts + <span class="hljs-number">1</span>) <span class="hljs-number">1</span> (<span class="hljs-type">Tip</span> k) ts
+
+<span class="hljs-title">uncons</span> :: <span class="hljs-type">Path</span> -&gt; <span class="hljs-type">Maybe</span> (<span class="hljs-type">Id</span>, <span class="hljs-type">Path</span>)
+<span class="hljs-title">uncons</span> <span class="hljs-type">Nil</span> = <span class="hljs-type">Nothing</span>
+<span class="hljs-title">uncons</span> (<span class="hljs-type">Cons</span> _ _ (<span class="hljs-type">Tip</span> k) ts)     = <span class="hljs-type">Just</span> (k, ts)
+<span class="hljs-title">uncons</span> (<span class="hljs-type">Cons</span> _ w (<span class="hljs-type">Bin</span> k l r) ts) = <span class="hljs-type">Just</span> (k, consT w2 l (consT w2 r ts))
+  <span class="hljs-keyword">where</span> w2 = div w <span class="hljs-number">2</span>
+
+<span class="hljs-title">keep</span> :: <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Path</span> -&gt; <span class="hljs-type">Path</span>
+<span class="hljs-title">keep</span> _ <span class="hljs-type">Nil</span> = <span class="hljs-type">Nil</span>
+<span class="hljs-title">keep</span> k xs@(<span class="hljs-type">Cons</span> n w t ts)
+  | k &gt;= n = xs
+  | otherwise = <span class="hljs-keyword">case</span> compare k (n - w) <span class="hljs-keyword">of</span>
+     <span class="hljs-type">GT</span> -&gt; keepT (k - n + w) w t ts
+     <span class="hljs-type">EQ</span> -&gt; ts
+     <span class="hljs-type">LT</span> -&gt; keep k ts
+
+<span class="hljs-title">keepT</span> :: <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Tree</span> -&gt; <span class="hljs-type">Path</span> -&gt; <span class="hljs-type">Path</span>
+<span class="hljs-title">keepT</span> n w (<span class="hljs-type">Bin</span> _ l r) ts = <span class="hljs-keyword">case</span> compare n w2 <span class="hljs-keyword">of</span>
+  <span class="hljs-type">LT</span> -&gt; keepT n w2 r ts
+  <span class="hljs-type">EQ</span> -&gt; consT w2 r ts
+  <span class="hljs-type">GT</span> | n == w - <span class="hljs-number">1</span> -&gt; consT w2 l (consT w2 r ts)
+     | otherwise -&gt; keepT (n - w2) w2 l (consT w2 r ts)
+ <span class="hljs-keyword">where</span> w2 = div w <span class="hljs-number">2</span>
+<span class="hljs-title">keepT</span> _ _ _ ts = ts
+
+<span class="hljs-title">lca'</span> :: <span class="hljs-type">Path</span> -&gt; <span class="hljs-type">Path</span> -&gt; <span class="hljs-type">Path</span>
+<span class="hljs-title">lca'</span> h@(<span class="hljs-type">Cons</span> _ w x xs) (<span class="hljs-type">Cons</span> _ _ y ys)
+  | x == y = h
+  | xs == ys = lcaT w x y ys
+  | otherwise = lca' xs ys
+<span class="hljs-title">lca'</span> _ _ = <span class="hljs-type">Nil</span>
+
+<span class="hljs-title">lcaT</span> :: <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Tree</span> -&gt; <span class="hljs-type">Tree</span> -&gt; <span class="hljs-type">Path</span> -&gt; <span class="hljs-type">Path</span>
+<span class="hljs-title">lcaT</span> w (<span class="hljs-type">Bin</span> _ la ra) (<span class="hljs-type">Bin</span> _ lb rb) ts
+  | la == lb = consT w2 la (consT w2 ra ts)
+  | ra == rb = lcaT w2 la lb (consT w ra ts)
+  | otherwise = lcaT w2 ra rb ts
+  <span class="hljs-keyword">where</span> w2 = div w <span class="hljs-number">2</span>
+<span class="hljs-title">lcaT</span> _ _ _ ts = ts
+
+<span class="hljs-title">lca</span> :: <span class="hljs-type">Path</span> -&gt; <span class="hljs-type">Path</span> -&gt; <span class="hljs-type">Path</span>
+<span class="hljs-title">lca</span> xs ys = <span class="hljs-keyword">case</span> compare nxs nys <span class="hljs-keyword">of</span>
+  <span class="hljs-type">LT</span> -&gt; lca' xs (keep nxs ys)
+  <span class="hljs-type">EQ</span> -&gt; lca' xs ys
+  <span class="hljs-type">GT</span> -&gt; lca' (keep nys xs) ys
+ <span class="hljs-keyword">where</span>
+  nxs = size xs
+  nys = size ys
+
+<span class="hljs-title">fromList</span> :: [<span class="hljs-type">Int</span>] -&gt; <span class="hljs-type">Path</span>
+<span class="hljs-title">fromList</span> = foldr cons <span class="hljs-type">Nil</span>
+
+<span class="hljs-title">toList</span> :: <span class="hljs-type">Path</span> -&gt; [<span class="hljs-type">Int</span>]
+<span class="hljs-title">toList</span> = unfoldr uncons
+
+<span class="hljs-title">xs</span> = fromList [<span class="hljs-number">6</span>,<span class="hljs-number">4</span>,<span class="hljs-number">3</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1</span>]
+<span class="hljs-title">ys</span> = fromList [<span class="hljs-number">5</span>,<span class="hljs-number">3</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1</span>]
+
+<span class="hljs-title">main</span> = print $ toList (lca xs ys)
+</code></pre>
+<h2 id="recap">Recap</h2>
+<p>With that we can compute an <code>lca</code> in logarithmic time, without preprocessing.</p>
+<p>To summarize:</p>
+<ul>
+<li>
+<p>My algorithm requires no preprocessing step</p>
+</li>
+<li>
+<p><em>O(log h)</em> LCA query type in h, the length of the path</p>
+</li>
+<li>
+<p><em>O(1)</em> to <code>cons</code> onto the end of the path.</p>
+</li>
+<li>
+<p><em>O(1)</em> to compare paths for equality.</p>
+</li>
+<li>
+<p>There is no need to store the entire tree locally, merely the paths you are currently using. This helps with distribution and parallelization when working with large trees.</p>
+</li>
+<li>
+<p>As an on-line algorithm the tree can grow downward from any node without requiring costly recalculations. This renders it suitable for use in version control and other domains where we constantly extend the trees.</p>
+</li>
+<li>
+<p>I've preserved all of the benefits of the naïve algorithm, while drastically reducing the costs.</p>
+</li>
+<li>
+<p>It is a heck of a lot simpler than the off-line algorithms!</p>
+</li>
+</ul>
+<p>This code is packaged up on hackage as the <a href="https://hackage.haskell.org/package/lca"><code>lca</code></a> package. There it has a few refinements. In particular in addition to the integer identifiers for each entry, I store some user annotation making the paths <code>Traversable</code>. Secondly, while trimming the path, it is easy to calculate a monoidal summary of what we trimmed off.</p>
+<p>If we consider monoids that cost <em>O(1)</em> to do its work, then the cost model doesn't change. This version is in <a href="https://hackage.haskell.org/packages/archive/lca/0.2.4/doc/html/Data-LCA-Online-Monoidal.html">Data.LCA.Online.Monoidal</a>.</p>
+<p>This isn't the end of the story. There are (newer) algorithms that can let us update a more static form of an LCA tree in an imperative setting, permitting us to split a node in the path in O(1) or extend a path downward by one in O(1), just like we can do here. However, these retain the cost that you have to preprocess and store the entire tree rather than just information about your active path, unlike the approach given here.</p>
+<p>-<a href="mailto:ekmett@gmail.com">Edward Kmett</a></p>
+<p>September 14th, 2013</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/concurrent-supply"><code>concurrent-supply</code></a> · <a href="https://hackage.haskell.org/package/lca"><code>lca</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><aside class="edition-note"><details><summary>About this edition</summary><p>The interactive figure is a new companion to the article. Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: School of Haskell. Date displayed by School of Haskell; may reflect a later revision.</p><p><a href="../../../source/articles/online-lca.md" download>Article Markdown</a> · <a href="../../../source/articles/online-lca.original.md" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2015/unlifted-structures/">Unlifted Structures →</a><a href="../../../reader/2015/some-rough-notes-on-univalent-foundations-and-b-systems-part-i/">Some Rough Notes on Univalent Foundations and B-Systems, Part I →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main><script type="module" src="../../../article-demos.js"></script></body></html>

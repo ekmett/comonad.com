@@ -1,0 +1,61 @@
+{
+  "reviewed": "2026-09-21",
+  "method": "Explicit reviewed selections; all unselected records preserved in the raw source.",
+  "comments": [
+    {
+      "id": "comment-11056",
+      "author": "Edward Kmett",
+      "date": "August 15th, 2009 at 9:41 am",
+      "markdown": "@Sebastian:\n\nActually, I went through and tried to minimize the number of language extensions the package required. Two of the ones I eliminated were EmptyDataDecls and KindSignatures, since you can define a ‘bottom only’ datatype with a newtype wrapper, and you can perform some shenanigans to avoid the kind signatures once it is a newtype.\n\nHowever, when you don’t use the newtype’s constructor anywhere, -Wall gives you a warning. Rather than have the module spit out 8-9 warnings, I wrote the Unused typeclass to give a single reference to each constructor and to silence the compiler."
+    },
+    {
+      "id": "comment-11060",
+      "author": "Edward Kmett",
+      "date": "August 15th, 2009 at 12:17 pm",
+      "markdown": "@Cale:\n\nYeah, it seems to be a bug in the package I’m using for syntax highlighting. =/ I swapped it out like 3 times, and eventually just moved on. If you have a suggestion for a good WordPress syntax highlighter that does Haskell, I’m all ears."
+    },
+    {
+      "id": "comment-11224",
+      "author": "Edward Kmett",
+      "date": "August 23rd, 2009 at 8:39 am",
+      "markdown": "@Sjoerd:\n\nThe problem with that is that Monoid isn’t the only kind of thing we might want to reify into a type so we can reflect it as a dictionary.\n\nIf any other type had the same dictionary shape, and you took that approach then you could very easily conflate instances.\n\nIf the reflection library wanted to concern itself with every type class in Haskell, that would work fine, but otherwise, you would be stuck with orphan instances. ;)"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "comment-11055",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-11056",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-11058",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-11059",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-11060",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-11212",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-11224",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    }
+  ]
+}

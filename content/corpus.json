@@ -1,0 +1,1903 @@
+{
+  "retrieved": "2026-09-21T16:06:26.889Z",
+  "downloads": {
+    "http://comonad.com/reader/": {
+      "file": "content/original/corpus/1eb8d10d3a61b35ef691f474.html",
+      "sha256": "bc47cf46bab42663baab4f78f7c938d7ab58e0552be30c9ac9385026c5a4e058",
+      "bytes": 297173,
+      "retrieved": "2026-09-21T16:05:08.082Z"
+    },
+    "http://comonad.com/reader/page/2/": {
+      "file": "content/original/corpus/71eaa6f662189d6a1315d899.html",
+      "sha256": "ba2ff1e498c2b7e30640967c30f893f8a2823eac16585903a9e6e73659e4c4b2",
+      "bytes": 48298,
+      "retrieved": "2026-09-21T16:05:08.280Z"
+    },
+    "http://comonad.com/reader/page/3/": {
+      "file": "content/original/corpus/d0abf7483c0e2f2dd3204c24.html",
+      "sha256": "6c665c407b614baefd1459be6cb8414d28de2e04c67da084c5bea4a9beccd89e",
+      "bytes": 50262,
+      "retrieved": "2026-09-21T16:05:08.432Z"
+    },
+    "http://comonad.com/reader/page/4/": {
+      "file": "content/original/corpus/3fff74823829a1d2f98b03b8.html",
+      "sha256": "1ed8985ca392bed08efc844275d3dbda31283f8ae5cba1f15918d120a14097a2",
+      "bytes": 72765,
+      "retrieved": "2026-09-21T16:05:08.603Z"
+    },
+    "http://comonad.com/reader/page/5/": {
+      "file": "content/original/corpus/f16ae1685cdf343e555f245a.html",
+      "sha256": "f92f6eb6947ae85b96ec739407e47c236589ab9be794322a21e29d9032299da3",
+      "bytes": 19053,
+      "retrieved": "2026-09-21T16:05:08.732Z"
+    },
+    "http://comonad.com/reader/2022/internalized-guarded-recursion-for-equational-reasoning/": {
+      "file": "content/original/corpus/62d12610e08f231f36fe7c17.html",
+      "sha256": "01a46abbd69e442fd57bf1af89eb222bcaebb66b57b77a3a20a950b50fb2b421",
+      "bytes": 31112,
+      "retrieved": "2026-09-21T16:05:08.862Z"
+    },
+    "http://comonad.com/reader/2018/the-state-comonad/": {
+      "file": "content/original/corpus/bafec0b96bfa9d914201220d.html",
+      "sha256": "af720b77cf52ac50142e8aaa3e238b0e6b8c164a28a485c5053f01852c730289",
+      "bytes": 69657,
+      "retrieved": "2026-09-21T16:05:09.146Z"
+    },
+    "http://comonad.com/reader/2018/computational-quadrinitarianism-curious-correspondences-go-cubical/": {
+      "file": "content/original/corpus/01563fa9c857e14cc415774d.html",
+      "sha256": "c6a7f94b359568ce8cc4b69f32d68e9297c60d760fd64bec68cc20c90a7d9aea",
+      "bytes": 117161,
+      "retrieved": "2026-09-21T16:05:09.284Z"
+    },
+    "http://comonad.com/reader/2016/adjoint-triples/": {
+      "file": "content/original/corpus/dcae42a5b9aaa0bcb312dae7.html",
+      "sha256": "9c2809db213c24cfb2f30a57aa21509e4c832e48922c2b544b614599c1132b11",
+      "bytes": 360979,
+      "retrieved": "2026-09-21T16:05:09.437Z"
+    },
+    "http://comonad.com/reader/2015/domains-sets-traversals-and-applicatives/": {
+      "file": "content/original/corpus/a8ac59dd61c5ec9d78cdbf08.html",
+      "sha256": "2688be52226b3aacd453101765225d284864c30d07db0ed9e6729b8375f69297",
+      "bytes": 95801,
+      "retrieved": "2026-09-21T16:05:09.845Z"
+    },
+    "http://comonad.com/reader/2015/some-rough-notes-on-univalent-foundations-and-b-systems-part-i/": {
+      "file": "content/original/corpus/c8df7a1de6e2cc015835e8b1.html",
+      "sha256": "43b4fde385e0c8103cbcd84702f94f0dc31efed1aded445b589f0800401eb678",
+      "bytes": 370004,
+      "retrieved": "2026-09-21T16:05:10.578Z"
+    },
+    "http://comonad.com/reader/2015/on-the-unsafety-of-interleaved-io/": {
+      "file": "content/original/corpus/67e9c32e06b0fa0f0955b77b.html",
+      "sha256": "ec450da5a03617e1f40bc056062e97e38539bee0a634f89d388b8f7baaa4cd07",
+      "bytes": 428908,
+      "retrieved": "2026-09-21T16:05:10.581Z"
+    },
+    "http://comonad.com/reader/2015/categories-of-structures-in-haskell/": {
+      "file": "content/original/corpus/792e103937b4b7f485e7dd61.html",
+      "sha256": "af9994a9c791886f2726a9b344e6c4f4adf631222d2f1a3e2e4e8a3a9eaf7eb0",
+      "bytes": 459140,
+      "retrieved": "2026-09-21T16:05:10.603Z"
+    },
+    "http://comonad.com/reader/2015/free-monoids-in-haskell/": {
+      "file": "content/original/corpus/ab5038cca0a712ac8d06ab5f.html",
+      "sha256": "c0c2fd3126625723647504fe5d646b70ea1ea8e24363005fe5b1014504ce7c1a",
+      "bytes": 69193,
+      "retrieved": "2026-09-21T16:05:10.930Z"
+    },
+    "http://comonad.com/reader/2014/fast-circular-substitution/": {
+      "file": "content/original/corpus/7b8b2013598c2da7fff39d56.html",
+      "sha256": "23c0da89072844f702fb5a9f858c1da079c03cbc317d7d8c692eda2c09ef1547",
+      "bytes": 74312,
+      "retrieved": "2026-09-21T16:05:10.934Z"
+    },
+    "http://comonad.com/reader/2014/letter-to-a-young-haskell-enthusiast/": {
+      "file": "content/original/corpus/1ffc3f4c4928fe6177f9828e.html",
+      "sha256": "fcca5e5f548ae2e2848ff7812cdc3594488c5e4ab27322ec5231eb232cf24530",
+      "bytes": 124459,
+      "retrieved": "2026-09-21T16:05:10.966Z"
+    },
+    "http://comonad.com/reader/2014/cufp-cfp/": {
+      "file": "content/original/corpus/ee0faf03eca7bd7628dcd755.html",
+      "sha256": "b84ba2ec8d6b6bbecf7bd91bb7e597959de307e0d91cec0dcaaa98105e525091",
+      "bytes": 380598,
+      "retrieved": "2026-09-21T16:05:11.209Z"
+    },
+    "http://comonad.com/reader/2012/abstracting-with-applicatives/": {
+      "file": "content/original/corpus/a4d2ddb09de01a42e85583f0.html",
+      "sha256": "62e65be292584b7a1779960f61451dee8d0e113f9c93bda6772be6db6179b2a3",
+      "bytes": 92583,
+      "retrieved": "2026-09-21T16:05:11.586Z"
+    },
+    "http://comonad.com/reader/2013/japanese-workshop-1/": {
+      "file": "content/original/corpus/6aa9749dd9485c3fe2e686f3.html",
+      "sha256": "88cbfd765f84304dcaf446773237b52117df74b6ffbcdf2c711edb59a8ca40ab",
+      "bytes": 97847,
+      "retrieved": "2026-09-21T16:05:11.656Z"
+    },
+    "http://comonad.com/reader/2013/representing-applicatives/": {
+      "file": "content/original/corpus/dbdf2e5c1f78a98171249552.html",
+      "sha256": "dd540a892533158cc03639c9197891cf7ed981add2c5242dd7f7abf558ffe2b4",
+      "bytes": 269052,
+      "retrieved": "2026-09-21T16:05:11.851Z"
+    },
+    "http://comonad.com/reader/2013/algebras-of-applicatives/": {
+      "file": "content/original/corpus/ab323cdc1b95356ed9701073.html",
+      "sha256": "e36ea8fb9b9fa1161edd11fef3511519497296944aa8b82899f89a4b8f399bd6",
+      "bytes": 389375,
+      "retrieved": "2026-09-21T16:05:11.942Z"
+    },
+    "http://comonad.com/reader/2012/hackage-mirror/": {
+      "file": "content/original/corpus/f858544dd2169820fee0c6a5.html",
+      "sha256": "90c5b050d51511c5002e6a92245f68f616ba26d291a2c80edbc78fce526b6d48",
+      "bytes": 52824,
+      "retrieved": "2026-09-21T16:05:12.329Z"
+    },
+    "http://comonad.com/reader/2012/natural-deduction-sequent-calculus-and-type-classes/": {
+      "file": "content/original/corpus/43af24b12978e562e1c59ed6.html",
+      "sha256": "2c7e6f45b22211ef7596c51ad715356c5515b4c5ed88526adeb5d26153057261",
+      "bytes": 382676,
+      "retrieved": "2026-09-21T16:05:12.850Z"
+    },
+    "http://comonad.com/reader/2012/unnatural-transformations-and-quantifiers/": {
+      "file": "content/original/corpus/93e6cb7111dee8a00894e2c1.html",
+      "sha256": "0e5c8cfa13a2a06a9509a4c2656e85469a45bb9ed3488fd6f73e1b010b3cb908",
+      "bytes": 391242,
+      "retrieved": "2026-09-21T16:05:12.867Z"
+    },
+    "http://comonad.com/reader/2012/mirrored-lenses/": {
+      "file": "content/original/corpus/d8773b23f906a5bf25be247b.html",
+      "sha256": "f4b6906556511c01663a29a326a28a339e1606e7aa799c67cefd3e3721228f2c",
+      "bytes": 442766,
+      "retrieved": "2026-09-21T16:05:13.014Z"
+    },
+    "http://comonad.com/reader/2012/wadlers-law-revisited/": {
+      "file": "content/original/corpus/acbf6518b96828488dc1d8a6.html",
+      "sha256": "f5677391fa19f2011e7c582de308c941dfac9823f417e35b136d200303431b7c",
+      "bytes": 16190,
+      "retrieved": "2026-09-21T16:05:13.194Z"
+    },
+    "http://comonad.com/reader/2012/wheres-waldo/": {
+      "file": "content/original/corpus/f8c4acb3e891979c896e9213.html",
+      "sha256": "f0abec34b6c2c16f3b7c75c49ddce3f20a16a7bd3428ed449eddda8752c507bc",
+      "bytes": 46907,
+      "retrieved": "2026-09-21T16:05:13.250Z"
+    },
+    "http://comonad.com/reader/2012/catamorphism-knol/": {
+      "file": "content/original/corpus/2f632db006c3e1ac5764aae7.html",
+      "sha256": "bc5b34d091d522715f75ec5c79cb5967bf88c5bc291ec46d0da513cb1263b04a",
+      "bytes": 328696,
+      "retrieved": "2026-09-21T16:05:13.654Z"
+    },
+    "http://comonad.com/reader/2011/searching-infinity/": {
+      "file": "content/original/corpus/a29a65d893fdc82eb0f081cc.html",
+      "sha256": "1eb9dce8b7d5d17b4db1d1011d51bd7e17cb56a98c900d5e0609d22ff8802e69",
+      "bytes": 356162,
+      "retrieved": "2026-09-21T16:05:13.665Z"
+    },
+    "http://comonad.com/reader/2011/homotopy-and-directed-type-theory-slides/": {
+      "file": "content/original/corpus/bf754c6f82fb9530dca144a2.html",
+      "sha256": "61bd4240758c8c159e6b82ceb04d28cc12706c190fa55857b0e83fa8cdf16632",
+      "bytes": 9872,
+      "retrieved": "2026-09-21T16:05:13.841Z"
+    },
+    "http://comonad.com/reader/2011/what-constraints-entail-part-1/": {
+      "file": "content/original/corpus/2c326e37f09fbe0b8b3b3c1f.html",
+      "sha256": "bd3edbc3d1913b0ae2612270754abe17dacaa22aecab12da72a75f64a7336df0",
+      "bytes": 38340,
+      "retrieved": "2026-09-21T16:05:13.896Z"
+    },
+    "http://comonad.com/reader/2011/what-constraints-entail-part-2/": {
+      "file": "content/original/corpus/b9d99a850e678e678a3ac805.html",
+      "sha256": "f5e235ab36b10749c492780bc27cb5749a5547282c8b1ce540648c38b160b09c",
+      "bytes": 125277,
+      "retrieved": "2026-09-21T16:05:14.007Z"
+    },
+    "http://comonad.com/reader/2011/hac-boston/": {
+      "file": "content/original/corpus/e80fd11c09f12548530f157a.html",
+      "sha256": "94030b4bc5d45914b11cd5f7355ac923c23864725a538cd4c9521802bd3f02d9",
+      "bytes": 304212,
+      "retrieved": "2026-09-21T16:05:14.187Z"
+    },
+    "http://comonad.com/reader/2011/a-parsec-full-of-rats-part-2/": {
+      "file": "content/original/corpus/addfcc9b01ec393709b44f7b.html",
+      "sha256": "5e4b0c996e71758ec44d794f12529cd2d585f9fc1437d51e56fc6d4241bd0cdd",
+      "bytes": 29427,
+      "retrieved": "2026-09-21T16:05:14.450Z"
+    },
+    "http://comonad.com/reader/2011/a-parsec-full-of-rats/": {
+      "file": "content/original/corpus/f9d846723bea758f226b6d72.html",
+      "sha256": "2bebb02a66736d6d8c987401f5998b0f06a8cb5ae56f42acea377084934e89fb",
+      "bytes": 33666,
+      "retrieved": "2026-09-21T16:05:14.457Z"
+    },
+    "http://comonad.com/reader/2011/free-modules-and-functional-linear-functionals/": {
+      "file": "content/original/corpus/4881676ccbe4ad3075ba2bdf.html",
+      "sha256": "8a8f1876e0d5711af4cc209a3123a8f33727483b32a2f66bd34d585ef1f8570d",
+      "bytes": 49985,
+      "retrieved": "2026-09-21T16:05:14.478Z"
+    },
+    "http://comonad.com/reader/2011/a-product-of-an-imperfect-union/": {
+      "file": "content/original/corpus/efc0b4425795e319138377e4.html",
+      "sha256": "4a0b35af746c4fb269f9216e6cef3091ebca83757d2afc98237012a32446a321",
+      "bytes": 353250,
+      "retrieved": "2026-09-21T16:05:14.779Z"
+    },
+    "http://comonad.com/reader/2011/more-on-comonads-as-monad-transformers/": {
+      "file": "content/original/corpus/9a277b69866cffbd67af9093.html",
+      "sha256": "f59bed424d9ab26e7a26a5c8f04e0c3734822802c8d442388368a809a04b1d87",
+      "bytes": 19761,
+      "retrieved": "2026-09-21T16:05:14.986Z"
+    },
+    "http://comonad.com/reader/2011/free-monads-for-less-3/": {
+      "file": "content/original/corpus/878af0b5d85503c63221d3ba.html",
+      "sha256": "06a653505801b33abaa692fe1cb3d5bac24bb9ac635826c70689b33de0da35d2",
+      "bytes": 37859,
+      "retrieved": "2026-09-21T16:05:15.014Z"
+    },
+    "http://comonad.com/reader/2011/monad-transformers-from-comonads/": {
+      "file": "content/original/corpus/3889fe429d58a30ebad4601d.html",
+      "sha256": "972ddee438591a745202a2bf9de4ebb0f2fe2ce4bc71ee527e530f5e9a204cd7",
+      "bytes": 338293,
+      "retrieved": "2026-09-21T16:05:15.436Z"
+    },
+    "http://comonad.com/reader/2011/monads-from-comonads/": {
+      "file": "content/original/corpus/de9a358fc36178db2c60e8bf.html",
+      "sha256": "477765fa65557caded600d3acfcec62a75b90e0258cc714551a83ff3a8656caf",
+      "bytes": 360047,
+      "retrieved": "2026-09-21T16:05:15.447Z"
+    },
+    "http://comonad.com/reader/2010/boston-haskell-june/": {
+      "file": "content/original/corpus/509811ce37a493dc422cd9bc.html",
+      "sha256": "780225fbf365c9349f9fe76d9b7c4cac617e7339f233de9c4fd90b9efc2a7ba7",
+      "bytes": 9970,
+      "retrieved": "2026-09-21T16:05:15.603Z"
+    },
+    "http://comonad.com/reader/2010/introducing-speculation/": {
+      "file": "content/original/corpus/c03ee4e516225506bf9cfd6c.html",
+      "sha256": "ec35ed649a05c7fc8ac615b7cfdeef6384d812a67e7a9c63314066b37f6a1d73",
+      "bytes": 23592,
+      "retrieved": "2026-09-21T16:05:15.641Z"
+    },
+    "http://comonad.com/reader/2011/free-monads-for-less/": {
+      "file": "content/original/corpus/3d111298b5de18e86c50f0bb.html",
+      "sha256": "3cfe3237b71cfb5d942c42d40a837eea56461e3aceef624a0d0c2fcfffc6b082",
+      "bytes": 346589,
+      "retrieved": "2026-09-21T16:05:16.076Z"
+    },
+    "http://comonad.com/reader/2011/free-monads-for-less-2/": {
+      "file": "content/original/corpus/29832ea55e9362ff1e44c667.html",
+      "sha256": "4f3fa022b0084bfe0ea6226145fe49814a2dd1e85ef1f48562086f25a919255f",
+      "bytes": 369344,
+      "retrieved": "2026-09-21T16:05:16.093Z"
+    },
+    "http://comonad.com/reader/2010/brodal-okasaki-heaps-in-haskell/": {
+      "file": "content/original/corpus/7fdf989b539ddd7a5a336d28.html",
+      "sha256": "22ec9080c6aa861c7925a1aa997a6ef6e5f61dbc48b9f7739701172d174b0125",
+      "bytes": 10297,
+      "retrieved": "2026-09-21T16:05:16.253Z"
+    },
+    "http://comonad.com/reader/2010/finger-trees/": {
+      "file": "content/original/corpus/b2988583028eed37828f437e.html",
+      "sha256": "34c30f2533d1d86c1bbdd592a4fc95ad721b7711cea1efc5eb7662ad3254bc29",
+      "bytes": 13067,
+      "retrieved": "2026-09-21T16:05:16.263Z"
+    },
+    "http://comonad.com/reader/2010/hac-phi/": {
+      "file": "content/original/corpus/3f9e2a73a7412afe331236fb.html",
+      "sha256": "342ba012d4ebe1245723d1b91b96b0d6337fa8111693da29a57fa1bc18f8ba04",
+      "bytes": 8967,
+      "retrieved": "2026-09-21T16:05:16.265Z"
+    },
+    "http://comonad.com/reader/2010/reverse-mode-automatic-differentiation-in-haskell/": {
+      "file": "content/original/corpus/58fe2e2b5a079832f05ab65c.html",
+      "sha256": "d2713d0971fb568791eae9466795a7c89cf3f8c606bf4dabd2dda0635e20ef70",
+      "bytes": 318522,
+      "retrieved": "2026-09-21T16:05:16.521Z"
+    },
+    "http://comonad.com/reader/2009/iteratees-parsec-and-monoid/": {
+      "file": "content/original/corpus/4c095f52672ab5c67e870d91.html",
+      "sha256": "1950d29a145b0429d874aacfbfc2cb5c80b6b6e5440b57282225317b2aa1c774",
+      "bytes": 15762,
+      "retrieved": "2026-09-21T16:05:16.695Z"
+    },
+    "http://comonad.com/reader/2009/iteratees-take-2/": {
+      "file": "content/original/corpus/27e103de8b5007a6899ee92e.html",
+      "sha256": "df8476efacaa9901112074c829fffce6de29c45c7dd24b4b54b434cf169a95b0",
+      "bytes": 15647,
+      "retrieved": "2026-09-21T16:05:16.701Z"
+    },
+    "http://comonad.com/reader/2009/remodeling-precision/": {
+      "file": "content/original/corpus/1aa697682867e52d76ed46b3.html",
+      "sha256": "8e8f55a15198eec50f74c2ddae66d0c62398e0700e29f86d514b1a5637429f74",
+      "bytes": 24244,
+      "retrieved": "2026-09-21T16:05:16.711Z"
+    },
+    "http://comonad.com/reader/2009/curried-scheme/": {
+      "file": "content/original/corpus/03ed1207e6c72679e5736b84.html",
+      "sha256": "5e50c85b4d95781bf16f27050753b488ca8762224323d49853577dea4b0cffe1",
+      "bytes": 29383,
+      "retrieved": "2026-09-21T16:05:16.713Z"
+    },
+    "http://comonad.com/reader/2009/hac-phi-slides/": {
+      "file": "content/original/corpus/d6322f251523a2f0eb5021a4.html",
+      "sha256": "cc6fc5224a62268be139ebe66680ace5b6d084fa664a0a83e65333ff388e5141",
+      "bytes": 19238,
+      "retrieved": "2026-09-21T16:05:16.901Z"
+    },
+    "http://comonad.com/reader/2009/clearer-reflection/": {
+      "file": "content/original/corpus/490afb656194a05f569254d6.html",
+      "sha256": "fdc2768c269af5516a6ebba1f7ae4a9dc66bf316e4bdf7f701e179894457e10d",
+      "bytes": 20127,
+      "retrieved": "2026-09-21T16:05:16.910Z"
+    },
+    "http://comonad.com/reader/2009/incremental-folds/": {
+      "file": "content/original/corpus/b73ecf77eff11ef5936c0834.html",
+      "sha256": "e73a9b2dd8798959af80314feaf704a4e0c1a907bd1eff7b036244bc618a6ce9",
+      "bytes": 66352,
+      "retrieved": "2026-09-21T16:05:16.976Z"
+    },
+    "http://comonad.com/reader/2009/recursion-schemes/": {
+      "file": "content/original/corpus/a7b76a06be80cd0de14a3b09.html",
+      "sha256": "8ef9f708a824dbe2f2237c484c789a0382b3ff0ced476e18c9501427bc940d22",
+      "bytes": 342389,
+      "retrieved": "2026-09-21T16:05:17.213Z"
+    },
+    "http://comonad.com/reader/2008/still-alive/": {
+      "file": "content/original/corpus/96f37f4d5e796ddc9a3a12db.html",
+      "sha256": "54685ce1e77682639ffc6bf7339cf2daf8c3c0f3c83cac18cefd2185e2b441b2",
+      "bytes": 50336,
+      "retrieved": "2026-09-21T16:05:17.471Z"
+    },
+    "http://comonad.com/reader/2008/representing-adjunctions/": {
+      "file": "content/original/corpus/f418e81159c3179c2eef0fa1.html",
+      "sha256": "1fa554954a11b9731651d6afa59fef6789be71586aa69bbe6c79f4b807634fbb",
+      "bytes": 64930,
+      "retrieved": "2026-09-21T16:05:17.501Z"
+    },
+    "http://comonad.com/reader/2008/zapping-strong-adjunctions/": {
+      "file": "content/original/corpus/cfe48e3fadcef955610d96d1.html",
+      "sha256": "69acd5d9a41496f7b1bfb5548f432af613785bce2082d261fc93218e6c1177fc",
+      "bytes": 66800,
+      "retrieved": "2026-09-21T16:05:17.513Z"
+    },
+    "http://comonad.com/reader/2008/the-pointed-set-comonad/": {
+      "file": "content/original/corpus/137b1682ac6f78d125dd8666.html",
+      "sha256": "1b10d5acec590a3747a8c17d6798ed496b3379dd593465a07fa6f25435e54686",
+      "bytes": 70810,
+      "retrieved": "2026-09-21T16:05:17.515Z"
+    },
+    "http://comonad.com/reader/2008/linear-bloom-filters/": {
+      "file": "content/original/corpus/53b48f9c131d363aba9daeb7.html",
+      "sha256": "57b60682916da60bd81f951fda14b2989408119cb44fb03c01534eaa06e7e309",
+      "bytes": 72917,
+      "retrieved": "2026-09-21T16:05:17.815Z"
+    },
+    "http://comonad.com/reader/2008/kan-extensions/": {
+      "file": "content/original/corpus/86f9f50b192345a65ac39d16.html",
+      "sha256": "8b82764c458bff86a94888a5df7d9bd7dce94302a74eb11202ca320bc874b6f2",
+      "bytes": 79237,
+      "retrieved": "2026-09-21T16:05:17.827Z"
+    },
+    "http://comonad.com/reader/2008/kan-extension-iii/": {
+      "file": "content/original/corpus/c7b7487534ab916058fe2750.html",
+      "sha256": "ae93aefbd388af2c8937d491c463ecef0008759ba94b709f431e906839aea882",
+      "bytes": 77712,
+      "retrieved": "2026-09-21T16:05:17.838Z"
+    },
+    "http://comonad.com/reader/2008/kan-extensions-ii/": {
+      "file": "content/original/corpus/bf080b25f6fb7791cc3a8d0c.html",
+      "sha256": "f564d7e122eb87b05619d7131829cb96046d98b08b5634929832076f09d64bae",
+      "bytes": 107824,
+      "retrieved": "2026-09-21T16:05:17.853Z"
+    },
+    "http://comonad.com/reader/2008/forgetful-laziness/": {
+      "file": "content/original/corpus/dd0ae762090500c5ea4dc6f0.html",
+      "sha256": "89ba33dc7086d32b25ad814ca090af9b3e014f4cbda55cff0702063af31538b9",
+      "bytes": 63379,
+      "retrieved": "2026-09-21T16:05:18.134Z"
+    },
+    "http://comonad.com/reader/2008/generatingfunctorology/": {
+      "file": "content/original/corpus/5fa81b552ea892ac8cde12e9.html",
+      "sha256": "c30ac9132a1628cf8dcfaaab066aa0e13c2a587bb8361c2db02bc6ec5c7f17b8",
+      "bytes": 72205,
+      "retrieved": "2026-09-21T16:05:18.166Z"
+    },
+    "http://comonad.com/reader/2008/towards-formal-power-series-for-functors/": {
+      "file": "content/original/corpus/f08625f38af011ea1aa05c11.html",
+      "sha256": "25638fbe555dbda14185115ec8b9353be5925d04ea28d9cb3189b0e53b323164",
+      "bytes": 394872,
+      "retrieved": "2026-09-21T16:05:18.613Z"
+    },
+    "http://comonad.com/reader/2008/elgot-coalgebras/": {
+      "file": "content/original/corpus/c5c04cb56bb7a617cf6ede4f.html",
+      "sha256": "0cfa8c79cda7b3bf98e3a60dbc4e1dd08dbf5acb1df9c9d54a4a4b367644396c",
+      "bytes": 389561,
+      "retrieved": "2026-09-21T16:05:18.620Z"
+    },
+    "http://comonad.com/reader/2008/just-fokkinga-abide/": {
+      "file": "content/original/corpus/f4bcba68ea39007fed984742.html",
+      "sha256": "c18089d7241efdc4346700a21b37554b142daf9d7fec03d2d3a91b7c4cff1726",
+      "bytes": 59788,
+      "retrieved": "2026-09-21T16:05:18.914Z"
+    },
+    "http://comonad.com/reader/2008/cozipping/": {
+      "file": "content/original/corpus/4716f2528db8571a4e985ab5.html",
+      "sha256": "fd004ca64657bef93726f26acfbde6119dc4a2708880d16b7c29655cd3661a17",
+      "bytes": 68240,
+      "retrieved": "2026-09-21T16:05:18.930Z"
+    },
+    "http://comonad.com/reader/2008/zipping-and-unzipping-functors/": {
+      "file": "content/original/corpus/965396383c90dac98623109a.html",
+      "sha256": "04091740cc21be1e5ca0fe3c5c6b5ae063855d6ec9c37635115e88ca57361dff",
+      "bytes": 79315,
+      "retrieved": "2026-09-21T16:05:18.942Z"
+    },
+    "http://comonad.com/reader/2008/the-cofree-comonad-and-the-expression-problem/": {
+      "file": "content/original/corpus/7b58f51cfd36c78a17cc545e.html",
+      "sha256": "73b37f1d9a6528d0e6b5e4e83b988785a867cbcafb4877da2e4ceca5c21b8170",
+      "bytes": 432118,
+      "retrieved": "2026-09-21T16:05:19.235Z"
+    },
+    "http://comonad.com/reader/2008/dynamorphisms-as-chronomorphisms/": {
+      "file": "content/original/corpus/b492c26975e3d814b46e952f.html",
+      "sha256": "c688139d7589c8d782f0abd97f17891d17a522398a87fa73d383534ce9f00d7e",
+      "bytes": 56631,
+      "retrieved": "2026-09-21T16:05:19.549Z"
+    },
+    "http://comonad.com/reader/2008/time-for-chronomorphisms/": {
+      "file": "content/original/corpus/deda6ee42bcdbf0c547a1502.html",
+      "sha256": "2aaaa7afd26232bfd49f7a3eb2834ba36490e2b0cfc21d4cebcc0ca7d15cdcef",
+      "bytes": 57580,
+      "retrieved": "2026-09-21T16:05:19.552Z"
+    },
+    "http://comonad.com/reader/2008/unnatural-transformations/": {
+      "file": "content/original/corpus/6ca7e7f8abfaf80147497207.html",
+      "sha256": "d01a0a52c4dde4b1be7910bd33093a72f0aa4c314843784b7fb8f4fd134ce534",
+      "bytes": 67344,
+      "retrieved": "2026-09-21T16:05:19.559Z"
+    },
+    "http://comonad.com/reader/2008/deriving-strength-from-laziness/": {
+      "file": "content/original/corpus/a35ed0bdac4cafcc5e27578a.html",
+      "sha256": "af697b42e0e4a23ee47bcad6fa839287ef0a7dd26d9f84d2affd3009f99f68f4",
+      "bytes": 81974,
+      "retrieved": "2026-09-21T16:05:19.565Z"
+    },
+    "http://comonad.com/reader/2008/generalized-hylomorphisms/": {
+      "file": "content/original/corpus/6c1ddf89aceb309ddc64f5d8.html",
+      "sha256": "860f8756036c02bcca8ea6a36978d33fcbf38477d2d92c2bcb7da0ef8adc1d1c",
+      "bytes": 17461,
+      "retrieved": "2026-09-21T16:05:19.760Z"
+    },
+    "http://comonad.com/reader/2008/rotten-bananas/": {
+      "file": "content/original/corpus/03c447e596c1bc926a1189c2.html",
+      "sha256": "70b645685d18a1a454e34c39f9a57b1fdf29a52cebdccf08ebff991dc3fbfa87",
+      "bytes": 54307,
+      "retrieved": "2026-09-21T16:05:19.828Z"
+    },
+    "http://comonad.com/reader/2008/higher-order-abstract-syntax-a-la-carte/": {
+      "file": "content/original/corpus/a830b45639c66016c4e4d4b2.html",
+      "sha256": "499a36ba29ee34220aa0263c846ecce9356568ebe1b3425b4f9c6c034646d0c6",
+      "bytes": 332945,
+      "retrieved": "2026-09-21T16:05:20.222Z"
+    },
+    "http://comonad.com/reader/2008/monads-for-free/": {
+      "file": "content/original/corpus/e8bd604eb99fff874eaacff7.html",
+      "sha256": "e292c35b10821c80ae59307849ef7076618722bb2d4afa78edcde475d46bc93e",
+      "bytes": 354012,
+      "retrieved": "2026-09-21T16:05:20.235Z"
+    },
+    "http://comonad.com/reader/2008/elgot-algebras/": {
+      "file": "content/original/corpus/46ee2c06fa01483a2fbdb2dc.html",
+      "sha256": "2f7ca911c0ece0fff02f1e1da600dcc8e45bd5e750f3834d0cb5128a4403a20d",
+      "bytes": 8765,
+      "retrieved": "2026-09-21T16:05:20.387Z"
+    },
+    "http://comonad.com/reader/2007/javascript-interpreter-recompiler-atomizer-threading-library/": {
+      "file": "content/original/corpus/a7766f536e60154ea77dc35b.html",
+      "sha256": "b5175783146310eff13058bc5d8e5f51b5df8c763587f96fb506619e7c39298d",
+      "bytes": 10006,
+      "retrieved": "2026-09-21T16:05:20.391Z"
+    },
+    "http://comonad.com/reader/2007/updated-datatype/": {
+      "file": "content/original/corpus/5e24e9ba19ef475b5a7a7086.html",
+      "sha256": "3264d3badbe3d686236b63dcc18d7ad520868261b837a6cbf0edfe327c7f1067",
+      "bytes": 9528,
+      "retrieved": "2026-09-21T16:05:20.397Z"
+    },
+    "http://comonad.com/reader/2007/parameterized-monads-in-haskell/": {
+      "file": "content/original/corpus/1e413dde1ae13a386437362c.html",
+      "sha256": "67ce47c668490b4d0b55f092482d63f93993c07f8057ef98812fce977fb6b334",
+      "bytes": 25192,
+      "retrieved": "2026-09-21T16:05:20.402Z"
+    },
+    "http://comonad.com/reader/2006/wikipress/": {
+      "file": "content/original/corpus/6f0ece51791c017a25eb3917.html",
+      "sha256": "ec45903dce35fb38d458d9fbdd752483f12af91aca24736157da9a382cc26a4f",
+      "bytes": 9502,
+      "retrieved": "2026-09-21T16:05:20.558Z"
+    },
+    "http://comonad.com/reader/2006/logic/": {
+      "file": "content/original/corpus/df6462db066179159571c300.html",
+      "sha256": "d0d63dd2f8675147ffd9b547f1456610722fb494941f208118286874dd5c39ae",
+      "bytes": 9335,
+      "retrieved": "2026-09-21T16:05:20.560Z"
+    },
+    "http://comonad.com/reader/2006/overloaded-functions-with-subtyping/": {
+      "file": "content/original/corpus/adc06eea64eed2fc50d87989.html",
+      "sha256": "99ec1db118fe7a4f6c95d692c537ee8fd0108814ed0988e9e3e4ed451be7bf3e",
+      "bytes": 10934,
+      "retrieved": "2026-09-21T16:05:20.568Z"
+    },
+    "http://comonad.com/reader/2006/generalizing-dot/": {
+      "file": "content/original/corpus/3cb8234acc5a40f11c2b3817.html",
+      "sha256": "9c782b22e221450ef2b0aa6b378e1d211e83ec81689d7b3493bcbb238ced03e1",
+      "bytes": 16106,
+      "retrieved": "2026-09-21T16:05:20.568Z"
+    },
+    "http://comonad.com/reader/2006/hello-world/": {
+      "file": "content/original/corpus/48d3b217a96e5bd9c482d5a8.html",
+      "sha256": "0be93641613496eca6edea8c286632e7e410f6aeef7db3ae3293f500b9e0c9d9",
+      "bytes": 12445,
+      "retrieved": "2026-09-21T16:05:20.683Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk": {
+      "file": "content/original/corpus/2df36087c6b966811c2c476a.html",
+      "sha256": "097689e07eb585267bd1345adfc6d06e8a81c98a51e76131a31837db9c9c282d",
+      "bytes": 29686,
+      "retrieved": "2026-09-21T16:05:20.793Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/unlifted-structures": {
+      "file": "content/original/corpus/2b7935538865fc301b88fd65.html",
+      "sha256": "68ae7426f6237c02bc2e1f20026692b61676146739f2930d09c6a2d89726ef1f",
+      "bytes": 29783,
+      "retrieved": "2026-09-21T16:05:20.896Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/heap-of-successes": {
+      "file": "content/original/corpus/6e11d6d974dbb9cca5d7b835.html",
+      "sha256": "27f09c6be0dfce0263834414ef8d04009448b2340688893975a1365c776dc895",
+      "bytes": 45339,
+      "retrieved": "2026-09-21T16:05:20.958Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/moore": {
+      "file": "content/original/corpus/4c872566bf0de09df4c27f6e.html",
+      "sha256": "b8e75c08baf094df8d810157a673e4b3c4e76bbe54c00dc34947c2386844ba0b",
+      "bytes": 21267,
+      "retrieved": "2026-09-21T16:05:20.978Z"
+    },
+    "https://www.schoolofhaskell.com/tutorial-raw/4906/bbf054cf4c47ccf0eb1c267a2a16b4f6c74ea341": {
+      "file": "content/original/corpus/e4532d2b7f150a32607915de.md",
+      "sha256": "0a9ffafb8505fa49879cececdb643062f8439288d0c68fca07cc8415063621da",
+      "bytes": 7024,
+      "retrieved": "2026-09-21T16:05:20.994Z"
+    },
+    "https://www.schoolofhaskell.com/tutorial-raw/4906/0f6911c474fa38006c6b1ba653b47020740cadcf": {
+      "file": "content/original/corpus/8ca7002c048331594f000b07.md",
+      "sha256": "c0a13e0a6427567e961afc30371c2ab78870896a328aa52d25ee08ff31fce663",
+      "bytes": 20211,
+      "retrieved": "2026-09-21T16:05:21.020Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/fibonacci": {
+      "file": "content/original/corpus/5c5e246bb01ead416a7688a0.html",
+      "sha256": "4ddacfa97e6bb698e60d52016a08ccd9627c95ddf2852668d1949ce3a467085b",
+      "bytes": 22407,
+      "retrieved": "2026-09-21T16:05:21.030Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/phoas": {
+      "file": "content/original/corpus/d17bf045173439595c83dfbf.html",
+      "sha256": "4b89a201d851ef02a8e9036c354441b87dab2c989eebea874d9f8ba8ebb70834",
+      "bytes": 40120,
+      "retrieved": "2026-09-21T16:05:21.126Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/bound": {
+      "file": "content/original/corpus/81212c0f04088fa81d4c8b0b.html",
+      "sha256": "e6846e0a7af832ae4d9b43838c42a06ee5e8b9ba3ec8a37c554cce012421ef91",
+      "bytes": 66016,
+      "retrieved": "2026-09-21T16:05:21.129Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/oblivious": {
+      "file": "content/original/corpus/500ae164a159b19207401fd7.html",
+      "sha256": "af7e8f2a9acab1377427701674ad334f2e1781cc5a23501d2e8fdefbf14b6ae0",
+      "bytes": 21863,
+      "retrieved": "2026-09-21T16:05:21.137Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/editorial": {
+      "file": "content/original/corpus/6fc83a20d4977fade48fa453.html",
+      "sha256": "136f462bf2a0fa1c2c42731ecd7f593f37330202835fad4694929405529b001c",
+      "bytes": 21333,
+      "retrieved": "2026-09-21T16:05:21.169Z"
+    },
+    "https://www.schoolofhaskell.com/tutorial-raw/4906/f941295a3eebf64a926799ca2aabafe14435b5f7": {
+      "file": "content/original/corpus/d698a4ac4023c4dde4906de0.md",
+      "sha256": "ee5d7d05a85a9c8b9c64c15ecfb7b36249f3865f37ce03520e27d78ad87a0bd0",
+      "bytes": 37507,
+      "retrieved": "2026-09-21T16:05:21.192Z"
+    },
+    "https://www.schoolofhaskell.com/tutorial-raw/4906/07986d7545873d46a1bcc28b8fbe367f2f9fa5ab": {
+      "file": "content/original/corpus/25ef8f1210cb0f36fde6ee4b.md",
+      "sha256": "9c327d8f9d504d77551b3f55b1662b2aeb9e9605df721a235a72ff49ebfbda63",
+      "bytes": 15184,
+      "retrieved": "2026-09-21T16:05:21.211Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/cellular-automata": {
+      "file": "content/original/corpus/c205219b2edb5ae971ae34a7.html",
+      "sha256": "d5922b17d03fdf4fb2683fea1fc01109b0c0ffd19f8e3a9b0395e3f358aac60c",
+      "bytes": 23077,
+      "retrieved": "2026-09-21T16:05:21.282Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/parallel-crc": {
+      "file": "content/original/corpus/1457ff0ee574486b64193df7.html",
+      "sha256": "3d79ffe0eb010d3e636e361bcc9a97e50b981ab40dc0c5d1fb4d5a6ed3dee4a4",
+      "bytes": 53602,
+      "retrieved": "2026-09-21T16:05:21.338Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/online-lca": {
+      "file": "content/original/corpus/c2b3fddaf5b3f361fefb727a.html",
+      "sha256": "0864cd160ca09e0866568e535b4d5d62cee98f6874197fb0dfc746ae87a7c476",
+      "bytes": 49520,
+      "retrieved": "2026-09-21T16:05:21.341Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/conquering-folds": {
+      "file": "content/original/corpus/6c2d11e532e6b0e69d59b86d.html",
+      "sha256": "fd6bcbc3dbcc185cd3854478e64b66d59d3e133688051fb184fb06dae1e61579",
+      "bytes": 47395,
+      "retrieved": "2026-09-21T16:05:21.343Z"
+    },
+    "https://www.schoolofhaskell.com/tutorial-raw/4906/3310c904c4265dd33884d81f64bff43f7f927209": {
+      "file": "content/original/corpus/abda21f5d356c060c66dd3de.md",
+      "sha256": "1c8849db6e1aa5c436778b63d63ff02c9a7a7699198808db21a7690d697375f4",
+      "bytes": 27382,
+      "retrieved": "2026-09-21T16:05:21.391Z"
+    },
+    "https://www.schoolofhaskell.com/tutorial-raw/4906/12df3bd5cac020b2c1c77edf8fa6ccc92f9337b0": {
+      "file": "content/original/corpus/09fe33c0fc02b5213668c7ee.md",
+      "sha256": "801167f44a2e3452e2df29e9d772ae2430967c786b35434250cff3c56f5ee4bb",
+      "bytes": 23318,
+      "retrieved": "2026-09-21T16:05:21.412Z"
+    },
+    "https://www.schoolofhaskell.com/tutorial-raw/4906/e98386333725c466b7a765c0b9cf2518e4dc360f": {
+      "file": "content/original/corpus/85e5cbe833521c3cc87bd763.md",
+      "sha256": "b9c4c80c7f2817d5fa796cfdc14f2646f587fcbf5883910c1ccda2dfc8dc22fd",
+      "bytes": 21991,
+      "retrieved": "2026-09-21T16:05:21.437Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/recursion-schemes": {
+      "file": "content/original/corpus/d3ad46f5b2b2f047994e5f40.html",
+      "sha256": "7dafc05930dc7480567ebeaa4e2657a4ba31dcc07e4bc5eea415998981910935",
+      "bytes": 21548,
+      "retrieved": "2026-09-21T16:05:21.531Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/snippets": {
+      "file": "content/original/corpus/30e2ec6b124c56ea41be90a7.html",
+      "sha256": "ce28803244a7ff2f1ba9102fe77d12016010c4dd5d535d62f23edca8f929437c",
+      "bytes": 22659,
+      "retrieved": "2026-09-21T16:05:21.544Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication": {
+      "file": "content/original/corpus/03bcba677649dc6ab9f9c7e6.html",
+      "sha256": "34ee79b77205f79a8e60533d3e893791bab18e9888d14cf350b664b935a5866c",
+      "bytes": 25197,
+      "retrieved": "2026-09-21T16:05:21.545Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/moore/for-less": {
+      "file": "content/original/corpus/2d5b1f1be31f6f04e07e7d4f.html",
+      "sha256": "a2c38869574832bcf1e76303f24e9ddb3df9b52ea72dd24751f24ce90d95cea8",
+      "bytes": 50007,
+      "retrieved": "2026-09-21T16:05:21.556Z"
+    },
+    "https://www.schoolofhaskell.com/tutorial-raw/4906/9ab8b288c6c5cc9d1ab36ccb8c3c74167b4dd00f": {
+      "file": "content/original/corpus/a2bd380233477b12005aa3b7.md",
+      "sha256": "ec90b545f27804e4e597d593e33e0144c10a8b8eec43398c519e04df4789209b",
+      "bytes": 22671,
+      "retrieved": "2026-09-21T16:05:21.608Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/fibonacci/leonardo": {
+      "file": "content/original/corpus/08e5d05ea7555f24b9ed7a3d.html",
+      "sha256": "379cead1e107289b1ab59e8928aef44c462714511edfb9d69c5821931517dfe0",
+      "bytes": 31787,
+      "retrieved": "2026-09-21T16:05:21.712Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/fibonacci/search": {
+      "file": "content/original/corpus/d49bca1ed9f320dd90189a47.html",
+      "sha256": "5521e03faccc61c219791bd5f336dafee077c11200dc2e92167da06177bb5dab",
+      "bytes": 42411,
+      "retrieved": "2026-09-21T16:05:21.715Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication/part-5": {
+      "file": "content/original/corpus/640e668ecaaad2b8619ea1e7.html",
+      "sha256": "df8248c819a83d32e6dfc99dac3440633b03ddbf27fd0af8ca8f6a0ab91bb857",
+      "bytes": 50095,
+      "retrieved": "2026-09-21T16:05:21.720Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/oblivious/deamortized-st": {
+      "file": "content/original/corpus/c79a1acedebcb3771ee48c7f.html",
+      "sha256": "f1e04a2212e94eecb6d773e79c5c96f27b9208e00b2ff8ee3f24491fcc637d85",
+      "bytes": 44325,
+      "retrieved": "2026-09-21T16:05:21.732Z"
+    },
+    "https://www.schoolofhaskell.com/tutorial-raw/4906/ef3bb842b9000d78432bcff461f73bed06069b8d": {
+      "file": "content/original/corpus/911c9304c31c6c3a8a6f905b.md",
+      "sha256": "8adfb16c660985438d562ce254cf9ca3ad8e38d76bb819963859f1e8c5c53553",
+      "bytes": 17060,
+      "retrieved": "2026-09-21T16:05:21.784Z"
+    },
+    "https://www.schoolofhaskell.com/tutorial-raw/4906/4244d5709e256fd7dacdf3512e7d00334eafbc6b": {
+      "file": "content/original/corpus/dbf50348ed361f4e6db353be.md",
+      "sha256": "5d2b5169da71446b86739ff342e0700afa64f7fbb391d953e945e63a7be942eb",
+      "bytes": 18449,
+      "retrieved": "2026-09-21T16:05:21.792Z"
+    },
+    "https://www.schoolofhaskell.com/tutorial-raw/4906/b43bf065739f05937cdb8de9cdac53ec646bed1a": {
+      "file": "content/original/corpus/485d93f33aa0885db5a24360.md",
+      "sha256": "67964ee95d565d3e3152a7cd9c5a06d73d502627320cd0aa033973149a1e0c8d",
+      "bytes": 24705,
+      "retrieved": "2026-09-21T16:05:21.800Z"
+    },
+    "https://www.schoolofhaskell.com/tutorial-raw/4906/3a2678a9238b713dbb2240b8e98bff28c88444f4": {
+      "file": "content/original/corpus/375863705d98619cdb11fc1a.md",
+      "sha256": "41330906046abae67d913a7e84e9aab55d9e128d526347fd81ab4a2bc79a2034",
+      "bytes": 8495,
+      "retrieved": "2026-09-21T16:05:21.815Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/editorial/procrustean-mathematics": {
+      "file": "content/original/corpus/24b40e9943ef856d9871cc75.html",
+      "sha256": "894b3a1951fcf2d083073434a0e08496ed657b06e60167c06be614d392b35d53",
+      "bytes": 46708,
+      "retrieved": "2026-09-21T16:05:21.879Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/cellular-automata/part-3": {
+      "file": "content/original/corpus/a81f5b8ebe7c3fb5c1285a6f.html",
+      "sha256": "7773ff712e2e2d968fdc899c566feb582a859f86abfa0aa58efd0cbe529e839d",
+      "bytes": 34895,
+      "retrieved": "2026-09-21T16:05:21.914Z"
+    },
+    "https://www.schoolofhaskell.com/tutorial-raw/4906/97cc863d550b152cbbcf6a645709d80f16ba96cd": {
+      "file": "content/original/corpus/92880915dacbf1849e4408db.md",
+      "sha256": "d88a18655615c5e29fa33187b158966aaf2ae18b8256e83a34a815f98e951776",
+      "bytes": 21360,
+      "retrieved": "2026-09-21T16:05:21.929Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/cellular-automata/part-1": {
+      "file": "content/original/corpus/3fefaefb79218aac6b117705.html",
+      "sha256": "b10f223bb3b849946b32a3367d56e35c73c287264622d9ce8a7637a70a6ec0be",
+      "bytes": 42328,
+      "retrieved": "2026-09-21T16:05:21.943Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/cellular-automata/part-2": {
+      "file": "content/original/corpus/d574eb9ed049ee1e9984c466.html",
+      "sha256": "5c3794292774821e2442cb092522db448b595a4706a2553343f589dd1b5d32a8",
+      "bytes": 54862,
+      "retrieved": "2026-09-21T16:05:21.949Z"
+    },
+    "https://www.schoolofhaskell.com/tutorial-raw/4906/2a6140398ce46eceac790037f4afbd66c3b9c7c5": {
+      "file": "content/original/corpus/bc357760cd1fe01afd085626.md",
+      "sha256": "49254982d1c94327019b33d2a368c4f130bf083513a27a57e8f5c96952debe1c",
+      "bytes": 17366,
+      "retrieved": "2026-09-21T16:05:21.992Z"
+    },
+    "https://www.schoolofhaskell.com/tutorial-raw/4906/adea78b22dcf260126adedf58d7500caf297b583": {
+      "file": "content/original/corpus/4883ae2c2d44cc80469bb460.md",
+      "sha256": "704791b9db0d43d48a6fbca61a7f48e0980d23ba860b28ca94ae3943fd67086b",
+      "bytes": 11440,
+      "retrieved": "2026-09-21T16:05:22.024Z"
+    },
+    "https://www.schoolofhaskell.com/tutorial-raw/4906/604212fe84a3e9f477c2f975737b8e05d70a941f": {
+      "file": "content/original/corpus/6f6f69b9cc40609b9a22cafe.md",
+      "sha256": "066e7cbf555b71506da20ee8b4dc946b55477d599eacb77804681bdc8bd819e4",
+      "bytes": 28230,
+      "retrieved": "2026-09-21T16:05:22.025Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/snippets/fmap": {
+      "file": "content/original/corpus/2656ecbaaf9e63aa4a7ce5a2.html",
+      "sha256": "88c74e98941242a125ff195cc0dfc59fffaee5b1a5b1064d169be8b2df999736",
+      "bytes": 27568,
+      "retrieved": "2026-09-21T16:05:22.148Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/snippets/mandelbrot": {
+      "file": "content/original/corpus/e5a9b4bfd735dae2f2e71599.html",
+      "sha256": "ed2848eaee4eb8886942dfb20a2f803e23e2aa960ac4a4fac4cf99ef9c41f11c",
+      "bytes": 28388,
+      "retrieved": "2026-09-21T16:05:22.150Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/recursion-schemes/catamorphisms": {
+      "file": "content/original/corpus/8b66740d0ee8cd7ada297cc8.html",
+      "sha256": "32681cb4cc7e8cdedfaa95df967b140ee5781626064284353ea7f81b6059d480",
+      "bytes": 32570,
+      "retrieved": "2026-09-21T16:05:22.164Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/snippets/once": {
+      "file": "content/original/corpus/3def36f6413b06c0f0aa18ce.html",
+      "sha256": "bba2449f6e5e78c2c4c53e91566678432d203c3bbafe33aebb3eeb3cc2e2b170",
+      "bytes": 24533,
+      "retrieved": "2026-09-21T16:05:22.166Z"
+    },
+    "https://www.schoolofhaskell.com/tutorial-raw/4906/f8868a34da7b6bd25296d160942294f74bccdf11": {
+      "file": "content/original/corpus/e6d0788672cacbb738446f7b.md",
+      "sha256": "0deee746bd7c105ecfa7a83c7f7cd96f440ea00aae02da50e6a4cfc1363b160c",
+      "bytes": 4508,
+      "retrieved": "2026-09-21T16:05:22.201Z"
+    },
+    "https://www.schoolofhaskell.com/tutorial-raw/4906/5075dba7d5304c8f12a24c282c3d243564ea9e0a": {
+      "file": "content/original/corpus/adfa97de2be831c784d42b96.md",
+      "sha256": "78f1e63be2c5ce9b797b20f48d2bd9e2d034dd3b76eff9e676e6bbea8e4e05bd",
+      "bytes": 5760,
+      "retrieved": "2026-09-21T16:05:22.212Z"
+    },
+    "https://www.schoolofhaskell.com/tutorial-raw/4906/52c9d1c864e897525f61e645d40e7d6a561f1c77": {
+      "file": "content/original/corpus/f1ad9dbd9e0ec6f5513cc200.md",
+      "sha256": "845af55d20586737778adfef891fc9339fb178255c848fe5410d5b1623ca09ba",
+      "bytes": 2111,
+      "retrieved": "2026-09-21T16:05:22.234Z"
+    },
+    "https://www.schoolofhaskell.com/tutorial-raw/4906/9f247ee93e3ec7d8b226e906eb1d7648a1e57c76": {
+      "file": "content/original/corpus/e1154a13f41bf133d66f892b.md",
+      "sha256": "84d4ad285d568cc938359f32a77ad3839e15ad244baa2ad76867b4d919768346",
+      "bytes": 9226,
+      "retrieved": "2026-09-21T16:05:22.246Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication/part-1": {
+      "file": "content/original/corpus/6b8ec81c35e3698a0d1aa801.html",
+      "sha256": "30164d59b5ddf9053f64144a1a098474618e9778a4dbee82b7edb8dba46d3b9f",
+      "bytes": 46619,
+      "retrieved": "2026-09-21T16:05:22.349Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication/part-4": {
+      "file": "content/original/corpus/fce096f2a2010c6a78491261.html",
+      "sha256": "df761c613f57c3ae44671c63437ac975ebcaa2bf6ce8cf99285926c37713f54a",
+      "bytes": 40345,
+      "retrieved": "2026-09-21T16:05:22.351Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication/part-3": {
+      "file": "content/original/corpus/6b5f9152f5fe1939ce2cdd2f.html",
+      "sha256": "a2c50adcc929787558a58008199c84c32da0651b77de82183fa181d1ecc3e021",
+      "bytes": 52769,
+      "retrieved": "2026-09-21T16:05:22.386Z"
+    },
+    "https://www.schoolofhaskell.com/tutorial-raw/4906/499f6f6ad03e6dc2feab4905f94308e5417e7458": {
+      "file": "content/original/corpus/4f17dfa96cb53d09b9993e31.md",
+      "sha256": "f873f97d588617b65e356bca18011617733908616f51b2bc4c8b66288e4d1160",
+      "bytes": 22318,
+      "retrieved": "2026-09-21T16:05:22.413Z"
+    },
+    "https://www.schoolofhaskell.com/tutorial-raw/4906/4892553edbb35ab05743b820e3d3f17b88343c66": {
+      "file": "content/original/corpus/70b3b22050550f3226171f87.md",
+      "sha256": "957a1f2121091601ee5448e723c37bc8e82edd198fc16fb88a1a0dc673d4188a",
+      "bytes": 15962,
+      "retrieved": "2026-09-21T16:05:22.435Z"
+    },
+    "https://www.schoolofhaskell.com/tutorial-raw/4906/c9948ec20386ad678e5f35781e4854b172e6308a": {
+      "file": "content/original/corpus/5a62211b97d2d50f7d26295c.md",
+      "sha256": "84bafc3096b93b46cde773340c6a534ced19de063c24ceaec48d5331f6deae2e",
+      "bytes": 27496,
+      "retrieved": "2026-09-21T16:05:22.446Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication/part-2": {
+      "file": "content/original/corpus/877dac641032ceaadf946f18.html",
+      "sha256": "0f9476fe9ec8a836c01b88d366f89c1919e2fbc770073c21e319d33cf32b35f9",
+      "bytes": 35081,
+      "retrieved": "2026-09-21T16:05:22.467Z"
+    },
+    "https://www.schoolofhaskell.com/tutorial-raw/4906/99e5ad65aa6415d56184e2621cde1187820b2b7d": {
+      "file": "content/original/corpus/51f419b87492a70a3d2f9ac2.md",
+      "sha256": "d40890755f366985ade280281b851ff8dd3a05f935c190e5a1689f4df3dd1b00",
+      "bytes": 11325,
+      "retrieved": "2026-09-21T16:05:22.537Z"
+    },
+    "https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication/part-6": {
+      "file": "content/original/corpus/9d0096171b33dccf29cb31ce.html",
+      "sha256": "118d25c4bb7d9b795e05cb39f76cc6c681cbfbff94562a2016e21e00ef337912",
+      "bytes": 27445,
+      "retrieved": "2026-09-21T16:05:22.627Z"
+    },
+    "https://www.schoolofhaskell.com/tutorial-raw/4906/fa630871f2e42363a2ebddceb1c6878594eccc6b": {
+      "file": "content/original/corpus/9859fd8454605faf2dc4e119.md",
+      "sha256": "3a9341edbef711008af8fccf2377fb1d3ad009a0c07fa989e2a063c7b0f9680e",
+      "bytes": 4346,
+      "retrieved": "2026-09-21T16:05:22.697Z"
+    }
+  },
+  "blog": [
+    {
+      "origin": "http://comonad.com/reader/2022/internalized-guarded-recursion-for-equational-reasoning/",
+      "title": "Internalized Guarded Recursion for Equational Reasoning",
+      "author": "Gershom Bazerman",
+      "date": "2022-10-21",
+      "categories": "Data Structures · Haskell",
+      "raw": "content/original/corpus/62d12610e08f231f36fe7c17.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2018/computational-quadrinitarianism-curious-correspondences-go-cubical/",
+      "title": "Computational Quadrinitarianism (Curious Correspondences go Cubical)",
+      "author": "Gershom Bazerman",
+      "date": "2018-01-16",
+      "categories": "Uncategorized",
+      "raw": "content/original/corpus/01563fa9c857e14cc415774d.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2018/the-state-comonad/",
+      "title": "The State Comonad",
+      "author": "Edward Kmett",
+      "date": "2018-01-06",
+      "categories": "Haskell · Monads",
+      "raw": "content/original/corpus/bafec0b96bfa9d914201220d.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2016/adjoint-triples/",
+      "title": "Adjoint Triples",
+      "author": "Dan Doel",
+      "date": "2016-01-13",
+      "categories": "Category Theory · Comonads · Haskell · Logic · Mathematics · Monads · Type Theory · Uncategorized",
+      "raw": "content/original/corpus/dcae42a5b9aaa0bcb312dae7.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2015/some-rough-notes-on-univalent-foundations-and-b-systems-part-i/",
+      "title": "Some Rough Notes on Univalent Foundations and B-Systems, Part I",
+      "author": "Gershom Bazerman",
+      "date": "2015-09-15",
+      "categories": "Homotopy Type Theory · Type Theory",
+      "raw": "content/original/corpus/c8df7a1de6e2cc015835e8b1.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2015/on-the-unsafety-of-interleaved-io/",
+      "title": "On the unsafety of interleaved I/O",
+      "author": "Dan Doel",
+      "date": "2015-07-22",
+      "categories": "Haskell",
+      "raw": "content/original/corpus/67e9c32e06b0fa0f0955b77b.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2015/categories-of-structures-in-haskell/",
+      "title": "Categories of Structures in Haskell",
+      "author": "Dan Doel",
+      "date": "2015-05-25",
+      "categories": "Category Theory · Comonads · Data Structures · Haskell · Kan Extensions · Mathematics · Monads · Type Hackery · Uncategorized",
+      "raw": "content/original/corpus/792e103937b4b7f485e7dd61.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2015/domains-sets-traversals-and-applicatives/",
+      "title": "Domains, Sets, Traversals and Applicatives",
+      "author": "Dan Doel",
+      "date": "2015-04-29",
+      "categories": "Category Theory · Comonads · Data Structures · Haskell · Mathematics · Monads",
+      "raw": "content/original/corpus/a8ac59dd61c5ec9d78cdbf08.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2015/free-monoids-in-haskell/",
+      "title": "Free Monoids in Haskell",
+      "author": "Dan Doel",
+      "date": "2015-02-21",
+      "categories": "Category Theory · Haskell · Mathematics",
+      "raw": "content/original/corpus/ab5038cca0a712ac8d06ab5f.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2014/fast-circular-substitution/",
+      "title": "Fast Circular Substitution",
+      "author": "Edward Kmett",
+      "date": "2014-12-30",
+      "categories": "Algorithms · Haskell · Type Theory",
+      "raw": "content/original/corpus/7b8b2013598c2da7fff39d56.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2014/letter-to-a-young-haskell-enthusiast/",
+      "title": "Letter to a Young Haskell Enthusiast",
+      "author": "Gershom Bazerman",
+      "date": "2014-08-01",
+      "categories": "Uncategorized",
+      "raw": "content/original/corpus/1ffc3f4c4928fe6177f9828e.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2014/cufp-cfp/",
+      "title": "CUFP 2014 Call For Presentations",
+      "author": "Edward Kmett",
+      "date": "2014-04-20",
+      "categories": "CUFP · Call For Presentations · Conferences · Meta",
+      "raw": "content/original/corpus/ee0faf03eca7bd7628dcd755.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2013/representing-applicatives/",
+      "title": "Representing Applicatives",
+      "author": "Gershom Bazerman",
+      "date": "2013-05-02",
+      "categories": "Uncategorized",
+      "raw": "content/original/corpus/dbdf2e5c1f78a98171249552.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2013/japanese-workshop-1/",
+      "title": "Japanese “ekmett” Workshop (Part 1 of 2)",
+      "author": "Edward Kmett",
+      "date": "2013-04-01",
+      "categories": "Japan · Lenses · Mathematics",
+      "raw": "content/original/corpus/6aa9749dd9485c3fe2e686f3.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2013/algebras-of-applicatives/",
+      "title": "Algebras of Applicatives",
+      "author": "Gershom Bazerman",
+      "date": "2013-01-11",
+      "categories": "Uncategorized",
+      "raw": "content/original/corpus/ab323cdc1b95356ed9701073.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2012/abstracting-with-applicatives/",
+      "title": "Abstracting with Applicatives",
+      "author": "Gershom Bazerman",
+      "date": "2012-12-26",
+      "categories": "Category Theory · Data Structures · Monoids",
+      "raw": "content/original/corpus/a4d2ddb09de01a42e85583f0.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2012/natural-deduction-sequent-calculus-and-type-classes/",
+      "title": "Natural Deduction, Sequent Calculus and Type Classes",
+      "author": "Dan Doel",
+      "date": "2012-12-07",
+      "categories": "Uncategorized",
+      "raw": "content/original/corpus/43af24b12978e562e1c59ed6.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2012/unnatural-transformations-and-quantifiers/",
+      "title": "Unnatural Transformations and Quantifiers",
+      "author": "Dan Doel",
+      "date": "2012-09-22",
+      "categories": "Category Theory · Haskell · Kan Extensions · Mathematics · Monads",
+      "raw": "content/original/corpus/93e6cb7111dee8a00894e2c1.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2012/hackage-mirror/",
+      "title": "Working around Hackage Outages",
+      "author": "Edward Kmett",
+      "date": "2012-08-29",
+      "categories": "Haskell · Infrastructure",
+      "raw": "content/original/corpus/f858544dd2169820fee0c6a5.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2012/mirrored-lenses/",
+      "title": "Mirrored Lenses",
+      "author": "Edward Kmett",
+      "date": "2012-06-24",
+      "categories": "Algorithms · Data Structures · Haskell · Lenses",
+      "raw": "content/original/corpus/d8773b23f906a5bf25be247b.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2012/wheres-waldo/",
+      "title": "Where’s Waldo?",
+      "author": "Edward Kmett",
+      "date": "2012-06-10",
+      "categories": "Haskell",
+      "raw": "content/original/corpus/f8c4acb3e891979c896e9213.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2012/catamorphism-knol/",
+      "title": "Catamorphism Knol",
+      "author": "Edward Kmett",
+      "date": "2012-05-27",
+      "categories": "Category Theory",
+      "raw": "content/original/corpus/2f632db006c3e1ac5764aae7.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2012/wadlers-law-revisited/",
+      "title": "Wadler’s Law Revisited",
+      "author": "Edward Kmett",
+      "date": "2012-04-02",
+      "categories": "Haskell · Meta",
+      "raw": "content/original/corpus/acbf6518b96828488dc1d8a6.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2011/searching-infinity/",
+      "title": "Searching Infinity Parametrically",
+      "author": "Edward Kmett",
+      "date": "2011-12-25",
+      "categories": "Algorithms · Haskell · Kan Extensions · Logic · Mathematics · Monads · Type Hackery",
+      "raw": "content/original/corpus/a29a65d893fdc82eb0f081cc.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2011/what-constraints-entail-part-2/",
+      "title": "What Constraints Entail: Part 2",
+      "author": "Edward Kmett",
+      "date": "2011-11-03",
+      "categories": "Constraint Kinds · Haskell · Logic · Monads · Type Hackery · Uncategorized",
+      "raw": "content/original/corpus/b9d99a850e678e678a3ac805.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2011/what-constraints-entail-part-1/",
+      "title": "What Constraints Entail: Part 1",
+      "author": "Edward Kmett",
+      "date": "2011-11-03",
+      "categories": "Category Theory · Constraint Kinds · Haskell · Logic · Monads · Type Hackery · Uncategorized",
+      "raw": "content/original/corpus/2c326e37f09fbe0b8b3b3c1f.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2011/homotopy-and-directed-type-theory-slides/",
+      "title": "Homotopy and Directed Type Theory Slides",
+      "author": "Edward Kmett",
+      "date": "2011-10-27",
+      "categories": "Boston Haskell · Category Theory · Haskell · Type Theory",
+      "raw": "content/original/corpus/bf754c6f82fb9530dca144a2.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2011/hac-boston/",
+      "title": "Hac Boston!",
+      "author": "Edward Kmett",
+      "date": "2011-10-25",
+      "categories": "Boston Haskell · Hac Boston · Haskell",
+      "raw": "content/original/corpus/e80fd11c09f12548530f157a.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2011/a-parsec-full-of-rats-part-2/",
+      "title": "A Parsec Full of Rats, Part 2",
+      "author": "Edward Kmett",
+      "date": "2011-09-23",
+      "categories": "Algorithms · Data Structures · Haskell · Monads · Parsing · Uncategorized",
+      "raw": "content/original/corpus/addfcc9b01ec393709b44f7b.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2011/a-parsec-full-of-rats/",
+      "title": "A Parsec Full of Rats, Part 1",
+      "author": "Edward Kmett",
+      "date": "2011-09-23",
+      "categories": "Algorithms · Data Structures · Haskell · Monads · Parsing · Uncategorized",
+      "raw": "content/original/corpus/f9d846723bea758f226b6d72.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2011/free-modules-and-functional-linear-functionals/",
+      "title": "Free Modules and Functional Linear Functionals",
+      "author": "Edward Kmett",
+      "date": "2011-07-11",
+      "categories": "Algorithms · Category Theory · Data Structures · Haskell · Linear Algebra · Monads · Monoids · Type Hackery",
+      "raw": "content/original/corpus/4881676ccbe4ad3075ba2bdf.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2011/a-product-of-an-imperfect-union/",
+      "title": "A Product of an Imperfect Union",
+      "author": "Edward Kmett",
+      "date": "2011-06-30",
+      "categories": "Category Theory · Comonads · Haskell · Kan Extensions · Monads",
+      "raw": "content/original/corpus/efc0b4425795e319138377e4.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2011/more-on-comonads-as-monad-transformers/",
+      "title": "More on Comonads as Monad Transformers",
+      "author": "Edward Kmett",
+      "date": "2011-06-30",
+      "categories": "Category Theory · Comonads · Haskell · Kan Extensions · Monads",
+      "raw": "content/original/corpus/9a277b69866cffbd67af9093.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2011/monad-transformers-from-comonads/",
+      "title": "Monad Transformers from Comonads",
+      "author": "Edward Kmett",
+      "date": "2011-06-28",
+      "categories": "Category Theory · Comonads · Data Structures · Haskell · Kan Extensions · Monads",
+      "raw": "content/original/corpus/3889fe429d58a30ebad4601d.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2011/monads-from-comonads/",
+      "title": "Monads from Comonads",
+      "author": "Edward Kmett",
+      "date": "2011-06-27",
+      "categories": "Category Theory · Comonads · Haskell · Kan Extensions · Mathematics · Monads",
+      "raw": "content/original/corpus/de9a358fc36178db2c60e8bf.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2011/free-monads-for-less-3/",
+      "title": "Free Monads for Less (Part 3 of 3): Yielding IO",
+      "author": "Edward Kmett",
+      "date": "2011-06-24",
+      "categories": "Algorithms · Category Theory · Comonads · Data Structures · Haskell · Kan Extensions · Monads",
+      "raw": "content/original/corpus/878af0b5d85503c63221d3ba.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2011/free-monads-for-less-2/",
+      "title": "Free Monads for Less (Part 2 of 3): Yoneda",
+      "author": "Edward Kmett",
+      "date": "2011-06-23",
+      "categories": "Algorithms · Category Theory · Data Structures · Haskell · Kan Extensions · Mathematics · Monads",
+      "raw": "content/original/corpus/29832ea55e9362ff1e44c667.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2011/free-monads-for-less/",
+      "title": "Free Monads for Less (Part 1 of 3): Codensity",
+      "author": "Edward Kmett",
+      "date": "2011-06-23",
+      "categories": "Algorithms · Category Theory · Data Structures · Haskell · Kan Extensions · Monads",
+      "raw": "content/original/corpus/3d111298b5de18e86c50f0bb.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2010/introducing-speculation/",
+      "title": "Introducing Speculation",
+      "author": "Edward Kmett",
+      "date": "2010-07-22",
+      "categories": "Algorithms · Boston Haskell · Haskell",
+      "raw": "content/original/corpus/c03ee4e516225506bf9cfd6c.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2010/boston-haskell-june/",
+      "title": "Boston Haskell June",
+      "author": "Edward Kmett",
+      "date": "2010-05-20",
+      "categories": "Boston Haskell · Haskell",
+      "raw": "content/original/corpus/509811ce37a493dc422cd9bc.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2010/hac-phi/",
+      "title": "Hac Phi",
+      "author": "Edward Kmett",
+      "date": "2010-05-20",
+      "categories": "Haskell",
+      "raw": "content/original/corpus/3f9e2a73a7412afe331236fb.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2010/brodal-okasaki-heaps-in-haskell/",
+      "title": "Brodal-Okasaki Heaps in Haskell",
+      "author": "Edward Kmett",
+      "date": "2010-05-15",
+      "categories": "Algorithms · Data Structures · Haskell · Monoids",
+      "raw": "content/original/corpus/7fdf989b539ddd7a5a336d28.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2010/reverse-mode-automatic-differentiation-in-haskell/",
+      "title": "Reverse-Mode Automatic Differentiation in Haskell",
+      "author": "Edward Kmett",
+      "date": "2010-05-15",
+      "categories": "Algorithms · Haskell · Mathematics",
+      "raw": "content/original/corpus/58fe2e2b5a079832f05ab65c.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2010/finger-trees/",
+      "title": "Finger Trees",
+      "author": "Edward Kmett",
+      "date": "2010-04-29",
+      "categories": "Boston Haskell · Data Structures · Haskell · Type Hackery",
+      "raw": "content/original/corpus/b2988583028eed37828f437e.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2009/iteratees-take-2/",
+      "title": "Iteratees, Parsec, and Monoids, Oh My!",
+      "author": "Edward Kmett",
+      "date": "2009-09-15",
+      "categories": "Boston Haskell · Monoids · Parsing",
+      "raw": "content/original/corpus/27e103de8b5007a6899ee92e.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2009/remodeling-precision/",
+      "title": "Remodeling Precision",
+      "author": "Edward Kmett",
+      "date": "2009-09-15",
+      "categories": "Mathematics",
+      "raw": "content/original/corpus/1aa697682867e52d76ed46b3.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2009/curried-scheme/",
+      "title": "Curried Scheme",
+      "author": "Edward Kmett",
+      "date": "2009-08-29",
+      "categories": "Macros · Scheme",
+      "raw": "content/original/corpus/03ed1207e6c72679e5736b84.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2009/iteratees-parsec-and-monoid/",
+      "title": "Iteratees, Parsec and Monoids (Slides)",
+      "author": "Edward Kmett",
+      "date": "2009-08-20",
+      "categories": "Algorithms · Data Structures · Haskell · Mathematics · Monoids · Parsing",
+      "raw": "content/original/corpus/4c095f52672ab5c67e870d91.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2009/clearer-reflection/",
+      "title": "Clearer Reflections",
+      "author": "Edward Kmett",
+      "date": "2009-08-15",
+      "categories": "Haskell · Monads · Monoids · Type Hackery",
+      "raw": "content/original/corpus/490afb656194a05f569254d6.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2009/hac-phi-slides/",
+      "title": "Slides from Hac Phi: “All About Monoids”",
+      "author": "Edward Kmett",
+      "date": "2009-07-31",
+      "categories": "Haskell · Mathematics · Monoids · Parsing",
+      "raw": "content/original/corpus/d6322f251523a2f0eb5021a4.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2009/recursion-schemes/",
+      "title": "Recursion Schemes: A Field Guide (Redux)",
+      "author": "Edward Kmett",
+      "date": "2009-06-11",
+      "categories": "Category Theory · Haskell · Mathematics",
+      "raw": "content/original/corpus/a7b76a06be80cd0de14a3b09.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2009/incremental-folds/",
+      "title": "Reflecting On Incremental Folds",
+      "author": "Edward Kmett",
+      "date": "2009-03-31",
+      "categories": "Category Theory · Haskell · Squiggol",
+      "raw": "content/original/corpus/b73ecf77eff11ef5936c0834.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2008/the-pointed-set-comonad/",
+      "title": "The Pointed-Set Comonad",
+      "author": "Edward Kmett",
+      "date": "2008-12-04",
+      "categories": "Comonads · Haskell · Uncategorized",
+      "raw": "content/original/corpus/137b1682ac6f78d125dd8666.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2008/still-alive/",
+      "title": "Still Alive",
+      "author": "Edward Kmett",
+      "date": "2008-11-08",
+      "categories": "Uncategorized",
+      "raw": "content/original/corpus/96f37f4d5e796ddc9a3a12db.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2008/zapping-strong-adjunctions/",
+      "title": "Zapping Adjunctions",
+      "author": "Edward Kmett",
+      "date": "2008-06-05",
+      "categories": "Category Theory · Haskell",
+      "raw": "content/original/corpus/cfe48e3fadcef955610d96d1.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2008/representing-adjunctions/",
+      "title": "Representing Adjunctions",
+      "author": "Edward Kmett",
+      "date": "2008-06-05",
+      "categories": "Category Theory · Haskell",
+      "raw": "content/original/corpus/f418e81159c3179c2eef0fa1.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2008/linear-bloom-filters/",
+      "title": "Linear Bloom Filters",
+      "author": "Edward Kmett",
+      "date": "2008-06-03",
+      "categories": "Algorithms · Data Structures",
+      "raw": "content/original/corpus/53b48f9c131d363aba9daeb7.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2008/kan-extension-iii/",
+      "title": "Kan Extensions III: As Ends and Coends",
+      "author": "Edward Kmett",
+      "date": "2008-05-26",
+      "categories": "Category Theory · Haskell · Kan Extensions · Mathematics",
+      "raw": "content/original/corpus/c7b7487534ab916058fe2750.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2008/kan-extensions-ii/",
+      "title": "Kan Extensions II: Adjunctions, Composition, Lifting",
+      "author": "Edward Kmett",
+      "date": "2008-05-22",
+      "categories": "Category Theory · Comonads · Haskell · Kan Extensions · Monads",
+      "raw": "content/original/corpus/bf080b25f6fb7791cc3a8d0c.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2008/kan-extensions/",
+      "title": "Kan Extensions",
+      "author": "Edward Kmett",
+      "date": "2008-05-20",
+      "categories": "Category Theory · Comonads · Haskell · Kan Extensions · Mathematics · Monads",
+      "raw": "content/original/corpus/86f9f50b192345a65ac39d16.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2008/elgot-coalgebras/",
+      "title": "Elgot (Co)Algebras",
+      "author": "Edward Kmett",
+      "date": "2008-05-19",
+      "categories": "Category Theory · Comonads · Haskell · Mathematics · Monads · Squiggol",
+      "raw": "content/original/corpus/c5c04cb56bb7a617cf6ede4f.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2008/forgetful-laziness/",
+      "title": "Forgetful Laziness",
+      "author": "Edward Kmett",
+      "date": "2008-05-16",
+      "categories": "Haskell · Uncategorized",
+      "raw": "content/original/corpus/dd0ae762090500c5ea4dc6f0.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2008/generatingfunctorology/",
+      "title": "Generatingfunctorology",
+      "author": "Edward Kmett",
+      "date": "2008-05-14",
+      "categories": "Haskell · Mathematics · Type Theory",
+      "raw": "content/original/corpus/5fa81b552ea892ac8cde12e9.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2008/towards-formal-power-series-for-functors/",
+      "title": "Towards Formal Power Series for Functors",
+      "author": "Edward Kmett",
+      "date": "2008-05-13",
+      "categories": "Category Theory · Haskell · Mathematics · Type Theory",
+      "raw": "content/original/corpus/f08625f38af011ea1aa05c11.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2008/just-fokkinga-abide/",
+      "title": "Just Fokkinga Abide",
+      "author": "Edward Kmett",
+      "date": "2008-05-07",
+      "categories": "Category Theory · Haskell · Squiggol",
+      "raw": "content/original/corpus/f4bcba68ea39007fed984742.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2008/cozipping/",
+      "title": "Cozipping",
+      "author": "Edward Kmett",
+      "date": "2008-05-05",
+      "categories": "Category Theory · Haskell · Monads",
+      "raw": "content/original/corpus/4716f2528db8571a4e985ab5.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2008/zipping-and-unzipping-functors/",
+      "title": "Zipping and Unzipping Functors",
+      "author": "Edward Kmett",
+      "date": "2008-05-04",
+      "categories": "Comonads · Haskell",
+      "raw": "content/original/corpus/965396383c90dac98623109a.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2008/the-cofree-comonad-and-the-expression-problem/",
+      "title": "The Cofree Comonad and the Expression Problem",
+      "author": "Edward Kmett",
+      "date": "2008-04-30",
+      "categories": "Category Theory · Comonads · Haskell · Monads",
+      "raw": "content/original/corpus/7b58f51cfd36c78a17cc545e.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2008/deriving-strength-from-laziness/",
+      "title": "Deriving Strength from Laziness",
+      "author": "Edward Kmett",
+      "date": "2008-04-30",
+      "categories": "Category Theory · Comonads · Haskell · Monads",
+      "raw": "content/original/corpus/a35ed0bdac4cafcc5e27578a.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2008/dynamorphisms-as-chronomorphisms/",
+      "title": "Dynamorphisms as Chronomorphisms",
+      "author": "Edward Kmett",
+      "date": "2008-04-26",
+      "categories": "Category Theory · Comonads · Haskell",
+      "raw": "content/original/corpus/b492c26975e3d814b46e952f.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2008/unnatural-transformations/",
+      "title": "Unnatural Transformations",
+      "author": "Edward Kmett",
+      "date": "2008-04-26",
+      "categories": "Category Theory · Comonads · Haskell · Monads · Uncategorized",
+      "raw": "content/original/corpus/6ca7e7f8abfaf80147497207.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2008/time-for-chronomorphisms/",
+      "title": "Time for Chronomorphisms",
+      "author": "Edward Kmett",
+      "date": "2008-04-26",
+      "categories": "Category Theory · Comonads · Haskell · Monads",
+      "raw": "content/original/corpus/deda6ee42bcdbf0c547a1502.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2008/generalized-hylomorphisms/",
+      "title": "Generalized Hylomorphisms",
+      "author": "Edward Kmett",
+      "date": "2008-04-24",
+      "categories": "Category Theory · Comonads · Haskell · Monads",
+      "raw": "content/original/corpus/6c1ddf89aceb309ddc64f5d8.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2008/monads-for-free/",
+      "title": "Monads for Free",
+      "author": "Edward Kmett",
+      "date": "2008-04-11",
+      "categories": "Haskell · Monads",
+      "raw": "content/original/corpus/e8bd604eb99fff874eaacff7.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2008/higher-order-abstract-syntax-a-la-carte/",
+      "title": "Higher-Order Abstract Syntax à la Carte",
+      "author": "Edward Kmett",
+      "date": "2008-03-26",
+      "categories": "Category Theory · Haskell",
+      "raw": "content/original/corpus/a830b45639c66016c4e4d4b2.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2008/rotten-bananas/",
+      "title": "Rotten Bananas",
+      "author": "Edward Kmett",
+      "date": "2008-03-25",
+      "categories": "Category Theory · Haskell",
+      "raw": "content/original/corpus/03c447e596c1bc926a1189c2.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2008/elgot-algebras/",
+      "title": "Elgot Algebras",
+      "author": "Edward Kmett",
+      "date": "2008-01-01",
+      "categories": "Uncategorized",
+      "raw": "content/original/corpus/46ee2c06fa01483a2fbdb2dc.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2007/updated-datatype/",
+      "title": "Updated Data.Type.*",
+      "author": "Edward Kmett",
+      "date": "2007-07-13",
+      "categories": "Haskell · Type Hackery · Uncategorized",
+      "raw": "content/original/corpus/5e24e9ba19ef475b5a7a7086.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2007/parameterized-monads-in-haskell/",
+      "title": "Parameterized Monads in Haskell",
+      "author": "Edward Kmett",
+      "date": "2007-07-13",
+      "categories": "Haskell · Monads · Type Theory",
+      "raw": "content/original/corpus/1e413dde1ae13a386437362c.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2007/javascript-interpreter-recompiler-atomizer-threading-library/",
+      "title": "Javascript Interpreter, Recompiler, Atomizer, Threading Library…",
+      "author": "Edward Kmett",
+      "date": "2007-05-21",
+      "categories": "Javascript",
+      "raw": "content/original/corpus/a7766f536e60154ea77dc35b.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2006/generalizing-dot/",
+      "title": "Generalizing (.)",
+      "author": "Edward Kmett",
+      "date": "2006-11-09",
+      "categories": "Haskell · Monads",
+      "raw": "content/original/corpus/3cb8234acc5a40f11c2b3817.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2006/logic/",
+      "title": "##logic",
+      "author": "Edward Kmett",
+      "date": "2006-11-09",
+      "categories": "Logic",
+      "raw": "content/original/corpus/df6462db066179159571c300.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2006/overloaded-functions-with-subtyping/",
+      "title": "Overloaded Functions with Subtyping",
+      "author": "Edward Kmett",
+      "date": "2006-11-01",
+      "categories": "Type Theory",
+      "raw": "content/original/corpus/adc06eea64eed2fc50d87989.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2006/wikipress/",
+      "title": "WikiPress",
+      "author": "Edward Kmett",
+      "date": "2006-10-26",
+      "categories": "Meta",
+      "raw": "content/original/corpus/6f0ece51791c017a25eb3917.html"
+    },
+    {
+      "origin": "http://comonad.com/reader/2006/hello-world/",
+      "title": "Hello, World!",
+      "author": "Edward Kmett",
+      "date": "2006-10-17",
+      "categories": "Meta",
+      "raw": "content/original/corpus/48d3b217a96e5bd9c482d5a8.html"
+    }
+  ],
+  "school": [
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/moore",
+      "title": "Moore Machines",
+      "kind": "collection",
+      "raw": "content/original/corpus/4c872566bf0de09df4c27f6e.html"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/fibonacci",
+      "title": "Fibonacci",
+      "kind": "collection",
+      "raw": "content/original/corpus/5c5e246bb01ead416a7688a0.html"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/unlifted-structures",
+      "title": "Unlifted Structures",
+      "kind": "article",
+      "raw": "content/original/corpus/2b7935538865fc301b88fd65.html",
+      "date": "2015-08-27",
+      "author": "Edward Kmett",
+      "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/bbf054cf4c47ccf0eb1c267a2a16b4f6c74ea341",
+      "markdown": "content/original/corpus/e4532d2b7f150a32607915de.md"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/heap-of-successes",
+      "title": "How to Replace Failure by a Heap of Successes",
+      "kind": "article",
+      "raw": "content/original/corpus/6e11d6d974dbb9cca5d7b835.html",
+      "date": "2015-05-02",
+      "author": "Edward Kmett",
+      "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/0f6911c474fa38006c6b1ba653b47020740cadcf",
+      "markdown": "content/original/corpus/8ca7002c048331594f000b07.md"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/oblivious",
+      "title": "Cache-Oblivious Data Structures",
+      "kind": "collection",
+      "raw": "content/original/corpus/500ae164a159b19207401fd7.html"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/editorial",
+      "title": "Editorials",
+      "kind": "collection",
+      "raw": "content/original/corpus/6fc83a20d4977fade48fa453.html"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/phoas",
+      "title": "PHOAS For Free",
+      "kind": "article",
+      "raw": "content/original/corpus/d17bf045173439595c83dfbf.html",
+      "date": "2013-12-09",
+      "author": "Edward Kmett",
+      "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/07986d7545873d46a1bcc28b8fbe367f2f9fa5ab",
+      "markdown": "content/original/corpus/25ef8f1210cb0f36fde6ee4b.md"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/bound",
+      "title": "Bound",
+      "kind": "article",
+      "raw": "content/original/corpus/81212c0f04088fa81d4c8b0b.html",
+      "date": "2015-12-02",
+      "author": "Edward Kmett",
+      "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/f941295a3eebf64a926799ca2aabafe14435b5f7",
+      "markdown": "content/original/corpus/d698a4ac4023c4dde4906de0.md"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/cellular-automata",
+      "title": "Cellular Automata",
+      "kind": "collection",
+      "raw": "content/original/corpus/c205219b2edb5ae971ae34a7.html"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/conquering-folds",
+      "title": "Conquering Folds",
+      "kind": "article",
+      "raw": "content/original/corpus/6c2d11e532e6b0e69d59b86d.html",
+      "date": "2013-09-13",
+      "author": "Edward Kmett",
+      "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/e98386333725c466b7a765c0b9cf2518e4dc360f",
+      "markdown": "content/original/corpus/85e5cbe833521c3cc87bd763.md"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/online-lca",
+      "title": "On-line Lowest Common Ancestor",
+      "kind": "article",
+      "raw": "content/original/corpus/c2b3fddaf5b3f361fefb727a.html",
+      "date": "2015-08-27",
+      "author": "Edward Kmett",
+      "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/12df3bd5cac020b2c1c77edf8fa6ccc92f9337b0",
+      "markdown": "content/original/corpus/09fe33c0fc02b5213668c7ee.md"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/parallel-crc",
+      "title": "Parallel and Incremental CRCs",
+      "kind": "article",
+      "raw": "content/original/corpus/1457ff0ee574486b64193df7.html",
+      "date": "2013-09-11",
+      "author": "Edward Kmett",
+      "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/3310c904c4265dd33884d81f64bff43f7f927209",
+      "markdown": "content/original/corpus/abda21f5d356c060c66dd3de.md"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/recursion-schemes",
+      "title": "Recursion Schemes",
+      "kind": "collection",
+      "raw": "content/original/corpus/d3ad46f5b2b2f047994e5f40.html"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication",
+      "title": "Revisiting Matrix Multiplication",
+      "kind": "collection",
+      "raw": "content/original/corpus/03bcba677649dc6ab9f9c7e6.html"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/snippets",
+      "title": "Snippets",
+      "kind": "collection",
+      "raw": "content/original/corpus/30e2ec6b124c56ea41be90a7.html"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/moore/for-less",
+      "title": "Moore for Less",
+      "kind": "article",
+      "raw": "content/original/corpus/2d5b1f1be31f6f04e07e7d4f.html",
+      "date": "2015-05-28",
+      "author": "Edward Kmett",
+      "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/9ab8b288c6c5cc9d1ab36ccb8c3c74167b4dd00f",
+      "markdown": "content/original/corpus/a2bd380233477b12005aa3b7.md"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/fibonacci/leonardo",
+      "title": "Part 1: Leonardo Random Access Lists",
+      "kind": "article",
+      "raw": "content/original/corpus/08e5d05ea7555f24b9ed7a3d.html",
+      "date": "2015-04-28",
+      "author": "Edward Kmett",
+      "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/3a2678a9238b713dbb2240b8e98bff28c88444f4",
+      "markdown": "content/original/corpus/375863705d98619cdb11fc1a.md"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/fibonacci/search",
+      "title": "Part 2: Open-Ended Fibonacci Search",
+      "kind": "article",
+      "raw": "content/original/corpus/d49bca1ed9f320dd90189a47.html",
+      "date": "2015-10-13",
+      "author": "Edward Kmett",
+      "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/ef3bb842b9000d78432bcff461f73bed06069b8d",
+      "markdown": "content/original/corpus/911c9304c31c6c3a8a6f905b.md"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication/part-5",
+      "title": "Part V: Heaps of Performance",
+      "kind": "article",
+      "raw": "content/original/corpus/640e668ecaaad2b8619ea1e7.html",
+      "date": "2014-11-16",
+      "author": "Edward Kmett",
+      "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/b43bf065739f05937cdb8de9cdac53ec646bed1a",
+      "markdown": "content/original/corpus/485d93f33aa0885db5a24360.md"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/oblivious/deamortized-st",
+      "title": "Part I: Deamortized ST",
+      "kind": "article",
+      "raw": "content/original/corpus/c79a1acedebcb3771ee48c7f.html",
+      "date": "2013-11-08",
+      "author": "Edward Kmett",
+      "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/4244d5709e256fd7dacdf3512e7d00334eafbc6b",
+      "markdown": "content/original/corpus/dbf50348ed361f4e6db353be.md"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/editorial/procrustean-mathematics",
+      "title": "Procrustean Mathematics",
+      "kind": "article",
+      "raw": "content/original/corpus/24b40e9943ef856d9871cc75.html",
+      "date": "2013-11-08",
+      "author": "Edward Kmett",
+      "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/97cc863d550b152cbbcf6a645709d80f16ba96cd",
+      "markdown": "content/original/corpus/92880915dacbf1849e4408db.md"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/cellular-automata/part-1",
+      "title": "Part I: From Theory to Pretty Pictures",
+      "kind": "article",
+      "raw": "content/original/corpus/3fefaefb79218aac6b117705.html",
+      "date": "2014-11-29",
+      "author": "Edward Kmett",
+      "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/2a6140398ce46eceac790037f4afbd66c3b9c7c5",
+      "markdown": "content/original/corpus/bc357760cd1fe01afd085626.md"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/cellular-automata/part-2",
+      "title": "Part II: PNGs and Moore",
+      "kind": "article",
+      "raw": "content/original/corpus/d574eb9ed049ee1e9984c466.html",
+      "date": "2015-06-10",
+      "author": "Edward Kmett",
+      "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/604212fe84a3e9f477c2f975737b8e05d70a941f",
+      "markdown": "content/original/corpus/6f6f69b9cc40609b9a22cafe.md"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/cellular-automata/part-3",
+      "title": "Part III: A World in a Bottle",
+      "kind": "article",
+      "raw": "content/original/corpus/a81f5b8ebe7c3fb5c1285a6f.html",
+      "date": "2013-11-16",
+      "author": "Edward Kmett",
+      "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/adea78b22dcf260126adedf58d7500caf297b583",
+      "markdown": "content/original/corpus/4883ae2c2d44cc80469bb460.md"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/recursion-schemes/catamorphisms",
+      "title": "Catamorphisms",
+      "kind": "article",
+      "raw": "content/original/corpus/8b66740d0ee8cd7ada297cc8.html",
+      "date": "2014-04-15",
+      "author": "Edward Kmett",
+      "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/9f247ee93e3ec7d8b226e906eb1d7648a1e57c76",
+      "markdown": "content/original/corpus/e1154a13f41bf133d66f892b.md"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication/part-1",
+      "title": "Part I: Bit Shuffling with Lenses and Isomorphisms",
+      "kind": "article",
+      "raw": "content/original/corpus/6b8ec81c35e3698a0d1aa801.html",
+      "date": "2013-08-25",
+      "author": "Edward Kmett",
+      "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/499f6f6ad03e6dc2feab4905f94308e5417e7458",
+      "markdown": "content/original/corpus/4f17dfa96cb53d09b9993e31.md"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication/part-2",
+      "title": "Part II: The Zen of Z-Ordering",
+      "kind": "article",
+      "raw": "content/original/corpus/877dac641032ceaadf946f18.html",
+      "date": "2013-08-25",
+      "author": "Edward Kmett",
+      "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/99e5ad65aa6415d56184e2621cde1187820b2b7d",
+      "markdown": "content/original/corpus/51f419b87492a70a3d2f9ac2.md"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication/part-3",
+      "title": "Part III: Extending Vector",
+      "kind": "article",
+      "raw": "content/original/corpus/6b5f9152f5fe1939ce2cdd2f.html",
+      "date": "2013-08-25",
+      "author": "Edward Kmett",
+      "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/c9948ec20386ad678e5f35781e4854b172e6308a",
+      "markdown": "content/original/corpus/5a62211b97d2d50f7d26295c.md"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication/part-4",
+      "title": "Part IV: IntMap!?",
+      "kind": "article",
+      "raw": "content/original/corpus/fce096f2a2010c6a78491261.html",
+      "date": "2013-08-25",
+      "author": "Edward Kmett",
+      "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/4892553edbb35ab05743b820e3d3f17b88343c66",
+      "markdown": "content/original/corpus/70b3b22050550f3226171f87.md"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication/part-6",
+      "title": "Part VI: A Most Significant Comparison",
+      "kind": "article",
+      "raw": "content/original/corpus/9d0096171b33dccf29cb31ce.html",
+      "date": "2013-08-25",
+      "author": "Edward Kmett",
+      "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/fa630871f2e42363a2ebddceb1c6878594eccc6b",
+      "markdown": "content/original/corpus/9859fd8454605faf2dc4e119.md"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/snippets/fmap",
+      "title": "The free theorem for fmap",
+      "kind": "article",
+      "raw": "content/original/corpus/2656ecbaaf9e63aa4a7ce5a2.html",
+      "date": "2015-02-16",
+      "author": "Edward Kmett",
+      "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/f8868a34da7b6bd25296d160942294f74bccdf11",
+      "markdown": "content/original/corpus/e6d0788672cacbb738446f7b.md"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/snippets/once",
+      "title": "Once",
+      "kind": "article",
+      "raw": "content/original/corpus/3def36f6413b06c0f0aa18ce.html",
+      "date": "2013-09-03",
+      "author": "Edward Kmett",
+      "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/52c9d1c864e897525f61e645d40e7d6a561f1c77",
+      "markdown": "content/original/corpus/f1ad9dbd9e0ec6f5513cc200.md"
+    },
+    {
+      "origin": "https://www.schoolofhaskell.com/user/edwardk/snippets/mandelbrot",
+      "title": "Mandelbrot",
+      "kind": "article",
+      "raw": "content/original/corpus/e5a9b4bfd735dae2f2e71599.html",
+      "date": "2013-09-03",
+      "author": "Edward Kmett",
+      "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/5075dba7d5304c8f12a24c282c3d243564ea9e0a",
+      "markdown": "content/original/corpus/adfa97de2be831c784d42b96.md"
+    }
+  ],
+  "failures": [
+    {
+      "url": "https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication-part-3",
+      "error": "404 https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication-part-3"
+    },
+    {
+      "url": "https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication-part-1",
+      "error": "404 https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication-part-1"
+    },
+    {
+      "url": "https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication-part-2",
+      "error": "404 https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication-part-2"
+    },
+    {
+      "url": "https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication-part-4",
+      "error": "404 https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication-part-4"
+    },
+    {
+      "url": "https://www.schoolofhaskell.com/user/edwardk/cellular-automata/webchat.freenode.net",
+      "error": "404 https://www.schoolofhaskell.com/user/edwardk/cellular-automata/webchat.freenode.net"
+    }
+  ]
+}

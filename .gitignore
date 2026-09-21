@@ -8,3 +8,8 @@ node_modules/
 *_stub.h
 __pycache__/
 *.pyc
+
+!content/archive/**/*.o
+!content/archive/**/*.hi
+!dist/haskell/**/*.o
+!dist/haskell/**/*.hi

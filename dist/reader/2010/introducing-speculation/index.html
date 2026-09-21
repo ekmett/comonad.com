@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Introducing Speculation · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Algorithms · Boston Haskell · Haskell</span><span>Edward Kmett · <time datetime="2010-07-22">22 July 2010</time></span></div><h1>Introducing Speculation</h1></header><article class="prose"><span id="more-205"></span><p>A couple of days ago, I gave a talk at Boston Haskell about a shiny new speculative evaluation library, <a href="https://hackage.haskell.org/package/speculation">speculation</a> on hackage, that I have implemented in Haskell. The implementation is based on the material presented as <a href="http://research.microsoft.com/apps/pubs/default.aspx?id=118795">"Safe Programmable Speculative Parallelism"</a> by Prakash Prabhu, G Ramalingam, and Kapil Vaswani at last month's PLDI.</p>
+<p>I've uploaded a copy of my slides here:</p>
+<p>* Introducing Speculation [<a href="../../../assets/imported/c7458306600d-Speculation.pptx">PowerPoint</a> | <a href="../../../assets/imported/9322df7a9bb3-Speculation.pdf">PDF</a>]</p>
+<p>This package provides speculative function application and speculative folds. Speculative STM transactions take the place of the transactional rollback machinery from the paper, but transactions are not always required in pure code. To get a feel for the shape of the library, here is an excerpt from the <a href="https://hackage.haskell.org/package/speculation">documentation</a> for one of the combinators:</p>
+<blockquote>
+<p><code>   spec :: Eq a =&gt; a -&gt; (a -&gt; b) -&gt; a -&gt; b   </code></p>
+<p><code>spec g f a</code> evaluates <code>f g</code> while forcing <code>a</code>, if <code>g == a</code> then <code>f g</code> is returned, otherwise <code>f a</code> is evaluated and returned. Furthermore, if the argument has already been evaluated, we skip the <code>f g</code> computation entirely. If a good guess at the value of <code>a</code> is available, this is one way to induce parallelism in an otherwise sequential task. However, if the guess isn't available more cheaply than the actual answer, then this saves no work and if the guess is wrong, you risk evaluating the function twice. Under high load, since <code>f g</code> is computed via the spark queue, the speculation will be skipped and you will obtain the same answer as <code>f $! a</code>.</p>
+</blockquote>
+<p>ASCII art time-lines of how this can speed up evaluation are available in both the slides and the documentation linked to above, but assuming an otherwise serial problem, you effectively wager otherwise idle CPU time and the time to generate your guess on the quality of your guess.</p>
+<p>Note that <a href="https://hackage.haskell.org/trac/ghc/ticket/4167">numSparks# feature request</a> that was mentioned in the slides has already been implemented in GHC HEAD, and support shall be added to improve the performance of the speculative STM transactions under high load as mentioned in the slides.</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/speculation"><code>speculation</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><section class="comments" id="comments"><h2>From the original discussion</h2><p class="editorial">Selected questions, explanations, and corrections. Original wording and dates; spam and automated trackbacks omitted.</p><article class="comment" id="comment-18645"><header><strong>Edward Kmett</strong><a href="../../../reader/2010/introducing-speculation/#comment-18645">July 28th, 2010 at 8:34 am</a></header><p>@Asger: You could likely exploit the speculation primitive if you supply your own equality check that checked fitness instead of value and used it to wrap the continuation, but I’ll admit I haven’t thought it through in depth.</p>
+</article><article class="comment" id="comment-18776"><header><strong>Edward Kmett</strong><a href="../../../reader/2010/introducing-speculation/#comment-18776">August 1st, 2010 at 1:39 pm</a></header><p>@Pepe: There are a couple of things happening here.</p>
+<p>You definitely shouldn’t be getting segfaults on the unboxed version. If so, then I have faulty reasoning and will need to revert to the boxed version.</p>
+<p>With regards to the boxed version still showing unevaluated-ness, what you’re experiencing is that the ‘i’ value at that point still points to the indirection because a garbage collection hasn’t happened yet to propagate the tag bits. I’d hazard that if you inserted a call to performGc in the middle there that you’d start seeing the tags.</p>
+</article><article class="comment" id="comment-18803"><header><strong>pepeiborra</strong><a href="../../../reader/2010/introducing-speculation/#comment-18803">August 2nd, 2010 at 10:03 am</a></header><p>Ed,</p>
+<p>thanks for the tips. I tried inserting a call to performGC in the example, but it didn’t help the boxed version.</p>
+<p>main = do<br>
+let i = trace “–&gt; evaluated” ()<br>
+putStrLn $ “tagbits: ” ++ show (unsafeGetTagBits i)<br>
+print i<br>
+performGC &gt;&gt; putStrLn “–&gt; GC performed”<br>
+putStrLn $ “tagbits: ” ++ show (unsafeGetTagBits i)</p>
+<p>pepe:~/Dropbox/code/snippets$ ghc –make TagBits&amp;&amp; ./TagBits<br>
+Linking TagBits …<br>
+tagbits: 0<br>
+–&gt; evaluated<br>
+()<br>
+–&gt; GC performed<br>
+tagbits: 0</p>
+<p>Nevertheless, I have gone back to my actual use case (pruning the non-evaluated branches of an incomplete infinite proof tree, for display purposes), and found I was traversing the tree bottom-up, with a non strict fold. In a bottom-up traversal, the boxed version was *correctly* returning False for subtrees (since the fold is lazy), whereas the unboxed version was actually seq’ing subtrees and returning True, which in the particular example at hand was what I expected. Hence the unboxed version was hiding an actual mistake in my reasoning. Now the boxed version works as expected with a top-down traversal.</p>
+<p>To see why the unboxed version forces evaluation of the argument, let’s look at the core generated by ghc:</p>
+<p>Data.TagBits.unsafeGetTagBits =<br>
+\ (@ a_aqz) (a_syV :: a_aqz) -&gt;<br>
+case a_syV<br>
+`cast` (CoUnsafe a_aqz GHC.Prim.Word# :: a_aqz ~ GHC.Prim.Word#)<br>
+of wild_syX { __DEFAULT -&gt;<br>
+case GHC.Prim.and# wild_syX __word 3 of sat_sz3 { __DEFAULT -&gt;<br>
+GHC.Word.W# sat_sz3<br>
+}<br>
+}</p>
+<p>There is a case expression where the scrutinee is the argument. Unless I am wrong, this case expression forces the evaluation of the argument.</p>
+<p>If you are curious I also cooked a version of unsafeIsEvaluated which avoids the tricky pointer tagging business and looks directly at the info table: <a href="http://gist.github.com/504764">http://gist.github.com/504764</a></p>
+</article><article class="comment" id="comment-18804"><header><strong>Edward Kmett</strong><a href="../../../reader/2010/introducing-speculation/#comment-18804">August 2nd, 2010 at 10:26 am</a></header><p>I was deliberately avoiding reading the info table to avoid dealing with variations in ghc compilation options changing the layout.</p>
+<p>I’ll revert to the boxed version for now I guess and then see if I can get a better way to do the unsafeCoerce# without forcing.</p>
+</article><article class="comment" id="comment-18805"><header><strong>Edward Kmett</strong><a href="../../../reader/2010/introducing-speculation/#comment-18805">August 2nd, 2010 at 10:30 am</a></header><p>That said, it might be worthwhile to add that as a second check, assuming we can get something like the unboxed version to work in the first place.</p>
+<p>That way it could check the tag bits, and if zero, before giving up it could double check the info table, that way we avoid having to actually use the target object in case where the tag bits having been propagated, which potentially avoids paging it in.</p>
+</article><article class="comment" id="comment-20828"><header><strong>Edward Kmett</strong><a href="../../../reader/2010/introducing-speculation/#comment-20828">September 16th, 2010 at 6:11 am</a></header><p>FYI, I did wind up adding that info table check to the tag-bits library, although I do so only after checking the tag bits themselves as a fallback.</p>
+<p>It works well, and lets the library be useful even from ghci.</p>
+<p>Thanks!</p>
+</article><article class="comment" id="comment-21221"><header><strong>Edward Kmett</strong><a href="../../../reader/2010/introducing-speculation/#comment-21221">September 22nd, 2010 at 3:28 pm</a></header><p>Apparently, undefined will sometimes claim to be evaluated. Now I need to chase bottoms too!</p>
+</article></section><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/introducing-speculation.md" download>Article Markdown</a> · <a href="../../../source/articles/introducing-speculation.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2010/boston-haskell-june/">Boston Haskell June →</a><a href="../../../reader/2011/free-monads-for-less-2/">Free Monads for Less (Part 2 of 3): Yoneda →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free Monads for Less (Part 2 of 3): Yoneda · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Algorithms · Category Theory · Data Structures · Haskell · Kan Extensions · Mathematics · Monads</span><span>Edward Kmett · <time datetime="2011-06-23">23 June 2011</time></span></div><h1>Free Monads for Less (Part 2 of 3): Yoneda</h1></header><details class="contents"><summary>On this page</summary><ol><li><a href="#the-yoneda-lemma">The Yoneda Lemma</a></li><li><a href="#codensity-vs-yoneda">Codensity vs. Yoneda</a></li><li><a href="#map-fusion-and-reassociating-binds">Map Fusion and Reassociating Binds</a></li><li><a href="#other-yoneda-transformed-monads">Other Yoneda-transformed Monads</a></li><li><a href="#bananas-in-space">Bananas in Space</a></li><li><a href="#going-to-church">Going to Church</a></li><li><a href="#swallowing-the-bigger-fish">Swallowing the Bigger Fish</a></li><li><a href="#scott-free">Scott Free</a></li><li><a href="#nobody-sells-for-less">Nobody Sells for Less</a></li></ol></details><article class="prose"><span id="more-243"></span><p><a href="../../../reader/2011/free-monads-for-less/">Last time</a>, I started exploring whether or not <a href="https://hackage.haskell.org/packages/archive/kan-extensions/0.5.0/doc/html/Control-Monad-Codensity.html">Codensity</a> was necessary to <a href="http://www.iai.uni-bonn.de/~jv/mpc08.pdf">improve the asymptotic performance of free monads</a>.</p>
+<p>This time I'll show that the answer is no; we can get by with something smaller.</p>
+<h2 id="the-yoneda-lemma">The Yoneda Lemma</h2>
+<p>Another form of right Kan extension arises from the <a href="http://en.wikipedia.org/wiki/Yoneda_lemma">Yoneda lemma</a>.</p>
+<p>I covered it briefly in <a href="../../../reader/2008/kan-extensions/">my initial article on Kan extensions</a>, but the inestimable Dan Piponi wrote a <a href="http://blog.sigfpe.com/2006/11/yoneda-lemma.html">much nicer article</a> on how it implies in Haskell that given a <code>Functor</code> instance on <em>f</em>, this type</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Yoneda</span> f a = <span class="hljs-type">Yoneda</span> (<span class="hljs-title">forall</span> <span class="hljs-title">r</span>. (<span class="hljs-title">a</span> -&gt; <span class="hljs-title">r</span>) -&gt; f r)</span>
+</code></pre>
+<p>is isomorphic to <code>f a</code>, witnessed by these natural transformations:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">liftYoneda</span> :: <span class="hljs-type">Functor</span> f =&gt; f a -&gt; <span class="hljs-type">Yoneda</span> f a
+<span class="hljs-title">liftYoneda</span> a = <span class="hljs-type">Yoneda</span> (\f -&gt; fmap f a)
+
+<span class="hljs-title">lowerYoneda</span> :: <span class="hljs-type">Yoneda</span> f a -&gt; f a
+<span class="hljs-title">lowerYoneda</span> (<span class="hljs-type">Yoneda</span> f) = f id
+</code></pre>
+<p>That said, <em>you are not limited to applying <code>Yoneda</code> to types that have <code>Functor</code> instances</em>.</p>
+<p>This type and these functions are provided by <a href="https://hackage.haskell.org/packages/archive/kan-extensions/0.5.0/doc/html/Data-Functor-Yoneda.html">Data.Functor.Yoneda</a> from the <a href="https://hackage.haskell.org/package/kan-extensions">kan-extensions</a> package.</p>
+<h2 id="codensity-vs-yoneda">Codensity vs. Yoneda</h2>
+<p>Note, <code>Yoneda f</code> is in some sense smaller than <code>Codensity f</code>, as <code>Codensity f a</code> is somewhat 'bigger' than <code>f a</code>, despite providing an embedding, while <code>Yoneda f a</code> is isomorphic.</p>
+<p>For example, <code>Codensity ((-&gt;) s) a</code> is isomorphic to <code>State s a</code>, not to <code>s -&gt; a</code> as shown by:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">MonadState</span> s (<span class="hljs-type">Codensity</span> ((-&gt;) s)) <span class="hljs-keyword">where</span></span>
+   get = <span class="hljs-type">Codensity</span> (\k s -&gt; k s s)
+   put s = <span class="hljs-type">Codensity</span> (\k _ -&gt; k () s)
+</code></pre>
+<p>Now, <code>Codensity</code> is a particular form of right Kan extension, which always yields a <code>Monad</code>, <strong>without needing anything from <em>f</em></strong>.</p>
+<p>Here we aren't so fortunate, but we do have the fact that <code>Yoneda f</code> is always a <code>Functor</code>, regardless of what <em>f</em> is, as shown by:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> (<span class="hljs-type">Yoneda</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+  fmap f (<span class="hljs-type">Yoneda</span> m) = <span class="hljs-type">Yoneda</span> (\k -&gt; m (k . f))
+</code></pre>
+<p>which was obtained just by cutting and pasting the appropriate definition from <code>Codensity</code> or <code>ContT</code>, and comes about because <code>Yoneda</code> is a right Kan extension, like all of those.</p>
+<p>To get a <code>Monad</code> instance for <code>Yoneda f</code> we need to lean on <em>f</em> somehow.</p>
+<p>One way is to just borrow a <code>Monad</code> instance from <em>f</em>, since <code>f a</code> is isomorphic to <code>Yoneda f a</code>, if we have a <code>Functor</code> for <em>f</em>, and if we have a <code>Monad</code>, we can definitely have a <code>Functor</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> m =&gt; <span class="hljs-type">Monad</span> (<span class="hljs-type">Yoneda</span> <span class="hljs-title">m</span>) <span class="hljs-keyword">where</span></span>
+  return a = <span class="hljs-type">Yoneda</span> (\f -&gt; return (f a))
+  <span class="hljs-type">Yoneda</span> m &gt;&gt;= k = <span class="hljs-type">Yoneda</span> (\f -&gt; m id &gt;&gt;= \a -&gt; runYoneda (k a) f)
+</code></pre>
+<h2 id="map-fusion-and-reassociating-binds">Map Fusion and Reassociating Binds</h2>
+<p>Unlike <code>Codensity</code> the monad instance above isn't very satisfying, because it uses the <code>&gt;&gt;=</code> of the underlying monad, and as a result the <code>&gt;&gt;=</code>s will wind up in the same order they started.</p>
+<p>On the other hand, the <code>Functor</code> instance for <code>Yoneda f</code> is still pretty nice because the <code>(a -&gt; r)</code> part of the type acts as an accumulating parameter fusing together uses of <code>fmap</code>.</p>
+<p>This is apparent if you expand <code>lowerYoneda . fmap f . fmap g . liftYoneda</code> , whereupon you can see we only call <code>fmap</code> on the underlying <code>Functor</code> once.</p>
+<p>Intuitively, you can view <code>Yoneda</code> as a type level construction that ensures that you get <code>fmap</code> fusion, while <code>Codensity</code> is a type level construction that ensures that you right associate binds. It is important to note that <code>Codensity</code> also effectively accumulates <code>fmap</code>s, as it uses the same definition for <code>fmap</code> as <code>Yoneda</code>!</p>
+<p>With this in mind, it doesn't usually make much sense to use <code>Codensity (Codensity m)</code> or <code>Yoneda (Yoneda m)</code> because the purpose being served is redundant.</p>
+<p>Less obviously, <code>Codensity (Yoneda m)</code> is also redundant, because as noted above, <code>Codensity</code> also does <code>fmap</code> accumulation.</p>
+<h2 id="other-yoneda-transformed-monads">Other Yoneda-transformed Monads</h2>
+<p>Now, I said one way to define a <code>Monad</code> for <code>Yoneda f</code> was to borrow an underlying <code>Monad</code> instance for <em>f</em>, but this isn't the only way.</p>
+<p>Consider <code>Yoneda Endo</code>. Recall that <code>Endo</code> from <a href="http://www.haskell.org/ghc/docs/6.12.2/html/libraries/base-4.2.0.1/Data-Monoid.html">Data.Monoid</a> is given by</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Endo</span> a = <span class="hljs-type">Endo</span> { <span class="hljs-title">appEndo</span> :: <span class="hljs-title">a</span> -&gt; <span class="hljs-title">a</span> }</span>
+</code></pre>
+<p>Clearly <code>Endo</code> is not a <code>Monad</code>, it can't even be a <code>Functor</code>, because <em>a</em> occurs in both positive and negative position.</p>
+<p>Nevertheless <code>Yoneda Endo</code> <strong>can</strong> be made into a monad -- the continuation passing style version of the <code>Maybe</code> monad!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">YMaybe</span> a = <span class="hljs-type">YMaybe</span> (<span class="hljs-title">forall</span> <span class="hljs-title">r</span>. (<span class="hljs-title">a</span> -&gt; <span class="hljs-title">r</span>) -&gt; r -&gt; r)</span>
+</code></pre>
+<p>I leave the rather straightforward derivation of this <code>Monad</code> for the reader. A version of it is present in <a href="../../../haskell/monad-ran/dist/doc/html/monad-ran/Control-Monad-Ran.html">monad-ran</a>.</p>
+<p>This lack of care for capital-F <code>Functor</code>iality also holds for <code>Codensity</code>, <code>Codensity Endo</code> can be used as a two-continuation list monad. It is isomorphic to the non-transformer version of <a href="http://okmij.org/ftp/papers/LogicT.pdf">Oleg et al.'s LogicT</a>, which is available on hackage as <a href="https://hackage.haskell.org/packages/archive/logict/0.4.2/doc/html/Control-Monad-Logic.html">logict</a> from my coworker, Dan Doel.</p>
+<p>The <code>Functor</code>, <code>Applicative</code>, <code>Monad</code>, <code>MonadPlus</code> and many other instances for <code>LogicT</code> can be rederived in their full glory from <code>Codensity (GEndo m)</code> automatically, where</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">GEndo</span> m r = <span class="hljs-type">GEndo</span> (<span class="hljs-title">m</span> <span class="hljs-title">r</span> -&gt; <span class="hljs-title">m</span> <span class="hljs-title">r</span>)</span>
+</code></pre>
+<p>without any need for conscious thought about how the continuations are plumbed through in the <code>Monad</code>.</p>
+<h2 id="bananas-in-space">Bananas in Space</h2>
+<p>One last digression,</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Rec</span> f r = (<span class="hljs-title">f</span> <span class="hljs-title">r</span> -&gt; <span class="hljs-title">r</span>) -&gt; r</span>
+</code></pre>
+<p>came up once previously on this blog in <a href="../../../reader/2008/rotten-bananas/">Rotten Bananas</a>. In that post, I talked about how Fegaras and Sheard used a free monad (somewhat obliquely) in "<a href="http://citeseer.ist.psu.edu/viewdoc/summary?doi=10.1.1.36.2763">Revisiting catamorphisms over datatypes with embedded functions</a>" to extend catamorphisms to deal with strong HOAS, and then talked further about how Stephanie Weirich and Geoffrey Washburn <a href="http://citeseer.ist.psu.edu/viewdoc/summary?doi=10.1.1.80.2219">used Rec</a> to replace the free monad used by Fegaras and Sheard. That said, they did so in a more restricted context, where any mapping was done by giving us both an embedding and a projection pair.</p>
+<h2 id="going-to-church">Going to Church</h2>
+<p>We can't just use <code>Rec f a</code> instead of <code>Free f a</code> here, because <code>Free f a</code> is a functor, while <code>Rec f a</code> is emphatically not.</p>
+<p>However, if we apply <code>Yoneda</code> to <code>Rec f</code>, we obtain a Church-encoded continuation-passing-style version of <code>Free</code>!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">F</span> f a = <span class="hljs-type">F</span> { <span class="hljs-title">runF</span> :: <span class="hljs-title">forall</span> <span class="hljs-title">r</span>. (<span class="hljs-title">a</span> -&gt; <span class="hljs-title">r</span>) -&gt; (<span class="hljs-title">f</span> <span class="hljs-title">r</span> -&gt; <span class="hljs-title">r</span>) -&gt; <span class="hljs-title">r</span> }</span>
+</code></pre>
+<p>Since this is of the form of <code>Yoneda (Rec f)</code>, it is clearly a <code>Functor</code>:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> (<span class="hljs-type">F</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+   fmap f (<span class="hljs-type">F</span> g) = <span class="hljs-type">F</span> (\kp -&gt; g (kp . f))
+</code></pre>
+<p>And nicely, <strong>without knowing anything about <em>f</em></strong>, we also get a <code>Monad</code>!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> (<span class="hljs-type">F</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+   return a = <span class="hljs-type">F</span> (\kp _ -&gt; kp a)
+   <span class="hljs-type">F</span> m &gt;&gt;= f = <span class="hljs-type">F</span> (\kp kf -&gt; m (\a -&gt; runF (f a) kp kf) kf)
+</code></pre>
+<p>But when we <code>&gt;&gt;=</code> all we do is change the continuation for <code>(a -&gt; r)</code>, leaving the <em>f</em>-algebra, <code>(f r -&gt; r)</code>, untouched.</p>
+<p>Now, <code>F</code> is a monad transformer:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">MonadTrans</span> <span class="hljs-type">F</span> <span class="hljs-keyword">where</span></span>
+   lift f = <span class="hljs-type">F</span> (\kp kf -&gt; kf (liftM kp f))
+</code></pre>
+<p>which is unsurprisingly, effectively performing the same operation as lifting did in <code>Free</code>.</p>
+<p>Heretofore, we've ignored everything about <em>f</em> entirely.</p>
+<p>This has pushed the need for the <code>Functor</code> on <em>f</em> into the wrapping operation:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> f =&gt; <span class="hljs-type">MonadFree</span> f (<span class="hljs-type">F</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+   wrap f = <span class="hljs-type">F</span> (\kp kf -&gt; kf (fmap (\ (<span class="hljs-type">F</span> m) -&gt; m kp kf) f))
+</code></pre>
+<p>Now, we can clearly transform from our representation to any other free monad representation:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">fromF</span> :: <span class="hljs-type">MonadFree</span> f m =&gt; <span class="hljs-type">F</span> f a -&gt; m a
+<span class="hljs-title">fromF</span> (<span class="hljs-type">F</span> m) = m return wrap
+</code></pre>
+<p>or to it from our original canonical ADT-based free monad representation:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">toF</span> :: <span class="hljs-type">Functor</span> f =&gt; <span class="hljs-type">Free</span> f a -&gt; <span class="hljs-type">F</span> f a
+<span class="hljs-title">toF</span> xs = <span class="hljs-type">F</span> (\kp kf -&gt; go kp kf xs) <span class="hljs-keyword">where</span>
+  go kp _  (<span class="hljs-type">Pure</span> a) = kp a
+  go kp kf (<span class="hljs-type">Free</span> fma) = kf (fmap (go kp kf) fma)
+</code></pre>
+<p>So, <code>F f a</code> is isomorphic to <code>Free f a</code>.</p>
+<p>So, looking at <code>Codensity (F f) a</code> as <code>Codensity (Yoneda (Rec f))</code>, it just seems silly.</p>
+<p>As we mentioned before, we should be able to go from <code>Codensity (Yoneda (Rec f)) a</code> to <code>Codensity (Rec f) a</code>, since <code>Yoneda</code> was just fusing uses of <code>fmap</code>, while <code>Codensity</code> was fusing <code>fmap</code> while right-associating <code>(&gt;&gt;=)</code>'s.</p>
+<h2 id="swallowing-the-bigger-fish">Swallowing the Bigger Fish</h2>
+<p>So, the obvious choice is to try to optimize to <code>Codensity (Rec f) a</code>. If you go through the motions of encoding that you get:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">CF</span> f a = <span class="hljs-type">CF</span> (<span class="hljs-title">forall</span> <span class="hljs-title">r</span>. (<span class="hljs-title">a</span> -&gt; (<span class="hljs-title">f</span> <span class="hljs-title">r</span> -&gt; <span class="hljs-title">r</span>) -&gt; r) -&gt; (<span class="hljs-title">f</span> <span class="hljs-title">r</span> -&gt; <span class="hljs-title">r</span>) -&gt; r)</span>
+</code></pre>
+<p>which is in some sense larger than <code>F f a</code>, because the first continuation gets both an <em>a</em> and an <em>f</em>-algebra <code>(f r -&gt; r)</code>.</p>
+<p>But tellingly, once you write the code, the first continuation <strong>never uses the extra <em>f</em>-algebra you supplied it!</strong></p>
+<p>So <code>Codensity (Yoneda (Rec f)) a</code> gives us nothing of interest that we don't already have in <code>Yoneda (Rec f) a</code>.</p>
+<p>Consequently, in this special case rather than letting <code>Codensity (Yoneda x) a</code> swallow the <code>Yoneda</code> to get <code>Codensity x a</code> we can actually let the <code>Yoneda</code> swallow the surrounding <code>Codensity</code> obtaining <code>Yoneda (Rec f) a</code>, the representation we started with.</p>
+<h2 id="scott-free">Scott Free</h2>
+<p>Finally, you might ask if a Church encoding is as simple as we could go. After all a Scott encoding</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">ScottFree</span> f a = <span class="hljs-type">ScottFree</span></span>
+    { runScottFree :: <span class="hljs-keyword">forall</span> r.
+       (a -&gt; r) -&gt; (f (<span class="hljs-type">ScottFree</span> f a) -&gt; r) -&gt; r
+    }
+</code></pre>
+<p>would admit easier pattern matching, and a nice pun, and seems somewhat conceptually simpler, while remaining isomorphic.</p>
+<p>But the <code>Monad</code> instance:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> f =&gt; <span class="hljs-type">Monad</span> (<span class="hljs-type">ScottFree</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+   return a = <span class="hljs-type">ScottFree</span> (\kp _ -&gt; kp a)
+   <span class="hljs-type">ScottFree</span> m &gt;&gt;= f = <span class="hljs-type">ScottFree</span>
+       (\kb kf -&gt; m (\a -&gt; runScottFree (f a) kb kf) (kf . fmap (&gt;&gt;= f)))
+</code></pre>
+<p>needs to rely on the underlying bind, and you can show that it won't do the right thing with regards to reassociating.</p>
+<p>So, alas, we cannot get away with <code>ScottFree</code>.</p>
+<h2 id="nobody-sells-for-less">Nobody Sells for Less</h2>
+<p>So, now we can rebuild Voigtländer's <code>improve</code> using our Church-encoded / Yoneda-based free monad <code>F</code>, which is precisely isomorphic to <code>Free</code>, by using</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">lowerF</span> :: <span class="hljs-type">F</span> f a -&gt; <span class="hljs-type">Free</span> f a
+<span class="hljs-title">lowerF</span> (<span class="hljs-type">F</span> f) = f <span class="hljs-type">Pure</span> <span class="hljs-type">Free</span>
+</code></pre>
+<p>to obtain</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">improve</span> :: (<span class="hljs-keyword">forall</span> a. <span class="hljs-type">MonadFree</span> f m =&gt; m a) -&gt; <span class="hljs-type">Free</span> f a
+<span class="hljs-title">improve</span> m = lowerF m
+</code></pre>
+<p>And since our Church-encoded free monad is isomorphic to the simple ADT encoding, our new solution is as small as it can get.</p>
+<p>Next time, we'll see this construction in action!</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/kan-extensions"><code>kan-extensions</code></a> · <a href="https://hackage.haskell.org/package/free"><code>free</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><section class="comments" id="comments"><h2>From the original discussion</h2><p class="editorial">Selected questions, explanations, and corrections. Original wording and dates; spam and automated trackbacks omitted.</p><article class="comment" id="comment-104638"><header><strong>Philip J-F</strong><a href="../../../reader/2011/free-monads-for-less-2/#comment-104638">April 27th, 2012 at 12:01 am</a></header><p>shouldn’t the type of improve be</p>
+<p>Functor f =&gt; (forall m. MonadFree f m =&gt; m a) -&gt; Free f a</p>
+<p>instead of</p>
+<p>(forall a. MonadFree f m =&gt; m a) -&gt; Free f a</p>
+</article></section><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/free-monads-for-less-2.md" download>Article Markdown</a> · <a href="../../../source/articles/free-monads-for-less-2.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2010/introducing-speculation/">Introducing Speculation →</a><a href="../../../reader/2011/free-monads-for-less/">Free Monads for Less (Part 1 of 3): Codensity →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mandelbrot · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Haskell</span><span>Edward Kmett · <time datetime="2013-09-03">3 September 2013</time></span></div><h1>Mandelbrot</h1></header><details class="contents"><summary>On this page</summary><ol><li><a href="#update-sept-2-2013-just-add-parallelism">[Update: Sept 2, 2013] Just Add Parallelism</a></li><li><a href="#update-sept-2-2013-interlacing-and-incrementalization">[Update: Sept 2, 2013] Interlacing and Incrementalization</a></li></ol></details><article class="prose"><p>This short little snippet combines a Mandelbrot set generator using lens based on one by <a href="https://github.com/nandykins">N. Haas</a> with the fold-based PNG generator from the <a href="../../../reader/2015/cellular-automata-part-2/">second part of my cellular automata series</a>. His version of the Mandelbrot function was tighter than mine, but I mixed it with the formatting logic.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE OverloadedStrings #-}</span>
+<span class="hljs-meta">{-# LANGUAGE ExistentialQuantification #-}</span>
+<span class="hljs-meta">{-# LANGUAGE Rank2Types #-}</span>
+<span class="hljs-meta">{-# LANGUAGE TemplateHaskell #-}</span>
+<span class="hljs-meta">{-# LANGUAGE QuasiQuotes #-}</span>
+<span class="hljs-meta">{-# LANGUAGE TypeFamilies #-}</span>
+
+<span class="hljs-keyword">import</span> Codec.Compression.Zlib
+<span class="hljs-keyword">import</span> Control.Lens
+<span class="hljs-keyword">import</span> Control.DeepSeq
+<span class="hljs-keyword">import</span> Control.Parallel.Strategies
+<span class="hljs-keyword">import</span> Data.Bits
+<span class="hljs-keyword">import</span> Data.Binary
+<span class="hljs-keyword">import</span> Data.Binary.Put
+<span class="hljs-keyword">import</span> Data.Complex
+<span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Data.ByteString.Lazy <span class="hljs-keyword">as</span> Lazy
+<span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Data.Vector.Unboxed <span class="hljs-keyword">as</span> Unboxed
+<span class="hljs-keyword">import</span> Data.Foldable <span class="hljs-keyword">as</span> F
+<span class="hljs-keyword">import</span> Data.Monoid
+<span class="hljs-keyword">import</span> Yesod
+
+<span class="hljs-comment">-- * Mandelbrot</span>
+
+
+<span class="hljs-title">mandelbrot</span> :: <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Lazy</span>.<span class="hljs-type">ByteString</span>
+<span class="hljs-title">mandelbrot</span> n w h = png w h $ \r i -&gt;
+ maybe <span class="hljs-number">0</span> scale $ steps $ (r/.w*<span class="hljs-number">3</span>-<span class="hljs-number">2</span>) :+ (i/.h*<span class="hljs-number">2</span>-<span class="hljs-number">1</span>)
+ <span class="hljs-keyword">where</span>
+   x /. y = fromIntegral x / fromIntegral y :: <span class="hljs-type">Double</span>
+   scale k = floor (k /. n * <span class="hljs-number">255</span>)
+   diverges (r :+ i) = r^<span class="hljs-number">2</span> + i^<span class="hljs-number">2</span> &gt; <span class="hljs-number">4</span>
+   steps c = iterate (\z -&gt; z^<span class="hljs-number">2</span> + c) <span class="hljs-number">0</span> ^?
+     taking n ifolded.filtered diverges.asIndex
+
+<span class="hljs-comment">-- * Folds</span>
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">L</span> b a = forall x. <span class="hljs-type">L</span> (<span class="hljs-title">x</span> -&gt; <span class="hljs-title">b</span> -&gt; <span class="hljs-title">x</span>) x (<span class="hljs-title">x</span> -&gt; <span class="hljs-title">a</span>)</span>
+
+<span class="hljs-title">more</span> :: <span class="hljs-type">Lazy</span>.<span class="hljs-type">ByteString</span> -&gt; <span class="hljs-type">L</span> <span class="hljs-type">Word8</span> a -&gt; a
+<span class="hljs-title">more</span> bs (<span class="hljs-type">L</span> xbx x xa) = xa (<span class="hljs-type">Lazy</span>.foldl' xbx x bs)
+
+<span class="hljs-comment">-- * CRC32</span>
+
+<span class="hljs-title">crc32</span> :: <span class="hljs-type">L</span> <span class="hljs-type">Word8</span> <span class="hljs-type">Word32</span>
+<span class="hljs-title">crc32</span> = <span class="hljs-type">L</span> step <span class="hljs-number">0xffffffff</span> complement <span class="hljs-keyword">where</span>
+  step r b = unsafeShiftR r <span class="hljs-number">8</span> `xor` crcs <span class="hljs-type">Unboxed</span>.! fromIntegral (xor r (fromIntegral b) .&amp;. <span class="hljs-number">0xff</span>)
+
+<span class="hljs-title">crcs</span> :: <span class="hljs-type">Unboxed</span>.<span class="hljs-type">Vector</span> <span class="hljs-type">Word32</span>
+<span class="hljs-title">crcs</span> = <span class="hljs-type">Unboxed</span>.generate <span class="hljs-number">256</span> (go.go.go.go.go.go.go.go.fromIntegral) <span class="hljs-keyword">where</span>
+  go c = unsafeShiftR c <span class="hljs-number">1</span> `xor` <span class="hljs-keyword">if</span> c .&amp;. <span class="hljs-number">1</span> /= <span class="hljs-number">0</span> <span class="hljs-keyword">then</span> <span class="hljs-number">0xedb88320</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span>
+
+<span class="hljs-comment">-- * PNG</span>
+
+<span class="hljs-title">putChunk</span> :: <span class="hljs-type">Lazy</span>.<span class="hljs-type">ByteString</span> -&gt; <span class="hljs-type">Lazy</span>.<span class="hljs-type">ByteString</span> -&gt; <span class="hljs-type">Put</span>
+<span class="hljs-title">putChunk</span> h b = <span class="hljs-keyword">do</span>
+  putWord32be $ fromIntegral (<span class="hljs-type">Lazy</span>.length b)
+  putLazyByteString h
+  putLazyByteString b
+  putWord32be $ more (h &lt;&gt; b) crc32
+
+<span class="hljs-title">putChunks</span> :: <span class="hljs-type">Lazy</span>.<span class="hljs-type">ByteString</span> -&gt; <span class="hljs-type">Lazy</span>.<span class="hljs-type">ByteString</span> -&gt; <span class="hljs-type">Put</span>
+<span class="hljs-title">putChunks</span> h b = forM_ (<span class="hljs-type">Lazy</span>.toChunks b) (putChunk h . <span class="hljs-type">Lazy</span>.fromChunks . return)
+
+<span class="hljs-title">png</span> :: <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Int</span> -&gt; (<span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Word8</span>) -&gt; <span class="hljs-type">Lazy</span>.<span class="hljs-type">ByteString</span>
+<span class="hljs-title">png</span> w h p = runPut $ <span class="hljs-keyword">do</span>
+  putLazyByteString <span class="hljs-string">"\x89PNG\r\n\x1a\n"</span>
+  putChunk <span class="hljs-string">"IHDR"</span> $ runPut $ <span class="hljs-keyword">do</span>
+    putWord32be (fromIntegral w)
+    putWord32be (fromIntegral h)
+    putWord8 <span class="hljs-number">8</span> <span class="hljs-comment">-- 8 bit color depth</span>
+    putWord8 <span class="hljs-number">0</span> <span class="hljs-comment">-- greyscale</span>
+    putWord8 <span class="hljs-number">0</span>
+    putWord8 <span class="hljs-number">0</span>
+    putWord8 <span class="hljs-number">1</span> <span class="hljs-comment">-- Adam7 interlaced</span>
+  putChunks <span class="hljs-string">"IDAT"</span> $
+    compressWith defaultCompressParams { compressLevel = bestSpeed } $ runPut $ <span class="hljs-keyword">do</span>
+      pass [<span class="hljs-number">0</span>,<span class="hljs-number">8</span> ..h-<span class="hljs-number">1</span>] [<span class="hljs-number">0</span>,<span class="hljs-number">8</span>..w-<span class="hljs-number">1</span>]
+      pass [<span class="hljs-number">0</span>,<span class="hljs-number">8</span> ..h-<span class="hljs-number">1</span>] [<span class="hljs-number">4</span>,<span class="hljs-number">12</span>..w-<span class="hljs-number">1</span>]
+      pass [<span class="hljs-number">4</span>,<span class="hljs-number">12</span>..h-<span class="hljs-number">1</span>] [<span class="hljs-number">0</span>,<span class="hljs-number">4</span>..w-<span class="hljs-number">1</span>]
+      pass [<span class="hljs-number">0</span>,<span class="hljs-number">4</span> ..h-<span class="hljs-number">1</span>] [<span class="hljs-number">2</span>,<span class="hljs-number">6</span>..w-<span class="hljs-number">1</span>]
+      pass [<span class="hljs-number">2</span>,<span class="hljs-number">6</span> ..h-<span class="hljs-number">1</span>] [<span class="hljs-number">0</span>,<span class="hljs-number">2</span>..w-<span class="hljs-number">1</span>]
+      pass [<span class="hljs-number">0</span>,<span class="hljs-number">2</span> ..h-<span class="hljs-number">1</span>] [<span class="hljs-number">1</span>,<span class="hljs-number">3</span>..w-<span class="hljs-number">1</span>]
+      pass [<span class="hljs-number">1</span>,<span class="hljs-number">3</span> ..h-<span class="hljs-number">1</span>] [<span class="hljs-number">0</span>..w-<span class="hljs-number">1</span>]
+  putChunk <span class="hljs-string">"IEND"</span> mempty
+  <span class="hljs-keyword">where</span>
+    pass ys xs = forM_ ys $ \y -&gt; <span class="hljs-keyword">do</span>
+      putWord8 <span class="hljs-number">0</span>
+      <span class="hljs-type">F</span>.mapM_ put (fmap (p ?? y) xs `using` parListChunk <span class="hljs-number">16</span> rdeepseq)
+
+
+<span class="hljs-comment">-- * Yesod</span>
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">App</span> = <span class="hljs-type">App</span></span>
+<span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Yesod</span> <span class="hljs-type">App</span>
+mkYesod "<span class="hljs-type">App</span>" [parseRoutes| / <span class="hljs-type">ImageR</span> <span class="hljs-type">GET</span> |]
+
+
+getImageR :: <span class="hljs-type">MonadHandler</span> m =&gt; m <span class="hljs-type">TypedContent</span>
+getImageR = sendResponse
+          $ toTypedContent (<span class="hljs-title">typePng</span>, <span class="hljs-title">toContent</span> <span class="hljs-title">img</span>)
+  <span class="hljs-keyword">where</span></span>
+    img = mandelbrot <span class="hljs-number">32</span> <span class="hljs-number">600</span> <span class="hljs-number">300</span>
+
+<span class="hljs-title">main</span> :: <span class="hljs-type">IO</span> ()
+<span class="hljs-title">main</span> = warpEnv <span class="hljs-type">App</span>
+</code></pre>
+<p>It would be fun to modify the little embedded Yesod web server to permit interactive browsing of the resulting Mandelbrot set.</p>
+<h3 id="update-sept-2-2013-just-add-parallelism">[Update: Sept 2, 2013] Just Add Parallelism</h3>
+<p>In the PNG writer, replacing</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">forM_</span> [<span class="hljs-number">0</span>..w-<span class="hljs-number">1</span>] $ \x -&gt; put (p x y)
+</code></pre>
+<p>with a little bit of parallelism:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">F</span>.mapM_ put
+  (fmap (p ?? y) [<span class="hljs-number">0</span>..w-<span class="hljs-number">1</span>] `using` parListChunk <span class="hljs-number">16</span> rdeepseq)
+</code></pre>
+<p>rather dramatically speeds up rendering when compiled and run locally with the threaded runtime.</p>
+<p>Unfortunately, we don't seem to have the ability to pass RTS flags here on the School of Haskell at this time.</p>
+<h3 id="update-sept-2-2013-interlacing-and-incrementalization">[Update: Sept 2, 2013] Interlacing and Incrementalization</h3>
+<p>I also took the liberty of modifying the PNG writer to support directly generating the image
+using greyscale to cut down repetition, and to support multiple IDAT blocks and use Adam7 interlacing so you can see the Mandelbrot set as soon as possible.</p>
+<p>Greyscaling just involves changing one of the constants in the PNG header.</p>
+<p>Getting multiple <code>IDAT</code> blocks just involves replacing</p>
+<pre tabindex="0" aria-label="text code"><code class="language-text">putChunk "IDAT"
+</code></pre>
+<p>with</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">putChunks</span> <span class="hljs-string">"IDAT"</span>
+</code></pre>
+<p>after we let Haskell pick for us reasonable sounding chunk boundaries:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">putChunks</span> :: <span class="hljs-type">Lazy</span>.<span class="hljs-type">ByteString</span> -&gt; <span class="hljs-type">Lazy</span>.<span class="hljs-type">ByteString</span> -&gt; <span class="hljs-type">Put</span>
+<span class="hljs-title">putChunks</span> h b = forM_ (<span class="hljs-type">Lazy</span>.toChunks b) $
+  putChunk h . <span class="hljs-type">Lazy</span>.fromChunks . return
+</code></pre>
+<p>Switching to <a href="http://en.wikipedia.org/wiki/Adam7_algorithm">Adam7</a> is only slightly more involved.</p>
+<p>After we factor out the core loop that generates our PNG body:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">    pass ys xs = forM_ ys $ \y -&gt; <span class="hljs-keyword">do</span>
+      putWord8 <span class="hljs-number">0</span>
+      <span class="hljs-type">F</span>.mapM_ put (fmap (p ?? y) xs `using` parListChunk <span class="hljs-number">16</span> rdeepseq)
+</code></pre>
+<p>We wind up replacing:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">  putChunks <span class="hljs-string">"IDAT"</span> $ compress $ runPut $ <span class="hljs-keyword">do</span>
+      pass [<span class="hljs-number">0</span>..h-<span class="hljs-number">1</span>] [<span class="hljs-number">0</span>..w-<span class="hljs-number">1</span>]
+</code></pre>
+<p>with</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">  putChunks <span class="hljs-string">"IDAT"</span> $ compress $ runPut $ <span class="hljs-keyword">do</span>
+      pass [<span class="hljs-number">0</span>,<span class="hljs-number">8</span> ..h-<span class="hljs-number">1</span>] [<span class="hljs-number">0</span>,<span class="hljs-number">8</span>..w-<span class="hljs-number">1</span>]
+      pass [<span class="hljs-number">0</span>,<span class="hljs-number">8</span> ..h-<span class="hljs-number">1</span>] [<span class="hljs-number">4</span>,<span class="hljs-number">12</span>..w-<span class="hljs-number">1</span>]
+      pass [<span class="hljs-number">4</span>,<span class="hljs-number">12</span>..h-<span class="hljs-number">1</span>] [<span class="hljs-number">0</span>,<span class="hljs-number">4</span>..w-<span class="hljs-number">1</span>]
+      pass [<span class="hljs-number">0</span>,<span class="hljs-number">4</span> ..h-<span class="hljs-number">1</span>] [<span class="hljs-number">2</span>,<span class="hljs-number">6</span>..w-<span class="hljs-number">1</span>]
+      pass [<span class="hljs-number">2</span>,<span class="hljs-number">6</span> ..h-<span class="hljs-number">1</span>] [<span class="hljs-number">0</span>,<span class="hljs-number">2</span>..w-<span class="hljs-number">1</span>]
+      pass [<span class="hljs-number">0</span>,<span class="hljs-number">2</span> ..h-<span class="hljs-number">1</span>] [<span class="hljs-number">1</span>,<span class="hljs-number">3</span>..w-<span class="hljs-number">1</span>]
+      pass [<span class="hljs-number">1</span>,<span class="hljs-number">3</span> ..h-<span class="hljs-number">1</span>] [<span class="hljs-number">0</span>..w-<span class="hljs-number">1</span>]
+</code></pre>
+<p>and modifying the header to indicate we want it to be interlaced.</p>
+<p>This spits out the data in 7 passes refining 8x8 blocks as follows:</p>
+<pre tabindex="0" aria-label="text code"><code class="language-text">1 6 4 6 2 6 4 6
+7 7 7 7 7 7 7 7
+5 6 5 6 5 6 5 6
+7 7 7 7 7 7 7 7
+3 6 4 6 3 6 4 6
+7 7 7 7 7 7 7 7
+5 6 5 6 5 6 5 6
+7 7 7 7 7 7 7 7
+</code></pre>
+<p>Done!</p>
+<p>-<a href="mailto:ekmett@gmail.com">Edward Kmett</a></p>
+<p>September 2, 2013</p>
+</article><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: School of Haskell. Date displayed by School of Haskell; may reflect a later revision.</p><p><a href="../../../source/articles/snippets-mandelbrot.md" download>Article Markdown</a> · <a href="../../../source/articles/snippets-mandelbrot.original.md" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2013/snippets-once/">Once →</a><a href="../../../reader/2013/parallel-crc/">Parallel and Incremental CRCs →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

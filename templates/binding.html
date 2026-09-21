@@ -1,0 +1,9 @@
+<figure class="interactive-figure" id="binding-figure" data-demo="binding">
+  <div class="figure-controls"><label>Substitution <select data-control="preset"><option value="0">A free variable</option><option value="1">The article’s nested example</option><option value="2">Free and bound occurrences</option><option value="3">A shadowed variable</option></select></label><label>Print binders using <select data-control="spelling"><option value="0">x</option><option value="1">z</option><option value="2">u</option></select></label></div>
+  <p class="substitution-expression" data-view="input"></p>
+  <div class="substitution-results"><div><span class="figure-label">Naive substitution</span><output data-view="naive"></output><small data-view="naive-free"></small></div><div><span class="figure-label">Capture-avoiding substitution</span><output data-view="safe"></output><small data-view="safe-free"></small></div></div>
+  <p class="figure-key"><span class="term-free">Free variable</span> · <span class="term-bound">Bound occurrence</span> · <span class="term-binder">Binder</span></p>
+  <details><summary>The underlying scope</summary><p><code data-view="scope"></code></p><p>Bound variables use <code>B</code>; free variables use <code>F</code>. Changing printed binder names leaves the scope unchanged.</p></details>
+  <figcaption><span data-view="status" role="status">Loading the Haskell figure…</span> A new companion using the article’s small <code>Scope</code>/<code>Var</code> encoding. <a href="{{root}}source/BindingDemo.hs">Haskell source</a> · <a href="{{root}}source/browser-sources.zip">All Haskell sources</a>.</figcaption>
+  <noscript>Enable JavaScript and WebAssembly to try substitution. For λx. y with y := x, capture avoidance gives λx′. x; naive substitution gives λx. x.</noscript>
+</figure>

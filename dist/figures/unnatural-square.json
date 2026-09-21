@@ -1,0 +1,16 @@
+{
+  "id": "unnatural-square",
+  "objects": [
+    "F(A)",
+    "F(B)",
+    "G(A)",
+    "G(B)"
+  ],
+  "arrows": [
+    "F⟦f, g⟧",
+    "ηₐ",
+    "ηᵦ",
+    "G⟦f, g⟧"
+  ],
+  "originalTex": "\\bfig \\square/>`>`>`>/[F(A)`F(B)`G(A)`G(B);F {[}\\hspace{-0.8pt}{[}f, g{]}\\hspace{-0.8pt}{]} `\\eta_A`\\eta_B`G {[}\\hspace{-0.8pt}{[}f, g{]}\\hspace{-0.8pt}{]}] \\efig "
+}

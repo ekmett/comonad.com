@@ -1,0 +1,71 @@
+{
+  "reviewed": "2026-09-21",
+  "method": "Explicit reviewed selections; all unselected records preserved in the raw source.",
+  "comments": [
+    {
+      "id": "comment-11782",
+      "author": "Edward Kmett",
+      "date": "September 15th, 2009 at 9:34 pm",
+      "markdown": "Wren:\n\nYeah, you’ve got the metric. I used this once a couple of years back to pretty good effect.\n\nThat is a very good point about diversity. The metric I actually used did a much simpler version of what you proposed in that I just considered a pre-ranked training set. And if you found an item that should be ranked up to, say, 4th in the 3rd slot you earned 3/4ths of the points, clamped to 1. Ties can them be allowed in the list of expected rankings when the distinctions between them aren’t clear. This doesn’t address diversity directly, but it does ensure that you can reach 100% precision given perfect ordering."
+    },
+    {
+      "id": "comment-11800",
+      "author": "Edward Kmett",
+      "date": "September 16th, 2009 at 7:10 am",
+      "markdown": "Pseudonym:\n\nI agree, although the precision metric for a given recall level can be calculated using the same machinery.\n\nI’m happy to learn though. References are welcome! I hardly suspect that I came up with anything novel during a 2 hour whiteboard session two years back and a similar amount of time hacking things up in perl. ;)\n\nI just haven’t seen anything similar written up."
+    },
+    {
+      "id": "comment-11828",
+      "author": "Edward Kmett",
+      "date": "September 16th, 2009 at 5:33 pm",
+      "markdown": "Hello Bob,\n\nThanks for the references! The TREC IR Measures overview seems to be exactly what I was looking for."
+    }
+  ],
+  "decisions": [
+    {
+      "id": "comment-11775",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-11782",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-11791",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-11800",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-11805",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-11810",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-11812",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-11828",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-91959",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    }
+  ]
+}

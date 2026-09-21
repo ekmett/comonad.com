@@ -1,24 +1,11 @@
-# CRC pilot architecture
+# Static archive architecture
 
-- `haskell/CRC.hs`: pure CRC-32/ISO-HDLC arithmetic. Reflected polynomial
-  representation, with one represented by 0x80000000. A summary contains the
-  zero-initialized remainder and x^(8*byte_length). Semigroup composition is
-  `(p,m) <> (q,n) = (p*n + q,m*n)`. Addition is XOR.
-- `haskell/Browser.hs`: C-FFI exports compiled by GHC as a WASI reactor. Explicit
-  `_initialize` and `hs_init` calls precede any Haskell exports. JavaScript owns
-  input buffers through malloc/free; Haskell results are unsigned Word32 values.
-- `dist/engine.js`: WASI initialization, byte copying, and wrappers. No CRC math.
-- `dist/app.js`: input encoding, presentation, two-way split and cached four-leaf
-  tree. One leaf edit recalculates one leaf and two compositions, reusing four
-  existing summaries. A separate full scan provides an independent path check.
-- `haskell/Server.hs`: new native WAI/Warp companion, same pure core, UTF-8 query
-  bytes. Historical School of Haskell snippets are separately preserved unchanged.
-- `dist/index.html`, `style.css`: static article shell. GHC/Wasm and WASI assets
-  are same-origin; no CDN or external runtime is required. Standard links to
-  original sources are navigation only.
-- `tools/build.py`: compiles the reactor, copies current Haskell source and WASI
-  assets, extracts the composition excerpt, and records hashes in build-info.json.
+`content/` is the durable corpus: edited article Markdown and metadata, unchanged source snapshots, explicit comment selections, downloaded assets and their hashes, Haskell archive manifests, talk metadata, and editorial decisions.
 
-The current native build has been verified with GHC 9.10.1. The browser build has
-been verified with the pinned 9.14.1.20260731 wasm cross-compiler. The version
-difference is deliberate: source-level and numerical agreement are tested.
+`tools/build-articles.mjs` renders local HTML, Haskell highlighting, KaTeX, diagrams, chronology, series, feed and provenance. It never fetches original hosts. Import scripts run separately and are resumable. The generated site uses relative links for GitHub Pages project-path compatibility; feed and sitemap URLs target the eventual canonical `https://comonad.com/` host.
+
+`dist/` contains both maintained browser assets and generated pages. It is intentionally deployable without a compiler/database/CDN. Do not remove it before building. Math and fonts are local. YouTube embeds are created only on explicit Play. The editorial source remains downloadable alongside every article.
+
+`haskell/CRC.hs` is shared by the native server and Wasm adapter. `haskell/Automaton.hs` implements the cellular automaton kernel. JavaScript handles controls, drawing and CRC tree caching; numerical operations execute in GHC-generated Wasm. The source/hash manifest prevents deploying stale Wasm after Haskell changes.
+
+The Pages workflow renders articles, verifies preservation and the Wasm artifact, and publishes only on manual dispatch. Changing the generator to Hakyll/Pandoc remains an independent future choice; content preservation and reader-facing design do not depend on that choice.

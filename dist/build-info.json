@@ -1,12 +1,18 @@
 {
   "compiler": "GHC 9.14.1.20260731",
   "target": "wasm32-wasi",
-  "wasm_bytes": 1644489,
-  "wasm_sha256": "fa67869d6c25de92ee73c7f382c6e8f336f2d8dfb9d01680fad4b26fc8dc6ebd",
+  "wasm_bytes": 2006672,
+  "wasm_sha256": "fbfd7bcf99716c34aeb0eec6d3235a705ad834bd58cd0349011ea3e36414bb21",
   "source_sha256": {
-    "Browser.hs": "43f58a09966763d65ad2c59518ac3fa59bc78a6a3fa7971d4780f62bdedf0e7b",
+    "Browser.hs": "8294f872ca1813c4d6327db7c6d1d9f5bddc9166092e0466d2abca181e75d8df",
+    "Automaton.hs": "0ee350a757ab8fc33ce3535d6c21661e42426bf606e3892ecf7a25d8f4654946",
+    "BindingDemo.hs": "2acc34d56d5f66be977ea00fce4216e4703f12288c5c88bdb3e295b18786e11a",
     "CRC.hs": "51024e167fb5119c66053c13208ed88b088058a0ebbc2d65d0867cf185c9c67e",
-    "Server.hs": "0e4417e6f8b8da6173e608861d3901e84816888816800b49cf0588def993f295"
+    "Server.hs": "0e4417e6f8b8da6173e608861d3901e84816888816800b49cf0588def993f295",
+    "ADDemo.hs": "7d2e86a39866b720b211e49de2fb318755f20ddff27a8855fa1b06b182f1e707",
+    "LCADemo.hs": "3ba06cb65b68a3efd7bcafd9fd8f5e8d6959ef3f717453bd4bed98d875e99825",
+    "MortonDemo.hs": "bac31c92cc28c4489d1a5f6d2d60ffd92786558caf6085f2d9e88605ad164542",
+    "DemoJSON.hs": "189539a932ecc2eda365c3b82fd6d830dcf74739b8dd66dbfb6fc3fbd717bc05"
   },
   "exports": [
     "hs_init",
@@ -17,6 +23,11 @@
     "crc_factor",
     "crc_multiply",
     "crc_combine",
-    "crc_finish"
+    "crc_finish",
+    "automaton_step",
+    "binding_demo",
+    "morton_demo",
+    "ad_demo",
+    "lca_demo"
   ]
 }

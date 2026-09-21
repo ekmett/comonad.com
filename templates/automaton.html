@@ -1,0 +1,6 @@
+<figure class="automaton" id="automaton-figure">
+  <div class="automaton-controls"><label>Rule <input id="automaton-rule" type="number" min="0" max="255" step="1" value="110"></label><label>Initial cells <select id="automaton-seed"><option value="single">One cell</option><option value="pair">Two nearby cells</option><option value="alternating">Alternating cells</option></select></label></div>
+  <canvas id="automaton-canvas" width="516" height="320" role="img" aria-label="Cellular automaton, with time running downward"></canvas>
+  <figcaption><span id="automaton-status" aria-live="polite">Loading the Haskell example…</span> Each row is one generation on the integer line; the picture shows its central 129 cells. <a href="../../../../source/Automaton.hs">Haskell source</a>.</figcaption>
+  <noscript>This interactive figure needs JavaScript and WebAssembly; the article and original code remain readable below.</noscript>
+</figure>

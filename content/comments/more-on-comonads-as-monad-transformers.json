@@ -1,0 +1,35 @@
+{
+  "reviewed": "2026-09-21",
+  "method": "Explicit reviewed selections; all unselected records preserved in the raw source.",
+  "comments": [
+    {
+      "id": "comment-62253",
+      "author": "wren ng thornton",
+      "date": "June 30th, 2011 at 4:31 pm",
+      "markdown": "_Co w a ~ Co (f . g) ~ g . f_\n\nShouldn’t that be Co w?\n\n_CoT w m a ~ Codensity (g . m) r_\n\nShouldn’t that be Codensity (g . m) a?"
+    },
+    {
+      "id": "comment-62263",
+      "author": "Edward Kmett",
+      "date": "June 30th, 2011 at 7:05 pm",
+      "markdown": "Yes and yes. :)"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "comment-62253",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-62263",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-62287",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    }
+  ]
+}

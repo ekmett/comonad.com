@@ -1,0 +1,7 @@
+<figure class="interactive-figure" id="morton-figure" data-demo="morton">
+  <div class="figure-controls"><label>x <input data-control="x" type="range" min="0" max="7" value="2"></label><label>y <input data-control="y" type="range" min="0" max="7" value="3"></label><label>Path <select data-control="order"><option value="morton">Z-order</option><option value="row">Row-major</option></select></label><label>Cells per block <select data-control="block"><option>2</option><option selected>4</option><option>8</option><option>16</option></select></label></div>
+  <svg data-view="grid" class="morton-grid" viewBox="0 0 360 360" role="img" aria-label="Eight by eight grid and traversal path"></svg>
+  <div class="morton-bits" data-view="bits"></div><p data-view="blocks"></p>
+  <figcaption><span data-view="status" role="status">Loading the Haskell figure…</span> Choose a cell; the shaded 2 × 2 window moves with it and stays inside the grid. x runs right, y runs down. Block counts model aligned, contiguous memory blocks, not hardware timings. <a href="{{root}}source/MortonDemo.hs">Haskell source</a> · <a href="{{root}}source/browser-sources.zip">All Haskell sources</a>.</figcaption>
+  <noscript>Enable JavaScript and WebAssembly to explore bit interleaving. The first coordinate occupies odd bit positions, the second even positions.</noscript>
+</figure>

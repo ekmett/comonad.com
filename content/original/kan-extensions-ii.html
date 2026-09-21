@@ -1,0 +1,1029 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head profile="http://gmpg.org/xfn/11">
+        <link rel="shortcut icon" href="http://comonad.com/reader/wp-content/themes/connections/favicon.ico" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>The Comonad.Reader &raquo; Kan Extensions II: Adjunctions, Composition, Lifting</title>
+	<meta name="generator" content="WordPress 2.8.4" />
+	<style type="text/css" media="screen">@import url( http://comonad.com/reader/wp-content/themes/connections/style.css );</style>
+	<!--[if IE]><style type="text/css"> img { behavior: url(/reader/pngbehavior/pngbehavior.htc); } </style><![endif]-->
+        <link rel="openid.server" href="https://api.screenname.aol.com/auth/openidServer"/>
+        <link rel="openid.delegate" href="http://openid.aol.com/edwardallankmett"/>
+
+	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://comonad.com/reader/feed/" />
+	<link rel="alternate" type="application/atom+xml" title="Atom 0.3" href="http://comonad.com/reader/feed/atom/" />
+	<link rel="pingback" href="http://comonad.com/reader/xmlrpc.php" />
+    	<link rel='archives' title='October 2022' href='http://comonad.com/reader/2022/10/' />
+	<link rel='archives' title='January 2018' href='http://comonad.com/reader/2018/01/' />
+	<link rel='archives' title='January 2016' href='http://comonad.com/reader/2016/01/' />
+	<link rel='archives' title='September 2015' href='http://comonad.com/reader/2015/09/' />
+	<link rel='archives' title='July 2015' href='http://comonad.com/reader/2015/07/' />
+	<link rel='archives' title='May 2015' href='http://comonad.com/reader/2015/05/' />
+	<link rel='archives' title='April 2015' href='http://comonad.com/reader/2015/04/' />
+	<link rel='archives' title='February 2015' href='http://comonad.com/reader/2015/02/' />
+	<link rel='archives' title='December 2014' href='http://comonad.com/reader/2014/12/' />
+	<link rel='archives' title='August 2014' href='http://comonad.com/reader/2014/08/' />
+	<link rel='archives' title='April 2014' href='http://comonad.com/reader/2014/04/' />
+	<link rel='archives' title='May 2013' href='http://comonad.com/reader/2013/05/' />
+	<link rel='archives' title='April 2013' href='http://comonad.com/reader/2013/04/' />
+	<link rel='archives' title='January 2013' href='http://comonad.com/reader/2013/01/' />
+	<link rel='archives' title='December 2012' href='http://comonad.com/reader/2012/12/' />
+	<link rel='archives' title='September 2012' href='http://comonad.com/reader/2012/09/' />
+	<link rel='archives' title='August 2012' href='http://comonad.com/reader/2012/08/' />
+	<link rel='archives' title='June 2012' href='http://comonad.com/reader/2012/06/' />
+	<link rel='archives' title='May 2012' href='http://comonad.com/reader/2012/05/' />
+	<link rel='archives' title='April 2012' href='http://comonad.com/reader/2012/04/' />
+	<link rel='archives' title='December 2011' href='http://comonad.com/reader/2011/12/' />
+	<link rel='archives' title='November 2011' href='http://comonad.com/reader/2011/11/' />
+	<link rel='archives' title='October 2011' href='http://comonad.com/reader/2011/10/' />
+	<link rel='archives' title='September 2011' href='http://comonad.com/reader/2011/09/' />
+	<link rel='archives' title='July 2011' href='http://comonad.com/reader/2011/07/' />
+	<link rel='archives' title='June 2011' href='http://comonad.com/reader/2011/06/' />
+	<link rel='archives' title='July 2010' href='http://comonad.com/reader/2010/07/' />
+	<link rel='archives' title='May 2010' href='http://comonad.com/reader/2010/05/' />
+	<link rel='archives' title='April 2010' href='http://comonad.com/reader/2010/04/' />
+	<link rel='archives' title='September 2009' href='http://comonad.com/reader/2009/09/' />
+	<link rel='archives' title='August 2009' href='http://comonad.com/reader/2009/08/' />
+	<link rel='archives' title='July 2009' href='http://comonad.com/reader/2009/07/' />
+	<link rel='archives' title='June 2009' href='http://comonad.com/reader/2009/06/' />
+	<link rel='archives' title='March 2009' href='http://comonad.com/reader/2009/03/' />
+	<link rel='archives' title='December 2008' href='http://comonad.com/reader/2008/12/' />
+	<link rel='archives' title='November 2008' href='http://comonad.com/reader/2008/11/' />
+	<link rel='archives' title='June 2008' href='http://comonad.com/reader/2008/06/' />
+	<link rel='archives' title='May 2008' href='http://comonad.com/reader/2008/05/' />
+	<link rel='archives' title='April 2008' href='http://comonad.com/reader/2008/04/' />
+	<link rel='archives' title='March 2008' href='http://comonad.com/reader/2008/03/' />
+	<link rel='archives' title='January 2008' href='http://comonad.com/reader/2008/01/' />
+	<link rel='archives' title='July 2007' href='http://comonad.com/reader/2007/07/' />
+	<link rel='archives' title='May 2007' href='http://comonad.com/reader/2007/05/' />
+	<link rel='archives' title='November 2006' href='http://comonad.com/reader/2006/11/' />
+	<link rel='archives' title='October 2006' href='http://comonad.com/reader/2006/10/' />
+	<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader &raquo; Kan Extensions II: Adjunctions, Composition, Lifting Comments Feed" href="http://comonad.com/reader/2008/kan-extensions-ii/feed/" />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://comonad.com/reader/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://comonad.com/reader/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='The Comonad.Reader' href='http://comonad.com/reader' />
+<link rel='start' title='Hello, World!' href='http://comonad.com/reader/2006/hello-world/' />
+<link rel='prev' title='Kan Extensions' href='http://comonad.com/reader/2008/kan-extensions/' />
+<link rel='next' title='Kan Extensions III: As Ends and Coends' href='http://comonad.com/reader/2008/kan-extension-iii/' />
+<meta name="generator" content="WordPress 2.8.4" />
+</head>
+<body>
+<div id="rap">
+	<div id="header">
+	<ul id="topnav">
+		<li><a href="/reader" id="navHome" title="Posted Recently" accesskey="h">Home |</a></li>
+		<li><a href="/reader/about/" id="navAbout" title="About the Author" accesskey="a">About |</a></li>
+		<li><a href="/reader/source;item=libraries" id="navSource" title="Source Code" accesskey="s">Source |</a></li>
+		<li><a href="mailto:ekmett@gmail.com" id="navContact" title="Contact the Author" accesskey="c">Contact </a></li>
+	</ul>
+	<a href="http://comonad.com/reader" id="logoHome" title="Posted Recently"><img id="logo" src="/reader/pngbehavior/blank.gif" ></a>
+	<h1><a href="http://comonad.com/reader" title="The Comonad.Reader">The Comonad.Reader</a></h1>		
+	<div id="desc">types, (co)monads, substructural logic</div>
+</div>
+	
+	<div id="main">
+	<div id="content">
+
+						<div class="post">
+				<p class="post-date">Thu 22 May 2008</p>
+<div class="post-info"><h2 class="post-title"><a href="http://comonad.com/reader/2008/kan-extensions-ii/" rel="bookmark" title="Permanent Link: Kan Extensions II: Adjunctions, Composition, Lifting">Kan Extensions II: Adjunctions, Composition, Lifting</a></h2>
+Posted by Edward Kmett under <a href="http://comonad.com/reader/category/category-theory/" title="View all posts in Category Theory" rel="category tag">Category Theory</a> ,  <a href="http://comonad.com/reader/category/comonads/" title="View all posts in Comonads" rel="category tag">Comonads</a> ,  <a href="http://comonad.com/reader/category/haskell/" title="View all posts in Haskell" rel="category tag">Haskell</a> ,  <a href="http://comonad.com/reader/category/kan-extensions/" title="View all posts in Kan Extensions" rel="category tag">Kan Extensions</a> ,  <a href="http://comonad.com/reader/category/monads/" title="View all posts in Monads" rel="category tag">Monads</a> <br/><a href="http://comonad.com/reader/2008/kan-extensions-ii/#comments" title="Comment on Kan Extensions II: Adjunctions, Composition, Lifting">[48] Comments</a>&nbsp;</div>
+<div class="post-content">
+	<p>I want to spend some more time talking about Kan extensions, composition of Kan extensions, and the relationship between a monad and the monad generated by a monad.</p>
+<p>But first, I want to take a moment to recall adjunctions and show how they relate to some standard (co)monads, before tying them back to <a href="http://comonad.com/reader/2008/kan-extensions/">Kan extensions</a>.</p>
+<p><b>Adjunctions 101</b></p>
+<p>An adjunction between categories <img src='http://comonad.com/latex/db5f7b3e9934fbc5a2859d88c4ba84a3.png' title='$\mathcal{C}$' alt='$\mathcal{C}$' align=absmiddle> and <img src='http://comonad.com/latex/eaf85f2b753a4c7585def4cc7ecade43.png' title='$\mathcal{D}$' alt='$\mathcal{D}$' align=absmiddle> consists of a pair of functors <img src='http://comonad.com/latex/643ec496aeec2eb4f7cdeeeab943a717.png' title='$F : \mathcal{C} -&gt; \mathcal{D}$' alt='$F : \mathcal{C} -&gt; \mathcal{D}$' align=absmiddle>, and <img src='http://comonad.com/latex/eaa04d33f0ae2a183ec4b02f98486860.png' title='$G : \mathcal{D} -&gt; \mathcal{C}$' alt='$G : \mathcal{D} -&gt; \mathcal{C}$' align=absmiddle> and a natural isomorphism:</p>
+<p><img src='http://comonad.com/latex/84b7d3e3e76f4dbe53fea154dac9b8f8.png' title='$\phi : \mathrm{Hom}_\mathcal{D} (F-, =) -&gt; \mathrm{Hom}_\mathcal{C} (-, G=)$' alt='$\phi : \mathrm{Hom}_\mathcal{D} (F-, =) -&gt; \mathrm{Hom}_\mathcal{C} (-, G=)$' align=absmiddle></p>
+<p>We call <img src='http://comonad.com/latex/b8bc815b5e9d5177af01fd4d3d3c2f10.png' title='$F$' alt='$F$' align=absmiddle> the left adjoint functor, and <img src='http://comonad.com/latex/5201385589993766eea584cd3aa6fa13.png' title='$G$' alt='$G$' align=absmiddle> the right adjoint functor and <img src='http://comonad.com/latex/599386ddd45d1479f1992f0f7183ac22.png' title='$(F,G)$' alt='$(F,G)$' align=absmiddle> an adjoint pair, and write this relationship as <img src='http://comonad.com/latex/754907e967821ca061438630f9c72a7d.png' title='$F \dashv G$' alt='$F \dashv G$' align=absmiddle></p>
+<p><span id="more-64"></span></p>
+<p>Borrowing a Haskell definition from Dave Menendez, an adjunction from the category of Haskell types (<strong>Hask</strong>) to <strong>Hask</strong> given by a pair of Haskell <code>Functor</code> instances can be defined as follows, where phi is witnessed by <img src='http://comonad.com/latex/f50853d41be7d55874e952eb0d80c53e.png' title='$\phi$' alt='$\phi$' align=absmiddle> = <code>leftAdjunct</code> and <img src='http://comonad.com/latex/0f615b0f2c4e9e9f67b2b7d0c33798f2.png' title='$\phi^{-1}$' alt='$\phi^{-1}$' align=absmiddle> = <code>rightAdjunct</code>. [<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html">haddock</a>]</p>
+<pre class="haskell">&nbsp;
+<span style="color: #06c; font-weight: bold;">class</span> <span style="color: green;">&#40;</span><a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Functor"><span style="background-color: #efefbf; font-weight: bold;">Functor</span></a> f, <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Functor"><span style="background-color: #efefbf; font-weight: bold;">Functor</span></a> g<span style="color: green;">&#41;</span> =&gt;
+    <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#t:Adjunction"><span style="background-color: #efefbf; font-weight: bold;">Adjunction</span></a> f g | f -&gt; g, g -&gt; f <span style="color: #06c; font-weight: bold;">where</span>
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:unit"><span style="font-weight: bold;">unit</span></a>   :: a -&gt; g <span style="color: green;">&#40;</span>f a<span style="color: green;">&#41;</span>
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:counit"><span style="font-weight: bold;">counit</span></a> :: f <span style="color: green;">&#40;</span>g a<span style="color: green;">&#41;</span> -&gt; a
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:leftAdjunct"><span style="font-weight: bold;">leftAdjunct</span></a>  :: <span style="color: green;">&#40;</span>f a -&gt; b<span style="color: green;">&#41;</span> -&gt; a -&gt; g b
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:rightAdjunct"><span style="font-weight: bold;">rightAdjunct</span></a> :: <span style="color: green;">&#40;</span>a -&gt; g b<span style="color: green;">&#41;</span> -&gt; f a -&gt; b
+&nbsp;
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:unit"><span style="font-weight: bold;">unit</span></a> = <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:leftAdjunct"><span style="font-weight: bold;">leftAdjunct</span></a> <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:id"><span style="font-weight: bold;">id</span></a>
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:counit"><span style="font-weight: bold;">counit</span></a> = <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:rightAdjunct"><span style="font-weight: bold;">rightAdjunct</span></a> <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:id"><span style="font-weight: bold;">id</span></a>
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:leftAdjunct"><span style="font-weight: bold;">leftAdjunct</span></a> f = <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fmap"><span style="font-weight: bold;">fmap</span></a> f . <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:unit"><span style="font-weight: bold;">unit</span></a>
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:rightAdjunct"><span style="font-weight: bold;">rightAdjunct</span></a> f = <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:counit"><span style="font-weight: bold;">counit</span></a> . <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fmap"><span style="font-weight: bold;">fmap</span></a> f
+&nbsp;</pre>
+<p><b>Currying and Uncurrying</b></p>
+<p>The most well known adjunction to a Haskell programmer is between the functors given by <code>((,)e)</code> and <code>((->)e)</code>. (Recall that you can read <code>((,)e)</code> as <code>(e,)</code> and <code>((->)e)</code> as <code>(e->)</code>; however, the latter syntax isn't valid Haskell as you aren't allowed to make <code>(,)</code> and <code>(->)</code> sections. We use this adjunction most every day in the form of the functions <code>curry</code> and <code>uncurry</code>. </p>
+<pre class="haskell">&nbsp;
+<a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:curry"><span style="font-weight: bold;">curry</span></a> :: <span style="color: green;">&#40;</span><span style="color: green;">&#40;</span>a, b<span style="color: green;">&#41;</span> -&gt; c<span style="color: green;">&#41;</span> -&gt; a -&gt; b -&gt; c
+<a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:curry"><span style="font-weight: bold;">curry</span></a> f x y = f <span style="color: green;">&#40;</span>x,y<span style="color: green;">&#41;</span>
+&nbsp;
+<a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:uncurry"><span style="font-weight: bold;">uncurry</span></a> :: <span style="color: green;">&#40;</span>a -&gt; b -&gt; c<span style="color: green;">&#41;</span> -&gt; <span style="color: green;">&#40;</span>a, b<span style="color: green;">&#41;</span> -&gt; c
+<a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:uncurry"><span style="font-weight: bold;">uncurry</span></a> f ~<span style="color: green;">&#40;</span>x,y<span style="color: green;">&#41;</span> = f x y
+&nbsp;</pre>
+<p>However the arguments are unfortunately slightly flipped around when we go to define this as an adjunction.</p>
+<pre class="haskell">&nbsp;
+<span style="color: #06c; font-weight: bold;">instance</span> <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#t:Adjunction"><span style="background-color: #efefbf; font-weight: bold;">Adjunction</span></a> <span style="color: green;">&#40;</span><span style="color: green;">&#40;</span>,<span style="color: green;">&#41;</span>e<span style="color: green;">&#41;</span> <span style="color: green;">&#40;</span><span style="color: green;">&#40;</span>-&gt;<span style="color: green;">&#41;</span>e<span style="color: green;">&#41;</span> <span style="color: #06c; font-weight: bold;">where</span>
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:leftAdjunct"><span style="font-weight: bold;">leftAdjunct</span></a> f a e  = f <span style="color: green;">&#40;</span>e,a<span style="color: green;">&#41;</span>
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:rightAdjunct"><span style="font-weight: bold;">rightAdjunct</span></a> f ~<span style="color: green;">&#40;</span>e,a<span style="color: green;">&#41;</span> = f a e
+&nbsp;</pre>
+<p>This adjunction defines the relationship between the anonymous <a href="http://www.haskell.org/all_about_monads/html/readermonad.html">reader monad</a> and the anonymous <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad-Reader.html">reader comonad</a> (aka the product comonad). </p>
+<p><b>All Readers are the Same</b></p>
+<p>As an aside, if you look at the reader arrow, reader monad and reader comonad all side by side you can see that they are all basically the same thing. Kleisli arrows for the anonymous reader monad have the form <code>a -> e -> b</code>. The Reader arrow takes the form <code>arr (a, e) b</code>, which when <code>arr</code> is <code>(->)</code> this reads as <code>(a,e) -> b</code>, which is just a curried Kleisli arrow for the Reader monad. On the other hand the reader comonad is <code>((,)e)</code>, and its CoKleisli arrows have the form <code>(e,a) -> b</code>. So, putting these side by side: </p>
+<pre class="haskell">&nbsp;
+a -&gt; e -&gt; b
+<span style="color: green;">&#40;</span>a , e<span style="color: green;">&#41;</span> -&gt; b
+<span style="color: green;">&#40;</span>e , a<span style="color: green;">&#41;</span> -&gt; b
+&nbsp;</pre>
+<p>You can clearly see these are all the same thing!</p>
+<p><b>State and Composing Adjunctions</b></p>
+<p>Once we define functor composition:</p>
+<pre class="haskell">&nbsp;
+<span style="color: #06c; font-weight: bold;">newtype</span> O f g a = Compose <span style="color: green;">&#123;</span> decompose :: f <span style="color: green;">&#40;</span>g a<span style="color: green;">&#41;</span> <span style="color: green;">&#125;</span>
+<span style="color: #06c; font-weight: bold;">instance</span> <span style="color: green;">&#40;</span><a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Functor"><span style="background-color: #efefbf; font-weight: bold;">Functor</span></a> f, <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Functor"><span style="background-color: #efefbf; font-weight: bold;">Functor</span></a> g<span style="color: green;">&#41;</span> =&gt; <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Functor"><span style="background-color: #efefbf; font-weight: bold;">Functor</span></a> <span style="color: green;">&#40;</span>f `O` g<span style="color: green;">&#41;</span> <span style="color: #06c; font-weight: bold;">where</span>
+        <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fmap"><span style="font-weight: bold;">fmap</span></a> f = Compose . <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fmap"><span style="font-weight: bold;">fmap</span></a> <span style="color: green;">&#40;</span><a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fmap"><span style="font-weight: bold;">fmap</span></a> f<span style="color: green;">&#41;</span> . decompose
+&nbsp;</pre>
+<p>We can see that every adjunction gives rise to a monad:</p>
+<pre class="haskell">&nbsp;
+<span style="color: #06c; font-weight: bold;">instance</span> <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#t:Adjunction"><span style="background-color: #efefbf; font-weight: bold;">Adjunction</span></a> f g =&gt; <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Monad"><span style="background-color: #efefbf; font-weight: bold;">Monad</span></a> <span style="color: green;">&#40;</span>g `O` f<span style="color: green;">&#41;</span> <span style="color: #06c; font-weight: bold;">where</span>
+        <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:return"><span style="font-weight: bold;">return</span></a> = Compose . <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:unit"><span style="font-weight: bold;">unit</span></a>
+        m &gt;&gt;= f =
+             Compose .
+             <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fmap"><span style="font-weight: bold;">fmap</span></a> <span style="color: green;">&#40;</span><a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:rightAdjunct"><span style="font-weight: bold;">rightAdjunct</span></a> <span style="color: green;">&#40;</span>decompose . f<span style="color: green;">&#41;</span><span style="color: green;">&#41;</span> $
+             decompose m
+&nbsp;</pre>
+<p>and if you happen to have a <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html">Comonad typeclass</a> lying around, a comonad:</p>
+<pre class="haskell">&nbsp;
+<span style="color: #06c; font-weight: bold;">class</span> <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#t:Comonad"><span style="background-color: #efefbf; font-weight: bold;">Comonad</span></a> w <span style="color: #06c; font-weight: bold;">where</span>
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#v:extract"><span style="font-weight: bold;">extract</span></a> :: w a -&gt; a
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#v:duplicate"><span style="font-weight: bold;">duplicate</span></a> :: w a -&gt; w <span style="color: green;">&#40;</span>w a<span style="color: green;">&#41;</span>
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#v:extend"><span style="font-weight: bold;">extend</span></a> :: <span style="color: green;">&#40;</span>w a -&gt; b<span style="color: green;">&#41;</span> -&gt; w a -&gt; w b
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#v:extend"><span style="font-weight: bold;">extend</span></a> f = <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fmap"><span style="font-weight: bold;">fmap</span></a> f . <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#v:duplicate"><span style="font-weight: bold;">duplicate</span></a>
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#v:duplicate"><span style="font-weight: bold;">duplicate</span></a> = <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#v:extend"><span style="font-weight: bold;">extend</span></a> <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:id"><span style="font-weight: bold;">id</span></a>
+&nbsp;
+<span style="color: #06c; font-weight: bold;">instance</span> <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#t:Adjunction"><span style="background-color: #efefbf; font-weight: bold;">Adjunction</span></a> f g =&gt; <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#t:Comonad"><span style="background-color: #efefbf; font-weight: bold;">Comonad</span></a> <span style="color: green;">&#40;</span>f `O` g<span style="color: green;">&#41;</span> <span style="color: #06c; font-weight: bold;">where</span>
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#v:extract"><span style="font-weight: bold;">extract</span></a> = <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:counit"><span style="font-weight: bold;">counit</span></a> . decompose
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#v:extend"><span style="font-weight: bold;">extend</span></a> f =
+                Compose .
+                <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fmap"><span style="font-weight: bold;">fmap</span></a> <span style="color: green;">&#40;</span><a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:leftAdjunct"><span style="font-weight: bold;">leftAdjunct</span></a> <span style="color: green;">&#40;</span>f . Compose<span style="color: green;">&#41;</span><span style="color: green;">&#41;</span> .
+                decompose
+&nbsp;</pre>
+<p>In reality, adjunction composition is of course not the only way you could form a monad by composition, so in practice a single composition constructor leads to ambiguity. Hence why in category-extras there is a base <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Composition.html"><code>CompF</code></a> functor, and <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#t%3AACompF">specialized variations</a> for different desired instances. For simplicity, I'll stick to <code>`O`</code> here.</p>
+<p>We can compose adjunctions, yielding an adjunction, so long as we are careful to place things in the right order:</p>
+<pre class="haskell">&nbsp;
+<span style="color: #06c; font-weight: bold;">instance</span> <span style="color: green;">&#40;</span><a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#t:Adjunction"><span style="background-color: #efefbf; font-weight: bold;">Adjunction</span></a> f1 g1, <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#t:Adjunction"><span style="background-color: #efefbf; font-weight: bold;">Adjunction</span></a> f2 g2<span style="color: green;">&#41;</span> =&gt;
+    <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#t:Adjunction"><span style="background-color: #efefbf; font-weight: bold;">Adjunction</span></a> <span style="color: green;">&#40;</span>f2 `O` f1<span style="color: green;">&#41;</span> <span style="color: green;">&#40;</span>g1 `O` g2<span style="color: green;">&#41;</span> <span style="color: #06c; font-weight: bold;">where</span>
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:counit"><span style="font-weight: bold;">counit</span></a> =
+               <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:counit"><span style="font-weight: bold;">counit</span></a> .
+               <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fmap"><span style="font-weight: bold;">fmap</span></a> <span style="color: green;">&#40;</span><a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:counit"><span style="font-weight: bold;">counit</span></a> . <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fmap"><span style="font-weight: bold;">fmap</span></a> decompose<span style="color: green;">&#41;</span> .
+               decompose
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:unit"><span style="font-weight: bold;">unit</span></a> =
+               Compose .
+               <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fmap"><span style="font-weight: bold;">fmap</span></a> <span style="color: green;">&#40;</span><a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fmap"><span style="font-weight: bold;">fmap</span></a> Compose . <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:unit"><span style="font-weight: bold;">unit</span></a><span style="color: green;">&#41;</span> .
+               <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:unit"><span style="font-weight: bold;">unit</span></a>
+&nbsp;</pre>
+<p>In fact, if we use the adjunction defined above, we can see that its just the <code>State</code> monad!</p>
+<pre class="haskell">&nbsp;
+<span style="color: #06c; font-weight: bold;">instance</span> MonadState e <span style="color: green;">&#40;</span><span style="color: green;">&#40;</span>-&gt;<span style="color: green;">&#41;</span>e `O` <span style="color: green;">&#40;</span>,<span style="color: green;">&#41;</span>e<span style="color: green;">&#41;</span> <span style="color: #06c; font-weight: bold;">where</span>
+        get = compose $ \s -&gt; <span style="color: green;">&#40;</span>s,s<span style="color: green;">&#41;</span>
+        put s = compose $ <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:const"><span style="font-weight: bold;">const</span></a> <span style="color: green;">&#40;</span>s,<span style="color: green;">&#40;</span><span style="color: green;">&#41;</span><span style="color: green;">&#41;</span>
+&nbsp;</pre>
+<p>Not that I'd be prone to consider using that representation, but we can also see that we get the <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad-Context.html">context comonad</a> this way:</p>
+<pre class="haskell">&nbsp;
+<span style="color: #06c; font-weight: bold;">class</span> <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#t:Comonad"><span style="background-color: #efefbf; font-weight: bold;">Comonad</span></a> w =&gt;
+    ComonadContext s w | w -&gt; s <span style="color: #06c; font-weight: bold;">where</span>
+        getC :: w a -&gt; s
+        modifyC :: <span style="color: green;">&#40;</span>s -&gt; s<span style="color: green;">&#41;</span> -&gt; w a -&gt; a
+&nbsp;
+<span style="color: #06c; font-weight: bold;">instance</span> ComonadContext e <span style="color: green;">&#40;</span><span style="color: green;">&#40;</span>,<span style="color: green;">&#41;</span>e `O` <span style="color: green;">&#40;</span>-&gt;<span style="color: green;">&#41;</span>e<span style="color: green;">&#41;</span> <span style="color: #06c; font-weight: bold;">where</span>
+        getC = <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fst"><span style="font-weight: bold;">fst</span></a> . decompose
+        modifyC f = <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:uncurry"><span style="font-weight: bold;">uncurry</span></a> <span style="color: green;">&#40;</span><a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:flip"><span style="font-weight: bold;">flip</span></a> <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:id"><span style="font-weight: bold;">id</span></a> . f<span style="color: green;">&#41;</span> . decompose
+&nbsp;</pre>
+<p><b>Adjunctions as Kan Extensions</b></p>
+<p>Unsurprisingly, since pretty much all of category theory comes around to being an observation about Kan extensions in the end, we can find some laws relating left- and right- Kan extensions to adjunctions.</p>
+<p>Recall the definitions for right and left Kan extensions over <b>Hask</b>:</p>
+<pre class="haskell">&nbsp;
+<span style="color: #06c; font-weight: bold;">newtype</span> <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Ran"><span style="background-color: #efefbf; font-weight: bold;">Ran</span></a> g h a = <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Ran"><span style="background-color: #efefbf; font-weight: bold;">Ran</span></a>
+        <span style="color: green;">&#123;</span> <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:runRan"><span style="font-weight: bold;">runRan</span></a> :: <span style="color: #06c; font-weight: bold;">forall</span> b. <span style="color: green;">&#40;</span>a -&gt; g b<span style="color: green;">&#41;</span> -&gt; h b <span style="color: green;">&#125;</span>
+<span style="color: #06c; font-weight: bold;">data</span> <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Lan"><span style="background-color: #efefbf; font-weight: bold;">Lan</span></a> g h a = <span style="color: #06c; font-weight: bold;">forall</span> b. <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Lan"><span style="background-color: #efefbf; font-weight: bold;">Lan</span></a> <span style="color: green;">&#40;</span>g b -&gt; a<span style="color: green;">&#41;</span> <span style="color: green;">&#40;</span>h b<span style="color: green;">&#41;</span>
+&nbsp;</pre>
+<p>Formally, <img src='http://comonad.com/latex/5b71d6dacbdcea5e00e534e92b576d55.png' title='F \dashv G' alt='F \dashv G' align=absmiddle> if and only if the right Kan extension <img src='http://comonad.com/latex/775c574bc0cb7d42c94f7417ba8350b4.png' title='$\mathrm{Ran}_G 1$' alt='$\mathrm{Ran}_G 1$' align=absmiddle> exists and is preserved by <img src='http://comonad.com/latex/5201385589993766eea584cd3aa6fa13.png' title='$G$' alt='$G$' align=absmiddle>. (Saunders Mac Lane, Categories for the Working Mathematician p248). We can use this  in Haskell to define a <a href="http://en.wikipedia.org/wiki/Natural_transformation">natural isomorphism</a> between <code>f</code> and <code>Ran g Identity</code> witnessed by <code>adjointToRan</code> and <code>ranToAdjoint</code> below:</p>
+<pre class="haskell">&nbsp;
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:adjointToRan"><span style="font-weight: bold;">adjointToRan</span></a> :: <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#t:Adjunction"><span style="background-color: #efefbf; font-weight: bold;">Adjunction</span></a> f g =&gt; f a -&gt; <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Ran"><span style="background-color: #efefbf; font-weight: bold;">Ran</span></a> g Identity a
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:adjointToRan"><span style="font-weight: bold;">adjointToRan</span></a> f = <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Ran"><span style="background-color: #efefbf; font-weight: bold;">Ran</span></a> <span style="color: green;">&#40;</span>\a -&gt; Identity $ <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:rightAdjunct"><span style="font-weight: bold;">rightAdjunct</span></a> a f<span style="color: green;">&#41;</span>
+&nbsp;
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:ranToAdjoint"><span style="font-weight: bold;">ranToAdjoint</span></a> :: <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#t:Adjunction"><span style="background-color: #efefbf; font-weight: bold;">Adjunction</span></a> f g =&gt; <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Ran"><span style="background-color: #efefbf; font-weight: bold;">Ran</span></a> g Identity a -&gt; f a
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:ranToAdjoint"><span style="font-weight: bold;">ranToAdjoint</span></a> r = runIdentity <span style="color: green;">&#40;</span><a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:runRan"><span style="font-weight: bold;">runRan</span></a> r <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:unit"><span style="font-weight: bold;">unit</span></a><span style="color: green;">&#41;</span>
+&nbsp;</pre>
+<p>We can construct a similar natural isomorphism for the right adjoint <code>g</code> of a <code>Functor</code> <code>f</code> and <code>Lan f Identity</code>:</p>
+<pre class="haskell">&nbsp;
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:adjointToLan"><span style="font-weight: bold;">adjointToLan</span></a> :: <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#t:Adjunction"><span style="background-color: #efefbf; font-weight: bold;">Adjunction</span></a> f g =&gt; g a -&gt; <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Lan"><span style="background-color: #efefbf; font-weight: bold;">Lan</span></a> f Identity a
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:adjointToLan"><span style="font-weight: bold;">adjointToLan</span></a> = <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Lan"><span style="background-color: #efefbf; font-weight: bold;">Lan</span></a> <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:counit"><span style="font-weight: bold;">counit</span></a> . Identity
+&nbsp;
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:lanToAdjoint"><span style="font-weight: bold;">lanToAdjoint</span></a> :: <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#t:Adjunction"><span style="background-color: #efefbf; font-weight: bold;">Adjunction</span></a> f g =&gt; <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Lan"><span style="background-color: #efefbf; font-weight: bold;">Lan</span></a> f Identity a -&gt; g a
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:lanToAdjoint"><span style="font-weight: bold;">lanToAdjoint</span></a> <span style="color: green;">&#40;</span><a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Lan"><span style="background-color: #efefbf; font-weight: bold;">Lan</span></a> f v<span style="color: green;">&#41;</span> = <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:leftAdjunct"><span style="font-weight: bold;">leftAdjunct</span></a> f <span style="color: green;">&#40;</span>runIdentity v<span style="color: green;">&#41;</span>
+&nbsp;</pre>
+<p>So, with that in hand we can see that <code>Ran f Identity -| f -| Lan f Identity</code>, presuming <code>Ran f Identity</code> and <code>Lan f Identity</code> exist. </p>
+<p><b>A More General Connection</b></p>
+<p>Now, the first isomorphism above can be seen as a special case of a more general law relating functor composition and Kan extensions, where <code>h = Identity</code> in the composition below:</p>
+<pre class="haskell">&nbsp;
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:ranToComposedAdjoint"><span style="font-weight: bold;">ranToComposedAdjoint</span></a> ::
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#t:Adjunction"><span style="background-color: #efefbf; font-weight: bold;">Adjunction</span></a> f g =&gt;
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Ran"><span style="background-color: #efefbf; font-weight: bold;">Ran</span></a> g h a -&gt; <span style="color: green;">&#40;</span>h `O` f<span style="color: green;">&#41;</span> a
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:ranToComposedAdjoint"><span style="font-weight: bold;">ranToComposedAdjoint</span></a> r = Compose <span style="color: green;">&#40;</span><a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:runRan"><span style="font-weight: bold;">runRan</span></a> r <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:unit"><span style="font-weight: bold;">unit</span></a><span style="color: green;">&#41;</span>
+&nbsp;
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:composedAdjointToRan"><span style="font-weight: bold;">composedAdjointToRan</span></a> ::
+        <span style="color: green;">&#40;</span><a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Functor"><span style="background-color: #efefbf; font-weight: bold;">Functor</span></a> h, <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#t:Adjunction"><span style="background-color: #efefbf; font-weight: bold;">Adjunction</span></a> f g<span style="color: green;">&#41;</span> =&gt;
+        <span style="color: green;">&#40;</span>h `O` f<span style="color: green;">&#41;</span> a -&gt; <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Ran"><span style="background-color: #efefbf; font-weight: bold;">Ran</span></a> g h a
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:composedAdjointToRan"><span style="font-weight: bold;">composedAdjointToRan</span></a> f =
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Ran"><span style="background-color: #efefbf; font-weight: bold;">Ran</span></a> <span style="color: green;">&#40;</span>\a -&gt; <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fmap"><span style="font-weight: bold;">fmap</span></a> <span style="color: green;">&#40;</span><a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:rightAdjunct"><span style="font-weight: bold;">rightAdjunct</span></a> a<span style="color: green;">&#41;</span> <span style="color: green;">&#40;</span>decompose f<span style="color: green;">&#41;</span><span style="color: green;">&#41;</span>
+&nbsp;</pre>
+<p>Similarly , we get the more generalize relationship for <code>Lan</code>:</p>
+<pre class="haskell">&nbsp;
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:lanToComposedAdjoint"><span style="font-weight: bold;">lanToComposedAdjoint</span></a> ::
+        <span style="color: green;">&#40;</span><a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Functor"><span style="background-color: #efefbf; font-weight: bold;">Functor</span></a> h, <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#t:Adjunction"><span style="background-color: #efefbf; font-weight: bold;">Adjunction</span></a> f g<span style="color: green;">&#41;</span> =&gt;
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Lan"><span style="background-color: #efefbf; font-weight: bold;">Lan</span></a> f h a -&gt; <span style="color: green;">&#40;</span>h `O` g<span style="color: green;">&#41;</span> a
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:lanToComposedAdjoint"><span style="font-weight: bold;">lanToComposedAdjoint</span></a> <span style="color: green;">&#40;</span><a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Lan"><span style="background-color: #efefbf; font-weight: bold;">Lan</span></a> f v<span style="color: green;">&#41;</span> =
+        Compose <span style="color: green;">&#40;</span><a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fmap"><span style="font-weight: bold;">fmap</span></a> <span style="color: green;">&#40;</span><a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:leftAdjunct"><span style="font-weight: bold;">leftAdjunct</span></a> f<span style="color: green;">&#41;</span> v<span style="color: green;">&#41;</span>
+&nbsp;
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:composedAdjointToLan"><span style="font-weight: bold;">composedAdjointToLan</span></a> ::
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#t:Adjunction"><span style="background-color: #efefbf; font-weight: bold;">Adjunction</span></a> f g =&gt;
+        <span style="color: green;">&#40;</span>h `O` g<span style="color: green;">&#41;</span> a -&gt; <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Lan"><span style="background-color: #efefbf; font-weight: bold;">Lan</span></a> f h a
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:composedAdjointToLan"><span style="font-weight: bold;">composedAdjointToLan</span></a> = <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Lan"><span style="background-color: #efefbf; font-weight: bold;">Lan</span></a> <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-Adjunction.html#v:counit"><span style="font-weight: bold;">counit</span></a> . decompose
+&nbsp;</pre>
+<p><b>Composing Kan Extensions</b></p>
+<p>Using the above with the laws for composing right Kan extensions:</p>
+<pre class="haskell">&nbsp;
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:composeRan"><span style="font-weight: bold;">composeRan</span></a> :: <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Ran"><span style="background-color: #efefbf; font-weight: bold;">Ran</span></a> f <span style="color: green;">&#40;</span><a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Ran"><span style="background-color: #efefbf; font-weight: bold;">Ran</span></a> g h<span style="color: green;">&#41;</span> a -&gt; <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Ran"><span style="background-color: #efefbf; font-weight: bold;">Ran</span></a> <span style="color: green;">&#40;</span>f `O` g<span style="color: green;">&#41;</span> h a
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:composeRan"><span style="font-weight: bold;">composeRan</span></a> r =
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Ran"><span style="background-color: #efefbf; font-weight: bold;">Ran</span></a> <span style="color: green;">&#40;</span>\f -&gt; <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:runRan"><span style="font-weight: bold;">runRan</span></a> <span style="color: green;">&#40;</span><a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:runRan"><span style="font-weight: bold;">runRan</span></a> r <span style="color: green;">&#40;</span>decompose . f<span style="color: green;">&#41;</span><span style="color: green;">&#41;</span> <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:id"><span style="font-weight: bold;">id</span></a><span style="color: green;">&#41;</span>
+&nbsp;
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:decomposeRan"><span style="font-weight: bold;">decomposeRan</span></a> ::
+        <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Functor"><span style="background-color: #efefbf; font-weight: bold;">Functor</span></a> f =&gt;
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Ran"><span style="background-color: #efefbf; font-weight: bold;">Ran</span></a> <span style="color: green;">&#40;</span>f `O` g<span style="color: green;">&#41;</span> h a -&gt;  <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Ran"><span style="background-color: #efefbf; font-weight: bold;">Ran</span></a> f <span style="color: green;">&#40;</span><a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Ran"><span style="background-color: #efefbf; font-weight: bold;">Ran</span></a> g h<span style="color: green;">&#41;</span> a
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:decomposeRan"><span style="font-weight: bold;">decomposeRan</span></a> r =
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Ran"><span style="background-color: #efefbf; font-weight: bold;">Ran</span></a> <span style="color: green;">&#40;</span>\f -&gt; <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Ran"><span style="background-color: #efefbf; font-weight: bold;">Ran</span></a> <span style="color: green;">&#40;</span>\g -&gt; <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:runRan"><span style="font-weight: bold;">runRan</span></a> r <span style="color: green;">&#40;</span>Compose . <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fmap"><span style="font-weight: bold;">fmap</span></a> g . f<span style="color: green;">&#41;</span><span style="color: green;">&#41;</span><span style="color: green;">&#41;</span>
+&nbsp;</pre>
+<p>or the laws for composing left Kan extensions: </p>
+<pre class="haskell">&nbsp;
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:composeLan"><span style="font-weight: bold;">composeLan</span></a> ::
+        <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Functor"><span style="background-color: #efefbf; font-weight: bold;">Functor</span></a> f =&gt;
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Lan"><span style="background-color: #efefbf; font-weight: bold;">Lan</span></a> f <span style="color: green;">&#40;</span><a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Lan"><span style="background-color: #efefbf; font-weight: bold;">Lan</span></a> g h<span style="color: green;">&#41;</span> a -&gt; <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Lan"><span style="background-color: #efefbf; font-weight: bold;">Lan</span></a> <span style="color: green;">&#40;</span>f `O` g<span style="color: green;">&#41;</span> h a
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:composeLan"><span style="font-weight: bold;">composeLan</span></a> <span style="color: green;">&#40;</span><a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Lan"><span style="background-color: #efefbf; font-weight: bold;">Lan</span></a> f <span style="color: green;">&#40;</span><a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Lan"><span style="background-color: #efefbf; font-weight: bold;">Lan</span></a> g h<span style="color: green;">&#41;</span><span style="color: green;">&#41;</span> =
+        <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Lan"><span style="background-color: #efefbf; font-weight: bold;">Lan</span></a> <span style="color: green;">&#40;</span>f . <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fmap"><span style="font-weight: bold;">fmap</span></a> g . decompose<span style="color: green;">&#41;</span> h
+&nbsp;
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:decomposeLan"><span style="font-weight: bold;">decomposeLan</span></a> :: <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Lan"><span style="background-color: #efefbf; font-weight: bold;">Lan</span></a> <span style="color: green;">&#40;</span>f `O` g<span style="color: green;">&#41;</span> h a -&gt; <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Lan"><span style="background-color: #efefbf; font-weight: bold;">Lan</span></a> f <span style="color: green;">&#40;</span><a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Lan"><span style="background-color: #efefbf; font-weight: bold;">Lan</span></a> g h<span style="color: green;">&#41;</span> a
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:decomposeLan"><span style="font-weight: bold;">decomposeLan</span></a> <span style="color: green;">&#40;</span><a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Lan"><span style="background-color: #efefbf; font-weight: bold;">Lan</span></a> f h<span style="color: green;">&#41;</span> = <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Lan"><span style="background-color: #efefbf; font-weight: bold;">Lan</span></a> <span style="color: green;">&#40;</span>f . compose<span style="color: green;">&#41;</span> <span style="color: green;">&#40;</span><a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Lan"><span style="background-color: #efefbf; font-weight: bold;">Lan</span></a> <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:id"><span style="font-weight: bold;">id</span></a> h<span style="color: green;">&#41;</span>
+&nbsp;</pre>
+<p>can give you a lot of ways to construct monads:</p>
+<p><b>Right Kan Extension as (almost) a Monad Transformer</b></p>
+<p>You can lift many of operations from a monad m to the codensity monad of <code>m</code>. Unfortunately, we don't have quite the right type signature for an instance of <code>MonadTrans</code>, so we'll have to make do with our own methods:</p>
+<p>[Edit: this has been since factored out into <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Monad-Codensity.html">Control.Monad.Codensity</a> to allow <code>Codensity</code> to actually be an instance of <code>MonadTrans</code>]</p>
+<pre class="haskell">&nbsp;
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:liftRan"><span style="font-weight: bold;">liftRan</span></a> :: <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Monad"><span style="background-color: #efefbf; font-weight: bold;">Monad</span></a> m =&gt; m a -&gt; <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Ran"><span style="background-color: #efefbf; font-weight: bold;">Ran</span></a> m m a
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:liftRan"><span style="font-weight: bold;">liftRan</span></a> m = <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Ran"><span style="background-color: #efefbf; font-weight: bold;">Ran</span></a> <span style="color: green;">&#40;</span>m &gt;&gt;=<span style="color: green;">&#41;</span>
+&nbsp;
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:lowerRan"><span style="font-weight: bold;">lowerRan</span></a> :: <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Monad"><span style="background-color: #efefbf; font-weight: bold;">Monad</span></a> m =&gt; <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Ran"><span style="background-color: #efefbf; font-weight: bold;">Ran</span></a> m m a -&gt; m a
+<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:lowerRan"><span style="font-weight: bold;">lowerRan</span></a> a = <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:runRan"><span style="font-weight: bold;">runRan</span></a> a <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:return"><span style="font-weight: bold;">return</span></a>
+&nbsp;
+<span style="color: #06c; font-weight: bold;">instance</span> MonadReader r m =&gt;
+    MonadReader r <span style="color: green;">&#40;</span><a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Ran"><span style="background-color: #efefbf; font-weight: bold;">Ran</span></a> m m<span style="color: green;">&#41;</span> <span style="color: #06c; font-weight: bold;">where</span>
+        ask = <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:liftRan"><span style="font-weight: bold;">liftRan</span></a> ask
+        local f m = <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Ran"><span style="background-color: #efefbf; font-weight: bold;">Ran</span></a> <span style="color: green;">&#40;</span>\c -&gt; ask &gt;&gt;=
+              \r -&gt; local f <span style="color: green;">&#40;</span><a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:runRan"><span style="font-weight: bold;">runRan</span></a> m <span style="color: green;">&#40;</span>local <span style="color: green;">&#40;</span><a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:const"><span style="font-weight: bold;">const</span></a> r<span style="color: green;">&#41;</span> . c<span style="color: green;">&#41;</span><span style="color: green;">&#41;</span><span style="color: green;">&#41;</span>
+&nbsp;
+<span style="color: #06c; font-weight: bold;">instance</span> MonadIO m =&gt;
+    MonadIO <span style="color: green;">&#40;</span><a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Ran"><span style="background-color: #efefbf; font-weight: bold;">Ran</span></a> m m<span style="color: green;">&#41;</span> <span style="color: #06c; font-weight: bold;">where</span>
+        liftIO = <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:liftRan"><span style="font-weight: bold;">liftRan</span></a> . liftIO
+&nbsp;
+<span style="color: #06c; font-weight: bold;">instance</span> MonadState s m =&gt;
+    MonadState s <span style="color: green;">&#40;</span><a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#t:Ran"><span style="background-color: #efefbf; font-weight: bold;">Ran</span></a> m m<span style="color: green;">&#41;</span> <span style="color: #06c; font-weight: bold;">where</span>
+        get = <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:liftRan"><span style="font-weight: bold;">liftRan</span></a> get
+        put = <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Functor-KanExtension.html#v:liftRan"><span style="font-weight: bold;">liftRan</span></a> . put
+&nbsp;</pre>
+<p>In fact the list of things you can lift is pretty much the same as what you can lift over the <code>ContT</code> monad transformer due to the similarity in the types. However, just because you lifted the operation into the right or left Kan extension, doesn't mean that it has the same asymptotic performance.</p>
+<p>Similarly we can lift many comonadic operations to the <code>Density</code> comonad of a comonad using <code>Lan</code>.</p>
+<p>[Edit: Refactored out into <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad-Density.html">Control.Comonad.Density</a>]</p>
+<p><b>Changing Representation</b></p>
+<p>Given a <code>f -| g</code>, <code>g `O` f</code> is a monad, and <code>Ran (g `O` f) (g `O` f)</code> is the monad generated by <code>(g `O` f)</code>, described in the previous post. We showed above that this monad can do many of the same things that the original monad could do. From there you can <code>decomposeRan</code> to get <code>Ran g (Ran f (g `O` f))</code>, which you can show to be yet another monad, and you can continue on from there. </p>
+<p>Each of these monads may have different operational characteristics and performance tradeoffs. For instance the codensity monad of a monad can offer <a href="http://wwwtcs.inf.tu-dresden.de/~voigt/mpc08.pdf">better asymptotic performance</a> in some usage scenarios.</p>
+<p>Similarly the left Kan extension can be used to manipulate the representation of a comonad.</p>
+<p>All of this code is encapsulated in <a href="http://hackage.haskell.org/cgi-bin/hackage-scripts/package/category-extras">category-extras</a> [<a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/">docs</a>] [<a href="http://comonad.com/haskell/category-extras">darcs</a>] as of release 0.51.0</p>
+	<div class="post-info">
+			</div>
+	<div class="post-footer">&nbsp;</div>
+</div>
+				
+<!-- You can start editing here. -->
+
+	<h3 id="comments">48 Responses to &#8220;Kan Extensions II: Adjunctions, Composition, Lifting&#8221;</h3> 
+
+	<ol class="commentlist">
+
+	
+		<li class="alt" id="comment-1418">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=9c51a8b8afa2366a2ef4650c411f187a&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://comonad.com/' rel='external nofollow' class='url'>Edward Kmett</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1418" title="">May 23rd, 2008 at 12:06 am</a> </small>
+			<br clear="all"/>
+
+			<p>Update: The current version of category-extras on hackage should now build correctly on ghc 6.8.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-1476">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://comonad.com/reader/2008/kan-extension-iii/' rel='external nofollow' class='url'>The Comonad.Reader &raquo; Kan Extensions III: As Ends and Coends</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1476" title="">May 26th, 2008 at 7:23 pm</a> </small>
+			<br clear="all"/>
+
+			<p>[...] Grant B. asked me to post the derivation for the right and left Kan extension formula used in previous Kan Extension posts (1,2). For that we can turn to the definition of Kan extensions in terms of ends, but first we need to take a couple of steps back to find a way to represent (co)ends in Haskell. [...]</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-1613">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://comonad.com/reader/2008/representing-adjunctions/' rel='external nofollow' class='url'>The Comonad.Reader &raquo; Representing Adjunctions</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1613" title="">June 5th, 2008 at 11:49 am</a> </small>
+			<br clear="all"/>
+
+			<p>[...] I&#8217;ve had a few people ask me questions about Adjunctions since my recent post and a request for some more introductory material, so I figured I would take a couple of short posts to tie Adjunctions to some other concepts. [...]</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-61224">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://comonad.com/reader/2011/free-monads-for-less/' rel='external nofollow' class='url'>The Comonad.Reader &raquo; Free Monads for Less (Part 1 of 3): Codensity</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-61224" title="">June 24th, 2011 at 1:22 am</a> </small>
+			<br clear="all"/>
+
+			<p>[...] arise in a subsequent post) on this blog previously, in a series of posts on Kan Extensions. [ 1, 2, [...]</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-62286">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://comonad.com/reader/2011/a-product-of-an-imperfect-union/' rel='external nofollow' class='url'>The Comonad.Reader &raquo; A Product of an Imperfect Union</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-62286" title="">June 30th, 2011 at 10:55 pm</a> </small>
+			<br clear="all"/>
+
+			<p>[...] The latter few steps require identities established in my second post on Kan extensions. [...]</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-106676">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://comonad.com/reader/2012/unnatural-transformations-and-quantifiers/' rel='external nofollow' class='url'>The Comonad.Reader &raquo; Unnatural Transformations and Quantifiers</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-106676" title="">November 22nd, 2012 at 1:43 am</a> </small>
+			<br clear="all"/>
+
+			<p>[...] , where  is enriched in . Provided the above end exists,  is a monad regardless of whether  has an adjoint, which is the usual way one thinks of functors (in general) giving rise to [...]</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-211461">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://500px.com/p/skulogovid/?view=groups' rel='external nofollow' class='url'>stromectol uk</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-211461" title="">September 23rd, 2022 at 4:00 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>stromectol nuzeniec <a href="https://500px.com/p/skulogovid/?view=groups.." rel="nofollow">https://500px.com/p/skulogovid/?view=groups..</a>.</strong></p>
+<p>You definitely made the point!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-211578">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://500px.com/p/bersavahi/?view=groups' rel='external nofollow' class='url'>500px.compbersavahi?view=groups</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-211578" title="">September 23rd, 2022 at 8:06 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra for sale <a href="https://500px.com/p/bersavahi/?view=groups.." rel="nofollow">https://500px.com/p/bersavahi/?view=groups..</a>.</strong></p>
+<p>Wow all kinds of fantastic information&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-211957">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://reallygoodemails.com/canadianpharmaceuticalsonlineusa' rel='external nofollow' class='url'>https://reallygoodemails.com/canadianpharmaceuticalsonlineusa</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-211957" title="">September 24th, 2022 at 1:10 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra manufacturer coupon <a href="https://reallygoodemails.com/canadianpharmaceuticalsonlineusa.." rel="nofollow">https://reallygoodemails.com/canadianpharmaceuticalsonlineusa..</a>.</strong></p>
+<p>Good info. With thanks&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-212058">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.provenexpert.com/canadian-pharmaceuticals-online-usa/' rel='external nofollow' class='url'>https://www.provenexpert.com/canadian-pharmaceuticals-online-usa/</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-212058" title="">September 24th, 2022 at 4:48 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Canadian viagra <a href="https://www.provenexpert.com/canadian-pharmaceuticals-online-usa/.." rel="nofollow">https://www.provenexpert.com/canadian-pharmaceuticals-online-usa/..</a>.</strong></p>
+<p>You actually mentioned this very well&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-212188">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://sanangelolive.com/members/pharmaceuticals' rel='external nofollow' class='url'>sanangelolive.commemberspharmaceuticals</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-212188" title="">September 24th, 2022 at 9:54 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra rezeptfrei <a href="https://sanangelolive.com/members/pharmaceuticals.." rel="nofollow">https://sanangelolive.com/members/pharmaceuticals..</a>.</strong></p>
+<p>Seriously many of awesome data&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-213139">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://melaninterest.com/user/canadian-pharmaceuticals-online/?view=likes' rel='external nofollow' class='url'>melaninterest.comusercanadian-pharmaceuticals-online?view=likes</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-213139" title="">September 26th, 2022 at 8:51 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra dosage <a href="https://melaninterest.com/user/canadian-pharmaceuticals-online/?view=likes.." rel="nofollow">https://melaninterest.com/user/canadian-pharmaceuticals-online/?view=likes..</a>.</strong></p>
+<p>This is nicely put! !&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-213250">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://haikudeck.com/canadian-pharmaceuticals-online-personal-presentation-827506e003' rel='external nofollow' class='url'>canadian pharmacy</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-213250" title="">September 26th, 2022 at 12:53 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>canada online pharmacies <a href="https://haikudeck.com/canadian-pharmaceuticals-online-personal-presentation-827506e003.." rel="nofollow">https://haikudeck.com/canadian-pharmaceuticals-online-personal-presentation-827506e003..</a>.</strong></p>
+<p>You reported that really well&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-213364">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://buyersguide.americanbar.org/profile/420642/0' rel='external nofollow' class='url'>canada pharmacies online</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-213364" title="">September 26th, 2022 at 5:02 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>canadian rx <a href="https://buyersguide.americanbar.org/profile/420642/0.." rel="nofollow">https://buyersguide.americanbar.org/profile/420642/0..</a>.</strong></p>
+<p>Many thanks. I value this!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-213530">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://experiment.com/users/canadianpharmacy' rel='external nofollow' class='url'>canada pharmacies</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-213530" title="">September 27th, 2022 at 12:44 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>prescriptions from canada without <a href="https://experiment.com/users/canadianpharmacy.." rel="nofollow">https://experiment.com/users/canadianpharmacy..</a>.</strong></p>
+<p>This is nicely said. !&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-213751">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://challonge.com/esapenti' rel='external nofollow' class='url'>stromectol uk</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-213751" title="">September 27th, 2022 at 10:20 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>how much does stromectol cost <a href="https://challonge.com/esapenti.." rel="nofollow">https://challonge.com/esapenti..</a>.</strong></p>
+<p>Very good write ups, Thanks a lot&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-214136">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://challonge.com/citlitigolf' rel='external nofollow' class='url'>buy viagra online cheap</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-214136" title="">September 28th, 2022 at 4:34 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra vs viagra vs levitra <a href="https://challonge.com/citlitigolf.." rel="nofollow">https://challonge.com/citlitigolf..</a>.</strong></p>
+<p>Terrific posts. Regards&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-214235">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://order-stromectol-over-the-counter.estranky.cz/clanky/order-stromectol-over-the-counter.html' rel='external nofollow' class='url'>stromectol australia</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-214235" title="">September 28th, 2022 at 8:07 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>stromectol cvs <a href="https://order-stromectol-over-the-counter.estranky.cz/clanky/order-stromectol-over-the-counter.html.." rel="nofollow">https://order-stromectol-over-the-counter.estranky.cz/clanky/order-stromectol-over-the-counter.html..</a>.</strong></p>
+<p>Truly many of terrific material&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-214387">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://soncheebarxu.estranky.cz/clanky/stromectol-for-head-lice.html' rel='external nofollow' class='url'>stromectol</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-214387" title="">September 28th, 2022 at 2:34 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>stromectol pill <a href="https://soncheebarxu.estranky.cz/clanky/stromectol-for-head-lice.html.." rel="nofollow">https://soncheebarxu.estranky.cz/clanky/stromectol-for-head-lice.html..</a>.</strong></p>
+<p>Amazing stuff. Thank you!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-214744">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://dsdgbvda.zombeek.cz/' rel='external nofollow' class='url'>https://dsdgbvda.zombeek.cz/</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-214744" title="">September 29th, 2022 at 7:53 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra 20 mg best price <a href="https://dsdgbvda.zombeek.cz/.." rel="nofollow">https://dsdgbvda.zombeek.cz/..</a>.</strong></p>
+<p>Nicely put. With thanks&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-214880">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://inflavnena.zombeek.cz/' rel='external nofollow' class='url'>inflavnena.zombeek.cz</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-214880" title="">September 29th, 2022 at 2:19 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Buy viagra <a href="https://inflavnena.zombeek.cz/.." rel="nofollow">https://inflavnena.zombeek.cz/..</a>.</strong></p>
+<p>Nicely put. Thank you!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-215100">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.myscrsdirectory.com/profile/421708/0' rel='external nofollow' class='url'>www.myscrsdirectory.comprofile4217080</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215100" title="">September 30th, 2022 at 8:36 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra from canada <a href="https://www.myscrsdirectory.com/profile/421708/0.." rel="nofollow">https://www.myscrsdirectory.com/profile/421708/0..</a>.</strong></p>
+<p>You said it perfectly&#8230;..</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-215175">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://supplier.ihrsa.org/profile/421717/0' rel='external nofollow' class='url'>supplier.ihrsa.orgprofile4217170</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215175" title="">September 30th, 2022 at 3:46 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra sans ordonnance <a href="https://supplier.ihrsa.org/profile/421717/0.." rel="nofollow">https://supplier.ihrsa.org/profile/421717/0..</a>.</strong></p>
+<p>You&#8217;ve made your position quite effectively.!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-215302">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://wefbuyersguide.wef.org/profile/421914/0' rel='external nofollow' class='url'>wefbuyersguide.wef.orgprofile4219140</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215302" title="">October 1st, 2022 at 6:08 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra cost <a href="https://wefbuyersguide.wef.org/profile/421914/0.." rel="nofollow">https://wefbuyersguide.wef.org/profile/421914/0..</a>.</strong></p>
+<p>You said that exceptionally well&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-215362">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://legalmarketplace.alanet.org/profile/421920/0' rel='external nofollow' class='url'>https://legalmarketplace.alanet.org/profile/421920/0</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215362" title="">October 1st, 2022 at 10:08 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Low cost viagra 20mg <a href="https://legalmarketplace.alanet.org/profile/421920/0.." rel="nofollow">https://legalmarketplace.alanet.org/profile/421920/0..</a>.</strong></p>
+<p>This is nicely expressed! &#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-215487">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://moaamein.nacda.com/profile/422018/0' rel='external nofollow' class='url'>https://moaamein.nacda.com/profile/422018/0</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215487" title="">October 2nd, 2022 at 3:45 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra vs viagra vs levitra <a href="https://moaamein.nacda.com/profile/422018/0.." rel="nofollow">https://moaamein.nacda.com/profile/422018/0..</a>.</strong></p>
+<p>Whoa all kinds of helpful info&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-215548">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.audiologysolutionsnetwork.org/profile/422019/0' rel='external nofollow' class='url'>canadian pharmacies online prescriptions</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215548" title="">October 2nd, 2022 at 8:12 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>online pharmacy canada <a href="https://www.audiologysolutionsnetwork.org/profile/422019/0.." rel="nofollow">https://www.audiologysolutionsnetwork.org/profile/422019/0..</a>.</strong></p>
+<p>Incredible all kinds of great tips&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-215602">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://network.myscrs.org/profile/422020/0' rel='external nofollow' class='url'>network.myscrs.orgprofile4220200</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215602" title="">October 2nd, 2022 at 11:29 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra 5 mg <a href="https://network.myscrs.org/profile/422020/0.." rel="nofollow">https://network.myscrs.org/profile/422020/0..</a>.</strong></p>
+<p>Wow all kinds of useful data!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-215718">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://sanangelolive.com/members/canadianpharmaceuticalsonlineusa' rel='external nofollow' class='url'>sanangelolive.commemberscanadianpharmaceuticalsonlineusa</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215718" title="">October 3rd, 2022 at 5:15 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra 20mg <a href="https://sanangelolive.com/members/canadianpharmaceuticalsonlineusa.." rel="nofollow">https://sanangelolive.com/members/canadianpharmaceuticalsonlineusa..</a>.</strong></p>
+<p>Many thanks. A good amount of write ups.<br />
+&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-215771">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://sanangelolive.com/members/girsagerea' rel='external nofollow' class='url'>stromectol children</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215771" title="">October 3rd, 2022 at 8:40 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>where to buy stromectol uk <a href="https://sanangelolive.com/members/girsagerea.." rel="nofollow">https://sanangelolive.com/members/girsagerea..</a>.</strong></p>
+<p>Thanks a lot. I appreciate this!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-215915">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.ecosia.org/search?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>https://www.ecosia.org/search?q="My Canadian Pharmacy - Extensive Assortment of Medications – 2022"</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215915" title="">October 4th, 2022 at 7:23 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra canada <a href="https://www.ecosia.org/search?q=" rel="nofollow">https://www.ecosia.org/search?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>Good info. Many thanks!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-215970">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.mojomarketplace.com/user/Canadianpharmaceuticalsonline-EkugcJDMYH' rel='external nofollow' class='url'>https://www.mojomarketplace.com/user/Canadianpharmaceuticalsonline-EkugcJDMYH</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215970" title="">October 4th, 2022 at 11:07 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Buy viagra online <a href="https://www.mojomarketplace.com/user/Canadianpharmaceuticalsonline-EkugcJDMYH.." rel="nofollow">https://www.mojomarketplace.com/user/Canadianpharmaceuticalsonline-EkugcJDMYH..</a>.</strong></p>
+<p>Information effectively considered&#8230;..</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-216023">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://seedandspark.com/user/canadian-pharmaceuticals-online' rel='external nofollow' class='url'>canadian pharmacy meds</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-216023" title="">October 4th, 2022 at 3:31 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>legitimate canadian mail order pharmacies <a href="https://seedandspark.com/user/canadian-pharmaceuticals-online.." rel="nofollow">https://seedandspark.com/user/canadian-pharmaceuticals-online..</a>.</strong></p>
+<p>You made the point&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-216259">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.giantbomb.com/profile/canadapharmacy/blog/canadian-pharmaceuticals-online/265652/' rel='external nofollow' class='url'>https://www.giantbomb.com/profile/canadapharmacy/blog/canadian-pharmaceuticals-online/265652/</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-216259" title="">October 5th, 2022 at 3:24 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra great britain <a href="https://www.giantbomb.com/profile/canadapharmacy/blog/canadian-pharmaceuticals-online/265652/.." rel="nofollow">https://www.giantbomb.com/profile/canadapharmacy/blog/canadian-pharmaceuticals-online/265652/..</a>.</strong></p>
+<p>This is nicely said! &#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-216443">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://feeds.feedburner.com/bing/Canadian-pharmaceuticals-online' rel='external nofollow' class='url'>canada pharmacy online</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-216443" title="">October 5th, 2022 at 12:25 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>prescription drugs without prior prescription <a href="https://feeds.feedburner.com/bing/Canadian-pharmaceuticals-online.." rel="nofollow">https://feeds.feedburner.com/bing/Canadian-pharmaceuticals-online..</a>.</strong></p>
+<p>Incredible plenty of great data&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-216556">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://search.gmx.com/web/result?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>search.gmx.comwebresult?q="My Canadian Pharmacy - Extensive Assortment of Medications – 2022"</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-216556" title="">October 5th, 2022 at 5:12 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra 5mg <a href="https://search.gmx.com/web/result?q=" rel="nofollow">https://search.gmx.com/web/result?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>Nicely put, Kudos&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-216873">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://search.seznam.cz/?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>search.seznam.cz?q="My Canadian Pharmacy - Extensive Assortment of Medications – 2022"</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-216873" title="">October 6th, 2022 at 2:19 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra sans ordonnance <a href="https://search.seznam.cz/?q=" rel="nofollow">https://search.seznam.cz/?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>Thank you! Helpful stuff!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-217020">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://sanangelolive.com/members/unsafiri' rel='external nofollow' class='url'>sanangelolive.commembersunsafiri</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-217020" title="">October 6th, 2022 at 6:01 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra for sale <a href="https://sanangelolive.com/members/unsafiri.." rel="nofollow">https://sanangelolive.com/members/unsafiri..</a>.</strong></p>
+<p>Effectively spoken without a doubt! &#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-217415">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://swisscows.com/en/web?query=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>swisscows.comenweb?query="My Canadian Pharmacy - Extensive Assortment of Medications – 2022"</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-217415" title="">October 6th, 2022 at 4:14 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra uk <a href="https://swisscows.com/en/web?query=" rel="nofollow">https://swisscows.com/en/web?query=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>Awesome tips. Thank you!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-217828">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.dogpile.com/serp?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>https://www.dogpile.com/serp?q="My Canadian Pharmacy - Extensive Assortment of Medications – 2022"</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-217828" title="">October 7th, 2022 at 3:31 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra 5mg prix <a href="https://www.dogpile.com/serp?q=" rel="nofollow">https://www.dogpile.com/serp?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>Awesome info. Thanks!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-218109">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://search.naver.com/search.naver?where=nexearch' rel='external nofollow' class='url'>canada online pharmacy</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-218109" title="">October 7th, 2022 at 10:41 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Northwest Pharmacy &#8230;</strong></p>
+<p>Good advice. Kudos&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-218823">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://search.givewater.com/serp?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>search.givewater.comserp?q="My Canadian Pharmacy - Extensive Assortment of Medications – 2022"</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-218823" title="">October 8th, 2022 at 6:40 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Tadalafil 20 mg <a href="https://search.givewater.com/serp?q=" rel="nofollow">https://search.givewater.com/serp?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>Regards, Lots of data.<br />
+&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-219032">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.bakespace.com/members/profile/Сanadianpharmaceuticalsforusasales/1541108/' rel='external nofollow' class='url'>https://www.bakespace.com/members/profile/Сanadian pharmaceuticals for usa sales/1541108/</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-219032" title="">October 8th, 2022 at 12:09 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra vs viagra <a href="https://www.bakespace.com/members/profile/Сanadian" rel="nofollow">https://www.bakespace.com/members/profile/Сanadian</a> pharmaceuticals for usa sales/1541108/&#8230;</strong></p>
+<p>Whoa lots of excellent info!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-219624">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.qwant.com/?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>online pharmacies</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-219624" title="">October 9th, 2022 at 5:17 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>canadian pharmacies online &#8230;</strong></p>
+<p>Wow all kinds of valuable facts&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-220574">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://headwayapp.co/canadianppharmacy-changelog' rel='external nofollow' class='url'>canadian prescription drugstore</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-220574" title="">October 10th, 2022 at 7:10 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>canadian pharmacy no prescription <a href="https://headwayapp.co/canadianppharmacy-changelog.." rel="nofollow">https://headwayapp.co/canadianppharmacy-changelog..</a>.</strong></p>
+<p>Perfectly voiced indeed. &#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-221130">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://results.excite.com/serp?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>canadian pharmacy meds</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-221130" title="">October 11th, 2022 at 5:07 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>buy viagra online usa <a href="https://results.excite.com/serp?q=" rel="nofollow">https://results.excite.com/serp?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>Nicely spoken without a doubt. &#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-221283">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://canadianpharmaceuticalsonline.as.me/schedule.php' rel='external nofollow' class='url'>https://canadianpharmaceuticalsonline.as.me/schedule.php</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-221283" title="">October 11th, 2022 at 10:30 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra coupon <a href="https://canadianpharmaceuticalsonline.as.me/schedule.php.." rel="nofollow">https://canadianpharmaceuticalsonline.as.me/schedule.php..</a>.</strong></p>
+<p>Truly a good deal of very good facts&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-224187">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://reallygoodemails.com/orderstromectoloverthecounterusa' rel='external nofollow' class='url'>reallygoodemails.comorderstromectoloverthecounterusa</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-224187" title="">October 14th, 2022 at 4:54 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra 5mg <a href="https://reallygoodemails.com/orderstromectoloverthecounterusa.." rel="nofollow">https://reallygoodemails.com/orderstromectoloverthecounterusa..</a>.</strong></p>
+<p>Superb information. Kudos!&#8230;</p>
+		</li>
+
+	
+	
+	</ol>
+
+ 
+
+			</div>
+					<p align="center"></p>		
+	</div>
+	<div id="sidebar">
+		<h2>Archived Entry</h2>
+	<ul>
+	<li><strong>Post Date :</strong></li>
+	<li>Thursday, May 22nd, 2008 at 7:13 pm</li>
+	<li><strong>Category :</strong></li>
+	<li><a href="http://comonad.com/reader/category/category-theory/" title="View all posts in Category Theory" rel="category tag">Category Theory</a> and  <a href="http://comonad.com/reader/category/comonads/" title="View all posts in Comonads" rel="category tag">Comonads</a> and  <a href="http://comonad.com/reader/category/haskell/" title="View all posts in Haskell" rel="category tag">Haskell</a> and  <a href="http://comonad.com/reader/category/kan-extensions/" title="View all posts in Kan Extensions" rel="category tag">Kan Extensions</a> and  <a href="http://comonad.com/reader/category/monads/" title="View all posts in Monads" rel="category tag">Monads</a></li>
+	<li><strong>Do More :</strong></li>
+	<li>							Both comments and pings are currently closed.			
+						
+						</li>
+	</ul>
+		
+	<h2><label for="s">Search</label></h2>
+	<ul>
+		<li>
+			<form id="searchform" method="get" action="/reader/index.php">
+				<div style="text-align:center">
+					<p><input type="text" name="s" id="s" size="10" /> <input type="submit" name="submit" value="Search" /></p>
+				</div>
+			</form>
+		</li>
+	</ul>
+<h2>RSS Feeds</h2>
+	<ul>
+		<li>
+			<a title="RSS2 Feed for Posts" href="http://comonad.com/reader/feed/">Posts</a> | <a title="RSS2 Feed for Comments" href="http://comonad.com/reader/comments/feed/">Comments</a></li>	
+	</ul>	
+</div>
+<p id="footer">Design based on <a href="http://www.vanillamist.com" title="Vanilla Mist">www.vanillamist.com</a></p></div>
+</div>
+</body>
+</html>

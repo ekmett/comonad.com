@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Cofree Comonad and the Expression Problem · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Category Theory · Comonads · Haskell · Monads</span><span>Edward Kmett · <time datetime="2008-04-30">30 April 2008</time></span></div><h1>The Cofree Comonad and the Expression Problem</h1></header><details class="contents"><summary>On this page</summary><ol><li><a href="#fight-club-for-functors">Fight Club for Functors</a></li></ol></details><article class="prose"><span id="more-53"></span><pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# OPTIONS -fglasgow-exts -fallow-undecidable-instances #-}</span>
+<span class="hljs-keyword">import</span> Control.Monad
+<span class="hljs-keyword">import</span> Control.Monad.Identity
+<span class="hljs-keyword">import</span> Control.Arrow ((&amp;&amp;&amp;), (***),(+++), (|||))
+</code></pre>
+<p>I want to talk about duality briefly. I don't want to go all the way to <a href="http://citeseer.ist.psu.edu/filinski89declarative.html">Filinski</a>-style or <a href="http://research.microsoft.com/users/simonpj/papers/not-not-ml/index.htm">Haskell is Not Not ML</a>-style value/continuation duality, but I do want to poke a bit at the variant/record duality explified by the extensible cases used to handle variants in <a href="http://ttic.uchicago.edu/~wchae/wiki/pmwiki.php">MLPolyR</a>.</p>
+<p>The need for extensible cases to handle open variants is part of the expression problem as stated by Wadler:</p>
+<blockquote>
+<p>The goal is to define a data type by cases, where one can add new cases to the data type and new functions over the data type, without recompiling existing code, and while retaining static type safety.</p>
+</blockquote>
+<p>One obvious trick is to use an extensible record of functions as a 'case' statement, with each field corresponding to one of the variants. To index into records you can use an extensible variant of functions to represent a field selection. In a purer form ala the Filinski or the Haskell is Not Not ML approach mentioned above, you can replace the word 'function' with continuation and everything works out.</p>
+<p>Sweirstra recently tackled the extensible variant side of the equation with in <a href="http://www.cs.nott.ac.uk/~wss/Publications/DataTypesALaCarte.pdf">Data types a la carte</a> using the free monad coproduct to handle the 'variant' side of things, leaving the handling of cases to typeclasses, but we can see if we can go one better and just exploit the variant/record duality directly.</p>
+<h2 id="fight-club-for-functors">Fight Club for Functors</h2>
+<p>Leaning a little on multi-parameter type classes we define:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Dual</span> f g | f -&gt; g, g -&gt; f <span class="hljs-keyword">where</span></span>
+  zap :: (a -&gt; b -&gt; c) -&gt; f a -&gt; g b -&gt; c
+
+(&gt;$&lt; ) :: <span class="hljs-type">Dual</span> f g =&gt; f (a -&gt; b) -&gt; g a -&gt; b
+(&gt;$&lt; ) = zap id
+</code></pre>
+<p>The (&gt;$&lt;) operator takes a functor containing functions, and its 'dual functor' and annihilates them both obtaining a single value in a deterministic fashion.</p>
+<p>The easiest inhabitant of this typeclass is the following:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Dual</span> <span class="hljs-type">Identity</span> <span class="hljs-type">Identity</span> <span class="hljs-keyword">where</span></span>
+  zap f (<span class="hljs-type">Identity</span> a) (<span class="hljs-type">Identity</span> b) = f a b
+</code></pre>
+<p>After all there is only one item to be had on both the left and right so the choice is obvious. Now, we can take a couple of additional functors, the coproduct and product functors and define instances of Dual for them:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> (<span class="hljs-title">f</span> :+: <span class="hljs-title">g</span>) a = <span class="hljs-type">Inl</span> (<span class="hljs-title">f</span> <span class="hljs-title">a</span>) | <span class="hljs-type">Inr</span> (<span class="hljs-title">g</span> <span class="hljs-title">a</span>)</span>
+<span class="hljs-class"><span class="hljs-keyword">data</span> (<span class="hljs-title">f</span> :*: <span class="hljs-title">g</span>) a = <span class="hljs-type">Prod</span> (<span class="hljs-title">f</span> <span class="hljs-title">a</span>) (<span class="hljs-title">g</span> <span class="hljs-title">a</span>)</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Functor</span> <span class="hljs-title">f</span>, <span class="hljs-type">Functor</span> <span class="hljs-title">g</span>) =&gt; <span class="hljs-type">Functor</span> (<span class="hljs-title">f</span> :+: <span class="hljs-title">g</span>) <span class="hljs-keyword">where</span></span>
+  fmap f (<span class="hljs-type">Inl</span> x) = <span class="hljs-type">Inl</span> (fmap f x)
+  fmap f (<span class="hljs-type">Inr</span> y) = <span class="hljs-type">Inr</span> (fmap f y)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Functor</span> <span class="hljs-title">f</span>, <span class="hljs-type">Functor</span> <span class="hljs-title">g</span>) =&gt; <span class="hljs-type">Functor</span> (<span class="hljs-title">f</span> :+: <span class="hljs-title">g</span>) <span class="hljs-keyword">where</span></span>
+  fmap f (<span class="hljs-type">Prod</span> x y) = <span class="hljs-type">Prod</span> (fmap f x) (fmap f y)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Dual</span> <span class="hljs-title">f</span> <span class="hljs-title">f'</span>, <span class="hljs-type">Dual</span> <span class="hljs-title">g</span> <span class="hljs-title">g'</span>) =&gt; <span class="hljs-type">Dual</span> (<span class="hljs-title">f</span> :+: <span class="hljs-title">g</span>) (<span class="hljs-title">f'</span> :*: <span class="hljs-title">g'</span>) <span class="hljs-keyword">where</span></span>
+  zap op (<span class="hljs-type">Inl</span> f) (<span class="hljs-type">Prod</span> a _) = zap op f a
+  zap op (<span class="hljs-type">Inr</span> f) (<span class="hljs-type">Prod</span> _ b) = zap op f b
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Dual</span> <span class="hljs-title">f</span> <span class="hljs-title">f'</span>, <span class="hljs-type">Dual</span> <span class="hljs-title">g</span> <span class="hljs-title">g'</span>) =&gt; <span class="hljs-type">Dual</span> (<span class="hljs-title">f</span> :*: <span class="hljs-title">g</span>) (<span class="hljs-title">f'</span> :+: <span class="hljs-title">g'</span>) <span class="hljs-keyword">where</span></span>
+  zap op (<span class="hljs-type">Prod</span> f _) (<span class="hljs-type">Inl</span> a) = zap op f a
+  zap op (<span class="hljs-type">Prod</span> _ g) (<span class="hljs-type">Inr</span> b) = zap op g b
+</code></pre>
+<p>Now, we can use the above to define an extensible case using (:*:)'s to handle any matching variant (:+:).</p>
+<p>Clearly if you use any composition of the above, what will happen is whenever you have a product on the left you will have a sum on the right 'choosing' which half of the product you are interested, and whenever you have a sum on the left you will have a product on the right, and the sum in THAT case will choose which half of the product you are interested in. You will eventually reach a leaf (or evaluate to bottom), and the only base case we have is the Identity functor on both sides, so you will have only one candidate value to return.</p>
+<p>The 'dispatch' of the function call is handled by some choices being made by sums on the left and others being made by sums on the right, but always in order to preserve duality, there is a corresponding pair of options on the other side.</p>
+<p>A more straightforward insight might be obtained by extending this logic to bifunctors to eliminate some of the noise and allow your types to vary more.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">-- | Bifunctor Duality</span>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">BiDual</span> p q | p -&gt; q, q -&gt; p <span class="hljs-keyword">where</span></span>
+  bizap :: (a -&gt; c -&gt; e) -&gt; (b -&gt; d -&gt; e) -&gt; p a b -&gt; q c d -&gt; e
+
+(&gt;&gt;$&lt; &lt;):: <span class="hljs-type">BiDual</span> p q =&gt; p (a -&gt; c) (b -&gt; c) -&gt; q a b -&gt; c
+(&gt;&gt;$&lt; &lt;) = bizap id id
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">BiDual</span> (,) <span class="hljs-type">Either</span> <span class="hljs-keyword">where</span></span>
+  bizap l r (f,g) (<span class="hljs-type">Left</span> a)  = l f a
+  bizap l r (f,g) (<span class="hljs-type">Right</span> b) = r g b
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">BiDual</span> <span class="hljs-type">Either</span> (,) <span class="hljs-keyword">where</span></span>
+  bizap l r (<span class="hljs-type">Left</span> f) (a,b)  = l f a
+  bizap l r (<span class="hljs-type">Right</span> g) (a,b) = r g b
+</code></pre>
+<p>With the latter definition in hand, we can use products of functions to annihilate sums of values, or sums of functions to annihilate products of values.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">ten</span> :: <span class="hljs-type">Int</span>
+<span class="hljs-title">ten</span> = ((*<span class="hljs-number">2</span>),id) &gt;&gt;$&lt; &lt; <span class="hljs-type">Left</span> <span class="hljs-number">5</span>
+
+<span class="hljs-title">four</span> :: <span class="hljs-type">Int</span>
+<span class="hljs-title">four</span> = <span class="hljs-type">Left</span> (/<span class="hljs-number">2</span>) &gt;&gt;$&lt; &lt; (<span class="hljs-number">8.0</span>, <span class="hljs-type">True</span>)
+</code></pre>
+<p>We can use the earlier definitions to define the different algebra instances used by Swierstra as functions as a product of functions thereby decoupling us from the typeclass machinery.</p>
+<p>I'll leave this bit as an exercise for the reader. The translation is pretty much straightforward.</p>
+<p>[Edit: See a simple worked example in the comments]</p>
+<p><em>However</em>, the catamorphism used in the a la Carte paper to deconstruct the free monad with an initial algebra is not the only way you may want to take a free monad apart!</p>
+<p>We can also use the cofree comonad of its dual functor, exploiting the same duality we used above to construct the algebra itself. And similarly we can stick a bunch of functions in the free monad of a the dual of a functor to pick a value out of a cofree comonad.</p>
+<p>Where the a la Carte paper approach let you carry around different variants, the cofree comonad product construction allows you to 'carry around more stuff in each one.' The record/variant stuff has been around since Oleg et al.'s <a href="http://darcs.haskell.org/HList/">HList</a>/<a href="http://homepages.cwi.nl/~ralf/OOHaskell/">OOHaskell</a> stuff, but I don't recall seeing records of functions used to handle variants in that setting. I'm sure someone will correct me with a 15 year old example.</p>
+<p>Recall the relevant portions of the free monad and cofree comonad:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Cofree</span> f a = <span class="hljs-type">Cofree</span> { <span class="hljs-title">runCofree</span> :: (<span class="hljs-title">a</span>, <span class="hljs-title">f</span> (<span class="hljs-type">Cofree</span> <span class="hljs-title">f</span> <span class="hljs-title">a</span>)) }</span>
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Free</span> f a = <span class="hljs-type">Free</span> { <span class="hljs-title">runFree</span> :: <span class="hljs-type">Either</span> <span class="hljs-title">a</span> (<span class="hljs-title">f</span> (<span class="hljs-type">Free</span> <span class="hljs-title">f</span> <span class="hljs-title">a</span>)) }</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> f =&gt; <span class="hljs-type">Functor</span> (<span class="hljs-type">Cofree</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+  fmap f = <span class="hljs-type">Cofree</span> . (f *** fmap (fmap f)) . runCofree
+<span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> f =&gt; <span class="hljs-type">Functor</span> (<span class="hljs-type">Free</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+  fmap f = <span class="hljs-type">Free</span> . (f +++ fmap (fmap f)) . runFree
+
+<span class="hljs-title">anaC</span> :: <span class="hljs-type">Functor</span> f =&gt; (a -&gt; f a) -&gt; a -&gt; <span class="hljs-type">Cofree</span> f a
+<span class="hljs-title">anaC</span> t = <span class="hljs-type">Cofree</span> . (id &amp;&amp;&amp; fmap (anaC t) . t)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> f =&gt; <span class="hljs-type">Monad</span> (<span class="hljs-type">Free</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+  return = <span class="hljs-type">Free</span> . <span class="hljs-type">Left</span>
+  m &gt;&gt;= k = (k ||| (inFree . fmap (&gt;&gt;= k))) (runFree m)
+
+<span class="hljs-title">inFree</span> :: f (<span class="hljs-type">Free</span> f a) -&gt; <span class="hljs-type">Free</span> f a
+<span class="hljs-title">inFree</span> = <span class="hljs-type">Free</span> . <span class="hljs-type">Right</span>
+</code></pre>
+<p>Now, we can use the bizap we defined above for bifunctors to handle the (,) and Either portions and the zap function defined above to handle the nested functor, obtaining:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Dual</span> f g =&gt; <span class="hljs-type">Dual</span> (<span class="hljs-type">Cofree</span> <span class="hljs-title">f</span>) (<span class="hljs-type">Free</span> <span class="hljs-title">g</span>) <span class="hljs-keyword">where</span></span>
+  zap op (<span class="hljs-type">Cofree</span> fs) (<span class="hljs-type">Free</span> <span class="hljs-keyword">as</span>) = bizap op (zap (zap op)) fs <span class="hljs-keyword">as</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Dual</span> f g =&gt; <span class="hljs-type">Dual</span> (<span class="hljs-type">Free</span> <span class="hljs-title">f</span>) (<span class="hljs-type">Cofree</span> <span class="hljs-title">g</span>) <span class="hljs-keyword">where</span></span>
+  zap op (<span class="hljs-type">Free</span> fs) (<span class="hljs-type">Cofree</span> <span class="hljs-keyword">as</span>) = bizap op (zap (zap op)) fs <span class="hljs-keyword">as</span>
+</code></pre>
+<p>The most trivial example of a free monad and a cofree comonad would be the 'natural number' free monad and the 'stream' comonad, which both coincidentally can be obtained from the Identity functor -- how convenient! Its almost like I planned this.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Nat</span> a = <span class="hljs-type">Free</span> <span class="hljs-type">Identity</span> a</span>
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Stream</span> a = <span class="hljs-type">Cofree</span> <span class="hljs-type">Identity</span> a</span>
+</code></pre>
+<p>We can define a successor function for our Naturals:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">suck</span> :: <span class="hljs-type">Nat</span> a -&gt; <span class="hljs-type">Nat</span> a
+<span class="hljs-title">suck</span> = inFree . <span class="hljs-type">Identity</span>
+</code></pre>
+<p>And we can build up a stream of integers, just to have a stream to search through:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">ints</span> :: <span class="hljs-type">Stream</span> <span class="hljs-type">Int</span>
+<span class="hljs-title">ints</span> = anaC (return . (+<span class="hljs-number">1</span>)) <span class="hljs-number">0</span>
+</code></pre>
+<p>Then we can look at the <em>n</em>th element of the stream, by annihilating it with a free monad of the dual of its base functor.</p>
+<p>In other words, we can ask for the element at a position that is given as a natural number!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">two</span> :: <span class="hljs-type">Int</span>
+<span class="hljs-title">two</span> = suck (suck (return id)) &gt;$&lt; ints
+</code></pre>
+<p>And by duality we can take a stream of functions, and use it to annihilate a Nat functor wrapped around a value. Another exercise for the reader.</p>
+<p>These are of course the simplest example of a free monad and a cofree comonad, but it works for any dualizable construction.</p>
+<p>i.e. Given a binary tree containing values you index with a path into the tree. If your tree is potentially non-infinite then your path has to be decorated with functions in order to handle potential leaves. If your path is non-infinite then your tree has to be decorated with values. The types enforce that you'll either return bottom or find a single value at some point.</p>
+<p>Two functors enter, one value leaves.</p>
+<p><a href="../../../haskell/posts/FreeExpression.hs">Source Code</a></p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/free"><code>free</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><section class="comments" id="comments"><h2>From the original discussion</h2><p class="editorial">Selected questions, explanations, and corrections. Original wording and dates; spam and automated trackbacks omitted.</p><article class="comment" id="comment-1102"><header><strong>Edward Kmett</strong><a href="../../../reader/2008/the-cofree-comonad-and-the-expression-problem/#comment-1102">May 1st, 2008 at 10:36 am</a></header><p>Here is a quick take on the Incr/Recall example.</p>
+<p>[Edit: typechecked, added to source code, and a couple typos corrected]</p>
+<p>data Incr t = Incr Int t<br>
+data Recall t = Recall (Int -&gt; t)</p>
+<p>instance Functor Incr where<br>
+fmap f (Incr i t) = Incr i (f t)</p>
+<p>instance Functor Recall where<br>
+fmap f (Recall g) = Recall (f . g)</p>
+<p>(/+/) :: (Functor f, Functor g) =&gt; (f a -&gt; a) -&gt; (g a -&gt; a) -&gt; ((f :+: g) a -&gt; a)<br>
+(f /+/ g) (Inl a) = f a<br>
+(f /+/ g) (Inr b) = g b</p>
+<p>newtype Mem = Mem Int<br>
+type RunAlg f a = f (Mem -&gt; (a,Mem)) -&gt; Mem -&gt; (a,Mem)</p>
+<p>incrRun :: RunAlg Incr a<br>
+incrRun (Incr k r) (Mem i) = r (Mem (i + k))</p>
+<p>recallRun :: RunAlg Recall a<br>
+recallRun (Recall r) (Mem i) = r i (Mem i)</p>
+<p>run :: Functor f =&gt; RunAlg f a -&gt; Free f a -&gt; Mem -&gt; (a, Mem)<br>
+run = cataFree (,)</p>
+<p>runMyExpr :: Free (Incr :+: Recall) a -&gt; Mem -&gt; (a, Mem)<br>
+runMyExpr = run (incrRun /+/ recallRun)</p>
+</article><article class="comment" id="comment-1125"><header><strong>Dave Menendez</strong><a href="../../../reader/2008/the-cofree-comonad-and-the-expression-problem/#comment-1125">May 3rd, 2008 at 2:00 am</a></header><p>It’s only two years old, but Oleg describes how to handle polymorphic variants using a record of functions in . He doesn’t have the neat Dual class, though.</p>
+</article><article class="comment" id="comment-104596"><header><strong>Richard Wallace</strong><a href="../../../reader/2008/the-cofree-comonad-and-the-expression-problem/#comment-104596">April 23rd, 2012 at 8:11 pm</a></header><p>I’ve really enjoyed studying and trying to understand this, but one thing has still got me hung up that I just can’t seem to get past.</p>
+<p>I’ve been trying, as an exercise, to get the addition example from Swierstra’s paper working in terms of Free and Cofree. I translated Expr to Free successfully and am able to right an eval function</p>
+<p>eval :: (Eval f, Functor f) =&gt; Free f Int -&gt; Int</p>
+<p>that works using cataFree. I’ve also taken the next step and eliminated the Eval type-class and written runArith and runVal functions that I can then compose in the way outlined in the comment above.</p>
+<p>But I just can’t seem to take that mental leap to translate it using Cofree. I think my problem is in determining what the dual of Addition and Val should be.</p>
+<p>An example of that would be greatly appreciated and hopefully shine light the last bits that are still eluding me.</p>
+<p>Thanks.</p>
+</article></section><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/the-cofree-comonad-and-the-expression-problem.md" download>Article Markdown</a> · <a href="../../../source/articles/the-cofree-comonad-and-the-expression-problem.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2008/dynamorphisms-as-chronomorphisms/">Dynamorphisms as Chronomorphisms →</a><a href="../../../reader/2008/deriving-strength-from-laziness/">Deriving Strength from Laziness →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

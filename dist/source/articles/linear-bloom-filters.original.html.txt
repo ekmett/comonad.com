@@ -1,0 +1,1001 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head profile="http://gmpg.org/xfn/11">
+        <link rel="shortcut icon" href="http://comonad.com/reader/wp-content/themes/connections/favicon.ico" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>The Comonad.Reader &raquo; Linear Bloom Filters</title>
+	<meta name="generator" content="WordPress 2.8.4" />
+	<style type="text/css" media="screen">@import url( http://comonad.com/reader/wp-content/themes/connections/style.css );</style>
+	<!--[if IE]><style type="text/css"> img { behavior: url(/reader/pngbehavior/pngbehavior.htc); } </style><![endif]-->
+        <link rel="openid.server" href="https://api.screenname.aol.com/auth/openidServer"/>
+        <link rel="openid.delegate" href="http://openid.aol.com/edwardallankmett"/>
+
+	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://comonad.com/reader/feed/" />
+	<link rel="alternate" type="application/atom+xml" title="Atom 0.3" href="http://comonad.com/reader/feed/atom/" />
+	<link rel="pingback" href="http://comonad.com/reader/xmlrpc.php" />
+    	<link rel='archives' title='October 2022' href='http://comonad.com/reader/2022/10/' />
+	<link rel='archives' title='January 2018' href='http://comonad.com/reader/2018/01/' />
+	<link rel='archives' title='January 2016' href='http://comonad.com/reader/2016/01/' />
+	<link rel='archives' title='September 2015' href='http://comonad.com/reader/2015/09/' />
+	<link rel='archives' title='July 2015' href='http://comonad.com/reader/2015/07/' />
+	<link rel='archives' title='May 2015' href='http://comonad.com/reader/2015/05/' />
+	<link rel='archives' title='April 2015' href='http://comonad.com/reader/2015/04/' />
+	<link rel='archives' title='February 2015' href='http://comonad.com/reader/2015/02/' />
+	<link rel='archives' title='December 2014' href='http://comonad.com/reader/2014/12/' />
+	<link rel='archives' title='August 2014' href='http://comonad.com/reader/2014/08/' />
+	<link rel='archives' title='April 2014' href='http://comonad.com/reader/2014/04/' />
+	<link rel='archives' title='May 2013' href='http://comonad.com/reader/2013/05/' />
+	<link rel='archives' title='April 2013' href='http://comonad.com/reader/2013/04/' />
+	<link rel='archives' title='January 2013' href='http://comonad.com/reader/2013/01/' />
+	<link rel='archives' title='December 2012' href='http://comonad.com/reader/2012/12/' />
+	<link rel='archives' title='September 2012' href='http://comonad.com/reader/2012/09/' />
+	<link rel='archives' title='August 2012' href='http://comonad.com/reader/2012/08/' />
+	<link rel='archives' title='June 2012' href='http://comonad.com/reader/2012/06/' />
+	<link rel='archives' title='May 2012' href='http://comonad.com/reader/2012/05/' />
+	<link rel='archives' title='April 2012' href='http://comonad.com/reader/2012/04/' />
+	<link rel='archives' title='December 2011' href='http://comonad.com/reader/2011/12/' />
+	<link rel='archives' title='November 2011' href='http://comonad.com/reader/2011/11/' />
+	<link rel='archives' title='October 2011' href='http://comonad.com/reader/2011/10/' />
+	<link rel='archives' title='September 2011' href='http://comonad.com/reader/2011/09/' />
+	<link rel='archives' title='July 2011' href='http://comonad.com/reader/2011/07/' />
+	<link rel='archives' title='June 2011' href='http://comonad.com/reader/2011/06/' />
+	<link rel='archives' title='July 2010' href='http://comonad.com/reader/2010/07/' />
+	<link rel='archives' title='May 2010' href='http://comonad.com/reader/2010/05/' />
+	<link rel='archives' title='April 2010' href='http://comonad.com/reader/2010/04/' />
+	<link rel='archives' title='September 2009' href='http://comonad.com/reader/2009/09/' />
+	<link rel='archives' title='August 2009' href='http://comonad.com/reader/2009/08/' />
+	<link rel='archives' title='July 2009' href='http://comonad.com/reader/2009/07/' />
+	<link rel='archives' title='June 2009' href='http://comonad.com/reader/2009/06/' />
+	<link rel='archives' title='March 2009' href='http://comonad.com/reader/2009/03/' />
+	<link rel='archives' title='December 2008' href='http://comonad.com/reader/2008/12/' />
+	<link rel='archives' title='November 2008' href='http://comonad.com/reader/2008/11/' />
+	<link rel='archives' title='June 2008' href='http://comonad.com/reader/2008/06/' />
+	<link rel='archives' title='May 2008' href='http://comonad.com/reader/2008/05/' />
+	<link rel='archives' title='April 2008' href='http://comonad.com/reader/2008/04/' />
+	<link rel='archives' title='March 2008' href='http://comonad.com/reader/2008/03/' />
+	<link rel='archives' title='January 2008' href='http://comonad.com/reader/2008/01/' />
+	<link rel='archives' title='July 2007' href='http://comonad.com/reader/2007/07/' />
+	<link rel='archives' title='May 2007' href='http://comonad.com/reader/2007/05/' />
+	<link rel='archives' title='November 2006' href='http://comonad.com/reader/2006/11/' />
+	<link rel='archives' title='October 2006' href='http://comonad.com/reader/2006/10/' />
+	<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader &raquo; Linear Bloom Filters Comments Feed" href="http://comonad.com/reader/2008/linear-bloom-filters/feed/" />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://comonad.com/reader/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://comonad.com/reader/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='The Comonad.Reader' href='http://comonad.com/reader' />
+<link rel='start' title='Hello, World!' href='http://comonad.com/reader/2006/hello-world/' />
+<link rel='prev' title='Kan Extensions III: As Ends and Coends' href='http://comonad.com/reader/2008/kan-extension-iii/' />
+<link rel='next' title='Representing Adjunctions' href='http://comonad.com/reader/2008/representing-adjunctions/' />
+<meta name="generator" content="WordPress 2.8.4" />
+</head>
+<body>
+<div id="rap">
+	<div id="header">
+	<ul id="topnav">
+		<li><a href="/reader" id="navHome" title="Posted Recently" accesskey="h">Home |</a></li>
+		<li><a href="/reader/about/" id="navAbout" title="About the Author" accesskey="a">About |</a></li>
+		<li><a href="/reader/source;item=libraries" id="navSource" title="Source Code" accesskey="s">Source |</a></li>
+		<li><a href="mailto:ekmett@gmail.com" id="navContact" title="Contact the Author" accesskey="c">Contact </a></li>
+	</ul>
+	<a href="http://comonad.com/reader" id="logoHome" title="Posted Recently"><img id="logo" src="/reader/pngbehavior/blank.gif" ></a>
+	<h1><a href="http://comonad.com/reader" title="The Comonad.Reader">The Comonad.Reader</a></h1>		
+	<div id="desc">types, (co)monads, substructural logic</div>
+</div>
+	
+	<div id="main">
+	<div id="content">
+
+						<div class="post">
+				<p class="post-date">Tue 3 Jun 2008</p>
+<div class="post-info"><h2 class="post-title"><a href="http://comonad.com/reader/2008/linear-bloom-filters/" rel="bookmark" title="Permanent Link: Linear Bloom Filters">Linear Bloom Filters</a></h2>
+Posted by Edward Kmett under <a href="http://comonad.com/reader/category/algorithms/" title="View all posts in Algorithms" rel="category tag">Algorithms</a> ,  <a href="http://comonad.com/reader/category/data-structures/" title="View all posts in Data Structures" rel="category tag">Data Structures</a> <br/><a href="http://comonad.com/reader/2008/linear-bloom-filters/#comments" title="Comment on Linear Bloom Filters">[57] Comments</a>&nbsp;</div>
+<div class="post-content">
+	<p>This post is a bit of a departure from my recent norm. It contains no category theory whatsoever. None. I promise.</p>
+<p>Now that I've bored away the math folks, I'll point out that this also isn't a guide to better horticulture. Great, there goes the rest of you.</p>
+<p>Instead, I want to talk about <a href="http://citeseer.ist.psu.edu/bloom70spacetime.html">Bloom filters</a>, Bloom joins for distributed databases and some novel extensions to them that let you trade in resources that we have in abundance for ones that are scarce, which I've been using for the last few months and which I have never before seen before in print. Primarily because I guess they have little to do with the strengths of Bloom filters.</p>
+<p><span id="more-66"></span></p>
+<p>For practical purposes you will need to use a <a href="http://en.wikipedia.org/wiki/Bloom_filter#Counting_filters">counted</a> or <a href="http://theory.stanford.edu/~matias/papers/sbf-sigmod-03.pdf">spectral</a> Bloom filter for the purposes of the structure mentioned below. However, as these introduce nothing novel, and simply muddle the exposition, I'll ignore counting and spectral Blooms for now.</p>
+<p><b>Bloom Filters</b></p>
+<p>Ok, so what is a Bloom filter? Bloom filters date back to 1970. A simple Bloom filter is a novel data structure for approximating membership in a set, yielding only false positives. A filter consists of an m-bit array and k distinct hash functions. To add an element to the filter you run it through each of the k hash functions and setting the appropriate bits. A value is considered to be a member of the set if you hash it through each of the k functions and each of the target bits is set. It is easy to see that this can only result in a false positive, but its also easy to see that you need to set the size of the array before you start adding elements to it, and that you need to balance the number of hash functions to the overall desired precision of your filter. In general you want to have about half of the bits set in the resulting array to maximize your information density -- a fact which can be derived with elementary calculus. From which you can figure out that you get optimal results when <img src='http://comonad.com/latex/2926fa9fe0e15aa4f8ef10438cd6822e.png' title='$k = \frac{m}{n} \ln 2$' alt='$k = \frac{m}{n} \ln 2$' align=absmiddle>.</p>
+<p>We can readily approximate k distinct hashing functions by using a single one-way hashing function and carving it up into a number of hashing functions that consist of the right number of bits each. A simpler approach due to <a href="http://www.eecs.harvard.edu/~kirsch/pubs/bbbf/esa06.pdf">Kirsch and Mitzenmacher</a> is to sacrifice the independence of the hash functions without particularly adversely affecting the properties of the filter.</p>
+<p>The nice thing about a Bloom filter is that the parameters m and k can be varied to tune space requirements and precision.</p>
+<p><b>Improving Locality</b></p>
+<p>One common way to improve the locality of reference for excessively large Bloom filters is to break up the structure into two tiers. You have an upper tier in which you use a single hash function to bin the data, then within the bin you placed the data you run the remaining k-1 hash functions. This can result in a 'lumpier' distribution of data, but generally improves performance because if you exceed working memory, this model can typically page in a single page from disk to handle the k-1 writes. When you figure that it is common to use between several hashing functions with a bloom filter this can result in a several-fold performance improvement as the data set grows and you become IO bound. As a result of being primarily to optimize IO you typically want to have a bin size that corresponds with your block or page size. </p>
+<p>As an admittedly <em>completely</em> unintelligible aside, I am particularly fond of 8k bins for a simple Bloom filter, because they nicely consume 16 bits of hash evenly, and 4k bins, when used with 4 bit counting Blooms, page in and out efficiently and compress nicely with an arithmetic/exponentiated Huffman encoding into near even multiples of the ethernet packet MTU when you tune the ratio of set bits carefully, I've found this to be beneficial for tweaking real world performance.</p>
+<p><b>Bloom Joins</b></p>
+<p>Given a pair of bloom filters that share a given size m and which use the same k hash functions. You can take their intersection (or union) quite efficiently with bitwise and (or or). This is a well known technique for dealing with distributed database joins when you have data distributed across multiple servers joining against data distributed across other servers. In general, you are only interested in transmitting the data that exists on both sides of the join.</p>
+<p>(You can technically free yourself from the requirement that both sides agree on the number of hash functions if you are willing to accept more false positives and you test for membership in the result set using just the hash functions contained in both Blooms. The easiest way to do this is to just agree on an order in which hash functions will be used, which comes for free from the Kirsch/Mitzenmacher approach mentioned above.)</p>
+<p><b>The good</b><br />
+The nice thing about a standard Bloom join is that you can send the Bloom filter over the network quite cheaply in comparison to the data, and with the addition of counting Bloom filter tricks it can be used to calculate approximately the size of the result set. This allows you to use it to load level <a href="http://labs.google.com/papers/mapreduce.html">MapReduce</a> style workloads effectively by estimating the size of intermediate results quite accurately before you send everything over the network to be aggregated.</p>
+<p><b>The bad</b><br />
+One problem with this model is that you have to know the size of your data set up front in order to calculate an ideal m for a desired precision level. Moreover both sides of the join have to agree on this figure m before calculating the join.</p>
+<p>Now, the main goal of a Bloom join is to conserve an scarce resource (network bandwith) by exchanging cheaper, more plentiful resources (local CPU utilization, and disk IO). In that respect it serves adequately, but we can do better if our goal is more or less purely to optimize network bandwidth. Lets carry that a bit further.</p>
+<p><b>Linear Hash Tables</b></p>
+<p>To address the limitation that you have to know the size of the bloom a priori, we'll turn to another data structure, the <a href="http://en.wikipedia.org/wiki/Linear_hash">linear hash table</a>. Linear hash tables were designed by Witold Litwin back in 1980 to provide an expandable hash table without a huge stairstep in the cost function whenever you hit a power of two in size. The basic idea of a linear hash table is that you grow the table gradually, by splitting one bucket at a time and using the least significant bits of your hash function.</p>
+<p>For sake of variety, I've included a C# 3.5 implementation here:</p>
+<p>[<a href="http://comonad.com/csharp/SortedLinearHashTable.cs">SortedLinearHashTable.cs</a>]<br />
+[<a href="http://comonad.com/csharp/SinglyLinkedList.cs">SinglyLinkedList.cs</a>]<br />
+[<a href="http://comonad.com/csharp/PreparedEqualityComparer.cs">PreparedEqualityComparer.cs</a>]<br />
+[<a href="http://comonad.com/csharp/PreparedEqualityComparerTypeProxyAttribute.cs">PreparedEqualityComparerTypeProxyAttribute.cs</a>]</p>
+<p>For my regular audience, an implementation in Haskell using STM &mdash; incidentally was the first piece of Haskell I ever wrote &mdash; designed for read-mostly use can be found here:</p>
+<p>[<a href="http://comonad.com/haskell/thash/dist/doc/html/">haddock</a>]<br />
+[<a href="http://comonad.com/haskell/thash/">darcs</a>]</p>
+<p><b>A Linear Bloom Filter</b></p>
+<p>Now, we can look at the bi-level structure we introduced above for dealing with improved cache locality and note that we could go in a different direction and treat the upper level as a linear hash table, instead of a simple hash function! This requires that we keep not only the Bloom but also the member list (or at least their hashes). We can optimize this slightly by computing the Bloom of the member list for each page lazily. This costs us quite a bit of storage relative to a traditional Bloom filter, but we can transmit the Bloom of the resulting set over the network more cheaply than we can transmit a linear hash table and it isn't appreciably more expensive locally than a linear hash table due to only lazily constructing the Blooms.</p>
+<p>This mechanism gives rise to an actual tree of pages based on the unfolding of the linear hash table in the resulting hierarchical bloom if you choose to represent the interior of the tree.</p>
+<p>Again, this isn't a win for all scenarios, but if you are intending to transmit the resulting set over the network, and don't know its size a priori, the combination of properties from the linear hash table and the bloomed pages leads to some interesting options.</p>
+<p><b>Linear Bloom Origami</b></p>
+<p>Now that we have an expandable hash in our top level, we finally have the machinery to deal with how to perform a join between two linear bloom filters of different size. The model is actually quite simple. We can fold the larger bloom up by <em>or</em>ing together the leaves that were split by the linear hash table in the larger bloom until we have the same number of pages and then perform a standard Bloom join. This frees us from the tyranny of having to have both sides of the join guess in advance a shared number of buckets to use to perform the join. </p>
+<p>As an aside, an interesting thought experiment is to go one step further and use a full-fledged sorted linear hash table for the extra cost of sorting the chains, but this doesn't seem to be useful in practice.</p>
+<p><b>Mipmapping Blooms</b></p>
+<p>If we are willing to pay an <img src='http://comonad.com/latex/01a17e3e6b652247d2115619a119c921.png' title='$\mathcal{O}(n \log n)$' alt='$\mathcal{O}(n \log n)$' align=absmiddle> cost in terms of the data set size cost in terms of CPU utilization and memory bandwidth we can gain some further performance in terms of network utilization through encoding a set of "<a href="http://en.wikipedia.org/wiki/Mipmap">mipmaps</a>" for our filters. </p>
+<p>Basically the idea is to fold up the tree by <em>or</em>ing together the pages into an admissible Bloom of the dataset. Then you encode the splitting of each bit that was set in the Bloom using conditional probabilities. This can be transmitted near optimally using arithmetic encoding or exponentiated Huffman.</p>
+<p>If a bit is set in the parent Bloom, then at least one of the two bits will be set in the child Blooms; if no bit is set in the parent Bloom, then no bit can be set in the child Blooms. The probability of each bit being set in each child is for all practical intents and purposes independent and can reasonably be modeled as a function of the expected number of set bits. (This is ever-so-slightly suboptimal if the overall number of values is known). You can determine exact values for the weights of each of the three cases using conditional probabilities and then use an arithmetic compressor, or exponentiate the alphabet for a Huffman compressor &mdash; this is otherwise near worst-case for Huffman, since you have two possibilities both just shy of 50% and one much smaller probability. Nicely the regular structure of the exponentiated alphabet is very regular and can be represented efficiently. With careful choice of page size (or bit density within a page) you can transmit the initial page cheaply, and then pack multiple pages into subsequent packets. </p>
+<p>Since we can determine the relevance of portions of the tree based on partial information this may allow you to avoid transmitting some branches of the tree. More interestingly we can use it to figure out approximately the size of the join set from the first few pages transmitted and to gain gradual refinements as both sides of the join supply more information. </p>
+<p>If you wanted to optimize strictly for network bandwidth and were willing to accept additional latency you could prune branches of the tree after it was clear that the intersection was empty and so no further resolution was required, but in my experience this optimization doesn't seem to be worth the effort.</p>
+<p><b>Incremental Update</b></p>
+<p>Interestingly if you have already shared a Linear Bloom and need to update your copy it admits a cheap network representation using the same arithmetic/exponentiated Huffman encoding trick mentioned earlier. You lose the ability to ignore all unset bits in the dataset because extending the set of known values will in all likelihood set new bits, but as you add members you can transmit splits using the same mechanism used above, and you have the actual member set needed to populate the child pages accurately.</p>
+<p>Interestingly it is the ability to mipmap the intermediate results that sometimes makes it worth dealing with a suboptimal choice of density for the overall Bloom filter, because it only affects the cost on either end of the network, it doesn't affect the network transmission costs all that adversely and more sparse population early in the tree can allow you to have a less oversaturated tree near the root, allowing earlier pruning of branches - I have yet to take this from an art to a science.</p>
+<p><b>Conclusion</b></p>
+<p>I had intended to explain things in more detail and delve into the asymptotic behavior of hierarchical and linear Blooms, but various people have been hammering me to just post this already, so here it is.</p>
+<p>So to recap, we took a normal (or counted or spectral) Bloom filter, crossbred it with Litwin's linear hash table and found that the mutant offspring is an approximation of a set that is better suited to sharing over the network than either structure alone, with a memory usage profile similar to that of a linear hash table. Interestingly as a side effect you can go one step further and allow for transmission of a requested subset of the exact hashes present in which case we've really only used the Blooms to provide partial information about the underlying linear hash table, which can aid in the subsequent join process.</p>
+<p>And yes, they are probably better named something like Bloomed linear hash tables, but that doesn't roll off the tongue.</p>
+<p>If there is enough interest and I don't get dragged into other things, I might see about packaging up and genericizing some code that I had lying around intended for production use into a more general purpose library for Linear Bloom Filters. </p>
+	<div class="post-info">
+			</div>
+	<div class="post-footer">&nbsp;</div>
+</div>
+				
+<!-- You can start editing here. -->
+
+	<h3 id="comments">57 Responses to &#8220;Linear Bloom Filters&#8221;</h3> 
+
+	<ol class="commentlist">
+
+	
+		<li class="alt" id="comment-1601">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=7a94394b49ca6e8abbe48d46ec7c5156&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite>Shae Erisson</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1601" title="">June 4th, 2008 at 12:51 am</a> </small>
+			<br clear="all"/>
+
+			<p>This is me expressing interest in both the general purpose Linear Bloom Filter library, and the asymptotic behavior.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-1602">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=9c51a8b8afa2366a2ef4650c411f187a&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://comonad.com/' rel='external nofollow' class='url'>Edward Kmett</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1602" title="">June 4th, 2008 at 2:01 am</a> </small>
+			<br clear="all"/>
+
+			<p>Bah. You don&#8217;t count. You already have access to the original library. =)</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-1604">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=423ea323160555479e6298bd520bc3d5&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://www.blabberize.com' rel='external nofollow' class='url'>Mo Kakwan</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1604" title="">June 4th, 2008 at 9:28 pm</a> </small>
+			<br clear="all"/>
+
+			<p>With all that talk of bloom filters and even a few mentions of mipmaps I thought you would have thrown in a few screenshots. Ha.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-1607">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=9c51a8b8afa2366a2ef4650c411f187a&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://comonad.com/' rel='external nofollow' class='url'>Edward Kmett</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1607" title="">June 4th, 2008 at 10:30 pm</a> </small>
+			<br clear="all"/>
+
+			<p>Hah! Sorry Mo.</p>
+<p>Unfortunately nothing I do these days makes for great screenshots. Maybe I should go back to voxels and stabbing line problems. ;)</p>
+<p>I suppose you could Bloom a scene&#8217;s PVS or something, but its not all that useful for its primary purpose because then you wouldn&#8217;t be able to extract the member cells. Hrmm. That said, I guess it could be used for a quick, &#8220;is this model that overlaps these cells probably visible?&#8221; tester.</p>
+<p>I almost referred to the hierarchical representation as a kind of Haar wavelet encoding, but I figured that would cause the last person in the audience to tune me out.</p>
+<p>P.S. The alpaca on your page still refers to  blabberize as &#8216;the technology of 2007&#8242; ;)</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-1618">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://www.s31.org/2008/06/05/links-for-2008-06-06/' rel='external nofollow' class='url'>links for 2008-06-06</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-1618" title="">June 5th, 2008 at 8:28 pm</a> </small>
+			<br clear="all"/>
+
+			<p>[...] The Comonad.Reader » Linear Bloom Filters (tags: algorithm algorithms article data math research programming) [...]</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-2378">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=8737e8b7274c1c75ed8164e3744a4701&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://www.subayai.com' rel='external nofollow' class='url'>Darrell Teague</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-2378" title="">August 5th, 2008 at 2:02 pm</a> </small>
+			<br clear="all"/>
+
+			<p>Your article was well-written and is very interesting. I was really geeking out on it and I am not even a mathematician. I think the article would have made my ex-girlfriend hot.</p>
+<p>Anyway, all jokes aside, I am surprised to find Bloom Filter usage very sparse within the general software industry (I am a consultant-of-one running my own company but have large clients in the Fortune 100, start-ups, etc).</p>
+<p>The case you presented here for being able to efficiently serialize the filter has notable use in web-application farm environments where sessions and other state table information must be migrated between servers (depending on session management strategy employed). Indeed one challenge I am considering is somehow managing some Bloom Filter construct across a RAIN architecture without sacrificing the small memory footprint and performance advantages that Blooms provide.</p>
+<p>Thanks again.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-6564">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=5646c6bb5b097105b718b73c4bd215f7&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite>Christian</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-6564" title="">March 8th, 2009 at 12:52 pm</a> </small>
+			<br clear="all"/>
+
+			<p>Edward, are you aware of any specific paper discussing theoretical properties of the two-tier Bloom filter architecture? I am specifically interested in a comparison of false-positive rates of two-tier filters and standard filters.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-6569">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=9c51a8b8afa2366a2ef4650c411f187a&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://comonad.com/' rel='external nofollow' class='url'>Edward Kmett</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-6569" title="">March 8th, 2009 at 6:00 pm</a> </small>
+			<br clear="all"/>
+
+			<p>Christian you might want to check out:</p>
+<p><a href="http://algo2.iti.uni-karlsruhe.de/singler/publications/cacheefficientbloomfilters-wea2007.pdf" rel="nofollow">http://algo2.iti.uni-karlsruhe.de/singler/publications/cacheefficientbloomfilters-wea2007.pdf</a></p>
+<p>Although they concern themselves with clustering within a single cache line, the idea of clustering within a page follows similarly.</p>
+<p>IIRC they take up like ~32% extra space to get the same precision, but they use VERY small buckets of the same size as a cache line. So that should give you an upper bound for space comparison that you can back into a false positive rate comparison.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-6577">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=5646c6bb5b097105b718b73c4bd215f7&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite>Christian</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-6577" title="">March 9th, 2009 at 6:07 am</a> </small>
+			<br clear="all"/>
+
+			<p>Thanks, Edward. If I get this right, the larger the single buckets, the closer the two-tier variant performs to the standard variant (in sense of the false-positive rate for a total length of m)?</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-6604">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=9c51a8b8afa2366a2ef4650c411f187a&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://comonad.com/' rel='external nofollow' class='url'>Edward Kmett</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-6604" title="">March 10th, 2009 at 4:43 pm</a> </small>
+			<br clear="all"/>
+
+			<p>Yes.</p>
+<p>If you have p bits of hash function available to you, and the top tier consumes q of them, then at one extreme q = 0, and you have all p bits available for use within the one bucket, cutting p up into k different hash functions yields the traditional Bloom filter. </p>
+<p>In the other extreme you have q = p, and you have the efficacy of a bloom table/bit-hash with one hash function. </p>
+<p>In the middle the false positive rate lies somewhere in between, but you only have to deal with data points within a single bucket to answer the query, so you can typically save a factor of k in paging or cache-thrashing costs.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-7126">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=8737e8b7274c1c75ed8164e3744a4701&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://www.subayai.com' rel='external nofollow' class='url'>Darrell Teague</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-7126" title="">April 7th, 2009 at 7:41 pm</a> </small>
+			<br clear="all"/>
+
+			<p>Ed,<br />
+I know you and some of your readers love Haskell so I thought I would share this funny (but real) programming language I just read about:</p>
+<p><a href="http://compsoc.dur.ac.uk/whitespace/index.php" rel="nofollow">http://compsoc.dur.ac.uk/whitespace/index.php</a></p>
+		</li>
+
+	
+	
+		<li class="" id="comment-211446">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://500px.com/p/skulogovid/?view=groups' rel='external nofollow' class='url'>500px.compskulogovid?view=groups</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-211446" title="">September 23rd, 2022 at 3:27 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra vs viagra <a href="https://500px.com/p/skulogovid/?view=groups.." rel="nofollow">https://500px.com/p/skulogovid/?view=groups..</a>.</strong></p>
+<p>Cheers. I like it&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-211560">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://500px.com/p/bersavahi/?view=groups' rel='external nofollow' class='url'>https://500px.com/p/bersavahi/?view=groups</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-211560" title="">September 23rd, 2022 at 7:34 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra rezeptfrei <a href="https://500px.com/p/bersavahi/?view=groups.." rel="nofollow">https://500px.com/p/bersavahi/?view=groups..</a>.</strong></p>
+<p>Nicely put, Cheers!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-211944">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://reallygoodemails.com/canadianpharmaceuticalsonlineusa' rel='external nofollow' class='url'>canadian pharmacies mail order</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-211944" title="">September 24th, 2022 at 12:37 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>online canadian pharmacy <a href="https://reallygoodemails.com/canadianpharmaceuticalsonlineusa.." rel="nofollow">https://reallygoodemails.com/canadianpharmaceuticalsonlineusa..</a>.</strong></p>
+<p>You actually reported that fantastically!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-212039">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.provenexpert.com/canadian-pharmaceuticals-online-usa/' rel='external nofollow' class='url'>https://www.provenexpert.com/canadian-pharmaceuticals-online-usa/</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-212039" title="">September 24th, 2022 at 4:17 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra pills <a href="https://www.provenexpert.com/canadian-pharmaceuticals-online-usa/.." rel="nofollow">https://www.provenexpert.com/canadian-pharmaceuticals-online-usa/..</a>.</strong></p>
+<p>With thanks. Ample write ups.<br />
+&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-212176">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://sanangelolive.com/members/pharmaceuticals' rel='external nofollow' class='url'>https://sanangelolive.com/members/pharmaceuticals</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-212176" title="">September 24th, 2022 at 9:24 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra prices <a href="https://sanangelolive.com/members/pharmaceuticals.." rel="nofollow">https://sanangelolive.com/members/pharmaceuticals..</a>.</strong></p>
+<p>Awesome write ups. With thanks!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-213117">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://melaninterest.com/user/canadian-pharmaceuticals-online/?view=likes' rel='external nofollow' class='url'>https://melaninterest.com/user/canadian-pharmaceuticals-online/?view=likes</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-213117" title="">September 26th, 2022 at 8:18 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Interactions for viagra <a href="https://melaninterest.com/user/canadian-pharmaceuticals-online/?view=likes.." rel="nofollow">https://melaninterest.com/user/canadian-pharmaceuticals-online/?view=likes..</a>.</strong></p>
+<p>You actually suggested this terrifically&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-213234">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://haikudeck.com/canadian-pharmaceuticals-online-personal-presentation-827506e003' rel='external nofollow' class='url'>canadian pharmacy online</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-213234" title="">September 26th, 2022 at 12:20 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>canadian pharmacy online <a href="https://haikudeck.com/canadian-pharmaceuticals-online-personal-presentation-827506e003.." rel="nofollow">https://haikudeck.com/canadian-pharmaceuticals-online-personal-presentation-827506e003..</a>.</strong></p>
+<p>Really quite a lot of useful information!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-213350">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://buyersguide.americanbar.org/profile/420642/0' rel='external nofollow' class='url'>https://buyersguide.americanbar.org/profile/420642/0</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-213350" title="">September 26th, 2022 at 4:30 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Tadalafil 20 mg <a href="https://buyersguide.americanbar.org/profile/420642/0.." rel="nofollow">https://buyersguide.americanbar.org/profile/420642/0..</a>.</strong></p>
+<p>With thanks. I like this!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-213652">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://slides.com/canadianpharmaceuticalsonline' rel='external nofollow' class='url'>slides.comcanadianpharmaceuticalsonline</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-213652" title="">September 27th, 2022 at 6:10 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra generika <a href="https://slides.com/canadianpharmaceuticalsonline.." rel="nofollow">https://slides.com/canadianpharmaceuticalsonline..</a>.</strong></p>
+<p>With thanks! A lot of knowledge.<br />
+&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-213737">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://challonge.com/esapenti' rel='external nofollow' class='url'>stromectol australia</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-213737" title="">September 27th, 2022 at 9:47 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>stromectol france <a href="https://challonge.com/esapenti.." rel="nofollow">https://challonge.com/esapenti..</a>.</strong></p>
+<p>You have made your point quite effectively!&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-213859">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://challonge.com/gotsembpertvil' rel='external nofollow' class='url'>challonge.comgotsembpertvil</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-213859" title="">September 27th, 2022 at 2:16 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra purchasing <a href="https://challonge.com/gotsembpertvil.." rel="nofollow">https://challonge.com/gotsembpertvil..</a>.</strong></p>
+<p>Very good posts. Thanks a lot&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-214121">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://challonge.com/citlitigolf' rel='external nofollow' class='url'>challonge.comcitlitigolf</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-214121" title="">September 28th, 2022 at 4:03 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra alternative <a href="https://challonge.com/citlitigolf.." rel="nofollow">https://challonge.com/citlitigolf..</a>.</strong></p>
+<p>Very good forum posts. Kudos!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-214224">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://order-stromectol-over-the-counter.estranky.cz/clanky/order-stromectol-over-the-counter.html' rel='external nofollow' class='url'>stromectol generic</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-214224" title="">September 28th, 2022 at 7:37 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>stromectol sale <a href="https://order-stromectol-over-the-counter.estranky.cz/clanky/order-stromectol-over-the-counter.html.." rel="nofollow">https://order-stromectol-over-the-counter.estranky.cz/clanky/order-stromectol-over-the-counter.html..</a>.</strong></p>
+<p>Great forum posts. Thanks a lot!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-214376">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://soncheebarxu.estranky.cz/clanky/stromectol-for-head-lice.html' rel='external nofollow' class='url'>soncheebarxu.estranky.czclankystromectol-for-head-lice.html</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-214376" title="">September 28th, 2022 at 2:03 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra vs viagra <a href="https://soncheebarxu.estranky.cz/clanky/stromectol-for-head-lice.html.." rel="nofollow">https://soncheebarxu.estranky.cz/clanky/stromectol-for-head-lice.html..</a>.</strong></p>
+<p>Thanks a lot! Quite a lot of stuff!<br />
+&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-214636">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://lehyriwor.estranky.sk/clanky/stromectol-cream.html' rel='external nofollow' class='url'>lehyriwor.estranky.skclankystromectol-cream.html</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-214636" title="">September 29th, 2022 at 3:36 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>How does viagra work <a href="https://lehyriwor.estranky.sk/clanky/stromectol-cream.html.." rel="nofollow">https://lehyriwor.estranky.sk/clanky/stromectol-cream.html..</a>.</strong></p>
+<p>Appreciate it, Numerous forum posts.<br />
+&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-214727">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://dsdgbvda.zombeek.cz/' rel='external nofollow' class='url'>dsdgbvda.zombeek.cz</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-214727" title="">September 29th, 2022 at 7:23 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra pills <a href="https://dsdgbvda.zombeek.cz/.." rel="nofollow">https://dsdgbvda.zombeek.cz/..</a>.</strong></p>
+<p>Amazing quite a lot of excellent facts!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-214867">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://inflavnena.zombeek.cz/' rel='external nofollow' class='url'>https://inflavnena.zombeek.cz/</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-214867" title="">September 29th, 2022 at 1:48 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Tadalafil 5mg <a href="https://inflavnena.zombeek.cz/.." rel="nofollow">https://inflavnena.zombeek.cz/..</a>.</strong></p>
+<p>With thanks! An abundance of material!<br />
+&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-215091">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.myscrsdirectory.com/profile/421708/0' rel='external nofollow' class='url'>www.myscrsdirectory.comprofile4217080</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215091" title="">September 30th, 2022 at 8:06 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Generic viagra <a href="https://www.myscrsdirectory.com/profile/421708/0.." rel="nofollow">https://www.myscrsdirectory.com/profile/421708/0..</a>.</strong></p>
+<p>Very good content. Many thanks!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-215164">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://supplier.ihrsa.org/profile/421717/0' rel='external nofollow' class='url'>supplier.ihrsa.orgprofile4217170</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215164" title="">September 30th, 2022 at 3:15 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Tadalafil <a href="https://supplier.ihrsa.org/profile/421717/0.." rel="nofollow">https://supplier.ihrsa.org/profile/421717/0..</a>.</strong></p>
+<p>Nicely put, Many thanks&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-215290">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://wefbuyersguide.wef.org/profile/421914/0' rel='external nofollow' class='url'>https://wefbuyersguide.wef.org/profile/421914/0</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215290" title="">October 1st, 2022 at 5:37 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra cost <a href="https://wefbuyersguide.wef.org/profile/421914/0.." rel="nofollow">https://wefbuyersguide.wef.org/profile/421914/0..</a>.</strong></p>
+<p>Terrific knowledge. Thanks a lot&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-215352">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://legalmarketplace.alanet.org/profile/421920/0' rel='external nofollow' class='url'>legalmarketplace.alanet.orgprofile4219200</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215352" title="">October 1st, 2022 at 9:38 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Tadalafil tablets <a href="https://legalmarketplace.alanet.org/profile/421920/0.." rel="nofollow">https://legalmarketplace.alanet.org/profile/421920/0..</a>.</strong></p>
+<p>Nicely put, Thanks&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-215478">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://moaamein.nacda.com/profile/422018/0' rel='external nofollow' class='url'>https://moaamein.nacda.com/profile/422018/0</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215478" title="">October 2nd, 2022 at 3:15 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Tadalafil <a href="https://moaamein.nacda.com/profile/422018/0.." rel="nofollow">https://moaamein.nacda.com/profile/422018/0..</a>.</strong></p>
+<p>You revealed it fantastically!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-215541">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.audiologysolutionsnetwork.org/profile/422019/0' rel='external nofollow' class='url'>www.audiologysolutionsnetwork.orgprofile4220190</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215541" title="">October 2nd, 2022 at 7:42 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra daily <a href="https://www.audiologysolutionsnetwork.org/profile/422019/0.." rel="nofollow">https://www.audiologysolutionsnetwork.org/profile/422019/0..</a>.</strong></p>
+<p>Wow plenty of superb information!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-215593">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://network.myscrs.org/profile/422020/0' rel='external nofollow' class='url'>network.myscrs.orgprofile4220200</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215593" title="">October 2nd, 2022 at 11:00 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra reviews <a href="https://network.myscrs.org/profile/422020/0.." rel="nofollow">https://network.myscrs.org/profile/422020/0..</a>.</strong></p>
+<p>You made your stand very effectively!!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-215710">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://sanangelolive.com/members/canadianpharmaceuticalsonlineusa' rel='external nofollow' class='url'>https://sanangelolive.com/members/canadianpharmaceuticalsonlineusa</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215710" title="">October 3rd, 2022 at 4:45 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Cheap viagra <a href="https://sanangelolive.com/members/canadianpharmaceuticalsonlineusa.." rel="nofollow">https://sanangelolive.com/members/canadianpharmaceuticalsonlineusa..</a>.</strong></p>
+<p>You actually revealed that exceptionally well&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-215762">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://sanangelolive.com/members/girsagerea' rel='external nofollow' class='url'>https://sanangelolive.com/members/girsagerea</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215762" title="">October 3rd, 2022 at 8:09 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra kaufen <a href="https://sanangelolive.com/members/girsagerea.." rel="nofollow">https://sanangelolive.com/members/girsagerea..</a>.</strong></p>
+<p>Seriously plenty of good knowledge!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-215905">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.ecosia.org/search?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>www.ecosia.orgsearch?q="My Canadian Pharmacy - Extensive Assortment of Medications – 2022"</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215905" title="">October 4th, 2022 at 6:49 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra bula <a href="https://www.ecosia.org/search?q=" rel="nofollow">https://www.ecosia.org/search?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>You expressed this adequately&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-215962">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.mojomarketplace.com/user/Canadianpharmaceuticalsonline-EkugcJDMYH' rel='external nofollow' class='url'>https://www.mojomarketplace.com/user/Canadianpharmaceuticalsonline-EkugcJDMYH</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-215962" title="">October 4th, 2022 at 10:33 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Cheap viagra <a href="https://www.mojomarketplace.com/user/Canadianpharmaceuticalsonline-EkugcJDMYH.." rel="nofollow">https://www.mojomarketplace.com/user/Canadianpharmaceuticalsonline-EkugcJDMYH..</a>.</strong></p>
+<p>Amazing tons of very good material&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-216012">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://seedandspark.com/user/canadian-pharmaceuticals-online' rel='external nofollow' class='url'>https://seedandspark.com/user/canadian-pharmaceuticals-online</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-216012" title="">October 4th, 2022 at 2:57 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra tablets <a href="https://seedandspark.com/user/canadian-pharmaceuticals-online.." rel="nofollow">https://seedandspark.com/user/canadian-pharmaceuticals-online..</a>.</strong></p>
+<p>Kudos. Valuable information&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-216243">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.giantbomb.com/profile/canadapharmacy/blog/canadian-pharmaceuticals-online/265652/' rel='external nofollow' class='url'>www.giantbomb.comprofilecanadapharmacyblogcanadian-pharmaceuticals-online265652</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-216243" title="">October 5th, 2022 at 2:51 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra online <a href="https://www.giantbomb.com/profile/canadapharmacy/blog/canadian-pharmaceuticals-online/265652/.." rel="nofollow">https://www.giantbomb.com/profile/canadapharmacy/blog/canadian-pharmaceuticals-online/265652/..</a>.</strong></p>
+<p>Perfectly spoken really! &#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-216427">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://feeds.feedburner.com/bing/Canadian-pharmaceuticals-online' rel='external nofollow' class='url'>canadian pharmacy online 24</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-216427" title="">October 5th, 2022 at 11:50 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>legitimate canadian mail order pharmacies <a href="https://feeds.feedburner.com/bing/Canadian-pharmaceuticals-online.." rel="nofollow">https://feeds.feedburner.com/bing/Canadian-pharmaceuticals-online..</a>.</strong></p>
+<p>Nicely put. Appreciate it&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-216549">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://search.gmx.com/web/result?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>https://search.gmx.com/web/result?q="My Canadian Pharmacy - Extensive Assortment of Medications – 2022"</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-216549" title="">October 5th, 2022 at 4:40 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Generic for viagra <a href="https://search.gmx.com/web/result?q=" rel="nofollow">https://search.gmx.com/web/result?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>Regards, Fantastic information!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-216852">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://search.seznam.cz/?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>https://search.seznam.cz/?q="My Canadian Pharmacy - Extensive Assortment of Medications – 2022"</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-216852" title="">October 6th, 2022 at 1:47 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra coupon <a href="https://search.seznam.cz/?q=" rel="nofollow">https://search.seznam.cz/?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>Great stuff. Thanks!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-216998">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://sanangelolive.com/members/unsafiri' rel='external nofollow' class='url'>sanangelolive.commembersunsafiri</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-216998" title="">October 6th, 2022 at 5:27 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra vs viagra <a href="https://sanangelolive.com/members/unsafiri.." rel="nofollow">https://sanangelolive.com/members/unsafiri..</a>.</strong></p>
+<p>Seriously a lot of very good data&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-217167">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://duckduckgo.com/?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>duckduckgo.com?q="My Canadian Pharmacy - Extensive Assortment of Medications – 2022"</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-217167" title="">October 6th, 2022 at 9:45 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra alternative &#8230;</strong></p>
+<p>Well voiced without a doubt! &#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-217393">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://swisscows.com/en/web?query=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>online canadian pharmacies</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-217393" title="">October 6th, 2022 at 3:42 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>canadian pharmacys <a href="https://swisscows.com/en/web?query=" rel="nofollow">https://swisscows.com/en/web?query=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>You actually suggested it well&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-218087">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://search.naver.com/search.naver?where=nexearch' rel='external nofollow' class='url'>https://search.naver.com/search.naver?where=nexearch</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-218087" title="">October 7th, 2022 at 10:06 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra great britain &#8230;</strong></p>
+<p>Awesome postings, Kudos&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-218801">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://search.givewater.com/serp?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>Northwest Pharmacy</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-218801" title="">October 8th, 2022 at 6:06 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>canadian pharmacies mail order <a href="https://search.givewater.com/serp?q=" rel="nofollow">https://search.givewater.com/serp?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>You said it wonderfully&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-219006">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.bakespace.com/members/profile/Сanadianpharmaceuticalsforusasales/1541108/' rel='external nofollow' class='url'>canada pharmacy online</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-219006" title="">October 8th, 2022 at 11:34 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>canadianpharmacy <a href="https://www.bakespace.com/members/profile/Сanadian" rel="nofollow">https://www.bakespace.com/members/profile/Сanadian</a> pharmaceuticals for usa sales/1541108/&#8230;</strong></p>
+<p>You have made your point quite well&#8230;..</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-219604">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.qwant.com/?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>https://www.qwant.com/?q="My Canadian Pharmacy - Extensive Assortment of Medications – 2022"</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-219604" title="">October 9th, 2022 at 4:42 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Canadian viagra &#8230;</strong></p>
+<p>Whoa tons of superb advice!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-219794">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://results.excite.com/serp?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>results.excite.comserp?q="My Canadian Pharmacy - Extensive Assortment of Medications – 2022"</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-219794" title="">October 9th, 2022 at 9:50 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra tablets australia <a href="https://results.excite.com/serp?q=" rel="nofollow">https://results.excite.com/serp?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>Seriously a lot of terrific tips&#8230;.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-219977">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://www.infospace.com/serp?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>https://www.infospace.com/serp?q="My Canadian Pharmacy - Extensive Assortment of Medications – 2022"</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-219977" title="">October 9th, 2022 at 2:19 pm</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra great britain <a href="https://www.infospace.com/serp?q=" rel="nofollow">https://www.infospace.com/serp?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>Wow tons of useful info!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-220553">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://headwayapp.co/canadianppharmacy-changelog' rel='external nofollow' class='url'>https://headwayapp.co/canadianppharmacy-changelog</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-220553" title="">October 10th, 2022 at 6:35 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra great britain <a href="https://headwayapp.co/canadianppharmacy-changelog.." rel="nofollow">https://headwayapp.co/canadianppharmacy-changelog..</a>.</strong></p>
+<p>You explained it well!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-221111">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://results.excite.com/serp?q=MyCanadianPharmacy-ExtensiveAssortmentofMedications–2022' rel='external nofollow' class='url'>results.excite.comserp?q="My Canadian Pharmacy - Extensive Assortment of Medications – 2022"</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-221111" title="">October 11th, 2022 at 4:31 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Viagra tablets <a href="https://results.excite.com/serp?q=" rel="nofollow">https://results.excite.com/serp?q=</a>&#8220;My Canadian Pharmacy &#8211; Extensive Assortment of Medications – 2022&#8243;&#8230;</strong></p>
+<p>You explained this adequately!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-221259">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://canadianpharmaceuticalsonline.as.me/schedule.php' rel='external nofollow' class='url'>https://canadianpharmaceuticalsonline.as.me/schedule.php</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-221259" title="">October 11th, 2022 at 9:53 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>Online viagra <a href="https://canadianpharmaceuticalsonline.as.me/schedule.php.." rel="nofollow">https://canadianpharmaceuticalsonline.as.me/schedule.php..</a>.</strong></p>
+<p>Fantastic content. Thanks a lot!&#8230;</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-224162">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d41d8cd98f00b204e9800998ecf8427e&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='https://reallygoodemails.com/orderstromectoloverthecounterusa' rel='external nofollow' class='url'>canadian pharmacy cialis</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-224162" title="">October 14th, 2022 at 4:21 am</a> </small>
+			<br clear="all"/>
+
+			<p><strong>canadian pharmacies without an rx <a href="https://reallygoodemails.com/orderstromectoloverthecounterusa.." rel="nofollow">https://reallygoodemails.com/orderstromectoloverthecounterusa..</a>.</strong></p>
+<p>Wonderful information, Cheers&#8230;.</p>
+		</li>
+
+	
+	
+	</ol>
+
+ 
+
+			</div>
+					<p align="center"></p>		
+	</div>
+	<div id="sidebar">
+		<h2>Archived Entry</h2>
+	<ul>
+	<li><strong>Post Date :</strong></li>
+	<li>Tuesday, Jun 3rd, 2008 at 10:26 pm</li>
+	<li><strong>Category :</strong></li>
+	<li><a href="http://comonad.com/reader/category/algorithms/" title="View all posts in Algorithms" rel="category tag">Algorithms</a> and  <a href="http://comonad.com/reader/category/data-structures/" title="View all posts in Data Structures" rel="category tag">Data Structures</a></li>
+	<li><strong>Do More :</strong></li>
+	<li>							Both comments and pings are currently closed.			
+						
+						</li>
+	</ul>
+		
+	<h2><label for="s">Search</label></h2>
+	<ul>
+		<li>
+			<form id="searchform" method="get" action="/reader/index.php">
+				<div style="text-align:center">
+					<p><input type="text" name="s" id="s" size="10" /> <input type="submit" name="submit" value="Search" /></p>
+				</div>
+			</form>
+		</li>
+	</ul>
+<h2>RSS Feeds</h2>
+	<ul>
+		<li>
+			<a title="RSS2 Feed for Posts" href="http://comonad.com/reader/feed/">Posts</a> | <a title="RSS2 Feed for Comments" href="http://comonad.com/reader/comments/feed/">Comments</a></li>	
+	</ul>	
+</div>
+<p id="footer">Design based on <a href="http://www.vanillamist.com" title="Vanilla Mist">www.vanillamist.com</a></p></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Higher-Order Abstract Syntax à la Carte · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Category Theory · Haskell</span><span>Edward Kmett · <time datetime="2008-03-26">26 March 2008</time></span></div><h1>Higher-Order Abstract Syntax à la Carte</h1></header><article class="prose"><span id="more-45"></span><p>You may recall the definition for an exponential functor from my previous entry, which can also be viewed, I suppose, as functors in the<br>
+category of right-invertible functions in Haskell.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">ExpFunctor</span> f <span class="hljs-keyword">where</span></span>
+  xmap :: (a -&gt; b) -&gt; (b -&gt; a) -&gt; f a -&gt; f b
+</code></pre>
+<p>Clarifying the above, an instance of ExpFunctor should satisfy the slightly generalized version of the Functor laws from Control.Monad:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">xmap</span> id id = id
+<span class="hljs-title">xmap</span> f g . xmap f' g' = xmap (f . f') (g' . g)
+</code></pre>
+<p>Since we like to apply xmap to a pair of functions such that f . g = id, as in the Fegaras/Sheard case, we get:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">xmap</span> f g . xmap g f
+  = xmap (f . g) (f . g) <span class="hljs-comment">-- by second xmap law</span>
+  = xmap id id                <span class="hljs-comment">-- by f . g = id</span>
+  = id                       <span class="hljs-comment">-- by first xmap law</span>
+</code></pre>
+<p>In any event, what I thought what I'd do today is note that Wouter Swierstra's <a href="http://www.cs.nott.ac.uk/~wss/Publications/DataTypesALaCarte.pdf">Data Types a la Carte</a> approach works over exponential functors.</p>
+<p>Swierstra's main definition looks something like:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> (<span class="hljs-title">f</span> :+: <span class="hljs-title">g</span>) e = <span class="hljs-type">Inl</span> (<span class="hljs-title">f</span> <span class="hljs-title">e</span>) | <span class="hljs-type">Inr</span> (<span class="hljs-title">g</span> <span class="hljs-title">e</span>)</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Functor</span> <span class="hljs-title">f</span>, <span class="hljs-type">Functor</span> <span class="hljs-title">g</span>) =&gt; <span class="hljs-type">Functor</span> (<span class="hljs-title">f</span> :+: <span class="hljs-title">g</span>) <span class="hljs-keyword">where</span></span>
+  fmap f (<span class="hljs-type">Inl</span> e) = <span class="hljs-type">Inl</span> (fmap f e)
+  fmap f (<span class="hljs-type">Inr</span> e) = <span class="hljs-type">Inr</span> (fmap f e)
+</code></pre>
+<p>This permits the obvious analogue:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> (<span class="hljs-type">ExpFunctor</span> <span class="hljs-title">f</span>, <span class="hljs-type">ExpFunctor</span> <span class="hljs-title">g</span>) =&gt; <span class="hljs-type">ExpFunctor</span> (<span class="hljs-title">f</span> :+: <span class="hljs-title">g</span>) <span class="hljs-keyword">where</span></span>
+  xmap f g (<span class="hljs-type">Inl</span> e) = <span class="hljs-type">Inl</span> (xmap f g e)
+  xmap f g (<span class="hljs-type">Inr</span> e) = <span class="hljs-type">Inr</span> (xmap f g e)
+</code></pre>
+<p>With this we can quickly encode the untyped lambda calculus:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Lam</span> a = <span class="hljs-type">Lam</span> (<span class="hljs-title">a</span> -&gt; <span class="hljs-title">a</span>)</span>
+<span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">ExpFunctor</span> <span class="hljs-type">Lam</span> <span class="hljs-keyword">where</span></span>
+  xmap f g (<span class="hljs-type">Lam</span> k) = <span class="hljs-type">Lam</span> (f . k . g)
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">App</span> a = <span class="hljs-type">App</span> a a</span>
+<span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> <span class="hljs-type">App</span> <span class="hljs-keyword">where</span></span>
+  fmap f (<span class="hljs-type">App</span> a b) = <span class="hljs-type">App</span> (f a) (f b)
+<span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">ExpFunctor</span> <span class="hljs-type">App</span> <span class="hljs-keyword">where</span></span>
+  xmap = const . fmap
+</code></pre>
+<p>(Even better we could define a generic Bind and Binary functors, and newtype to get Lam and App)</p>
+<p>and we can encode the recursion using any of the ways we previously established to tie the knot (Nu f, ForAll (Rec f), ForAll (Elim f)).</p>
+<p>The rest of the a la carte stuff remains unchanged.</p>
+<p>We then get a definition of catamorphism 'for free', due to the definitions from the other day.</p>
+<p>From there we can define a fairly generic pretty printing framework.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">ShowAlgebra</span> f <span class="hljs-keyword">where</span></span>
+    showAlgebra :: f ([<span class="hljs-type">String</span>] -&gt; <span class="hljs-type">String</span>) -&gt; [<span class="hljs-type">String</span>] -&gt; <span class="hljs-type">String</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">ShowAlgebra</span> <span class="hljs-title">f</span>, <span class="hljs-type">ShowAlgebra</span> <span class="hljs-title">g</span>) =&gt; <span class="hljs-type">ShowAlgebra</span> (<span class="hljs-title">f</span> :+: <span class="hljs-title">g</span>) <span class="hljs-keyword">where</span></span>
+    showAlgebra (<span class="hljs-type">Inl</span> e) = showAlgebra e
+    showAlgebra (<span class="hljs-type">Inr</span> e) = showAlgebra e
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Cata</span> <span class="hljs-title">f</span> (<span class="hljs-type">ForAll</span> <span class="hljs-title">t</span>), <span class="hljs-type">ShowAlgebra</span> f) =&gt; <span class="hljs-type">Show</span> (<span class="hljs-type">ForAll</span> <span class="hljs-title">t</span>) <span class="hljs-keyword">where</span></span>
+    show x = cata showAlgebra (runForAll x) vars
+</code></pre>
+<p>And then we can derive particular instances for the untyped lambda calculus we slapped together above:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">ShowAlgebra</span> <span class="hljs-type">Lam</span> <span class="hljs-keyword">where</span></span>
+    showAlgebra (<span class="hljs-type">Lam</span> k) (v:vars) =
+        <span class="hljs-string">"(\\\\"</span> ++ v ++ <span class="hljs-string">". "</span> ++ k (const v) vars ++ <span class="hljs-string">")"</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">ShowAlgebra</span> <span class="hljs-type">App</span> <span class="hljs-keyword">where</span></span>
+    showAlgebra (<span class="hljs-type">App</span> a b) vars =
+        <span class="hljs-string">"("</span> ++ a vars ++ <span class="hljs-string">" "</span> ++ b vars ++ <span class="hljs-string">")"</span>
+</code></pre>
+<p>Then using the combinators from the other day:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Term</span> a = <span class="hljs-type">Elim</span> (<span class="hljs-type">Lam</span> :+: <span class="hljs-type">App</span>) a</span>
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Expr</span> = <span class="hljs-type">ForAll</span> <span class="hljs-type">Term</span></span>
+
+<span class="hljs-title">app_id_id</span> :: <span class="hljs-type">Term</span> a
+<span class="hljs-title">app_id_id</span> = app (lam id) (lam id)
+<span class="hljs-comment">-- for suitable definitions of app and lam a la the a la Carte paper.</span>
+
+<span class="hljs-title">main</span> = putStrLn . show $ <span class="hljs-keyword">safe</span> app_id_id
+</code></pre>
+<p>Other algebra structures can be derived similarly.</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/bound"><code>bound</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/higher-order-abstract-syntax-a-la-carte.md" download>Article Markdown</a> · <a href="../../../source/articles/higher-order-abstract-syntax-a-la-carte.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2008/rotten-bananas/">Rotten Bananas →</a><a href="../../../reader/2008/monads-for-free/">Monads for Free →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

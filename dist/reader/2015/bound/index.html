@@ -1,0 +1,876 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bound · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Haskell</span><span>Edward Kmett · <time datetime="2015-12-02">2 December 2015</time></span></div><h1>Bound</h1></header><details class="contents"><summary>On this page</summary><ol><li><a href="#what-is-in-a-name">What is in a Name?</a></li><li><a href="#na-ve-substitution">Naïve Substitution</a></li><li><a href="#the-barendregt-convention">The Barendregt Convention</a></li><li><a href="#higher-order-abstract-syntax-hoas">Higher-Order Abstract Syntax (HOAS)</a></li><li><a href="#de-bruijn-indices">De Bruijn Indices</a></li><li><a href="#bird-and-paterson-part-1">Bird and Paterson, Part 1</a></li><li><a href="#attempt-1">Attempt #1</a></li><li><a href="#bird-and-paterson-part-2">Bird and Paterson, Part 2</a></li><li><a href="#bound-generalized-generalized-de-bruijn">Bound: Generalized Generalized De Bruijn</a></li><li><a href="#loose-ends">Loose Ends</a></li><li><a href="#bound-class">Bound.Class</a></li><li><a href="#what-s-next">What's Next?</a></li></ol></details><article class="prose"><p><a href="https://hackage.haskell.org/package/bound"><code>bound</code></a> provides a powerful but simple toolbox for dealing with capture-avoiding substitution in your code. It lets you use classes you already know: <code>Monad</code>, <code>Foldable</code> and <code>Traversable</code> to manipulate your syntax tree, and it factors out issues of name capture into a reusable monad transformer named <code>Scope</code>.</p>
+<p>What I want to do today is help motivate the design of the <a href="https://hackage.haskell.org/package/bound"><code>bound</code></a> library by talking a bit about alternatives. This may serve, with a few digressions, as a bit of a crash course on capture-avoiding substitution, for those who don't deal with this issue on a day-to-day basis. This presentation is based on a talk I gave on <a href="https://hackage.haskell.org/package/bound"><code>bound</code></a>, but it has been upgraded to work with the School of Haskell tools for easier online consumption. In particular, I've tried to make the code fragments executable, and greatly expand on the content to cover things in greater depth. The <a href="http://www.slideshare.net/ekmett/bound-making-de-bruijn-succ-less">original slides</a> are also available, but were designed with me speaking over them in mind.</p>
+<h2 id="what-is-in-a-name">What is in a Name?</h2>
+<p>We use names in lots of contexts, but any program that deals with names has to deal with a number of issues such as capture avoidance and deciding alpha equivalance... and others that will come up as we go.</p>
+<p>If you go to write a syntax tree, the dumbest thing that can possibly work would be something like:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Name</span> = <span class="hljs-type">String</span></span>
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Exp</span></span>
+  = <span class="hljs-type">Var</span> <span class="hljs-type">Name</span>
+  | <span class="hljs-type">App</span> <span class="hljs-type">Exp</span> <span class="hljs-type">Exp</span>
+  | <span class="hljs-type">Lam</span> <span class="hljs-type">Name</span> <span class="hljs-type">Exp</span>
+  <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Eq</span>,<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>)
+
+<span class="hljs-title">main</span> = <span class="hljs-keyword">do</span>
+  print $ <span class="hljs-type">Var</span> <span class="hljs-string">"x"</span>
+  print $ <span class="hljs-type">Lam</span> <span class="hljs-string">"x"</span> (<span class="hljs-type">Var</span> <span class="hljs-string">"x"</span>)
+  print $ <span class="hljs-type">Lam</span> <span class="hljs-string">"x"</span> (<span class="hljs-type">Lam</span> <span class="hljs-string">"y"</span> (<span class="hljs-type">Var</span> <span class="hljs-string">"x"</span>))
+</code></pre>
+<p>Two problems we want to address in almost any syntax tree are:</p>
+<p>1.) Capture Avoidance</p>
+<p>Blindly substituting</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">Lam</span> <span class="hljs-string">"x"</span> (<span class="hljs-type">Var</span> <span class="hljs-string">"y"</span>)
+</code></pre>
+<p>into</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">Lam</span> <span class="hljs-string">"y"</span> (<span class="hljs-type">Var</span> <span class="hljs-string">"z"</span>)
+</code></pre>
+<p>for <code>z</code> would yield</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">Lam</span> <span class="hljs-string">"y"</span> (<span class="hljs-type">Lam</span> <span class="hljs-string">"x"</span> (<span class="hljs-type">Var</span> <span class="hljs-string">"y"</span>))
+</code></pre>
+<p>which now causes the formerly free variable <code>y</code> to now reference the <code>y</code> bound by the outer lambda.</p>
+<p>2.) Alpha Equivalence</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">Lam</span> <span class="hljs-string">"x"</span> (<span class="hljs-type">Var</span> <span class="hljs-string">"x"</span>)
+</code></pre>
+<p>and</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">Lam</span> <span class="hljs-string">"y"</span> (<span class="hljs-type">Var</span> <span class="hljs-string">"y"</span>)
+</code></pre>
+<p>both mean the same thing and it'd be nice to be able to check this easily, make them hash the
+same for common sub-expression elimination, etc.</p>
+<figure class="interactive-figure" id="binding-figure" data-demo="binding">
+  <div class="figure-controls"><label>Substitution <select data-control="preset"><option value="0">A free variable</option><option value="1">The article’s nested example</option><option value="2">Free and bound occurrences</option><option value="3">A shadowed variable</option></select></label><label>Print binders using <select data-control="spelling"><option value="0">x</option><option value="1">z</option><option value="2">u</option></select></label></div>
+  <p class="substitution-expression" data-view="input"></p>
+  <div class="substitution-results"><div><span class="figure-label">Naive substitution</span><output data-view="naive"></output><small data-view="naive-free"></small></div><div><span class="figure-label">Capture-avoiding substitution</span><output data-view="safe"></output><small data-view="safe-free"></small></div></div>
+  <p class="figure-key"><span class="term-free">Free variable</span> · <span class="term-bound">Bound occurrence</span> · <span class="term-binder">Binder</span></p>
+  <details><summary>The underlying scope</summary><p><code data-view="scope"></code></p><p>Bound variables use <code>B</code>; free variables use <code>F</code>. Changing printed binder names leaves the scope unchanged.</p></details>
+  <figcaption><span data-view="status" role="status">Loading the Haskell figure…</span> A new companion using the article’s small <code>Scope</code>/<code>Var</code> encoding. <a href="../../../source/BindingDemo.hs">Haskell source</a> · <a href="../../../source/browser-sources.zip">All Haskell sources</a>.</figcaption>
+  <noscript>Enable JavaScript and WebAssembly to try substitution. For λx. y with y := x, capture avoidance gives λx′. x; naive substitution gives λx. x.</noscript>
+</figure>
+<p>There is a cottage industry of solutions to the naming problem:</p>
+<p>e.g.</p>
+<ul>
+<li>Naïve substitution</li>
+<li><a href="http://www.amazon.com/Calculus-Semantics-Studies-Foundations-Mathematics/dp/0444875085">The Barendregt convention</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Higher-order_abstract_syntax">HOAS</a></li>
+<li>Weak HOAS/<a href="http://adam.chlipala.net/papers/PhoasICFP08/">PHOAS</a></li>
+<li><a href="http://www.cs.ru.nl/~james/RESEARCH/haskell2004.pdf">"I am not a Number: I am a Free Variable!"</a></li>
+<li><a href="http://www.chargueraud.org/research/2009/ln/main.pdf">The Locally Nameless Representation</a></li>
+<li><a href="https://hackage.haskell.org/package/unbound">Unbound</a>, which mixes Barendregt with Locally Nameless</li>
+<li>Locally Nameless Syntax with De Bruijn Indices</li>
+</ul>
+<p>I'm not looking to address all of these here, just a few, to showcase issues with the different points in the design space, and then to try to offer up a nice point in the design space (<code>bound</code>) that combines many of the advantages with few of the disadvantages.</p>
+<h3 id="na-ve-substitution">Naïve Substitution</h3>
+<p>Pros:</p>
+<p>1.) The syntax trees are pretty and easy to read.</p>
+<p>2.) Easy to use to get started</p>
+<p>Cons:</p>
+<p>1.) It is easy even for experts to make mistakes.</p>
+<p>2.) Alpha equivalence checking is tedious</p>
+<p>3.) It is comically slow.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-keyword">import</span> Data.List (<span class="hljs-title">union</span>, <span class="hljs-title">span</span>, (\\))
+
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Name</span> = <span class="hljs-type">String</span></span>
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Exp</span></span>
+  = <span class="hljs-type">Var</span> <span class="hljs-type">Name</span>
+  | <span class="hljs-type">App</span> <span class="hljs-type">Exp</span> <span class="hljs-type">Exp</span>
+  | <span class="hljs-type">Lam</span> <span class="hljs-type">Name</span> <span class="hljs-type">Exp</span>
+  <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Eq</span>,<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>)
+
+
+<span class="hljs-title">freeVars</span> :: <span class="hljs-type">Exp</span> -&gt; [<span class="hljs-type">Name</span>]
+<span class="hljs-title">freeVars</span> (<span class="hljs-type">Var</span> x) = [x]
+<span class="hljs-title">freeVars</span> (<span class="hljs-type">App</span> a b) = freeVars a `union` freeVars b
+<span class="hljs-title">freeVars</span> (<span class="hljs-type">Lam</span> n x) = freeVars x \\ [n]
+
+<span class="hljs-title">allVars</span> :: <span class="hljs-type">Exp</span> -&gt; [<span class="hljs-type">Name</span>]
+<span class="hljs-title">allVars</span> (<span class="hljs-type">Var</span> x) = [x]
+<span class="hljs-title">allVars</span> (<span class="hljs-type">App</span> a b) = allVars a `union` allVars b
+<span class="hljs-title">allVars</span> (<span class="hljs-type">Lam</span> n x) = allVars x
+
+<span class="hljs-title">subst</span> :: <span class="hljs-type">Name</span> -&gt; <span class="hljs-type">Exp</span> -&gt; <span class="hljs-type">Exp</span> -&gt; <span class="hljs-type">Exp</span>
+<span class="hljs-title">subst</span> x s b = sub vs0 b <span class="hljs-keyword">where</span>
+  sub _ e@(<span class="hljs-type">Var</span> v)
+    | v == x = s
+    | otherwise = e
+  sub vs e@(<span class="hljs-type">Lam</span> v e')
+    | v == x = e
+    | v `elem` fvs = <span class="hljs-type">Lam</span> v' (sub (v':vs) e'')
+    | otherwise = <span class="hljs-type">Lam</span> v (sub vs e') <span class="hljs-keyword">where</span>
+    v' = newId vs
+    e'' = subst v (<span class="hljs-type">Var</span> v') e'
+  sub vs (<span class="hljs-type">App</span> f a) = sub vs f `<span class="hljs-type">App</span>` sub vs a
+  fvs = freeVars s
+  vs0 = fvs `union` allVars b
+
+<span class="hljs-title">newId</span> :: [<span class="hljs-type">Name</span>] -&gt; <span class="hljs-type">Name</span>
+<span class="hljs-title">newId</span> vs = head (names \\ vs)
+
+<span class="hljs-title">names</span> :: [<span class="hljs-type">Name</span>]
+<span class="hljs-title">names</span> = [ [i] | i &lt;- [<span class="hljs-string">'a'</span>..<span class="hljs-string">'z'</span>]] ++ [i : show j | j &lt;- [<span class="hljs-number">1</span>..], i &lt;- [<span class="hljs-string">'a'</span>..<span class="hljs-string">'z'</span>] ]
+
+<span class="hljs-comment">-- show and we can see that this deals with capture avoidance</span>
+<span class="hljs-title">main</span> = print $ subst <span class="hljs-string">"z"</span> (<span class="hljs-type">Lam</span> <span class="hljs-string">"x"</span> (<span class="hljs-type">Var</span> <span class="hljs-string">"y"</span>)) (<span class="hljs-type">Lam</span> <span class="hljs-string">"y"</span> (<span class="hljs-type">Var</span> <span class="hljs-string">"z"</span>))
+
+</code></pre>
+<p>This code is adapted from Lennart Augustsson's excellent <a href="http://www.augustsson.net/Darcs/Lambda/top.pdf">λ-calculus cooked four ways</a>, which provides a nice crash course on name binding for evaluation.</p>
+<p>[Edited <em>August 27 2013</em>: The code fragment above was updated based on a conversation with Marc André Ziegert to deal with an issue where in the <code>v <code>elem</code> fvs</code> case under <code>sub</code> it wasn't properly updating the set of <code>allVars b</code> when it introduced <code>v'</code> into scope. I told you naïve substitution was tricky!]</p>
+<h3 id="the-barendregt-convention">The Barendregt Convention</h3>
+<p>This one is a serious contender. It is what GHC uses.</p>
+<p>Pros:</p>
+<p>1.) The <a href="http://research.microsoft.com/en-us/um/people/simonpj/Papers/inlining/">Secrets of the Glasgow Haskell Compiler inliner</a> paper by <a href="http://www.youtube.com/watch?v=IDhz_mVcVCQ">Simon and Simon</a> describes a technique they call "the Rapier," which can make this really fast.</p>
+<p>Cons:</p>
+<p>1.) Easy even for experts to screw up.</p>
+<p>2.) Alpha equivalence is still tedious.</p>
+<p>3.) Need a globally unique variable supply. e.g. <a href="https://hackage.haskell.org/package/concurrent-supply">concurrent-supply</a></p>
+<p>4.) The obvious implementation technique chews through a scarily large number of variable IDs! Without the Rapier there is a lot of "administrative" renaming going on.</p>
+<h3 id="higher-order-abstract-syntax-hoas">Higher-Order Abstract Syntax (HOAS)</h3>
+<p>HOAS cheats and borrows substitution from the host language.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Exp</span> a</span>
+  = <span class="hljs-type">Var</span> a
+  | <span class="hljs-type">Lam</span> (<span class="hljs-type">Exp</span> a -&gt; <span class="hljs-type">Exp</span> a)
+  | <span class="hljs-type">App</span> (<span class="hljs-type">Exp</span> a) (<span class="hljs-type">Exp</span> a)
+
+<span class="hljs-title">main</span> = putStrLn <span class="hljs-string">"It typechecks, but a Show instance here is hard!"</span>
+</code></pre>
+<p>Pros:</p>
+<p>1.) It provides ridiculously fast substitution by comparison to other techniques.</p>
+<p>2.) Meijer and Hutton's <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.64.4921&rep=rep1&type=pdf">"Bananas in Space"</a>, Fegaras and Sheard's <a href="http://citeseer.ist.psu.edu/viewdoc/summary?doi=10.1.1.36.2763">"Revisiting Catamorphisms over Datatypes with Embedded Functions (or, Programs from Outer Space)</a> and Weirich and Washburn's <a href="http://www.seas.upenn.edu/~sweirich/papers/itabox/icfp-published-version.pdf">"Boxes Go Bananas: Encoding Higher-order Abstract Syntax with Parametric Polymorphism"</a> each describe forms of catamorphism that can be used on these to work under binders.</p>
+<p>Cons:</p>
+<p>1.) It doesn't work in theorem provers like Coq or Agda, because <code>Exp</code> occurs in both positive and negative position, causing it to fail the positivity check.</p>
+<p>2.) It is quite hard to work under binders. You often have to invert your control flow for passes and think "inside out."</p>
+<p>3.) You have to deal with exotic terms that do bad things like inspect the expression they are given, so it is in some sense "too big."</p>
+<p>4.) Alpha equivalence is still tedious.</p>
+<p>5.) In <a href="../../../reader/2008/rotten-bananas/">"Rotten Bananas"</a> on <a href="http://comonad.com">comonad.com</a> I go through the issues with general recursion in this approach.</p>
+<p>Variants such as Weak HOAS/<a href="http://adam.chlipala.net/papers/PhoasICFP08/">PHOAS</a>/<a href="http://www.seas.upenn.edu/~sweirich/papers/itabox/icfp-published-version.pdf">Weirich and Washburn</a> exist to address some of these issues (e.g. working in Coq/Agda, restoring positivity, ruling out exotic terms) at the expense of other problems (e.g. losing the notion of catamorphism or general recursion).</p>
+<h3 id="de-bruijn-indices">De Bruijn Indices</h3>
+<blockquote>
+<p>M'colleague Bob Atkey once memorably described the capacity to put up with De Bruijn indices as a Cylon
+detector, the kind of reverse Turing Test that the humans in Battlestar Galactica invent, the better to
+recognize one another by their common inadequacies. He had a point</p>
+<p><em>-Conor McBride, "I am not a number, I am a classy hack"</em></p>
+</blockquote>
+<p>We can split variables into bound and free:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">
+<span class="hljs-meta">{-# LANGUAGE DeriveFunctor, DeriveFoldable, DeriveTraversable #-}</span>
+<span class="hljs-keyword">import</span> Data.Foldable
+<span class="hljs-keyword">import</span> Data.Traversable
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Exp</span> a</span>
+  = <span class="hljs-type">Free</span> a
+  | <span class="hljs-type">Bound</span> !<span class="hljs-type">Int</span>
+  | <span class="hljs-type">App</span> (<span class="hljs-type">Exp</span> a) (<span class="hljs-type">Exp</span> a)
+  | <span class="hljs-type">Lam</span> (<span class="hljs-type">Exp</span> a)
+  <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Eq</span>,<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>,<span class="hljs-type">Functor</span>,<span class="hljs-type">Foldable</span>,<span class="hljs-type">Traversable</span>)
+
+<span class="hljs-title">main</span> = putStrLn <span class="hljs-string">"It typechecks, but it is boring."</span>
+</code></pre>
+<p>We could define combinators to bind names and instantiate them</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">abstract</span> :: <span class="hljs-type">Eq</span> a =&gt; a -&gt; <span class="hljs-type">Exp</span> a -&gt; <span class="hljs-type">Exp</span> a
+<span class="hljs-title">instantiate</span> :: <span class="hljs-type">Exp</span> a -&gt; <span class="hljs-type">Exp</span> a -&gt; <span class="hljs-type">Exp</span> a
+</code></pre>
+<p>but let's adopt Conor McBride's less error prone convention instead:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE DeriveFunctor, DeriveFoldable, DeriveTraversable #-}</span>
+<span class="hljs-keyword">import</span> Data.Foldable
+<span class="hljs-keyword">import</span> Data.Traversable
+
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Scope</span> f a = <span class="hljs-type">Scope</span> (<span class="hljs-title">f</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Eq</span>,<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>,<span class="hljs-type">Functor</span>,<span class="hljs-type">Foldable</span>,<span class="hljs-type">Traversable</span>)</span>
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Exp</span> a</span>
+  = <span class="hljs-type">Free</span> a
+  | <span class="hljs-type">Bound</span> !<span class="hljs-type">Int</span>
+  | <span class="hljs-type">App</span> (<span class="hljs-type">Exp</span> a) (<span class="hljs-type">Exp</span> a)
+  | <span class="hljs-type">Lam</span> (<span class="hljs-type">Scope</span> <span class="hljs-type">Exp</span> a)
+
+  <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Eq</span>,<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>,<span class="hljs-type">Functor</span>,<span class="hljs-type">Foldable</span>,<span class="hljs-type">Traversable</span>)
+<span class="hljs-title">main</span> = putStrLn <span class="hljs-string">"It typechecks, and is even slightly interesting."</span>
+</code></pre>
+<p>With Conor's convention, <code>abstract</code> and <code>instantiate</code> actually have useful types that prevent you from doing bad things. Renaming <code>Bound</code> to <code>B</code> and <code>Free</code> to <code>F</code>, then adapting the approach he takes in his excellent functional pearl with James McKinna <a href="http://www.cs.ru.nl/~james/RESEARCH/haskell2004.pdf">"I am not a Number -- I am a Free Variable"</a> to our running example to try to keep Conor's somewhat absurd sense of humor intact we get:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE DeriveFunctor, DeriveFoldable, DeriveTraversable #-}</span>
+<span class="hljs-keyword">import</span> Data.Foldable
+<span class="hljs-keyword">import</span> Data.Traversable
+
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Scope</span> f a = <span class="hljs-type">Scope</span> (<span class="hljs-title">f</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Eq</span>,<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>,<span class="hljs-type">Functor</span>,<span class="hljs-type">Foldable</span>,<span class="hljs-type">Traversable</span>)</span>
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Exp</span> a</span>
+  = <span class="hljs-type">F</span> a
+  | <span class="hljs-type">B</span> !<span class="hljs-type">Int</span>
+  | <span class="hljs-type">App</span> (<span class="hljs-type">Exp</span> a) (<span class="hljs-type">Exp</span> a)
+  | <span class="hljs-type">Lam</span> (<span class="hljs-type">Scope</span> <span class="hljs-type">Exp</span> a)
+  <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Eq</span>,<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>,<span class="hljs-type">Functor</span>,<span class="hljs-type">Foldable</span>,<span class="hljs-type">Traversable</span>)
+
+<span class="hljs-title">abstract</span> :: <span class="hljs-type">Eq</span> a =&gt; a -&gt; <span class="hljs-type">Exp</span> a -&gt; <span class="hljs-type">Scope</span> <span class="hljs-type">Exp</span> a
+<span class="hljs-title">abstract</span> me expr = <span class="hljs-type">Scope</span> (letmeB <span class="hljs-number">0</span> expr) <span class="hljs-keyword">where</span>
+  letmeB this (<span class="hljs-type">F</span> you) | you == me = <span class="hljs-type">B</span> this
+                      | otherwise = <span class="hljs-type">F</span> you
+  letmeB this (<span class="hljs-type">B</span> that)            = <span class="hljs-type">B</span> that
+  letmeB this (<span class="hljs-type">App</span> fun arg)       = letmeB this fun `<span class="hljs-type">App</span>` letmeB this arg
+  letmeB this (<span class="hljs-type">Lam</span> (<span class="hljs-type">Scope</span> body))  = <span class="hljs-type">Lam</span> $ <span class="hljs-type">Scope</span> $ letmeB (succ this) body
+
+<span class="hljs-title">instantiate</span> :: <span class="hljs-type">Exp</span> a -&gt; <span class="hljs-type">Scope</span> <span class="hljs-type">Exp</span> a -&gt; <span class="hljs-type">Exp</span> a
+<span class="hljs-title">instantiate</span> what (<span class="hljs-type">Scope</span> body) = what'sB <span class="hljs-number">0</span> body <span class="hljs-keyword">where</span>
+  what'sB this (<span class="hljs-type">B</span> that) | this == that = what
+                        | otherwise    = <span class="hljs-type">B</span> that
+  what'sB this (<span class="hljs-type">F</span> you)                 = <span class="hljs-type">F</span> you
+  what'sB this (<span class="hljs-type">App</span> fun arg)           = what'sB this fun `<span class="hljs-type">App</span>` what'sB this arg
+  what'sB this (<span class="hljs-type">Lam</span> (<span class="hljs-type">Scope</span> body))      = <span class="hljs-type">Lam</span> $ <span class="hljs-type">Scope</span> $ what'sB (succ this) body
+
+<span class="hljs-title">main</span> = putStrLn <span class="hljs-string">"It typechecks, and is even slightly interesting."</span>
+</code></pre>
+<p>We could even make a monad that does capture avoiding substitution for <code>Exp</code>, but it is an awkward one-off experience.</p>
+<p>Pros:</p>
+<p>1.) <code>Scope</code>, <code>abstract</code>, and <code>instantiate</code> made it harder to screw up walking under binders.</p>
+<p>2.) Alpha equivalence is just <code>(==)</code> due to the power of De Bruijn indices.</p>
+<p>3.) We <em>can</em> make a <code>Monad</code> for <code>Exp</code> that does <em>capture avoiding</em> substitution.</p>
+<p>4.) We can use <code>Traversable</code> and <code>Foldable</code> to find free variables and close terms.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">Using</span> these we can define combinators like
+</code></pre>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-keyword">import</span> Data.Foldable <span class="hljs-keyword">as</span> Foldable
+<span class="hljs-keyword">import</span> Data.Traversable
+
+
+<span class="hljs-title">closed</span> :: <span class="hljs-type">Traversable</span> f =&gt; f a -&gt; <span class="hljs-type">Maybe</span> (f b)
+<span class="hljs-title">closed</span> = traverse (const <span class="hljs-type">Nothing</span>)
+
+<span class="hljs-title">isClosed</span> :: <span class="hljs-type">Foldable</span> f =&gt; f a -&gt; <span class="hljs-type">Bool</span>
+<span class="hljs-title">isClosed</span> = <span class="hljs-type">Foldable</span>.all (const <span class="hljs-type">False</span>)
+
+<span class="hljs-title">main</span> = putStrLn <span class="hljs-string">"The types check out."</span>
+</code></pre>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">to</span> check for closed terms, and we can use `<span class="hljs-type">Exp</span> <span class="hljs-type">Void</span>` directly <span class="hljs-keyword">as</span> a closed term.
+</code></pre>
+<p>Cons:</p>
+<p>1.) We <code>succ</code> a lot in <code>letmeB</code> and <code>what'sB</code>.</p>
+<p>2.) Illegal terms such as <code>Lam (Scope (B 2))</code> still exist.</p>
+<p>3.) We have to define one-off versions of <code>abstract</code> and <code>instantiate</code> for each expression type we come up with. This means this is a design pattern, not a library.</p>
+<p>4.) The <code>Monad</code> for <code>Exp</code> is similarly a one-off deal.</p>
+<h3 id="bird-and-paterson-part-1">Bird and Paterson, Part 1</h3>
+<p>We can turn to Bird and Paterson's encoding of De Bruijn indices in terms of polymorphic recursion from the first half of <a href="http://www.cs.uwyo.edu/~jlc/courses/5000_fall_08/debruijn_as_nested_datatype.pdf">De Bruijn notation as a nested datatype</a>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE DeriveFunctor, DeriveFoldable, DeriveTraversable #-}</span>
+<span class="hljs-keyword">import</span> Data.Foldable
+<span class="hljs-keyword">import</span> Data.Traversable
+
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Exp</span> a</span>
+  = <span class="hljs-type">Var</span> a
+  | <span class="hljs-type">App</span> (<span class="hljs-type">Exp</span> a) (<span class="hljs-type">Exp</span> a)
+  | <span class="hljs-type">Lam</span> (<span class="hljs-type">Exp</span> (<span class="hljs-type">Maybe</span> a))
+  <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Functor</span>, <span class="hljs-type">Foldable</span>, <span class="hljs-type">Traversable</span>)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> <span class="hljs-type">Exp</span> <span class="hljs-keyword">where</span></span>
+  return = <span class="hljs-type">Var</span>
+  <span class="hljs-type">Var</span> a &gt;&gt;= f = f a
+  <span class="hljs-type">App</span> l r &gt;&gt;= f = <span class="hljs-type">App</span> (l &gt;&gt;= f) (r &gt;&gt;= f)
+  <span class="hljs-type">Lam</span> xs &gt;&gt;= f = undefined <span class="hljs-comment">-- go for it!</span>
+
+<span class="hljs-title">main</span> = print <span class="hljs-string">"Did you finish (&gt;&gt;=)?"</span>
+</code></pre>
+<p>Pros:</p>
+<p>1.) This eliminates the illegal terms from Con #2 above once and for all, and we can write a one-off <code>Monad</code> for it.</p>
+<p>2.) We have the <code>Maybe</code> to mark our extra variables, so we can't forget to deal with our bound term at any point in our recursion.</p>
+<p>Cons:</p>
+<p>1.) We still <code>succ</code> a lot, except now we call <code>succ</code> <code>Just</code>.</p>
+<p>2.) We still need to write one-off <code>abstract</code> and <code>instantiate</code> combinators.</p>
+<p>3.) The <code>Monad</code> for <code>Exp</code> is a one-off deal.</p>
+<p>4.) They lean somewhat unnecessarily on <code>RankNTypes</code> to manipulate these expressions in terms of their folds, when the <code>Monad</code> and other classes can all be defined within the confines of <a href="http://www.haskell.org/onlinereport/">Haskell 98</a>.</p>
+<h3 id="attempt-1">Attempt #1</h3>
+<p>We can modify Bird and Paterson's approach in a few ways, to steal some of the desirable properties from McBride's "I am not a Number; I'm a Free Variable" by noticing that Scope forms a Monad transformer!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE DeriveFunctor, DeriveFoldable, DeriveTraversable #-}</span>
+<span class="hljs-keyword">import</span> Control.Monad
+<span class="hljs-keyword">import</span> Control.Monad.Trans
+<span class="hljs-keyword">import</span> Data.Foldable
+<span class="hljs-keyword">import</span> Data.Functor
+<span class="hljs-keyword">import</span> Data.Traversable
+
+
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Scope</span> f a = <span class="hljs-type">Scope</span> { <span class="hljs-title">runScope</span> :: <span class="hljs-title">f</span> (<span class="hljs-type">Maybe</span> <span class="hljs-title">a</span>) }</span>
+  <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Functor</span>, <span class="hljs-type">Foldable</span>, <span class="hljs-type">Traversable</span>)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> f =&gt; <span class="hljs-type">Monad</span> (<span class="hljs-type">Scope</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+  return = <span class="hljs-type">Scope</span> . return . <span class="hljs-type">Just</span>
+  <span class="hljs-type">Scope</span> m &gt;&gt;= f = undefined <span class="hljs-comment">-- go for it!</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">MonadTrans</span> <span class="hljs-type">Scope</span> <span class="hljs-keyword">where</span></span>
+  lift = <span class="hljs-type">Scope</span> . liftM <span class="hljs-type">Just</span>
+
+<span class="hljs-title">main</span> = print <span class="hljs-string">"Scope scopes out, but did you finish (&gt;&gt;=)?"</span>
+</code></pre>
+<p>The astute observer will recognize that this form of <code>Scope</code> is just <a href="https://hackage.haskell.org/packages/archive/transformers/0.3.0.0/doc/html/Control-Monad-Trans-Maybe.html"><code>MaybeT</code></a> from <a href="https://hackage.haskell.org/package/transformers"><code>transformers</code></a>.</p>
+<p>We can finally even define <code>abstract</code> and <code>instantiate</code> from Conor's approach once and for all, completely independently of our expression type. Sadly, they find themselves now devoid of humor.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">abstract</span> :: (<span class="hljs-type">Functor</span> f, <span class="hljs-type">Eq</span> a) =&gt; a -&gt; f a -&gt; <span class="hljs-type">Scope</span> f a
+<span class="hljs-title">abstract</span> x xs = <span class="hljs-type">Scope</span> (fmap go xs) <span class="hljs-keyword">where</span>
+  go y = y &lt;$ guard (x /= y)
+
+<span class="hljs-title">instantiate</span> :: <span class="hljs-type">Monad</span> f =&gt; f a -&gt; <span class="hljs-type">Scope</span> f a -&gt; f a
+<span class="hljs-title">instantiate</span> x (<span class="hljs-type">Scope</span> xs) = xs &gt;&gt;= go <span class="hljs-keyword">where</span>
+  go <span class="hljs-type">Nothing</span> = x
+  go (<span class="hljs-type">Just</span> y) = return y
+</code></pre>
+<p>This is starting to feel like a library, rather than design pattern.</p>
+<p>Moreover, with that in hand, we can revisit the definition of <code>Exp</code> and define our <code>Monad</code> by borrowing from <code>Scope</code>'s expression-type-agnostic definition.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE DeriveFunctor, DeriveFoldable, DeriveTraversable #-}</span>
+<span class="hljs-keyword">import</span> Control.Monad
+<span class="hljs-keyword">import</span> Control.Monad.Trans
+<span class="hljs-keyword">import</span> Data.Foldable
+<span class="hljs-keyword">import</span> Data.Functor
+<span class="hljs-keyword">import</span> Data.Traversable
+
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Scope</span> f a = <span class="hljs-type">Scope</span> { <span class="hljs-title">runScope</span> :: <span class="hljs-title">f</span> (<span class="hljs-type">Maybe</span> <span class="hljs-title">a</span>) }</span>
+  <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Functor</span>, <span class="hljs-type">Foldable</span>, <span class="hljs-type">Traversable</span>)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> f =&gt; <span class="hljs-type">Monad</span> (<span class="hljs-type">Scope</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+  return = <span class="hljs-type">Scope</span> . return . <span class="hljs-type">Just</span>
+  <span class="hljs-type">Scope</span> m &gt;&gt;= f = <span class="hljs-type">Scope</span> $ m &gt;&gt;= maybe (return <span class="hljs-type">Nothing</span>) (runScope . f)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">MonadTrans</span> <span class="hljs-type">Scope</span> <span class="hljs-keyword">where</span></span>
+  lift = <span class="hljs-type">Scope</span> . liftM <span class="hljs-type">Just</span>
+
+<span class="hljs-title">abstract</span> :: (<span class="hljs-type">Functor</span> f, <span class="hljs-type">Eq</span> a) =&gt; a -&gt; f a -&gt; <span class="hljs-type">Scope</span> f a
+<span class="hljs-title">abstract</span> x xs = <span class="hljs-type">Scope</span> (fmap go xs) <span class="hljs-keyword">where</span>
+  go y = y &lt;$ guard (x /= y)
+
+<span class="hljs-title">instantiate</span> :: <span class="hljs-type">Monad</span> f =&gt; f a -&gt; <span class="hljs-type">Scope</span> f a -&gt; f a
+<span class="hljs-title">instantiate</span> x (<span class="hljs-type">Scope</span> xs) = xs &gt;&gt;= go <span class="hljs-keyword">where</span>
+  go <span class="hljs-type">Nothing</span>  = x
+  go (<span class="hljs-type">Just</span> y) = return y
+
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Exp</span> a</span>
+  = <span class="hljs-type">Var</span> a
+  | <span class="hljs-type">App</span> (<span class="hljs-type">Exp</span> a) (<span class="hljs-type">Exp</span> a)
+  | <span class="hljs-type">Lam</span> (<span class="hljs-type">Scope</span> <span class="hljs-type">Exp</span> a)
+  <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Functor</span>, <span class="hljs-type">Foldable</span>, <span class="hljs-type">Traversable</span>)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> <span class="hljs-type">Exp</span> <span class="hljs-keyword">where</span></span>
+  return = <span class="hljs-type">Var</span>
+  <span class="hljs-type">Var</span> a &gt;&gt;= f    = f a
+  <span class="hljs-type">App</span> l r &gt;&gt;= f  = <span class="hljs-type">App</span> (l &gt;&gt;= f) (r &gt;&gt;= f)
+  <span class="hljs-type">Lam</span> body &gt;&gt;= f = <span class="hljs-type">Lam</span> (body &gt;&gt;= lift . f)
+
+<span class="hljs-title">main</span> = putStrLn <span class="hljs-string">"Now we're getting somewhere!"</span>
+</code></pre>
+<p>Pros:</p>
+<p>1.) We were able to factor out <code>Scope</code>, <code>abstract</code> and <code>instantiate</code> into code we can write once and package up.</p>
+<p>2.) We've gained the benefits of McBride's conventions, as <code>abstract</code> and <code>instantiate</code> are really nice to reason about.</p>
+<p>Cons:</p>
+<p>1.) This is still going to <code>succ</code> just as much as our earlier De Bruijn solutions. Using <code>lift</code> to embed into <code>Scope</code> has to traverse all of the leaves to mangle them with a <code>Just</code>.</p>
+<p>2.) <code>Eq</code> <code>Ord</code>, <code>Show</code>, and <code>Read</code> are now non-trivial to write due to polymorphic recursion.</p>
+<h3 id="bird-and-paterson-part-2">Bird and Paterson, Part 2</h3>
+<p>Bird and Paterson did write the other half of their paper for a reason, though. In the other half they showed we can encode a <em>generalized</em> De Bruijn index notion using a different polymorphic recursion pattern.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Exp</span> a</span>
+  = <span class="hljs-type">Var</span> a
+  | <span class="hljs-type">App</span> (<span class="hljs-type">Exp</span> a) (<span class="hljs-type">Exp</span> a)
+  | <span class="hljs-type">Lam</span> (<span class="hljs-type">Exp</span> (<span class="hljs-type">Maybe</span> (<span class="hljs-type">Exp</span> a)))
+</code></pre>
+<p>The astute observer will now note that this is looking a bit less like <code>MaybeT</code>. So what happened?</p>
+<p>Normally when you work with De Bruijn indices you <code>succ</code> only the variables down at the leaves.</p>
+<p>What Bird and Paterson's generalized De Bruijn form allows you to do is <code>Just</code> née <code>succ</code> whole trees at a time!</p>
+<p>If we adopt my <code>MonadTrans</code> variant of McBride's <code>Scope</code> as before, and generalize Bird and Paterson's approach, sticking to Haskell 98. We get very close to the final solution actually encoded in <code>bound</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE DeriveFunctor, DeriveFoldable, DeriveTraversable #-}</span>
+<span class="hljs-keyword">import</span> Control.Monad
+<span class="hljs-keyword">import</span> Control.Monad.Trans
+<span class="hljs-keyword">import</span> Data.Foldable
+<span class="hljs-keyword">import</span> Data.Functor
+<span class="hljs-keyword">import</span> Data.Maybe
+<span class="hljs-keyword">import</span> Data.Traversable
+
+
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Scope</span> f a = <span class="hljs-type">Scope</span> { <span class="hljs-title">runScope</span> :: <span class="hljs-title">f</span> (<span class="hljs-type">Maybe</span> (<span class="hljs-title">f</span> <span class="hljs-title">a</span>)) }</span>
+  <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Functor</span>, <span class="hljs-type">Foldable</span>, <span class="hljs-type">Traversable</span>)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> f =&gt; <span class="hljs-type">Monad</span> (<span class="hljs-type">Scope</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+  return = <span class="hljs-type">Scope</span> . return . <span class="hljs-type">Just</span> . return
+  <span class="hljs-type">Scope</span> e &gt;&gt;= f = <span class="hljs-type">Scope</span> $ e &gt;&gt;= \v -&gt; <span class="hljs-keyword">case</span> v <span class="hljs-keyword">of</span>
+    <span class="hljs-type">Nothing</span> -&gt; return <span class="hljs-type">Nothing</span>
+    <span class="hljs-type">Just</span> ea -&gt; ea &gt;&gt;= runScope . f
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">MonadTrans</span> <span class="hljs-type">Scope</span> <span class="hljs-keyword">where</span></span>
+  lift = <span class="hljs-type">Scope</span> . return . <span class="hljs-type">Just</span>
+
+<span class="hljs-title">abstract</span> :: (<span class="hljs-type">Monad</span> f, <span class="hljs-type">Eq</span> a) =&gt; a -&gt; f a -&gt; <span class="hljs-type">Scope</span> f a
+<span class="hljs-title">abstract</span> a e = <span class="hljs-type">Scope</span> (liftM k e) <span class="hljs-keyword">where</span>
+  k b = return b &lt;$ guard (a /= b)
+
+<span class="hljs-title">instantiate</span> :: <span class="hljs-type">Monad</span> f =&gt; f a -&gt; <span class="hljs-type">Scope</span> f a -&gt; f a
+<span class="hljs-title">instantiate</span> k (<span class="hljs-type">Scope</span> e) = e &gt;&gt;= fromMaybe k
+
+<span class="hljs-title">main</span> = putStrLn <span class="hljs-string">"Almost there!"</span>
+</code></pre>
+<p>The key difference realized by Bird and Paterson's design is that now, lifting an expression that does not have our bound term in it into our new <code>Scope</code>, no longer requires touching every leaf in the expression. In fact it is <code>O(1)</code>!</p>
+<p><code>Scope</code> is still a <code>Monad</code> transformer, but it is a new one!</p>
+<p>This is a salvageable representation, but I want to take one more step before we turn it into a library, before we talk about Pros and Cons.</p>
+<h3 id="bound-generalized-generalized-de-bruijn">Bound: Generalized Generalized De Bruijn</h3>
+<p>Often we need to deal with simultaneous substitution of several variables. e.g. all of the variables bound by a pattern, all of the variables bound by a lambda, many variables bound by recursive let</p>
+<p><code>De Bruijn</code> even as generalized above still only lets me <code>abstract</code> or <code>instantiate</code> a single variable at a time.</p>
+<p>What I want relates to <code>EitherT</code> as the above monad relates to <code>MaybeT</code>.</p>
+<p>Finally, I'm going to alpha rename <code>Either</code>, because really when we <em>do</em> finally get to show you these syntax trees, they are going to be bad enough without meaningless <code>Left</code> and <code>Right</code> names cluttering up my tree. Let's use <code>B</code> for bound (pronounced <code>zero</code>) and <code>F</code> for free (pronounced <code>succ</code>) in homage to Conor's conventions above.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE DeriveFunctor, DeriveFoldable, DeriveTraversable #-}</span>
+<span class="hljs-keyword">import</span> Control.Monad
+<span class="hljs-keyword">import</span> Control.Monad.Trans
+<span class="hljs-keyword">import</span> Data.Foldable
+<span class="hljs-keyword">import</span> Data.Functor
+<span class="hljs-keyword">import</span> Data.Maybe
+<span class="hljs-keyword">import</span> Data.Traversable
+
+<span class="hljs-comment">-- show Var</span>
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Var</span> b a</span>
+  = <span class="hljs-type">B</span> b
+  | <span class="hljs-type">F</span> a
+  <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Eq</span>,<span class="hljs-type">Ord</span>,<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>,<span class="hljs-type">Functor</span>,<span class="hljs-type">Foldable</span>,<span class="hljs-type">Traversable</span>)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> (<span class="hljs-type">Var</span> <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+  return = <span class="hljs-type">F</span>
+  <span class="hljs-type">F</span> a &gt;&gt;= f = f a
+  <span class="hljs-type">B</span> b &gt;&gt;= _ = <span class="hljs-type">B</span> b
+
+<span class="hljs-comment">-- show Scope</span>
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Scope</span> b f a = <span class="hljs-type">Scope</span> { <span class="hljs-title">runScope</span> :: <span class="hljs-title">f</span> (<span class="hljs-type">Var</span> <span class="hljs-title">b</span> (<span class="hljs-title">f</span> <span class="hljs-title">a</span>)) }</span>
+  <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Functor</span>,<span class="hljs-type">Foldable</span>,<span class="hljs-type">Traversable</span>)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> f =&gt; <span class="hljs-type">Monad</span> (<span class="hljs-type">Scope</span> <span class="hljs-title">b</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+  return = <span class="hljs-type">Scope</span> . return . <span class="hljs-type">F</span> . return
+  <span class="hljs-type">Scope</span> e &gt;&gt;= f = <span class="hljs-type">Scope</span> $ e &gt;&gt;= \v -&gt; <span class="hljs-keyword">case</span> v <span class="hljs-keyword">of</span>
+    <span class="hljs-type">B</span> b  -&gt; return (<span class="hljs-type">B</span> b)
+    <span class="hljs-type">F</span> ea -&gt; ea &gt;&gt;= runScope . f
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">MonadTrans</span> (<span class="hljs-type">Scope</span> <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+  lift = <span class="hljs-type">Scope</span> . return . <span class="hljs-type">F</span>
+
+<span class="hljs-comment">-- show Abstraction and Instantiation</span>
+<span class="hljs-title">abstract</span> :: <span class="hljs-type">Monad</span> f =&gt; (a -&gt; <span class="hljs-type">Maybe</span> b) -&gt; f a -&gt; <span class="hljs-type">Scope</span> b f a
+<span class="hljs-title">abstract</span> f e = <span class="hljs-type">Scope</span> (liftM k e) <span class="hljs-keyword">where</span>
+  k y = <span class="hljs-keyword">case</span> f y <span class="hljs-keyword">of</span>
+    <span class="hljs-type">Just</span> z  -&gt; <span class="hljs-type">B</span> z
+    <span class="hljs-type">Nothing</span> -&gt; <span class="hljs-type">F</span> (return y)
+
+<span class="hljs-title">instantiate</span> :: <span class="hljs-type">Monad</span> f =&gt; (b -&gt; f a) -&gt; <span class="hljs-type">Scope</span> b f a -&gt; f a
+<span class="hljs-title">instantiate</span> k e = runScope e &gt;&gt;= \v -&gt; <span class="hljs-keyword">case</span> v <span class="hljs-keyword">of</span>
+  <span class="hljs-type">B</span> b -&gt; k b
+  <span class="hljs-type">F</span> a -&gt; a
+
+<span class="hljs-title">main</span> = putStrLn <span class="hljs-string">"It typechecks, therefore it must be correct!"</span>
+</code></pre>
+<p>From here on out we can actually use the real <a href="https://hackage.haskell.org/package/bound"><code>bound</code></a> library.</p>
+<p>Pros:</p>
+<p>1.) Because we can now <code>succ</code>/<code>F</code> a whole tree, we don't have to pay the usual De Bruijn performance tax.
+We get <code>O(1)</code> lifting, and when we <code>instantiate</code> we can skip past the whole <code>F</code>'d tree.</p>
+<p>2.) We use <code>Foldable</code> and <code>Traversable</code> to extract information about free variables and do
+variable -&gt; variable substitution.</p>
+<p>3.) We can use the <code>MonadTrans</code> instance for <code>Scope b</code> to facilitate the construction of <code>Exp</code>.
+We do this so often that we turn the <code>&gt;&gt;= lift . f</code> idiom into a combinator (<code>&gt;&gt;&gt;=</code>)
+that we'll talk about further when we talk about patterns.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">This</span> is a complete example syntax tree example that supports the use <span class="hljs-keyword">of</span> `<span class="hljs-type">Foldable</span>`/`<span class="hljs-type">Traversable</span>`/`<span class="hljs-type">Monad</span>`
+<span class="hljs-title">to</span> extract information about the free variables, and <span class="hljs-keyword">do</span> capture-avoiding substitution!
+</code></pre>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">
+<span class="hljs-meta">{-# LANGUAGE DeriveFunctor, DeriveFoldable, DeriveTraversable #-}</span>
+<span class="hljs-keyword">import</span> Data.Foldable
+<span class="hljs-keyword">import</span> Data.Traversable
+<span class="hljs-keyword">import</span> Bound
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Exp</span> a</span>
+ = <span class="hljs-type">Var</span> a
+ | <span class="hljs-type">App</span> (<span class="hljs-type">Exp</span> a) (<span class="hljs-type">Exp</span> a)
+ | <span class="hljs-type">Lam</span> (<span class="hljs-type">Scope</span> () <span class="hljs-type">Exp</span> a)
+ | <span class="hljs-type">Let</span> [<span class="hljs-type">Scope</span> <span class="hljs-type">Int</span> <span class="hljs-type">Exp</span> a] (<span class="hljs-type">Scope</span> <span class="hljs-type">Int</span> <span class="hljs-type">Exp</span> a)
+ <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Functor</span>,<span class="hljs-type">Foldable</span>,<span class="hljs-type">Traversable</span>)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> <span class="hljs-type">Exp</span> <span class="hljs-keyword">where</span></span>
+  return = <span class="hljs-type">Var</span>
+  <span class="hljs-type">Var</span> a &gt;&gt;= f = f a
+  <span class="hljs-type">App</span> l r &gt;&gt;= f = <span class="hljs-type">App</span> (l &gt;&gt;= f) (r &gt;&gt;= f)
+  <span class="hljs-type">Lam</span> s &gt;&gt;= f = <span class="hljs-type">Lam</span> (s &gt;&gt;&gt;= f)
+  <span class="hljs-type">Let</span> xs b &gt;&gt;= f = <span class="hljs-type">Let</span> (map (&gt;&gt;&gt;= f) xs) (b &gt;&gt;&gt;= f)
+
+<span class="hljs-title">main</span> = putStrLn <span class="hljs-string">"That's it!"</span>
+</code></pre>
+<p>4.) We can now deal with simultaneous substitution. To make things interesting in the example above we've extended the example with a simultaneous binding for all of the variables in a recursive let!</p>
+<p>Cons:</p>
+<p>1.) I still haven't shown you how to get <code>Eq</code>, <code>Ord</code>, <code>Read</code>, <code>Show</code> such that <code>Eq</code> and <code>Ord</code> respect alpha-equivalence.</p>
+<h3 id="loose-ends">Loose Ends</h3>
+<p>To work around the polymorphic recursion in <code>Scope</code>, we turn to my fairly boring and generically named <a href="https://hackage.haskell.org/package/prelude-extras"><code>prelude-extras</code></a> package. This package provides higher-rank versions of typeclasses from the <code>Prelude</code>.</p>
+<p>For example</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Eq1</span> t <span class="hljs-keyword">where</span></span>
+  (==#) :: <span class="hljs-type">Eq</span> a =&gt; t a -&gt; t a -&gt; <span class="hljs-type">Bool</span>
+  (/=#) :: <span class="hljs-type">Eq</span> a =&gt; t a -&gt; t a -&gt; <span class="hljs-type">Bool</span>
+</code></pre>
+<p>along with <code>Eq2</code>, <code>Ord1</code>, <code>Ord2</code>, <code>Show1</code>, <code>Show2</code>, <code>Read1</code> and <code>Read2</code>.</p>
+<p>I told you it was boring.</p>
+<p>There has also been some discussion on the libraries mailing list of randomly renaming these things and putting (a subset?) of these in <code>transformers</code> to permit Haskell 98 <code>Show</code> instances things like <code>IdentityT</code> and <code>WriterT</code>.</p>
+<p>Now, what we can do is use the fact that these classes have default definitions and the instances for <code>Scope</code> are defined in terms of <code>Eq1</code>, <code>Ord1</code>, <code>Show1</code>, and <code>Read1</code> for the base data type, to obtain the final solution!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">
+<span class="hljs-meta">{-# LANGUAGE DeriveFunctor, DeriveFoldable, DeriveTraversable #-}</span>
+<span class="hljs-keyword">import</span> Bound
+<span class="hljs-keyword">import</span> Control.Applicative
+<span class="hljs-keyword">import</span> Control.Monad
+<span class="hljs-keyword">import</span> Data.Foldable
+<span class="hljs-keyword">import</span> Data.Traversable
+<span class="hljs-keyword">import</span> Prelude.Extras
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Exp</span> a</span>
+  = <span class="hljs-type">Var</span> a
+  | <span class="hljs-type">App</span> (<span class="hljs-type">Exp</span> a) (<span class="hljs-type">Exp</span> a)
+  | <span class="hljs-type">Lam</span> (<span class="hljs-type">Scope</span> () <span class="hljs-type">Exp</span> a)
+  <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Eq</span>,<span class="hljs-type">Ord</span>,<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>,<span class="hljs-type">Functor</span>,<span class="hljs-type">Foldable</span>,<span class="hljs-type">Traversable</span>)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Eq1</span> <span class="hljs-type">Exp</span>
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Ord1</span> <span class="hljs-type">Exp</span>
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Show1</span> <span class="hljs-type">Exp</span>
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Read1</span> <span class="hljs-type">Exp</span>
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Applicative</span> <span class="hljs-type">Exp</span> <span class="hljs-keyword">where</span></span>
+  pure = <span class="hljs-type">Var</span>
+  (&lt;*&gt;) = ap
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> <span class="hljs-type">Exp</span> <span class="hljs-keyword">where</span></span>
+  return = <span class="hljs-type">Var</span>
+  <span class="hljs-type">Var</span> a   &gt;&gt;= f = f a
+  <span class="hljs-type">App</span> x y &gt;&gt;= f = <span class="hljs-type">App</span> (x &gt;&gt;= f) (y &gt;&gt;= f)
+  <span class="hljs-type">Lam</span> e   &gt;&gt;= f = <span class="hljs-type">Lam</span> (e &gt;&gt;&gt;= f)
+
+<span class="hljs-title">whnf</span> :: <span class="hljs-type">Exp</span> a -&gt; <span class="hljs-type">Exp</span> a
+<span class="hljs-title">whnf</span> (<span class="hljs-type">App</span> f a) = <span class="hljs-keyword">case</span> whnf f <span class="hljs-keyword">of</span>
+  <span class="hljs-type">Lam</span> b -&gt; whnf (instantiate1 a b)
+  f'    -&gt; <span class="hljs-type">App</span> f' a
+<span class="hljs-title">whnf</span> e = e
+
+<span class="hljs-title">lam</span> :: <span class="hljs-type">Eq</span> a =&gt; a -&gt; <span class="hljs-type">Exp</span> a -&gt; <span class="hljs-type">Exp</span> a
+<span class="hljs-title">lam</span> v b = <span class="hljs-type">Lam</span> (abstract1 v b)
+
+<span class="hljs-title">nf</span> :: <span class="hljs-type">Exp</span> a -&gt; <span class="hljs-type">Exp</span> a
+<span class="hljs-title">nf</span> e@<span class="hljs-type">Var</span>{}   = e
+<span class="hljs-title">nf</span> (<span class="hljs-type">Lam</span> b) = <span class="hljs-type">Lam</span> $ toScope $ nf $ fromScope b
+<span class="hljs-title">nf</span> (<span class="hljs-type">App</span> f a) = <span class="hljs-keyword">case</span> whnf f <span class="hljs-keyword">of</span>
+  <span class="hljs-type">Lam</span> b -&gt; nf (instantiate1 a b)
+  f' -&gt; nf f' `<span class="hljs-type">App</span>` nf a
+
+<span class="hljs-title">main</span> = putStrLn <span class="hljs-string">"It compiles"</span>
+</code></pre>
+<p>and we can finally show syntax tree terms again.</p>
+<p>The instances of <code>Eq</code> and <code>Ord</code> for <code>Scope</code> in particular are careful to compare only up to alpha-equivalence by quotienting out the placement of any internal <code>F</code> levels in the tree as if they'd all been pushed out to the leaves.</p>
+<p>We can use <code>abstract1</code> and <code>instantiate1</code>, which are analogous to the <code>abstract</code> and <code>instantiate</code> we were using before we generalized our generalized De Bruijn index representation to define things like smart constructors</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">lam</span> :: <span class="hljs-type">Eq</span> a =&gt; a -&gt; <span class="hljs-type">Exp</span> a -&gt; <span class="hljs-type">Exp</span> a
+<span class="hljs-title">lam</span> v b = <span class="hljs-type">Lam</span> (abstract1 v b)
+</code></pre>
+<p>and evaluation strategies such as computing weak head normal form:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">whnf</span> :: <span class="hljs-type">Exp</span> a -&gt; <span class="hljs-type">Exp</span> a
+<span class="hljs-title">whnf</span> (<span class="hljs-type">App</span> f a) = <span class="hljs-keyword">case</span> whnf f <span class="hljs-keyword">of</span>
+  <span class="hljs-type">Lam</span> b -&gt; whnf (instantiate1 a b)
+  f'    -&gt; <span class="hljs-type">App</span> f' a
+<span class="hljs-title">whnf</span> e = e
+</code></pre>
+<p>One thing the <code>f (Maybe a)</code> representation was good for was for walking under binders. <code>bound</code> offers the round trip through this representation as <code>fromScope</code> and <code>toScope</code>. Now, if we need to walk under a lambda, we can!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">nf</span> :: <span class="hljs-type">Exp</span> a -&gt; <span class="hljs-type">Exp</span> a
+<span class="hljs-title">nf</span> e@<span class="hljs-type">V</span>{}   = e
+<span class="hljs-title">nf</span> (<span class="hljs-type">Lam</span> b) = <span class="hljs-type">Lam</span> $ toScope $ nf $ fromScope b
+<span class="hljs-title">nf</span> (<span class="hljs-type">App</span> f a) = <span class="hljs-keyword">case</span> whnf f <span class="hljs-keyword">of</span>
+  <span class="hljs-type">Lam</span> b -&gt; nf (instantiate1 a b)
+  f' -&gt; nf f' `<span class="hljs-type">App</span>` nf a
+</code></pre>
+<h3 id="bound-class">Bound.Class</h3>
+<p>Finally, it is worth commenting on the generality of <code>(&gt;&gt;&gt;=)</code> as it points to the class for which this package is named.</p>
+<p>In addition to <code>Scope</code> and <code>Var</code>, the <code>bound</code> package provides the <code>Bound</code> class:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Bound</span> t <span class="hljs-keyword">where</span></span>
+  (&gt;&gt;&gt;=) :: <span class="hljs-type">Monad</span> f =&gt; t f a -&gt; (a -&gt; f b) -&gt; t f b
+  <span class="hljs-keyword">default</span> (&gt;&gt;&gt;=) :: (<span class="hljs-type">MonadTrans</span> <span class="hljs-title">t</span>, <span class="hljs-type">Monad</span> <span class="hljs-title">f</span>) =&gt; t f a -&gt; (<span class="hljs-title">a</span> -&gt; <span class="hljs-title">f</span> <span class="hljs-title">b</span>) -&gt; t f b
+  m &gt;&gt;&gt;= f = m &gt;&gt;= lift . f
+</code></pre>
+<p>An instance of <code>Bound</code> is required to form a left module over all monads. That is to say it should satisfy the following two laws that were identified by Andrea Vezzosi:</p>
+<p>1.) The first such law is analogous to the first monad law:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">m</span> &gt;&gt;&gt;= return ≡ m
+</code></pre>
+<p>2.) The second such law is an associativity law:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">m</span> &gt;&gt;&gt;= (λ x → k x &gt;&gt;= h) ≡ (m &gt;&gt;&gt;= k) &gt;&gt;&gt;= h
+</code></pre>
+<p>Trivially, any valid <code>MonadTrans</code> instance satisfies these laws, hence the default definition.</p>
+<p>This extra flexibility is used in the <a href="https://github.com/ekmett/bound"><code>bound</code></a> <a href="https://github.com/ekmett/bound/tree/master/examples"><code>examples/</code></a> folder to deal with complex pattern matching or other binding/telescoping structures.</p>
+<h3 id="what-s-next">What's Next?</h3>
+<p>You've just taken a crash course on name capture and been shown how <code>bound</code> deals with common isses and makes it easy to work with De Bruijn indices without ever thinking about De Bruijn indices.</p>
+<p>Hopefully, you want to learn more. Perhaps after a slight break to let this settle. If so, I can offer you three further avenues for exploration off the top of my head.</p>
+<p>First, I'd like to note that there are a few middlingly-complex examples in the <a href="https://github.com/ekmett/bound"><code>bound</code></a> <a href="https://github.com/ekmett/bound/tree/master/examples"><code>examples/</code></a> folder to explore and use as a template. Notably:</p>
+<p>1.) <a href="https://github.com/ekmett/bound/blob/master/examples/Simple.hs"><code>Simple.hs</code></a> continues in the vein
+we've taken here but fleshes out recursive let and sticks to Haskell 98 religiously.
+2.)
+<a href="https://github.com/ekmett/bound/blob/master/examples/Deriving.hs"><code>Deriving.hs</code></a> takes over from
+where we're leaving off with here and uses</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE DeriveFunctor, DeriveFoldable, DeriveTraversable #-}</span>
+</code></pre>
+<p>to reduce boilerplate, and importantly adds pattern matching. This showcases the need for the <code>Bound</code>
+class for dealing with patterns, case alternatives, and similar module structures.</p>
+<p>3.) <a href="https://github.com/ekmett/bound/blob/master/examples/Overkill.hs"><code>Overkill.hs</code></a> offers a trip down the rabbit hole of type safety. It shows how strong the type guarantees <em>can</em> get, by using custom kinds to index into its patterns and improves the safety of pattern matching and let binding over and above the <code>Deriving.hs</code> approach, but at the expense of a great deal more code!</p>
+<p>Second, it is also possible to derive a higher order version of <code>bound</code> that can deal with strongly typed EDSLs as well. I've included a worked example version of it here under a spoiler tag simply for completeness, including an example of what could be turned into a network serializable EDSL replete with local variable bindings and lambdas, but it isn't for the faint of heart. It is also probably buggy and is completely untested. If you fix any issues with it, please feel free to email me!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE GADTs, Rank2Types, KindSignatures, ScopedTypeVariables, TypeOperators, DataKinds, PolyKinds, MultiParamTypeClasses, FlexibleInstances, TypeFamilies, DoRec, ExtendedDefaultRules #-}</span>
+
+<span class="hljs-keyword">import</span> Control.Applicative
+<span class="hljs-keyword">import</span> Control.Category
+<span class="hljs-keyword">import</span> Control.Comonad
+<span class="hljs-keyword">import</span> Control.Monad.Fix
+<span class="hljs-keyword">import</span> Control.Monad (<span class="hljs-title">ap</span>)
+<span class="hljs-keyword">import</span> Data.Functor.Identity
+<span class="hljs-keyword">import</span> Data.Typeable
+<span class="hljs-keyword">import</span> Data.Monoid
+<span class="hljs-keyword">import</span> Data.Unique
+<span class="hljs-keyword">import</span> System.IO.Unsafe
+<span class="hljs-keyword">import</span> Unsafe.Coerce
+<span class="hljs-keyword">import</span> Prelude <span class="hljs-keyword">hiding</span> ((.),id)
+
+<span class="hljs-keyword">infixl</span> <span class="hljs-number">1</span> &gt;&gt;&gt;-, &gt;&gt;-
+
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Nat</span> f g = forall x. f x -&gt; g x</span>
+<span class="hljs-class">
+<span class="hljs-keyword">class</span> <span class="hljs-type">HFunctor</span> t <span class="hljs-keyword">where</span></span>
+  hmap :: <span class="hljs-type">Nat</span> f g -&gt; <span class="hljs-type">Nat</span> (t f) (t g)
+<span class="hljs-class">
+<span class="hljs-keyword">class</span> <span class="hljs-type">HFunctor</span> t =&gt; <span class="hljs-type">HTraversable</span> t <span class="hljs-keyword">where</span></span>
+  htraverse :: <span class="hljs-type">Applicative</span> m =&gt; (<span class="hljs-keyword">forall</span> x. f x -&gt; m (g x)) -&gt; t f a -&gt; m (t g a)
+<span class="hljs-class">
+<span class="hljs-keyword">class</span> <span class="hljs-type">HFunctor</span> t =&gt; <span class="hljs-type">HMonad</span> t <span class="hljs-keyword">where</span></span>
+  hreturn :: <span class="hljs-type">Nat</span> f (t f)
+  (&gt;&gt;-)   :: t f a -&gt; <span class="hljs-type">Nat</span> f (t g) -&gt; t g a
+
+<span class="hljs-keyword">infixr</span> <span class="hljs-number">1</span> -&lt;&lt;
+(-&lt;&lt;) :: <span class="hljs-type">HMonad</span> t =&gt; <span class="hljs-type">Nat</span> f (t g) -&gt; <span class="hljs-type">Nat</span> (t f) (t g)
+<span class="hljs-title">f</span> -&lt;&lt; m = m &gt;&gt;- f
+<span class="hljs-class">
+<span class="hljs-keyword">class</span> <span class="hljs-type">HBound</span> s <span class="hljs-keyword">where</span></span>
+  (&gt;&gt;&gt;-) :: <span class="hljs-type">HMonad</span> t =&gt; s t f a -&gt; <span class="hljs-type">Nat</span> f (t g) -&gt; s t g a
+<span class="hljs-class">
+<span class="hljs-keyword">class</span> <span class="hljs-type">HMonadTrans</span> s <span class="hljs-keyword">where</span></span>
+  hlift :: <span class="hljs-type">HMonad</span> t =&gt; <span class="hljs-type">Nat</span> (t f) (s t f)
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Var</span> b f a <span class="hljs-keyword">where</span></span>
+  <span class="hljs-type">B</span> :: b a -&gt; <span class="hljs-type">Var</span> b f a
+  <span class="hljs-type">F</span> :: f a -&gt; <span class="hljs-type">Var</span> b f a
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">HFunctor</span> (<span class="hljs-type">Var</span> <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+  hmap _ (<span class="hljs-type">B</span> b) = <span class="hljs-type">B</span> b
+  hmap f (<span class="hljs-type">F</span> a) = <span class="hljs-type">F</span> (f a)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">HTraversable</span> (<span class="hljs-type">Var</span> <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+  htraverse _ (<span class="hljs-type">B</span> b) = pure (<span class="hljs-type">B</span> b)
+  htraverse f (<span class="hljs-type">F</span> a) = <span class="hljs-type">F</span> &lt;$&gt; f a
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">HMonad</span> (<span class="hljs-type">Var</span> <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+  hreturn   = <span class="hljs-type">F</span>
+  <span class="hljs-type">B</span> b &gt;&gt;- _ = <span class="hljs-type">B</span> b
+  <span class="hljs-type">F</span> a &gt;&gt;- f = f a
+
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Scope</span> b t f a = <span class="hljs-type">Scope</span> { <span class="hljs-title">unscope</span> :: <span class="hljs-title">t</span> (<span class="hljs-type">Var</span> <span class="hljs-title">b</span> (<span class="hljs-title">t</span> <span class="hljs-title">f</span>)) <span class="hljs-title">a</span> }</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">HFunctor</span> t =&gt; <span class="hljs-type">HFunctor</span> (<span class="hljs-type">Scope</span> <span class="hljs-title">b</span> <span class="hljs-title">t</span>) <span class="hljs-keyword">where</span></span>
+  hmap f (<span class="hljs-type">Scope</span> b) = <span class="hljs-type">Scope</span> (hmap (hmap (hmap f)) b)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">HTraversable</span> t =&gt; <span class="hljs-type">HTraversable</span> (<span class="hljs-type">Scope</span> <span class="hljs-title">b</span> <span class="hljs-title">t</span>) <span class="hljs-keyword">where</span></span>
+  htraverse f (<span class="hljs-type">Scope</span> b) = <span class="hljs-type">Scope</span> &lt;$&gt; htraverse (htraverse (htraverse f)) b
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">HMonad</span> t =&gt; <span class="hljs-type">HMonad</span> (<span class="hljs-type">Scope</span> <span class="hljs-title">b</span> <span class="hljs-title">t</span>) <span class="hljs-keyword">where</span></span>
+  hreturn = <span class="hljs-type">Scope</span> . hreturn . <span class="hljs-type">F</span> . hreturn
+  <span class="hljs-type">Scope</span> e &gt;&gt;- f  = <span class="hljs-type">Scope</span> $ e &gt;&gt;- \v -&gt; <span class="hljs-keyword">case</span> v <span class="hljs-keyword">of</span>
+    <span class="hljs-type">B</span> b -&gt; hreturn (<span class="hljs-type">B</span> b)
+    <span class="hljs-type">F</span> ea -&gt; ea &gt;&gt;- unscope . f
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">HMonadTrans</span> (<span class="hljs-type">Scope</span> <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+  hlift = <span class="hljs-type">Scope</span> . hreturn . <span class="hljs-type">F</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">HBound</span> (<span class="hljs-type">Scope</span> <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+  <span class="hljs-type">Scope</span> m &gt;&gt;&gt;- f = <span class="hljs-type">Scope</span> (hmap (hmap (&gt;&gt;- f)) m)
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Equal</span> a b <span class="hljs-keyword">where</span></span>
+   <span class="hljs-type">Refl</span> :: <span class="hljs-type">Equal</span> a a
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Category</span> <span class="hljs-type">Equal</span> <span class="hljs-keyword">where</span></span>
+  id = <span class="hljs-type">Refl</span>
+  <span class="hljs-type">Refl</span> . <span class="hljs-type">Refl</span> = <span class="hljs-type">Refl</span>
+
+<span class="hljs-title">abstract</span> :: <span class="hljs-type">HMonad</span> t =&gt; (<span class="hljs-keyword">forall</span> x. f x -&gt; <span class="hljs-type">Maybe</span> (b x)) -&gt; <span class="hljs-type">Nat</span> (t f) (<span class="hljs-type">Scope</span> b t f)
+<span class="hljs-title">abstract</span> f = <span class="hljs-type">Scope</span> . hmap (\y -&gt; <span class="hljs-keyword">case</span> f y <span class="hljs-keyword">of</span>
+  <span class="hljs-type">Just</span> b -&gt; <span class="hljs-type">B</span> b
+  <span class="hljs-type">Nothing</span> -&gt; <span class="hljs-type">F</span> (hreturn y))
+
+<span class="hljs-title">instantiate</span> :: <span class="hljs-type">HMonad</span> t =&gt; <span class="hljs-type">Nat</span> b (t f) -&gt; <span class="hljs-type">Nat</span> (<span class="hljs-type">Scope</span> b t f) (t f)
+<span class="hljs-title">instantiate</span> k (<span class="hljs-type">Scope</span> e) = e &gt;&gt;- \v -&gt; <span class="hljs-keyword">case</span> v <span class="hljs-keyword">of</span>
+  <span class="hljs-type">B</span> b -&gt; k b
+  <span class="hljs-type">F</span> a -&gt; a
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Ix</span> :: [*] -&gt; * -&gt; * <span class="hljs-keyword">where</span></span>
+  <span class="hljs-type">Z</span> :: <span class="hljs-type">Ix</span> (a ': <span class="hljs-keyword">as</span>) a
+  <span class="hljs-type">S</span> :: <span class="hljs-type">Ix</span> <span class="hljs-keyword">as</span> b -&gt; <span class="hljs-type">Ix</span> (a ': <span class="hljs-keyword">as</span>) b
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Vec</span> :: (* -&gt; *) -&gt; [*] -&gt; * <span class="hljs-keyword">where</span></span>
+  <span class="hljs-type">HNil</span> :: <span class="hljs-type">Vec</span> f '[]
+  (:::) :: f b -&gt; <span class="hljs-type">Vec</span> f bs -&gt; <span class="hljs-type">Vec</span> f (b ': bs)
+
+<span class="hljs-keyword">infixr</span> <span class="hljs-number">5</span> :++, :::
+
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-keyword">family</span> (:++) (<span class="hljs-title">as</span> :: [*]) (<span class="hljs-title">bs</span> :: [*]) :: [*]</span>
+<span class="hljs-class"><span class="hljs-keyword">type</span> instance '[] :++ bs = bs</span>
+<span class="hljs-class"><span class="hljs-keyword">type</span> instance (<span class="hljs-title">a</span> ': <span class="hljs-title">as</span>) :++ bs = a ': (<span class="hljs-title">as</span> :++ <span class="hljs-title">bs</span>)</span>
+
+<span class="hljs-title">happend</span> :: <span class="hljs-type">Vec</span> f <span class="hljs-keyword">as</span> -&gt; <span class="hljs-type">Vec</span> f bs -&gt; <span class="hljs-type">Vec</span> f (<span class="hljs-keyword">as</span> :++ bs)
+<span class="hljs-title">happend</span> <span class="hljs-type">HNil</span> bs = bs
+<span class="hljs-title">happend</span> (a ::: <span class="hljs-keyword">as</span>) bs = a ::: happend <span class="hljs-keyword">as</span> bs
+
+<span class="hljs-title">hsingleton</span> :: f a -&gt; <span class="hljs-type">Vec</span> f '[a]
+<span class="hljs-title">hsingleton</span> x = x ::: <span class="hljs-type">HNil</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">HFunctor</span> <span class="hljs-type">Vec</span> <span class="hljs-keyword">where</span></span>
+  hmap _ <span class="hljs-type">HNil</span> = <span class="hljs-type">HNil</span>
+  hmap f (x ::: xs) = f x ::: hmap f xs
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">HTraversable</span> <span class="hljs-type">Vec</span> <span class="hljs-keyword">where</span></span>
+  htraverse _ <span class="hljs-type">HNil</span> = pure <span class="hljs-type">HNil</span>
+  htraverse f (x ::: xs) = (:::) &lt;$&gt; f x &lt;*&gt; htraverse f xs
+<span class="hljs-class">
+<span class="hljs-keyword">class</span> <span class="hljs-type">EqF</span> f <span class="hljs-keyword">where</span></span>
+  (==?) :: f a -&gt; f b -&gt; <span class="hljs-type">Maybe</span> (<span class="hljs-type">Equal</span> a b)
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Lit</span> t <span class="hljs-keyword">where</span></span>
+  <span class="hljs-type">Integer</span> :: <span class="hljs-type">Integer</span> -&gt; <span class="hljs-type">Lit</span> <span class="hljs-type">Integer</span>
+  <span class="hljs-type">Double</span>  :: <span class="hljs-type">Double</span> -&gt; <span class="hljs-type">Lit</span> <span class="hljs-type">Double</span>
+  <span class="hljs-type">String</span> :: <span class="hljs-type">String</span> -&gt; <span class="hljs-type">Lit</span> <span class="hljs-type">String</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">EqF</span> <span class="hljs-type">Lit</span> <span class="hljs-keyword">where</span></span>
+  <span class="hljs-type">Integer</span> a ==? <span class="hljs-type">Integer</span> b = <span class="hljs-type">Just</span> <span class="hljs-type">Refl</span>
+  ...
+
+<span class="hljs-title">value</span> :: <span class="hljs-type">Lit</span> a -&gt; a
+<span class="hljs-title">value</span> (<span class="hljs-type">Integer</span> i) = i
+<span class="hljs-title">value</span> (<span class="hljs-type">Double</span> d) = d
+<span class="hljs-title">value</span> (<span class="hljs-type">String</span> s) = s
+<span class="hljs-class">
+<span class="hljs-keyword">class</span> <span class="hljs-type">Literal</span> a <span class="hljs-keyword">where</span></span>
+  literal :: a -&gt; <span class="hljs-type">Lit</span> a
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Literal</span> <span class="hljs-type">Integer</span> <span class="hljs-keyword">where</span></span>
+  literal = <span class="hljs-type">Integer</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Literal</span> <span class="hljs-type">String</span> <span class="hljs-keyword">where</span></span>
+  literal = <span class="hljs-type">String</span>
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Remote</span> :: (* -&gt; *) -&gt; * -&gt; * <span class="hljs-keyword">where</span></span>
+  <span class="hljs-type">Var</span> :: f a -&gt; <span class="hljs-type">Remote</span> f a
+  <span class="hljs-type">Lit</span> :: <span class="hljs-type">Lit</span> a -&gt; <span class="hljs-type">Remote</span> f a
+  <span class="hljs-type">Lam</span> :: <span class="hljs-type">Scope</span> (<span class="hljs-type">Equal</span> b) <span class="hljs-type">Remote</span> f a -&gt; <span class="hljs-type">Remote</span> f (b -&gt; a)
+  <span class="hljs-type">Let</span> :: <span class="hljs-type">Vec</span> (<span class="hljs-type">Scope</span> (<span class="hljs-type">Ix</span> bs) <span class="hljs-type">Remote</span> f) bs -&gt; <span class="hljs-type">Scope</span> (<span class="hljs-type">Ix</span> bs) <span class="hljs-type">Remote</span> f a -&gt; <span class="hljs-type">Remote</span> f a
+  <span class="hljs-type">Ap</span>  :: <span class="hljs-type">Remote</span> f (a -&gt; b) -&gt; <span class="hljs-type">Remote</span> f a -&gt; <span class="hljs-type">Remote</span> f b
+
+<span class="hljs-title">lam_</span> :: <span class="hljs-type">EqF</span> f =&gt; f a -&gt; <span class="hljs-type">Remote</span> f b -&gt; <span class="hljs-type">Remote</span> f (a -&gt; b)
+<span class="hljs-title">lam_</span> v f = <span class="hljs-type">Lam</span> (abstract (v ==?) f)
+
+<span class="hljs-title">lit</span> :: <span class="hljs-type">Literal</span> a =&gt; a -&gt; <span class="hljs-type">Remote</span> f a
+<span class="hljs-title">lit</span> = <span class="hljs-type">Lit</span> . literal
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">HFunctor</span> <span class="hljs-type">Remote</span> <span class="hljs-keyword">where</span></span>
+  hmap f (<span class="hljs-type">Var</span> a)    = <span class="hljs-type">Var</span> (f a)
+  hmap _ (<span class="hljs-type">Lit</span> t)    = <span class="hljs-type">Lit</span> t
+  hmap f (<span class="hljs-type">Lam</span> b)    = <span class="hljs-type">Lam</span> (hmap f b)
+  hmap f (<span class="hljs-type">Let</span> bs b) = <span class="hljs-type">Let</span> (hmap (hmap f) bs) (hmap f b)
+  hmap f (<span class="hljs-type">Ap</span> x y)   = <span class="hljs-type">Ap</span> (hmap f x) (hmap f y)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">HTraversable</span> <span class="hljs-type">Remote</span> <span class="hljs-keyword">where</span></span>
+  htraverse f (<span class="hljs-type">Var</span> a)    = <span class="hljs-type">Var</span> &lt;$&gt; f a
+  htraverse _ (<span class="hljs-type">Lit</span> t)    = pure $ <span class="hljs-type">Lit</span> t
+  htraverse f (<span class="hljs-type">Lam</span> b)    = <span class="hljs-type">Lam</span> &lt;$&gt; htraverse f b
+  htraverse f (<span class="hljs-type">Let</span> bs b) = <span class="hljs-type">Let</span> &lt;$&gt; htraverse (htraverse f) bs &lt;*&gt; htraverse f b
+  htraverse f (<span class="hljs-type">Ap</span> x y)   = <span class="hljs-type">Ap</span> &lt;$&gt; htraverse f x &lt;*&gt; htraverse f y
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">MyF</span> a <span class="hljs-keyword">where</span></span>
+  <span class="hljs-type">Mean</span> :: <span class="hljs-type">MyF</span> (<span class="hljs-type">Double</span> -&gt; <span class="hljs-type">Double</span>)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">HMonad</span> <span class="hljs-type">Remote</span> <span class="hljs-keyword">where</span></span>
+  hreturn        = <span class="hljs-type">Var</span>
+  <span class="hljs-type">Var</span> a    &gt;&gt;- f = f a
+  <span class="hljs-type">Lit</span> t    &gt;&gt;- _ = <span class="hljs-type">Lit</span> t
+  <span class="hljs-type">Lam</span> b    &gt;&gt;- f = <span class="hljs-type">Lam</span> (b &gt;&gt;&gt;- f)
+  <span class="hljs-type">Let</span> bs b &gt;&gt;- f = <span class="hljs-type">Let</span> (hmap (&gt;&gt;&gt;- f) bs) (b &gt;&gt;&gt;- f)
+  <span class="hljs-type">Ap</span> x y   &gt;&gt;- f = <span class="hljs-type">Ap</span> (x &gt;&gt;- f) (y &gt;&gt;- f)
+
+(!) :: <span class="hljs-type">Vec</span> f v -&gt; <span class="hljs-type">Ix</span> v a -&gt; f a
+(b ::: _)  ! <span class="hljs-type">Z</span>   = b
+(_ ::: bs) ! <span class="hljs-type">S</span> n = bs ! n
+
+<span class="hljs-title">eval</span> :: <span class="hljs-type">Remote</span> <span class="hljs-type">Identity</span> a -&gt; a
+<span class="hljs-title">eval</span> (<span class="hljs-type">Var</span> w) = extract w
+<span class="hljs-title">eval</span> (<span class="hljs-type">Lit</span> i) = value i
+<span class="hljs-title">eval</span> (<span class="hljs-type">Lam</span> b) = \a -&gt; eval (instantiate (\<span class="hljs-type">Refl</span> -&gt; <span class="hljs-type">Var</span> (<span class="hljs-type">Identity</span> a)) b)
+<span class="hljs-title">eval</span> (<span class="hljs-type">Let</span> bs b) = eval (instantiate (vs !) b) <span class="hljs-keyword">where</span> vs = hmap (instantiate (vs !)) bs
+<span class="hljs-title">eval</span> (<span class="hljs-type">Ap</span> x y) = eval x (eval y)
+
+<span class="hljs-title">closed</span> :: <span class="hljs-type">HTraversable</span> t =&gt; t f a -&gt; <span class="hljs-type">Maybe</span> (t g a)
+<span class="hljs-title">closed</span> = htraverse (const <span class="hljs-type">Nothing</span>)
+
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">V</span> (<span class="hljs-title">a</span> :: *) = <span class="hljs-type">V</span> <span class="hljs-type">Unique</span></span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">EqF</span> <span class="hljs-type">V</span> <span class="hljs-keyword">where</span></span>
+  <span class="hljs-type">V</span> a ==? <span class="hljs-type">V</span> b
+    | a == b    = <span class="hljs-type">Just</span> (unsafeCoerce <span class="hljs-type">Refl</span>)
+    | otherwise = <span class="hljs-type">Nothing</span>
+
+<span class="hljs-title">lam</span> :: (<span class="hljs-type">Remote</span> <span class="hljs-type">V</span> a -&gt; <span class="hljs-type">Remote</span> <span class="hljs-type">V</span> b) -&gt; <span class="hljs-type">Remote</span> <span class="hljs-type">V</span> (a -&gt; b)
+<span class="hljs-title">lam</span> f = unsafePerformIO $ <span class="hljs-keyword">do</span>
+  x &lt;- fmap <span class="hljs-type">V</span> newUnique
+  return $ <span class="hljs-type">Lam</span> $ abstract (x ==?) $ f $ <span class="hljs-type">Var</span> x
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Binding</span> a = <span class="hljs-type">V</span> a := <span class="hljs-type">Remote</span> <span class="hljs-type">V</span> a</span>
+
+<span class="hljs-title">rhs</span> :: <span class="hljs-type">Binding</span> a -&gt; <span class="hljs-type">Remote</span> <span class="hljs-type">V</span> a
+<span class="hljs-title">rhs</span> (_ := a) = a
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Bindings</span> = forall bs. <span class="hljs-type">Bindings</span> (<span class="hljs-type">Vec</span> <span class="hljs-type">Binding</span> <span class="hljs-title">bs</span>)</span>
+
+<span class="hljs-title">elemIndex</span> :: <span class="hljs-type">Vec</span> <span class="hljs-type">Binding</span> bs -&gt; <span class="hljs-type">V</span> a -&gt; <span class="hljs-type">Maybe</span> (<span class="hljs-type">Ix</span> bs a)
+<span class="hljs-title">elemIndex</span> <span class="hljs-type">HNil</span>              _ = <span class="hljs-type">Nothing</span>
+<span class="hljs-title">elemIndex</span> ((x := r) ::: xs) y = <span class="hljs-keyword">case</span> x ==? y <span class="hljs-keyword">of</span>
+  <span class="hljs-type">Just</span> <span class="hljs-type">Refl</span> -&gt; <span class="hljs-type">Just</span> <span class="hljs-type">Z</span>
+  <span class="hljs-type">Nothing</span>   -&gt; <span class="hljs-type">S</span> &lt;$&gt; elemIndex xs y
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monoid</span> <span class="hljs-type">Bindings</span> <span class="hljs-keyword">where</span></span>
+  mempty = <span class="hljs-type">Bindings</span> <span class="hljs-type">HNil</span>
+  <span class="hljs-type">Bindings</span> xs `mappend` <span class="hljs-type">Bindings</span> ys = <span class="hljs-type">Bindings</span> (happend xs ys)
+
+<span class="hljs-comment">-- Allow the use of DoRec to define let statements</span>
+
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Def</span> a = <span class="hljs-type">Def</span> { <span class="hljs-title">runDef</span> :: <span class="hljs-type">IO</span> (<span class="hljs-title">a</span>, <span class="hljs-type">Bindings</span>) }</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> <span class="hljs-type">Def</span> <span class="hljs-keyword">where</span></span>
+  fmap f (<span class="hljs-type">Def</span> m) = <span class="hljs-type">Def</span> $ <span class="hljs-keyword">do</span>
+    (a,w) &lt;- m
+    return (f a, w)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Applicative</span> <span class="hljs-type">Def</span> <span class="hljs-keyword">where</span></span>
+  pure = return
+  (&lt;*&gt;) = ap
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> <span class="hljs-type">Def</span> <span class="hljs-keyword">where</span></span>
+  return a = <span class="hljs-type">Def</span> $ return (a, mempty)
+  <span class="hljs-type">Def</span> m &gt;&gt;= f = <span class="hljs-type">Def</span> $ <span class="hljs-keyword">do</span>
+    (a, xs) &lt;- m
+    (b, ys) &lt;- runDef (f a)
+    return (b, xs &lt;&gt; ys)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">MonadFix</span> <span class="hljs-type">Def</span> <span class="hljs-keyword">where</span></span>
+  mfix m = <span class="hljs-type">Def</span> $ mfix $ \ ~(a, _) -&gt; runDef (m a)
+
+<span class="hljs-title">def</span> :: <span class="hljs-type">Remote</span> <span class="hljs-type">V</span> a -&gt; <span class="hljs-type">Def</span> (<span class="hljs-type">Remote</span> <span class="hljs-type">V</span> a)
+<span class="hljs-title">def</span> v@<span class="hljs-type">Var</span>{} = <span class="hljs-type">Def</span> $ return (v, mempty) <span class="hljs-comment">-- this thing already has a name</span>
+<span class="hljs-title">def</span> r = <span class="hljs-type">Def</span> $ <span class="hljs-keyword">do</span>
+  v &lt;- fmap <span class="hljs-type">V</span> newUnique
+  return (<span class="hljs-type">Var</span> v, <span class="hljs-type">Bindings</span> (hsingleton (v := r)))
+
+<span class="hljs-title">let_</span> :: <span class="hljs-type">Def</span> (<span class="hljs-type">Remote</span> <span class="hljs-type">V</span> a) -&gt; <span class="hljs-type">Remote</span> <span class="hljs-type">V</span> a
+<span class="hljs-title">let_</span> (<span class="hljs-type">Def</span> m) = unsafePerformIO $ <span class="hljs-keyword">do</span>
+    (r, <span class="hljs-type">Bindings</span> bs) &lt;- m
+    return $ <span class="hljs-type">Let</span> (hmap (abstract (elemIndex bs) . rhs) bs)
+                 (abstract (elemIndex bs) r)
+
+</code></pre>
+<p>Third, for a much larger "industrial scale" example you can explore our work-in-progress <a href="https://github.com/ermine-language/ermine">compiler for Ermine</a> that uses <a href="https://github.com/ekmett/bound"><code>bound</code></a> (and <a href="https://github.com/ekmett/lens"><code>lens</code></a>) extensively for manipulating its <a href="http://ermine-language.github.io/ermine/Ermine-Syntax-Term.html"><code>Term</code></a> language, <a href="http://ermine-language.github.io/ermine/Ermine-Syntax-Type.html"><code>Type</code></a> system, <a href="http://ermine-language.github.io/ermine/Ermine-Syntax-Kind.html"><code>Kind</code></a> system and the <a href="http://ermine-language.github.io/ermine/Ermine-Syntax-Core.html"><code>Core</code></a> language it spits out as a witness during type checking.</p>
+<p>Happy Hacking!</p>
+<p>-<a href="mailto:ekmett@gmail.com">Edward Kmett</a></p>
+<p>August 19 2013</p>
+<p>P.S. Apparently the proper Dutch convention with names is to use <a href="http://en.wikipedia.org/wiki/Nicolaas_Govert_de_Bruijn">Nicolaas Govert de Bruijn</a> when writing out a full name, but to capitalize De Bruijn when using the surname in isolation.</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/bound"><code>bound</code></a> · <a href="https://hackage.haskell.org/package/concurrent-supply"><code>concurrent-supply</code></a> · <a href="https://hackage.haskell.org/package/prelude-extras"><code>prelude-extras</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><aside class="edition-note"><details><summary>About this edition</summary><p>The interactive figure is a new companion to the article. Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: School of Haskell. Date displayed by School of Haskell; may reflect a later revision.</p><p><a href="../../../source/articles/bound.md" download>Article Markdown</a> · <a href="../../../source/articles/bound.original.md" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2015/fibonacci-search/">Part 2: Open-Ended Fibonacci Search →</a><a href="../../../reader/2016/adjoint-triples/">Adjoint Triples →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main><script type="module" src="../../../article-demos.js"></script></body></html>

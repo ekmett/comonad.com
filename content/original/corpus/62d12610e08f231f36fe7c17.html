@@ -1,0 +1,221 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head profile="http://gmpg.org/xfn/11">
+        <link rel="shortcut icon" href="http://comonad.com/reader/wp-content/themes/connections/favicon.ico" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>The Comonad.Reader &raquo; Internalized Guarded Recursion for Equational Reasoning</title>
+	<meta name="generator" content="WordPress 2.8.4" />
+	<style type="text/css" media="screen">@import url( http://comonad.com/reader/wp-content/themes/connections/style.css );</style>
+	<!--[if IE]><style type="text/css"> img { behavior: url(/reader/pngbehavior/pngbehavior.htc); } </style><![endif]-->
+        <link rel="openid.server" href="https://api.screenname.aol.com/auth/openidServer"/>
+        <link rel="openid.delegate" href="http://openid.aol.com/edwardallankmett"/>
+
+	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://comonad.com/reader/feed/" />
+	<link rel="alternate" type="application/atom+xml" title="Atom 0.3" href="http://comonad.com/reader/feed/atom/" />
+	<link rel="pingback" href="http://comonad.com/reader/xmlrpc.php" />
+    	<link rel='archives' title='October 2022' href='http://comonad.com/reader/2022/10/' />
+	<link rel='archives' title='January 2018' href='http://comonad.com/reader/2018/01/' />
+	<link rel='archives' title='January 2016' href='http://comonad.com/reader/2016/01/' />
+	<link rel='archives' title='September 2015' href='http://comonad.com/reader/2015/09/' />
+	<link rel='archives' title='July 2015' href='http://comonad.com/reader/2015/07/' />
+	<link rel='archives' title='May 2015' href='http://comonad.com/reader/2015/05/' />
+	<link rel='archives' title='April 2015' href='http://comonad.com/reader/2015/04/' />
+	<link rel='archives' title='February 2015' href='http://comonad.com/reader/2015/02/' />
+	<link rel='archives' title='December 2014' href='http://comonad.com/reader/2014/12/' />
+	<link rel='archives' title='August 2014' href='http://comonad.com/reader/2014/08/' />
+	<link rel='archives' title='April 2014' href='http://comonad.com/reader/2014/04/' />
+	<link rel='archives' title='May 2013' href='http://comonad.com/reader/2013/05/' />
+	<link rel='archives' title='April 2013' href='http://comonad.com/reader/2013/04/' />
+	<link rel='archives' title='January 2013' href='http://comonad.com/reader/2013/01/' />
+	<link rel='archives' title='December 2012' href='http://comonad.com/reader/2012/12/' />
+	<link rel='archives' title='September 2012' href='http://comonad.com/reader/2012/09/' />
+	<link rel='archives' title='August 2012' href='http://comonad.com/reader/2012/08/' />
+	<link rel='archives' title='June 2012' href='http://comonad.com/reader/2012/06/' />
+	<link rel='archives' title='May 2012' href='http://comonad.com/reader/2012/05/' />
+	<link rel='archives' title='April 2012' href='http://comonad.com/reader/2012/04/' />
+	<link rel='archives' title='December 2011' href='http://comonad.com/reader/2011/12/' />
+	<link rel='archives' title='November 2011' href='http://comonad.com/reader/2011/11/' />
+	<link rel='archives' title='October 2011' href='http://comonad.com/reader/2011/10/' />
+	<link rel='archives' title='September 2011' href='http://comonad.com/reader/2011/09/' />
+	<link rel='archives' title='July 2011' href='http://comonad.com/reader/2011/07/' />
+	<link rel='archives' title='June 2011' href='http://comonad.com/reader/2011/06/' />
+	<link rel='archives' title='July 2010' href='http://comonad.com/reader/2010/07/' />
+	<link rel='archives' title='May 2010' href='http://comonad.com/reader/2010/05/' />
+	<link rel='archives' title='April 2010' href='http://comonad.com/reader/2010/04/' />
+	<link rel='archives' title='September 2009' href='http://comonad.com/reader/2009/09/' />
+	<link rel='archives' title='August 2009' href='http://comonad.com/reader/2009/08/' />
+	<link rel='archives' title='July 2009' href='http://comonad.com/reader/2009/07/' />
+	<link rel='archives' title='June 2009' href='http://comonad.com/reader/2009/06/' />
+	<link rel='archives' title='March 2009' href='http://comonad.com/reader/2009/03/' />
+	<link rel='archives' title='December 2008' href='http://comonad.com/reader/2008/12/' />
+	<link rel='archives' title='November 2008' href='http://comonad.com/reader/2008/11/' />
+	<link rel='archives' title='June 2008' href='http://comonad.com/reader/2008/06/' />
+	<link rel='archives' title='May 2008' href='http://comonad.com/reader/2008/05/' />
+	<link rel='archives' title='April 2008' href='http://comonad.com/reader/2008/04/' />
+	<link rel='archives' title='March 2008' href='http://comonad.com/reader/2008/03/' />
+	<link rel='archives' title='January 2008' href='http://comonad.com/reader/2008/01/' />
+	<link rel='archives' title='July 2007' href='http://comonad.com/reader/2007/07/' />
+	<link rel='archives' title='May 2007' href='http://comonad.com/reader/2007/05/' />
+	<link rel='archives' title='November 2006' href='http://comonad.com/reader/2006/11/' />
+	<link rel='archives' title='October 2006' href='http://comonad.com/reader/2006/10/' />
+	<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://comonad.com/reader/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://comonad.com/reader/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='The Comonad.Reader' href='http://comonad.com/reader' />
+<link rel='start' title='Hello, World!' href='http://comonad.com/reader/2006/hello-world/' />
+<link rel='prev' title='Computational Quadrinitarianism (Curious Correspondences go Cubical)' href='http://comonad.com/reader/2018/computational-quadrinitarianism-curious-correspondences-go-cubical/' />
+<meta name="generator" content="WordPress 2.8.4" />
+</head>
+<body>
+<div id="rap">
+	<div id="header">
+	<ul id="topnav">
+		<li><a href="/reader" id="navHome" title="Posted Recently" accesskey="h">Home |</a></li>
+		<li><a href="/reader/about/" id="navAbout" title="About the Author" accesskey="a">About |</a></li>
+		<li><a href="/reader/source;item=libraries" id="navSource" title="Source Code" accesskey="s">Source |</a></li>
+		<li><a href="mailto:ekmett@gmail.com" id="navContact" title="Contact the Author" accesskey="c">Contact </a></li>
+	</ul>
+	<a href="http://comonad.com/reader" id="logoHome" title="Posted Recently"><img id="logo" src="/reader/pngbehavior/blank.gif" ></a>
+	<h1><a href="http://comonad.com/reader" title="The Comonad.Reader">The Comonad.Reader</a></h1>		
+	<div id="desc">types, (co)monads, substructural logic</div>
+</div>
+	
+	<div id="main">
+	<div id="content">
+
+						<div class="post">
+				<p class="post-date">Fri 21 Oct 2022</p>
+<div class="post-info"><h2 class="post-title"><a href="http://comonad.com/reader/2022/internalized-guarded-recursion-for-equational-reasoning/" rel="bookmark" title="Permanent Link: Internalized Guarded Recursion for Equational Reasoning">Internalized Guarded Recursion for Equational Reasoning</a></h2>
+Posted by Gershom Bazerman under <a href="http://comonad.com/reader/category/data-structures/" title="View all posts in Data Structures" rel="category tag">Data Structures</a> ,  <a href="http://comonad.com/reader/category/haskell/" title="View all posts in Haskell" rel="category tag">Haskell</a> <br/><span>Comments Off</span>&nbsp;</div>
+<div class="post-content">
+	<p>I recently <a href="https://www.youtube.com/watch?v=xdUgkGqKjS8">presented a paper</a> on infinite traversals at the Haskell Symposium: <a href="https://gbaz.github.io/papers/3546189.3549915.pdf">A totally predictable outcome: an investigation of traversals of infinite structures</a>. The main result there is a characterization of when a call to <code>traverse</code> on an infinite Traversable functor (like an infinite lazy list) yields a non-bottom result. It turns out this is a condition on the Applicative one traverses with that loosely amounts to it having only a single data constructor. What I want to talk about here is how the technique introduced in that paper, which I call "internal guarded recursion" can be used not only in a lightweight formal way to prove characterization theorems or the like, but just in everyday programming as a "back of the envelope" or "streetfighting" hack to quickly figure out when recursive functional programs terminate and when they go into infinite loops.</p>
+<p>Let's talk about the basic trick that makes the whole thing work. First, we introduce an abstract newtype for identity, which we will disallow pattern matching against, and instead only allow access to through the structure of an applicative functor.</p>
+<pre class="haskell">&nbsp;
+<span style="color: #06c; font-weight: bold;">newtype</span> Later a = Later a <span style="color: #06c; font-weight: bold;">deriving</span> <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Functor"><span style="background-color: #efefbf; font-weight: bold;">Functor</span></a>
+<span style="color: #06c; font-weight: bold;">instance</span> Applicative Later <span style="color: #06c; font-weight: bold;">where</span>
+    pure = Later
+    Later f &lt; *&gt; Later x = Later <span style="color: green;">&#40;</span>f x<span style="color: green;">&#41;</span>
+&nbsp;</pre>
+<p>Next, we introduce the <em>only</em> function allowed to perform recursion:</p>
+<pre class="haskell">&nbsp;
+lfix :: <span style="color: green;">&#40;</span>Later a -&gt; a<span style="color: green;">&#41;</span> -&gt; a
+lfix f = fix <span style="color: green;">&#40;</span>f . pure<span style="color: green;">&#41;</span>
+&nbsp;</pre>
+<p>This function has almost the same type signature as the typical fixpoint operator, but it "guards" the argument to the function it is taking the fixedpoint of by our abstract <code>Later</code> type constructor.</p>
+<p>Now, if you write code that only has recursion via `lfix` and no other function can implicitly or explicitly invoke itself (which the paper refers to as "working in the guarded fragment), your code will <i>never produce a bottom</i>. You can have whatever sorts of recursive Haskell '98 data definitions you like, it doesn't matter! (However, if you have "impredicative" datatypes that pack polymorphic functions into them, I think it would matter... but let's leave that aside). Try, for example, using only this form of recursion, to write a function that produces an infinite list. You'll realize that each recursive step requires using up one <code>Later</code> constructor as "fuel". And since there's no way to get an infinite amount of <code>Later</code> constructors to begin with, you'll only be able to produce lists of finite depth.</p>
+<p>However, we <em>can</em> create related data structures to our existing ones, which "guard" their own recurrence behind a <code>Later</code> type constructor as well -- and we can create, consume and manipulate those also, and also do so without risk of writing an expression that produces a bottom. For example, here is the type of possibly infinite lists:</p>
+<pre class="haskell">&nbsp;
+<span style="color: #06c; font-weight: bold;">data</span> Stream a =
+    Nil
+    | Cons a <span style="color: green;">&#40;</span>Later <span style="color: green;">&#40;</span>Stream a<span style="color: green;">&#41;</span>
+&nbsp;</pre>
+<p>And here is a function that interleaves two such lists:</p>
+<pre class="haskell">&nbsp;
+sinterleave :: Stream a -&gt; Stream a -&gt; Stream a
+sinterleave = lfix $ \f s1 s2 -&gt; <span style="color: #06c; font-weight: bold;">case</span> s1 <span style="color: #06c; font-weight: bold;">of</span>
+    <span style="color: green;">&#40;</span>Cons x xs<span style="color: green;">&#41;</span> -&gt; Cons x <span style="color: green;">&#40;</span>f &lt; *&gt; pure s2 &lt; *&gt; xs<span style="color: green;">&#41;</span>
+    _ -&gt; s2
+&nbsp;</pre>
+<p>Now, I'm going to diverge from the paper and pose a sort of general problem, based on some discussions I had at ICFP. Suppose you have some tricky recursion, possibly involving "<a href="https://wiki.haskell.org/Tying_the_Knot">tying the knot</a>" and want to show that it terminates, or to figure out under which conditions it terminates -- how can you do that? It turns out that internal guarded recursion can help! Here's the recipe:</p>
+<p>1. Write your function using only explicit recursion (via <code>fix</code>).<br />
+2. Change <code>fix</code> to <code>lfix</code><br />
+3. Figure out what work you have to do adding applicative operations involving <code>Later</code> to fix the types.</p>
+<p>The paper has in it a general theorem that says, loosely speaking, that if you have code involving <code>lfix</code> and <code>Later</code>, and change that back to <code>fix</code> and erase all the mucking around with <code>Later</code> you get "essentially the same" function, and you still have a guarantee it won't produce bottoms. So this just turns that around -- start with your normal code, and show you can write it even in the guarded fragment, and then that tells you the properties of your original code!</p>
+<p>I'll present this approach to reasoning about two tricky but well known problems in functional programming. First, as suggested by Tom Schrijvers as a question at the talk, is the famous "repmin" function introduced by Bird in <a href="https://link.springer.com/article/10.1007/BF00264249">1984</a>. This is a program that makes essential use of laziness to traverse a tree only once, but replacing each element in the tree by the minimum element anywhere in the tree. Here's a quick one-liner version, making use of traversal in the writer monad -- it works over any finite traversable structure, including typical trees. But it is perhaps easiest to test it over lists. For now, we'll ignore the issue of what happens with traversals of infinite structures, as that will complicate the example.</p>
+<pre class="haskell">&nbsp;
+repMin1 :: <span style="color: green;">&#40;</span>Traversable t, <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Ord"><span style="background-color: #efefbf; font-weight: bold;">Ord</span></a> a<span style="color: green;">&#41;</span> =&gt; t a -&gt; t a
+repMin1 xs =
+     <span style="color: #06c; font-weight: bold;">let</span> <span style="color: green;">&#40;</span>ans,m<span style="color: green;">&#41;</span> = <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fmap"><span style="font-weight: bold;">fmap</span></a> <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:minimum"><span style="font-weight: bold;">minimum</span></a> . runWriter $
+                    traverse <span style="color: green;">&#40;</span>\x -&gt; tell <span style="color: green;">&#91;</span>x<span style="color: green;">&#93;</span> &gt;&gt; pure m<span style="color: green;">&#41;</span> xs <span style="color: #06c; font-weight: bold;">in</span> ans
+&nbsp;</pre>
+<p>Note that this above definition makes use of a recursive definition -- the body of the definition of <code>(ans,m)</code> makes use of the <code>m</code> being defined.  This works because the definition does not pattern match on the m to compute -- otherwise we would bottom out. Using internal guarded recursion, we can let the type system guide us into rewriting our code into a form where it is directly evident that this does not bottom, rather than relying on careful reasoning about semantics. The first step is to mechanically transform the initial definition into one that is exactly the same, but where the implicit recursion has been rendered explicit by use of fix:</p>
+<pre class="haskell">&nbsp;
+repMin2 :: <span style="color: green;">&#40;</span>Traversable t, <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Ord"><span style="background-color: #efefbf; font-weight: bold;">Ord</span></a> a<span style="color: green;">&#41;</span> =&gt; t a -&gt; t a
+repMin2 xs =
+  <span style="color: #06c; font-weight: bold;">let</span> res = fix go <span style="color: #06c; font-weight: bold;">in</span> <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fst"><span style="font-weight: bold;">fst</span></a> res
+   <span style="color: #06c; font-weight: bold;">where</span>
+    go res = <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fmap"><span style="font-weight: bold;">fmap</span></a> <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:minimum"><span style="font-weight: bold;">minimum</span></a> . runWriter $
+               traverse <span style="color: green;">&#40;</span>\x -&gt; tell <span style="color: green;">&#91;</span>x<span style="color: green;">&#93;</span> &gt;&gt; pure <span style="color: green;">&#40;</span><a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:snd"><span style="font-weight: bold;">snd</span></a> res<span style="color: green;">&#41;</span><span style="color: green;">&#41;</span> xs
+&nbsp;</pre>
+<p>The next step is to now replace <code>fix</code> by <code>lfix</code>. When we do so, the type of <code>go</code> will no longer be correct. In particular, its argument, <code>res</code> will now be guarded by a <code>Later</code>. So we can no longer apply <code>snd</code> directly to it, but instead have to <code>fmap</code>. The compiler will notice this and yell at us, at which point we make that small tweak as well. In turn, this forces a change to the type signature of the overall function. With that done, everything still checks!</p>
+<pre class="haskell">&nbsp;
+repMin3 :: <span style="color: green;">&#40;</span>Traversable t, <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Ord"><span style="background-color: #efefbf; font-weight: bold;">Ord</span></a> a<span style="color: green;">&#41;</span> =&gt; t a -&gt; t <span style="color: green;">&#40;</span>Later a<span style="color: green;">&#41;</span>
+repMin3 xs =
+  <span style="color: #06c; font-weight: bold;">let</span> res = lfix go <span style="color: #06c; font-weight: bold;">in</span> <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fst"><span style="font-weight: bold;">fst</span></a> res
+   <span style="color: #06c; font-weight: bold;">where</span>
+    go res = <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fmap"><span style="font-weight: bold;">fmap</span></a> <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:minimum"><span style="font-weight: bold;">minimum</span></a> . runWriter $
+                traverse <span style="color: green;">&#40;</span>\x -&gt; tell <span style="color: green;">&#91;</span>x<span style="color: green;">&#93;</span> &gt;&gt; pure <span style="color: green;">&#40;</span><a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:snd"><span style="font-weight: bold;">snd</span></a> &lt; $&gt; res<span style="color: green;">&#41;</span><span style="color: green;">&#41;</span> xs
+&nbsp;</pre>
+<p>We have now verified that the original <code>repMin1</code> function does not bottom out on finite structures. Further, the "one layer" of <code>Later</code> in the type of <code>repMin3</code> tells us that there was exactly one recursive step invoked in computing the final result!</p>
+<p>The astute reader may have noticed a further complication -- to genuinely be in the guarded recursive fragment, we need to make sure all functions in sight have not been written using standard recursion, but only with guarded recursion. But in fact, both <code>minimum</code> and <code>traverse</code> are going to be written recursively! We limited ourselves to considering finite trees to avoid worrying about this for our example. But let's now briefly consider what happens otherwise. By the results in the paper, we can still use a guarded recursive traverse in the writer monad, which will produce a potentially productive stream of results -- one where there may be arbitrarily many <code>Later</code> steps between each result. Further, a guarded recursive <code>minimum</code> on such a stream, or even on a necessarily productive <code>Stream</code> as given above, will necessarily produce a value that is potentially infinitely delayed. So without grinding out the detailed equational substitution, we can conclude that the type signature we would have to produce in the case of a potentially infinite tree would in fact be: <code>(Traversable t, Ord a) => t a -> t (Partial a)</code> -- where a partial value is one that may be delayed behind an arbitrary (including infinite) sequence of <code>Later</code>. This in turns tells us that <code>repMin</code> on a potentially infinite structure would still produce safely the <em>skeleton</em> of the structure we started with. However, at each individual leaf, the value would potentially be bottom. And, in fact, by standard reasoning (it takes an infinite amount of time to find the minimum of an infinite stream), we can conclude that when <code>repMin</code> is run on an infinite structure, then indeed each leaf <em>would</em> be bottom!</p>
+<p>We'll now consider one further example, arising from <a href="https://scholarworks.brandeis.edu/esploro/outputs/undergraduate/Getting-A-Quick-Fix-On-Comonads/9923880018001921">work by Kenneth Foner</a> on fixed points of comonads. In their paper, Foner provides an efficient fixed point operator for comonads with an "apply" operator, but also makes reference to an inefficient version which they believe has the same semantics, and was introduced by Dominic Orchard. This latter operator is extremely simple to define, and so an easy candidate for an example. We'll first recall the methods of comonads, and then introduce Orchard's fixed-point:</p>
+<pre class="haskell">&nbsp;
+<span style="color: #06c; font-weight: bold;">class</span> <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#t:Functor"><span style="background-color: #efefbf; font-weight: bold;">Functor</span></a> w =&gt; <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#t:Comonad"><span style="background-color: #efefbf; font-weight: bold;">Comonad</span></a> w <span style="color: #06c; font-weight: bold;">where</span>
+    <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#v:extract"><span style="font-weight: bold;">extract</span></a> :: w a -&gt; a
+    <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#v:duplicate"><span style="font-weight: bold;">duplicate</span></a> :: w a -&gt; w <span style="color: green;">&#40;</span>w a<span style="color: green;">&#41;</span>
+    <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#v:extend"><span style="font-weight: bold;">extend</span></a> :: <span style="color: green;">&#40;</span>w a -&gt; b<span style="color: green;">&#41;</span> -&gt; w a -&gt; w b
+&nbsp;
+cfix f :: <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#t:Comonad"><span style="background-color: #efefbf; font-weight: bold;">Comonad</span></a> w =&gt; <span style="color: green;">&#40;</span>w a -&gt; a<span style="color: green;">&#41;</span> -&gt; w a
+cfix f = fix <span style="color: green;">&#40;</span><a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#v:extend"><span style="font-weight: bold;">extend</span></a> f<span style="color: green;">&#41;</span>
+&nbsp;</pre>
+<p>So the question is -- when does cfix not bottom out? To answer this, we again just change <code>fix</code> to <code>lfix</code> and let the typechecker tells us what goes wrong. We quickly discover that our code no longer typechecks, because <code>lfix</code> enforces we are given a <code>Later (w a)</code> but the argument to <code>extend f</code> needs to be a plain old <code>w a</code>. We ask ghc for the type of the intermediate conversion function necessary, and arrive at the following:</p>
+<pre class="haskell">&nbsp;
+lcfix :: <a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#t:Comonad"><span style="background-color: #efefbf; font-weight: bold;">Comonad</span></a> w =&gt; <span style="color: green;">&#40;</span>Later <span style="color: green;">&#40;</span>w b<span style="color: green;">&#41;</span> -&gt; w a<span style="color: green;">&#41;</span> -&gt; <span style="color: green;">&#40;</span>w a -&gt; b<span style="color: green;">&#41;</span> -&gt; w b
+lcfix conv f = lfix <span style="color: green;">&#40;</span><a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#v:extend"><span style="font-weight: bold;">extend</span></a> f . conv<span style="color: green;">&#41;</span>
+&nbsp;</pre>
+<p>So we discover that comonad fix will not bottom when we can provide some <code>conv</code> function that is "like the identity" (so it erases away when we strip out the mucking about with <code>Later</code>) but can send <code>Later (w a) -> w b</code>. If we choose to unify <code>a</code> and <code>b</code>, then this property (of some type to be equipped with an "almost identity" between it and it delayed by a <code>Later</code>) is examined in the paper at some length under the name "stability" -- and our conclusion is that cfix will terminate when the type <code>w a</code> is stable (which is to say that it in one way or another represents a potentially partial value). Also from the paper, we know that one easy way to get stability is when the type <code>w</code> is <code>Predictable</code> -- i.e. when it has an "almost identity" map <code>Later (w a) -> w (Later a)</code> and when <code>a</code> itself is stable. This handles most uses of comonad fix -- since functors of "fixed shape" (otherwise known as representable, or iso to <code>r -> a</code> for a fixed <code>r</code>) are all stable. And the stability condition on the underlying <code>a</code> tells us that even though we'll get out a perfectly good spine, whether or not there will be a bottom value at any given location in the resultant <code>w a</code> depends on the precise function being passed in.</p>
+<p>In fact, if we simply start with the idea of predictability in hand, we can specialize the above code in a different way, by taking <code>predict</code> itself to be our conversion function, and unifying <code>b</code> with <code>Later a</code>, which yields the following:</p>
+<pre class="haskell">&nbsp;
+lcfix2 :: <span style="color: green;">&#40;</span><a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#t:Comonad"><span style="background-color: #efefbf; font-weight: bold;">Comonad</span></a> w, Predict w<span style="color: green;">&#41;</span> =&gt; <span style="color: green;">&#40;</span>w <span style="color: green;">&#40;</span>Later a<span style="color: green;">&#41;</span> -&gt; a<span style="color: green;">&#41;</span> -&gt; w a
+lcfix2 f = lfix <span style="color: green;">&#40;</span><a href="http://comonad.com/haskell/category-extras/dist/doc/html/category-extras/Control-Comonad.html#v:extend"><span style="font-weight: bold;">extend</span></a> f . predict<span style="color: green;">&#41;</span>
+&nbsp;</pre>
+<p>This signature is nice because it does not require stability -- i.e. there is no possibility of partial results. Further, it is particularly suggestive -- it looks almost like that of <code>lfix</code> but lifts both the input to the argument and the output of the fixed-point up under a <code>w</code>. This warns us how hard it is to get useful values out of fixing a comonad -- in particular, just as with our <code>lfix</code> itself, we can't directly pattern match on the values we are taking fixed points of, but instead only use them in constructing larger structures.</p>
+<p>These examples illustrate both the power of the internal guarded recursion approach, and also some of its limits. It can tell us a lot of high level information about what does and doesn't produce bottoms, and it can produce conditions under which bottoms will never occur. However, there are also cases where we have code that sometimes bottoms, depending on specific functions it is passed -- the fact that it potentially bottoms is represented in the type, but the exact conditions under which bottoms will or will not occur aren't able to be directly "read off". In fact, in the references to the paper, there are much richer variants of guarded recursion that allow more precision in typing various sorts of recursive functions, and of course there is are general metamathematical barriers to going sufficiently far -- a typing system rich enough to say if any integer function terminates is also rich enough to say if e.g. the collatz conjecture is true or not! But with all those caveats in mind, I think this is still a useful tool that doesn't only have theoretical properties, but also practical use. The next time you have a tricky recursive function that you're <em>pretty sure</em> terminates, try these simple steps: 1) rewrite to use explicit fixed points; 2) change those to guarded recursive fixed points; 3) let ghc guide you in fixing the types; 4) see what you learn!</p>
+	<div class="post-info">
+			</div>
+	<div class="post-footer">&nbsp;</div>
+</div>
+				
+<!-- You can start editing here. -->
+
+
+  		<!-- If comments are closed. -->
+		<p class="nocomments">Comments are closed.</p>
+		
+	
+
+			</div>
+					<p align="center"></p>		
+	</div>
+	<div id="sidebar">
+		<h2>Archived Entry</h2>
+	<ul>
+	<li><strong>Post Date :</strong></li>
+	<li>Friday, Oct 21st, 2022 at 1:32 pm</li>
+	<li><strong>Category :</strong></li>
+	<li><a href="http://comonad.com/reader/category/data-structures/" title="View all posts in Data Structures" rel="category tag">Data Structures</a> and  <a href="http://comonad.com/reader/category/haskell/" title="View all posts in Haskell" rel="category tag">Haskell</a></li>
+	<li><strong>Do More :</strong></li>
+	<li>							Both comments and pings are currently closed.			
+						
+						</li>
+	</ul>
+		
+	<h2><label for="s">Search</label></h2>
+	<ul>
+		<li>
+			<form id="searchform" method="get" action="/reader/index.php">
+				<div style="text-align:center">
+					<p><input type="text" name="s" id="s" size="10" /> <input type="submit" name="submit" value="Search" /></p>
+				</div>
+			</form>
+		</li>
+	</ul>
+<h2>RSS Feeds</h2>
+	<ul>
+		<li>
+			<a title="RSS2 Feed for Posts" href="http://comonad.com/reader/feed/">Posts</a> | <a title="RSS2 Feed for Comments" href="http://comonad.com/reader/comments/feed/">Comments</a></li>	
+	</ul>	
+</div>
+<p id="footer">Design based on <a href="http://www.vanillamist.com" title="Vanilla Mist">www.vanillamist.com</a></p></div>
+</div>
+</body>
+</html>

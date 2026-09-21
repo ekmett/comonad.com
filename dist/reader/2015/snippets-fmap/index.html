@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The free theorem for fmap · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Haskell</span><span>Edward Kmett · <time datetime="2015-02-16">16 February 2015</time></span></div><h1>The free theorem for fmap</h1></header><article class="prose"><p>When we write down the definition of <code>Functor</code> we carefully state two laws:</p>
+<ol>
+<li><code>fmap id = id</code></li>
+<li><code>fmap f . fmap g = fmap (f . g)</code></li>
+</ol>
+<p>These are pretty well known in the Haskell community.</p>
+<p>What is less well known is that the second actually follows from the first and parametricity, so you only need to sit down and prove <em>one</em> <code>Functor</code> law when you go to supply a <code>Functor</code>!</p>
+<p>This is a “folklore” result, which I've used in conversation many times before, but it <a href="https://twitter.com/BartoszMilewski/status/566204998015787008">continues to surprise</a> folks, so I decided to write up a slow, step by step proof of this result as it is a fun little exercise in equational reasoning.</p>
+<p>To prove this we're going to need the <a href="http://ttic.uchicago.edu/~dreyer/course/papers/wadler.pdf">free theorem</a> for <code>fmap</code> and a few lemmas.</p>
+<blockquote>
+<p>###Free Theorem:</p>
+<p>The free theorem for <code>fmap :: (a -&gt; b) -&gt; F a -&gt; F b</code> is that given functions <code>f</code>, <code>g</code>, <code>k</code>, and <code>h</code> such that</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">g</span> . h = k . f
+</code></pre>
+<p>then</p>
+<pre tabindex="0" aria-label="text code"><code class="language-text">$map g . fmap h = fmap k . $map f
+</code></pre>
+<p>where <code>$map</code> is the "natural map" for the type constructor <code>F</code>.</p>
+<p>###Proof:</p>
+<p>This is a free theorem, so it holds for <em>any</em> function with the same type signature as
+<code>fmap</code>, regardless of implementation.</p>
+<p>You can obtain this theorem employing Philip Wadler's <a href="http://ttic.uchicago.edu/~dreyer/course/papers/wadler.pdf">“Theorems for Free”</a> laboriously by hand as is done by Bartosz in the comments below, but we can also obtain this result just by asking <code>lambdabot</code> to do it for us on IRC.</p>
+<pre tabindex="0" aria-label="text code"><code class="language-text">&lt;edwardk&gt; @free fmap :: (a -&gt; b) -&gt; (F a -&gt; F b)
+&lt;lambdabot&gt; g . h = k . f =&gt; $map_F g . fmap h = fmap k . $map_F f
+</code></pre>
+<p>Thanks, <code>lambdabot</code>!</p>
+</blockquote>
+<p>The natural map has the properties we're looking for, so what we need to do is use the above theorem to prove <code>fmap f = $map f</code>, and borrow them.</p>
+<p>Note: There are some caveats about precisely when such a natural map exists in the comments below, but in any case where <code>fmap</code> can be given with <code>fmap id = id</code>, it can also exist with this variance.</p>
+<p>To do that we start with</p>
+<blockquote>
+<p>###Lemma 1:</p>
+<p>Given <code>fmap id = id</code>, then</p>
+<pre tabindex="0" aria-label="text code"><code class="language-text">fmap f = $map f
+</code></pre>
+<p>###Proof:</p>
+<pre tabindex="0" aria-label="text code"><code class="language-text">fmap f 
+= {- by $map id = id -}
+$map id . fmap f
+= {- by free theorem, using g = k = id, h = f -} 
+fmap id . $map f
+= {- by fmap id = id -}
+$map f
+</code></pre>
+</blockquote>
+<p>Now we know that <code>fmap f = $map f</code> pointwise, and if we assume functional extensionality, we can even show <code>fmap = $map</code>.</p>
+<p><strong>Lemma 1</strong> is sufficient to show that any two definitions <code>fmap1</code> and <code>fmap2</code> for <code>fmap</code> that each satisfy <code>fmap id = id</code>, are equivalent up to functional extensionality, as of course <code>fmap1 f = $map f = fmap2 f</code>.</p>
+<p>Therefore the observable behavior of <code>fmap</code> is uniquely determined.</p>
+<p>Next we'll, need another precondition:</p>
+<blockquote>
+<p>###Lemma 2:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">f</span> . g = id . (f . g)
+</code></pre>
+<p>###Proof:</p>
+<p>Naively, <code>id</code> is the unit for <code>(.)</code>. In reality it results in it eta-expanded.</p>
+</blockquote>
+<p>Now we're finally ready to proceed to the real proof:</p>
+<blockquote>
+<p>###Theorem:</p>
+<p>Given <code>fmap id = id</code>, we can show that</p>
+<pre tabindex="0" aria-label="text code"><code class="language-text">fmap f . fmap g = fmap (f . g)
+</code></pre>
+<p>###Proof:</p>
+<p>We can read this off of the properties of the free theorem several ways.</p>
+<p>The easiest one which does not use the same shaped property on <code>$map</code> is to just play with <code>$map id = id</code></p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">fmap</span> f . fmap g 
+= <span class="hljs-comment">{- by lemma 1, fmap f = $map f -}</span>
+$map f . fmap g
+= <span class="hljs-comment">{- by the free theorem for fmap using lemma 2 for the precondition -}</span>
+<span class="hljs-title">fmap</span> id . $map (f . g)
+= <span class="hljs-comment">{- by fmap id = id -}</span>
+$map (f . g)
+= <span class="hljs-comment">{- by fmap _ = $map _ -}</span>
+<span class="hljs-title">fmap</span> (f . g)
+</code></pre>
+</blockquote>
+<p>(We could have also employed the fact that <code>$map f . $map g = $map (f . g)</code> more directly.)</p>
+<p>There is definitely room to improve this proof. It would be more satisfying to start with
+two definitions of <code>fmap</code> such that they both satisfy <code>fmap_1 id = id</code> and <code>fmap_2 id = id</code>, and show that they must be equivalent up to functional extensionality, rather than appeal to the existence of a "natural map", which is a bit hand wavy.  Russell O'Connor <a href="http://thread.gmane.org/gmane.comp.lang.haskell.libraries/15382/focus=15384">took a similar approach</a> to concisely show that <code>fmap</code> is uniquely determined, if it exists, on the <code>libraries</code> mailing list.</p>
+<p>But there you have it. Next time you go to write a <code>Functor</code>, you can rest assured that you only need to prove <code>fmap id = id</code>, and you can get the other result for free!</p>
+<p>-<a href="mailto:ekmett@gmail.com">Edward Kmett</a></p>
+<p>February 15, 2015</p>
+</article><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: School of Haskell. Date displayed by School of Haskell; may reflect a later revision.</p><p><a href="../../../source/articles/snippets-fmap.md" download>Article Markdown</a> · <a href="../../../source/articles/snippets-fmap.original.md" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2014/fast-circular-substitution/">Fast Circular Substitution →</a><a href="../../../reader/2015/free-monoids-in-haskell/">Free Monoids in Haskell →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

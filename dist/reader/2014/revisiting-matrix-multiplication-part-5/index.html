@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Part V: Heaps of Performance · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Haskell</span><span>Edward Kmett · <time datetime="2014-11-16">16 November 2014</time></span></div><h1>Part V: Heaps of Performance</h1></header><details class="contents"><summary>On this page</summary><ol><li><a href="#work-smarter">Work Smarter</a></li><li><a href="#steques">Steques</a></li><li><a href="#bootstrapping">Bootstrapping</a></li><li><a href="#catenable-heaps">Catenable Heaps</a></li></ol></details><article class="prose"><p>Back in <a href="../../../reader/2013/revisiting-matrix-multiplication-part-3/">part 3</a> I naïvely plodded ahead with implementing a nice fusion combinator to try to use inside of my matrix multiplication routine.</p>
+<p>It was slow.</p>
+<p>It was slow because I built nested trees of concatenations and merges, and then when pumping it stream fusion was never getting anything that it could unroll into a bigger loop. Moreover, when faced with a tree of merges, the <code>Stream</code> fusion framework was being forced to keep the associativity by which it was originally constructed, but there was no balance ensuring that tree was any good.</p>
+<p>If you're just joining, you may want to go back and read parts <a href="../../../reader/2013/revisiting-matrix-multiplication-part-1/">1</a>,<a href="../../../reader/2013/revisiting-matrix-multiplication-part-2/">2</a>,<a href="../../../reader/2013/revisiting-matrix-multiplication-part-3/">3</a>, and <a href="../../../reader/2013/revisiting-matrix-multiplication-part-4/">4</a>, but like the last two parts, this one mostly stands alone if you ignore the motivation for the trick as a short practicum on how to bootstrap a datastructure and an introduction to pairing heaps and ephemeral steques.</p>
+<h2 id="work-smarter">Work Smarter</h2>
+<p>Let's work smarter, not harder, by finding a better algorithm, rather than trying to run a dumb one fast.</p>
+<p>To that end, I need to be able to deal with merging together streams and concatenating streams with a minimum of impact from concatenation on the cost of getting the next element.</p>
+<p>We could of course merge streams by representing them as a <a href="http://en.wikipedia.org/wiki/Heap_%28data_structure%29">heap</a>.</p>
+<p>Pick your favorite heap. Mine today for ease of exposition is a <a href="http://en.wikipedia.org/wiki/Pairing_Heap">pairing heap</a>. It is pretty awful when you want to actually analyze the runtime performance of your algorithm, but it has excellent <a href="http://en.wikipedia.org/wiki/Amortized_analysis">amortized</a> performance in practice and fits the form of what I'm going to put around it.</p>
+<p>I'll deal with only non-empty heaps, as we can move all the reasoning for the empty case into <code>Maybe (Heap a)</code> and it admits a nicer recursive definition.</p>
+<p>For simplicity, I'll just be using <code>Int</code> keys rather than <a href="http://en.wikipedia.org/wiki/Z-order_curve">Morton-ordered</a> keys below.</p>
+<p>A pairing heap is a heap built on a <a href="http://en.wikipedia.org/wiki/Rose_Tree">rose tree</a>. That is to say any node in your heap can have any number of children, so long as you satisfy the <a href="http://xlinux.nist.gov/dads/HTML/heapproperty.html">heap property</a>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Heap</span> a = <span class="hljs-type">Heap</span> !<span class="hljs-type">Int</span> a [<span class="hljs-type">Heap</span> a] <span class="hljs-keyword">deriving</span> <span class="hljs-type">Show</span></span>
+</code></pre>
+<p>A pairing heap provides us with a dead simple union for two heaps. Compare them, and then shove the one with the larger starting key one underneath the smaller. That it is.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">mix</span> :: <span class="hljs-type">Heap</span> a -&gt; <span class="hljs-type">Heap</span> a -&gt; <span class="hljs-type">Heap</span> a
+<span class="hljs-title">mix</span> x@(<span class="hljs-type">Heap</span> i a <span class="hljs-keyword">as</span>) y@(<span class="hljs-type">Heap</span> j b bs)
+  | i &lt;= j    = <span class="hljs-type">Heap</span> i a (y:<span class="hljs-keyword">as</span>)
+  | otherwise = <span class="hljs-type">Heap</span> j b (x:bs)
+</code></pre>
+<p>We can obviously grab the <code>top</code> element</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">top</span> :: <span class="hljs-type">Heap</span> a -&gt; (<span class="hljs-type">Int</span>, a)
+<span class="hljs-title">top</span> (<span class="hljs-type">Heap</span> i a _) = (i, a)
+</code></pre>
+<p>and we can <code>pop</code> that element off the <code>Heap</code>:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">pop</span> :: <span class="hljs-type">Heap</span> a -&gt; <span class="hljs-type">Maybe</span> (<span class="hljs-type">Heap</span> a)
+<span class="hljs-title">pop</span> (<span class="hljs-type">Heap</span> _ _ [])    = <span class="hljs-type">Nothing</span>
+<span class="hljs-title">pop</span> (<span class="hljs-type">Heap</span> _ _ (x:xs) = <span class="hljs-type">Just</span> (merge x xs)
+
+<span class="hljs-title">merge</span> :: <span class="hljs-type">Heap</span> a -&gt; [<span class="hljs-type">Heap</span> a] -&gt; <span class="hljs-type">Heap</span> a
+<span class="hljs-title">merge</span> x (y:ys) = <span class="hljs-keyword">case</span> ys <span class="hljs-keyword">of</span>
+  (z:zs) -&gt; mix x y `mix` merge z zs
+  []     -&gt; mix x y
+<span class="hljs-title">merge</span> x [] = x
+</code></pre>
+<p>The complexity in analyzing the asymptotics of a pairing heap comes from the fact that <code>merge</code> might have to do a lot of work, but <code>merge</code> pairs up the heaps before doing it's work to get better balancing. Again, nothing in what I'm writing here cares about the pairing heap parts, other than it is easy to write and similar to the surrounding code we're adding, and it is the most obviously amenable heap to the transformation I'll be applying later.</p>
+<p><code>mix</code> now handles the behavior I need for merging streams/heaps, but I'm also going to need efficient concatenation. While <code>mix</code> is "technically correct" for concatenating two heaps that do not overlap in key space, it also isn't terribly good at it.</p>
+<h2 id="steques">Steques</h2>
+<p>A "stack-ended queue", or steque, is what <a href="http://en.wikipedia.org/wiki/Robert_Tarjan">Tarjan</a> calls a structure that permits <code>cons</code> and <code>snoc</code> on both ends, but only efficient <code>head</code>/<code>tail</code>/<code>uncons</code> from one side.</p>
+<p>This distinguishes it from a <a href="http://en.wikipedia.org/wiki/Double-ended_queue">deque</a>, which permits efficient <code>init</code>/<code>tail</code>/<code>unsnoc</code> as well.</p>
+<p>The simplest implementation of a steque is</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Steque</span> a = <span class="hljs-type">Steque</span> [a] [a] <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>)</span>
+</code></pre>
+<p>The first list is in order from left to right, and the second list is reversed.</p>
+<p>Note: This isn't the most robust steque or deque in Okasaki's book. Its asymptotics are amortized, not worst case, and they only hold for ephemeral rather than persistent use. However, I only care about that ephemeral use case and so the reduction in book-keeping overhead is more valuable than slower execution to support operations I don't use!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> <span class="hljs-type">Steque</span> <span class="hljs-keyword">where</span></span>
+  fmap f (<span class="hljs-type">Steque</span> fs rs) = <span class="hljs-type">Steque</span> (fmap f fs) (fmap f rs)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Foldable</span> <span class="hljs-type">Steque</span> <span class="hljs-keyword">where</span></span>
+  foldMap f (<span class="hljs-type">Steque</span> fs rs) = foldMap f fs `mappend` getDual (foldMap (<span class="hljs-type">Dual</span> . f) rs)
+</code></pre>
+<p>We can use a little bit of <code>lens</code> to make the <code>Traversable</code> instance easier, given the
+combinator <code>backwards</code> that can turn a <code>Traversal</code> around.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Traversable</span> <span class="hljs-type">Steque</span> <span class="hljs-keyword">where</span></span>
+  traverse f (<span class="hljs-type">Steque</span> fs rs) = <span class="hljs-type">Steque</span> &lt;$&gt; traverse f fs &lt;*&gt; backwards traverse f rs
+</code></pre>
+<p>and then we could quotient out the irrelevancies of how our elements are distributed between the two lists:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Eq</span> a =&gt; <span class="hljs-type">Eq</span> (<span class="hljs-type">Steque</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  (==) = (==) `on` toList
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Ord</span> a =&gt; <span class="hljs-type">Ord</span> (<span class="hljs-type">Steque</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  compare = compare `on` toList
+</code></pre>
+<p>We could even get ambitious and define a bunch of other instances on <code>Steque</code>, just because we can:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Applicative</span> <span class="hljs-type">Steque</span> <span class="hljs-keyword">where</span></span>
+  pure a = <span class="hljs-type">Steque</span> [a] []
+  (&lt;*&gt;) = ap
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> <span class="hljs-type">Steque</span> <span class="hljs-keyword">where</span></span>
+  return a = <span class="hljs-type">Steque</span> [a] []
+  <span class="hljs-type">Steque</span> fs bs &gt;&gt;= f = <span class="hljs-type">Steque</span> (fs &gt;&gt;= toList . f) (bs &gt;&gt;= toListOf (backwards folded) . f)
+</code></pre>
+<p>... but we're getting distracted, we really just want to be able to <code>cons</code>/<code>head</code>/<code>tail</code>/<code>uncons</code>, and <code>snoc</code>.</p>
+<p>To make this interesting, let us show how to implement these using some lesser understood parts of <code>lens</code>.</p>
+<p>The <a href="https://hackage.haskell.org/package/lens"><code>lens</code></a> package provides a common <a href="https://hackage.haskell.org/packages/archive/lens/3.9.0.2/doc/html/Control-Lens-Cons.html"><code>Cons</code></a> class for dealing with <code>cons</code>-like behavior. It is tricky to instantiate correctly, because it is overloaded to permit usecases where you can merely <code>cons</code> and not <code>uncons</code> and vice-versa, but we can define an instance:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> (<span class="hljs-type">Choice</span> <span class="hljs-title">p</span>, <span class="hljs-type">Applicative</span> <span class="hljs-title">f</span>) =&gt; <span class="hljs-type">Cons</span> p f (<span class="hljs-type">Steque</span> <span class="hljs-title">a</span>) (<span class="hljs-type">Steque</span> <span class="hljs-title">b</span>) a b <span class="hljs-keyword">where</span></span>
+  _Cons = prism (\(x,<span class="hljs-type">Steque</span> fs bs) -&gt; <span class="hljs-type">Steque</span> (x:fs) bs) $ \ (<span class="hljs-type">Steque</span> fs bs) -&gt; <span class="hljs-keyword">case</span> fs <span class="hljs-keyword">of</span>
+     x:xs -&gt; <span class="hljs-type">Right</span> (x,<span class="hljs-type">Steque</span> xs bs)
+     []   -&gt; <span class="hljs-keyword">case</span> reverse bs <span class="hljs-keyword">of</span>
+       x:xs -&gt; <span class="hljs-type">Right</span> (x,<span class="hljs-type">Steque</span> xs [])
+       [] -&gt; <span class="hljs-type">Left</span> (<span class="hljs-type">Steque</span> [] [])
+</code></pre>
+<p>This gives us the following <a href="https://hackage.haskell.org/packages/archive/lens/3.9.0.2/doc/html/Control-Lens-Prism.html"><code>Prism</code></a>:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">_Cons</span> :: <span class="hljs-type">Prism</span> (<span class="hljs-type">Steque</span> a) (<span class="hljs-type">Steque</span> b) (a, <span class="hljs-type">Steque</span> a) (b, <span class="hljs-type">Steque</span> b)
+</code></pre>
+<p>We can now use it to <code>cons</code> and <code>uncons</code>, using the definitions from <code>Control.Lens.Cons</code>:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">cons</span> a <span class="hljs-keyword">as</span> = _Cons # (a,<span class="hljs-keyword">as</span>)
+<span class="hljs-title">uncons</span> <span class="hljs-keyword">as</span> = <span class="hljs-keyword">as</span>^?_Cons
+</code></pre>
+<p>That module also provides combinators that makes either a <code>Getter</code>, <code>Setter</code>, <code>Lens</code> or <code>Traversal</code> for each of <code>_head</code> and <code>_tail</code> depending on the restricted form of <code>_Cons</code> you chose.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">_head</span> = _Cons._1
+<span class="hljs-title">_tail</span> = _Cons._2
+</code></pre>
+<p>On the other side we only want to be able to <code>snoc</code>, not use <code>tail</code>, <code>init</code> or <code>unsnoc</code>, so let's define:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> (<span class="hljs-title">p</span> ~ <span class="hljs-type">Reviewed</span>, <span class="hljs-title">f</span> ~ <span class="hljs-type">Identity</span>, <span class="hljs-title">a</span> ~ <span class="hljs-title">b</span>) =&gt; <span class="hljs-type">Snoc</span> p f (<span class="hljs-type">Steque</span> <span class="hljs-title">a</span>) (<span class="hljs-type">Steque</span> <span class="hljs-title">b</span>) a b <span class="hljs-keyword">where</span></span>
+  _Snoc = unto $ \(<span class="hljs-type">Steque</span> f b,x) -&gt; <span class="hljs-type">Steque</span> f (x:b)
+</code></pre>
+<p>Note: we <em>could</em> also support <code>_init</code> and <code>_tail</code> and <code>unsnoc</code>, but they will be <em>O(n)</em>, even for ephemeral use, because we do not try to preserve any balance between the front and back lists.</p>
+<p><code>unto</code> is used to define a <a href="https://hackage.haskell.org/packages/archive/lens/3.9.0.2/doc/html/Control-Lens-Review.html#g:1"><code>Review</code></a>, which is to a <code>Prism</code> what a <code>Getter</code> is to a <code>Lens</code>. In practice it makes something that is like a <code>Prism</code> in that you can apply <code>#</code> to it, but nothing else.</p>
+<p>This is enough to permit us to use the stock definition of <code>snoc</code>:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">snoc</span> <span class="hljs-keyword">as</span> a = _Snoc # (<span class="hljs-keyword">as</span>,a)
+</code></pre>
+<p>With all of that we can finally play with our <code>Steque</code>:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE FlexibleInstances #-}</span>
+<span class="hljs-meta">{-# LANGUAGE MultiParamTypeClasses #-}</span>
+<span class="hljs-meta">{-# LANGUAGE TypeFamilies #-}</span>
+<span class="hljs-meta">{-# LANGUAGE UndecidableInstances #-}</span>
+<span class="hljs-keyword">import</span> Control.Applicative
+<span class="hljs-keyword">import</span> Control.Monad
+<span class="hljs-keyword">import</span> Control.Lens
+<span class="hljs-keyword">import</span> Control.Lens.Internal.Review
+<span class="hljs-keyword">import</span> Data.Foldable
+<span class="hljs-keyword">import</span> Data.Functor.Identity
+<span class="hljs-keyword">import</span> Data.Monoid
+<span class="hljs-keyword">import</span> Data.Function (<span class="hljs-title">on</span>)
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Steque</span> a = <span class="hljs-type">Steque</span> [a] [a] <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>)</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Eq</span> a =&gt; <span class="hljs-type">Eq</span> (<span class="hljs-type">Steque</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  (==) = (==) `on` toList
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Ord</span> a =&gt; <span class="hljs-type">Ord</span> (<span class="hljs-type">Steque</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  compare = compare `on` toList
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> <span class="hljs-type">Steque</span> <span class="hljs-keyword">where</span></span>
+  fmap f (<span class="hljs-type">Steque</span> fs rs) = <span class="hljs-type">Steque</span> (fmap f fs) (fmap f rs)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Foldable</span> <span class="hljs-type">Steque</span> <span class="hljs-keyword">where</span></span>
+  foldMap f (<span class="hljs-type">Steque</span> fs rs) = foldMap f fs `mappend` getDual (foldMap (<span class="hljs-type">Dual</span> . f) rs)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Traversable</span> <span class="hljs-type">Steque</span> <span class="hljs-keyword">where</span></span>
+  traverse f (<span class="hljs-type">Steque</span> fs rs) = <span class="hljs-type">Steque</span> &lt;$&gt; traverse f fs &lt;*&gt; backwards traverse f rs
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Applicative</span> <span class="hljs-type">Steque</span> <span class="hljs-keyword">where</span></span>
+  pure a = <span class="hljs-type">Steque</span> [a] []
+  (&lt;*&gt;) = ap
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Alternative</span> <span class="hljs-type">Steque</span> <span class="hljs-keyword">where</span></span>
+  <span class="hljs-type">Steque</span> fs rs &lt;|&gt; <span class="hljs-type">Steque</span> fs' rs' = <span class="hljs-type">Steque</span> (fs ++ reverse rs ++ fs') rs'
+  empty = <span class="hljs-type">Steque</span> [] []
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> <span class="hljs-type">Steque</span> <span class="hljs-keyword">where</span></span>
+  return a = <span class="hljs-type">Steque</span> [a] []
+  <span class="hljs-type">Steque</span> fs bs &gt;&gt;= f = <span class="hljs-type">Steque</span> (fs &gt;&gt;= toList . f) (bs &gt;&gt;= toListOf (backwards folded) . f)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">MonadPlus</span> <span class="hljs-type">Steque</span> <span class="hljs-keyword">where</span></span>
+  mplus = (&lt;|&gt;)
+  mzero = <span class="hljs-type">Steque</span> [] []
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monoid</span> (<span class="hljs-type">Steque</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  mappend = (&lt;|&gt;)
+  mempty = <span class="hljs-type">Steque</span> [] []
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Choice</span> <span class="hljs-title">p</span>, <span class="hljs-type">Applicative</span> <span class="hljs-title">f</span>) =&gt; <span class="hljs-type">Cons</span> p f (<span class="hljs-type">Steque</span> <span class="hljs-title">a</span>) (<span class="hljs-type">Steque</span> <span class="hljs-title">b</span>) a b <span class="hljs-keyword">where</span></span>
+  _Cons = prism (\(x,<span class="hljs-type">Steque</span> fs bs) -&gt; <span class="hljs-type">Steque</span> (x:fs) bs) $ \ (<span class="hljs-type">Steque</span> fs bs) -&gt; <span class="hljs-keyword">case</span> fs <span class="hljs-keyword">of</span>
+     x:xs -&gt; <span class="hljs-type">Right</span> (x,<span class="hljs-type">Steque</span> xs bs)
+     []   -&gt; <span class="hljs-keyword">case</span> reverse bs <span class="hljs-keyword">of</span>
+       x:xs -&gt; <span class="hljs-type">Right</span> (x,<span class="hljs-type">Steque</span> xs [])
+       [] -&gt; <span class="hljs-type">Left</span> (<span class="hljs-type">Steque</span> [] [])
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-title">p</span> ~ <span class="hljs-type">Reviewed</span>, <span class="hljs-title">f</span> ~ <span class="hljs-type">Identity</span>, <span class="hljs-title">a</span> ~ <span class="hljs-title">b</span>) =&gt; <span class="hljs-type">Snoc</span> p f (<span class="hljs-type">Steque</span> <span class="hljs-title">a</span>) (<span class="hljs-type">Steque</span> <span class="hljs-title">b</span>) a b <span class="hljs-keyword">where</span></span>
+  _Snoc = unto $ \(<span class="hljs-type">Steque</span> f b,x) -&gt; <span class="hljs-type">Steque</span> f (x:b)
+
+
+<span class="hljs-title">main</span> = print $ uncons (snoc (cons <span class="hljs-number">1</span> (cons <span class="hljs-number">2</span> (snoc (empty :: <span class="hljs-type">Steque</span> <span class="hljs-type">Int</span>) <span class="hljs-number">4</span>))) <span class="hljs-number">5</span>)
+
+</code></pre>
+<p>Now, our definition of a <code>Steque</code> works passably well.</p>
+<p>We can snoc, cons, uncons, head, or tail all in <em>O(1)</em> amortized time.</p>
+<p>but the <code>Monoid</code>, <code>Alternative</code> and <code>MonadPlus</code> instances perform poorly, doing <em>O(n)</em> work because it has to glue together potentially rather long lists:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">Steque</span> fs rs &lt;|&gt; <span class="hljs-type">Steque</span> fs' rs' = <span class="hljs-type">Steque</span> (fs ++ reverse rs ++ fs') rs'
+</code></pre>
+<p>It is that <code>Monoid</code> performance that makes us sad, so let's do something about it.</p>
+<h2 id="bootstrapping">Bootstrapping</h2>
+<p>To solve that we turn to <a href="http://www.usma.edu/eecs/SitePages/Chris%20Okasaki.aspx">Chris Okasaki</a>'s <a href="http://www.cs.cmu.edu/~rwh/theses/okasaki.pdf">Purely Functional Data Structures</a> once again, this time to find bootstrapping.</p>
+<p>Bootstrapping is a tool for defining a data structure with cheap concatenation by recursively storing it in itself.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Catenable</span> f a = <span class="hljs-type">Empty</span> | <span class="hljs-type">Cons</span> a (<span class="hljs-title">f</span> (<span class="hljs-type">Catenable</span> <span class="hljs-title">f</span> <span class="hljs-title">a</span>))</span>
+</code></pre>
+<p>Here we could build a <code>Catenable Steque</code> out of our basic <code>Steque</code> following Okasaki's recipe. Here the vocabulary of Tarjan is more accurate and extensible. Tarjan calls a "catenable steque" a c-steque, while Okasaki uses the less informative name "catenable list."</p>
+<p>As with the pairing <code>Heap</code>, recursion is simpler if we don't allow <code>Empty</code> catenable substructures, and I'm only going to need non-empty catenable structures, though, so <code>Catenable</code> simplifies to:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Catenable</span> f a = <span class="hljs-type">Cons</span> a (<span class="hljs-title">f</span> (<span class="hljs-type">Catenable</span> <span class="hljs-title">f</span> <span class="hljs-title">a</span>))</span>
+</code></pre>
+<p>which advanced Haskell programmers in the audience may recognize as my old friend the <a href="https://hackage.haskell.org/packages/archive/free/3.4.2/doc/html/Control-Comonad-Cofree.html">cofree comonad</a>! In the interest of retaining some semblance of accessibility, I'm not going to work through this exercise in its full generality.</p>
+<p>Now it is obvious how to concatenate a pair of catenable steques, we simply insert one into the other.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">CSteque</span> a = <span class="hljs-type">Cons</span> a (<span class="hljs-type">Steque</span> (<span class="hljs-type">CSteque</span> <span class="hljs-title">a</span>))</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Semigroup</span> (<span class="hljs-type">CSteque</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  <span class="hljs-type">CSteque</span> a <span class="hljs-keyword">as</span> &lt;&gt; bs = <span class="hljs-type">CSteque</span> a (snoc <span class="hljs-keyword">as</span> bs)
+</code></pre>
+<p>Hrmm. That sounds suspiciously like the operation that drove our pairing heap.</p>
+<p>You can derive <code>cons</code> and <code>snoc</code> by just concatenating singleton catenable steques, and <code>uncons</code> simply has to put back the leftovers if any into the underlying <code>Steque</code>, which it can do because our <code>Steque</code> supports <em>O(1)</em> <code>cons</code>!</p>
+<p>If we inline the definition of <code>Steque</code> into <code>CSteque</code> we get:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">CSteque</span> a = <span class="hljs-type">Cons</span> a [<span class="hljs-type">CSteque</span> a] [<span class="hljs-type">CSteque</span> a]</span>
+</code></pre>
+<p>and that looks a <em>lot</em> like our pairing heap, just with different invariants.</p>
+<p>Hrmm.</p>
+<h2 id="catenable-heaps">Catenable Heaps</h2>
+<p>Finally, what we want looks kind of like a steque of heaps, but where the heaps can also act like steques of heaps, <em>ad infinitum</em>. We can get there by mashing all the parts we've described together to get:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Heap</span> a = <span class="hljs-type">Heap</span> <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Int</span> a [<span class="hljs-type">Heap</span> a] [<span class="hljs-type">Heap</span> a] [<span class="hljs-type">Heap</span> a]</span>
+</code></pre>
+<p>This type represents a form of catenable non-empty pairing heap. The three lists of heaps in turn are:</p>
+<p>1.) the jumbled mess of heaps we haven't sorted relative to one another except partially via the heap property, followed by
+2.) a list of heaps that do not overlap one another in key space in ascending order, followed by
+3.) another list of heaps that do not overlap one another in key space in descending order.</p>
+<p>Now we can concatenate in <em>O(1)</em>!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">fby</span> :: <span class="hljs-type">Heap</span> a -&gt; <span class="hljs-type">Heap</span> a -&gt; <span class="hljs-type">Heap</span> a
+<span class="hljs-title">fby</span> (<span class="hljs-type">Heap</span> i a <span class="hljs-keyword">as</span> ls rs) r = <span class="hljs-type">Heap</span> i a <span class="hljs-keyword">as</span> ls (r:rs)
+</code></pre>
+<p>A number of operations remain trivial:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">top</span> :: <span class="hljs-type">Heap</span> a -&gt; (<span class="hljs-type">Key</span>, a)
+<span class="hljs-title">top</span> (<span class="hljs-type">Heap</span> i a _ _ _) = (i, a)
+
+<span class="hljs-title">singleton</span> :: <span class="hljs-type">Key</span> -&gt; a -&gt; <span class="hljs-type">Heap</span> a
+<span class="hljs-title">singleton</span> k v = <span class="hljs-type">Heap</span> k v [] [] []
+
+<span class="hljs-title">fromList</span> :: [(<span class="hljs-type">Key</span>,a)] -&gt; <span class="hljs-type">Heap</span> a
+<span class="hljs-title">fromList</span> ((k0,v0):xs) = <span class="hljs-type">Prelude</span>.foldr (\(k,v) r -&gt; mix (singleton k v) r) (singleton k0 v0) xs
+<span class="hljs-title">fromList</span> [] = error <span class="hljs-string">"empty Heap"</span>
+
+<span class="hljs-title">fromAscList</span> :: [(<span class="hljs-type">Key</span>,a)] -&gt; <span class="hljs-type">Heap</span> a
+<span class="hljs-title">fromAscList</span> ((k0,v0):xs) = <span class="hljs-type">Prelude</span>.foldr (\(k,v) r -&gt; fby (singleton k v) r) (singleton k0 v0) xs
+<span class="hljs-title">fromAscList</span> [] = error <span class="hljs-string">"empty Heap"</span>
+</code></pre>
+<p><code>pop</code> got a bit more complicated. We'll just pass it the 3 lists from our heap, as it doesn't use the key/value pair out front and we don't want to require the compiler to figure out to specialize on the constructor.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">pop</span> :: [<span class="hljs-type">Heap</span> a] -&gt; [<span class="hljs-type">Heap</span> a] -&gt; [<span class="hljs-type">Heap</span> a] -&gt; <span class="hljs-type">Maybe</span> (<span class="hljs-type">Heap</span> a)
+<span class="hljs-title">pop</span> (x:xs) ls     rs = <span class="hljs-type">Just</span> $ fbys (merge x xs) ls rs
+<span class="hljs-title">pop</span> []     (l:ls) rs = <span class="hljs-type">Just</span> $ fbys l ls rs
+<span class="hljs-title">pop</span> []     []     rs = <span class="hljs-keyword">case</span> reverse rs <span class="hljs-keyword">of</span>
+  f:fs -&gt; <span class="hljs-type">Just</span> (fbys f fs [])
+  []   -&gt; <span class="hljs-type">Nothing</span>
+
+<span class="hljs-title">fbys</span> :: <span class="hljs-type">Heap</span> a -&gt; [<span class="hljs-type">Heap</span> a] -&gt; [<span class="hljs-type">Heap</span> a] -&gt; <span class="hljs-type">Heap</span> a
+<span class="hljs-title">fbys</span> (<span class="hljs-type">Heap</span> i a <span class="hljs-keyword">as</span> [] []) ls' rs' = <span class="hljs-type">Heap</span> i a <span class="hljs-keyword">as</span> ls' rs'
+<span class="hljs-title">fbys</span> (<span class="hljs-type">Heap</span> i a <span class="hljs-keyword">as</span> ls []) ls' rs' = <span class="hljs-type">Heap</span> i a <span class="hljs-keyword">as</span> ls $ rs' &lt;&gt; reverse ls'
+<span class="hljs-title">fbys</span> (<span class="hljs-type">Heap</span> i a <span class="hljs-keyword">as</span> ls rs) ls' rs' = <span class="hljs-type">Heap</span> i a <span class="hljs-keyword">as</span> ls $ rs' &lt;&gt; reverse ls' &lt;&gt; rs
+</code></pre>
+<blockquote>
+<p><strong>No-Prize #7</strong></p>
+<p>Computing with <code>fbys</code> in <code>pop</code> is somewhat unpleasant, but I don't have a cleaner way.</p>
+<p>Is there something where I can preserve the correctness of this but not have to move content
+into the right hand reversed list and re-reverse it? Keep in mind it isn't sound to move
+it into the left list, because we don't know the length of the left list and can only
+move content left when the left list is empty.</p>
+<p>We could probably insert a pair of other heaps into the reversed list by building up a
+chain of <code>fby</code>s popping something off of the <code>ls'</code> and smashing the other <code>ls'</code> and <code>rs'</code>
+underneath it by using this function recursively. What does that look like?</p>
+</blockquote>
+<p>and <code>mix</code> also becomes more complex as it now has to deal with the extra concatenated components, pushing what it can into the nested pairing heap.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">mix</span> :: <span class="hljs-type">Heap</span> a -&gt; <span class="hljs-type">Heap</span> a -&gt; <span class="hljs-type">Heap</span> a
+<span class="hljs-title">mix</span> x@(<span class="hljs-type">Heap</span> i a <span class="hljs-keyword">as</span> al ar) y@(<span class="hljs-type">Heap</span> j b bs bl br)
+  | i &lt;= j    = <span class="hljs-type">Heap</span> i a (y:pops <span class="hljs-keyword">as</span> al ar) [] []
+  | otherwise = <span class="hljs-type">Heap</span> j b (x:pops bs bl br) [] []
+
+
+<span class="hljs-title">merge</span> :: <span class="hljs-type">Heap</span> a -&gt; [<span class="hljs-type">Heap</span> a] -&gt; <span class="hljs-type">Heap</span> a
+<span class="hljs-title">merge</span> x (y:ys) = <span class="hljs-keyword">case</span> ys <span class="hljs-keyword">of</span>
+  (z:zs) -&gt; mix x y `mix` merge z zs
+  []     -&gt; mix x y
+<span class="hljs-title">merge</span> x [] = x
+
+<span class="hljs-title">pops</span> :: [<span class="hljs-type">Heap</span> a] -&gt; [<span class="hljs-type">Heap</span> a] -&gt; [<span class="hljs-type">Heap</span> a] -&gt; [<span class="hljs-type">Heap</span> a]
+<span class="hljs-title">pops</span> xs     []     [] = xs
+<span class="hljs-title">pops</span> (x:xs) ls     rs = [fbys (merge x xs) ls rs]
+<span class="hljs-title">pops</span> []     (l:ls) rs = [fbys l ls rs]
+<span class="hljs-title">pops</span> []     []     rs = <span class="hljs-keyword">case</span> reverse rs <span class="hljs-keyword">of</span>
+  f:fs -&gt; [fbys f fs []]
+  _    -&gt; [] <span class="hljs-comment">-- caught above</span>
+</code></pre>
+<p><code>pops</code> is a slight optimization of <code>pop</code> that uses the fact that the result is winding up in a list subject to the heap property and need not be reduced all the way down to a <code>Maybe (Heap a)</code> just yet.</p>
+<p>Finally, we can define a <em>useful</em> conversion to a <code>Stream</code> that can get some benefit out of stream fusion.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">HeapState</span> a</span>
+  = <span class="hljs-type">Start</span> !(<span class="hljs-type">Heap</span> a)
+  | <span class="hljs-type">Ready</span> <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Key</span> a !(<span class="hljs-type">Heap</span> a)
+  | <span class="hljs-type">Final</span> <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Key</span> a
+  | <span class="hljs-type">Finished</span>
+
+<span class="hljs-title">streamHeapWith</span> :: <span class="hljs-type">Monad</span> m =&gt; (a -&gt; a -&gt; a) -&gt; <span class="hljs-type">Maybe</span> (<span class="hljs-type">Heap</span> a) -&gt; <span class="hljs-type">Stream</span> m (<span class="hljs-type">Key</span>, a)
+<span class="hljs-title">streamHeapWith</span> f h0 = <span class="hljs-type">Stream</span> step (maybe <span class="hljs-type">Finished</span> <span class="hljs-type">Start</span> h0) <span class="hljs-type">Unknown</span> <span class="hljs-keyword">where</span>
+  step (<span class="hljs-type">Start</span> (<span class="hljs-type">Heap</span> i a xs ls rs))     = return $ <span class="hljs-type">Skip</span> $ maybe (<span class="hljs-type">Final</span> i a) (<span class="hljs-type">Ready</span> i a) $ pop xs ls rs
+  step (<span class="hljs-type">Ready</span> i a (<span class="hljs-type">Heap</span> j b xs ls rs)) = return $ <span class="hljs-keyword">case</span> compare i j <span class="hljs-keyword">of</span>
+    <span class="hljs-type">LT</span> -&gt; <span class="hljs-type">Yield</span> (i, a)      $ maybe (<span class="hljs-type">Final</span> j b) (<span class="hljs-type">Ready</span> j b) $ pop xs ls rs
+    <span class="hljs-type">EQ</span> | c &lt;- f a b -&gt; <span class="hljs-type">Skip</span> $ maybe (<span class="hljs-type">Final</span> i c) (<span class="hljs-type">Ready</span> i c) $ pop xs ls rs
+    <span class="hljs-type">GT</span> -&gt; <span class="hljs-type">Yield</span> (j, b)      $ maybe (<span class="hljs-type">Final</span> i a) (<span class="hljs-type">Ready</span> i a) $ pop xs ls rs
+  step (<span class="hljs-type">Final</span> i a) = return $ <span class="hljs-type">Yield</span> (i,a) <span class="hljs-type">Finished</span>
+  step <span class="hljs-type">Finished</span>    = return <span class="hljs-type">Done</span>
+  <span class="hljs-meta">{-# INLINE [1] step #-}</span>
+<span class="hljs-meta">{-# INLINE [0] streamHeapWith #-}</span>
+</code></pre>
+<p>This doesn't quite hit the <a href="http://citeseer.ist.psu.edu/viewdoc/summary?doi=10.1.1.104.7401">stream fusion</a> goal of being made of a single loop that can fuse into other loops, due to the recursive calls to <code>pop</code>. I leave it as an exercise for the reader to find a form that implements <code>pop</code> via iterative <code>Skip</code> steps and a more complex state -- In other words, I haven't bothered yet. ;)</p>
+<p>Putting it all together yields:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">
+<span class="hljs-meta">{-# LANGUAGE BangPatterns #-}</span>
+<span class="hljs-meta">{-# LANGUAGE PatternGuards #-}</span>
+<span class="hljs-meta">{-# LANGUAGE FlexibleInstances #-}</span>
+<span class="hljs-meta">{-# LANGUAGE MultiParamTypeClasses #-}</span>
+<span class="hljs-meta">{-# LANGUAGE TypeFamilies #-}</span>
+
+<span class="hljs-keyword">import</span> Control.Applicative
+<span class="hljs-keyword">import</span> Control.Lens
+<span class="hljs-keyword">import</span> Data.Bits
+<span class="hljs-keyword">import</span> Data.Foldable
+<span class="hljs-keyword">import</span> Data.Monoid
+<span class="hljs-keyword">import</span> Data.Vector.Fusion.Stream.Monadic <span class="hljs-keyword">hiding</span> (<span class="hljs-title">singleton</span>, <span class="hljs-title">fromList</span>)
+<span class="hljs-keyword">import</span> Data.Vector.Fusion.Stream.Size
+<span class="hljs-keyword">import</span> Data.Vector.Fusion.Util
+<span class="hljs-keyword">import</span> Data.Word
+<span class="hljs-keyword">import</span> Prelude
+
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Key</span> = <span class="hljs-type">Int</span></span>
+
+<span class="hljs-comment">-- | Bootstrapped _catenable_ non-empty pairing heaps</span>
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Heap</span> a = <span class="hljs-type">Heap</span> <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Key</span> a [<span class="hljs-type">Heap</span> a] [<span class="hljs-type">Heap</span> a] [<span class="hljs-type">Heap</span> a]</span>
+  <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>)
+
+<span class="hljs-comment">-- | Append two heaps where we know every key in the first occurs before every key in the second</span>
+<span class="hljs-title">fby</span> :: <span class="hljs-type">Heap</span> a -&gt; <span class="hljs-type">Heap</span> a -&gt; <span class="hljs-type">Heap</span> a
+<span class="hljs-title">fby</span> (<span class="hljs-type">Heap</span> i a <span class="hljs-keyword">as</span> ls rs) r = <span class="hljs-type">Heap</span> i a <span class="hljs-keyword">as</span> ls (r:rs)
+
+<span class="hljs-comment">-- | Interleave two heaps making a new 'Heap'</span>
+<span class="hljs-title">mix</span> :: <span class="hljs-type">Heap</span> a -&gt; <span class="hljs-type">Heap</span> a -&gt; <span class="hljs-type">Heap</span> a
+<span class="hljs-title">mix</span> x@(<span class="hljs-type">Heap</span> i a <span class="hljs-keyword">as</span> al ar) y@(<span class="hljs-type">Heap</span> j b bs bl br)
+  | i &lt;= j    = <span class="hljs-type">Heap</span> i a (y:pops <span class="hljs-keyword">as</span> al ar) [] []
+  | otherwise = <span class="hljs-type">Heap</span> j b (x:pops bs bl br) [] []
+
+
+<span class="hljs-title">merge</span> :: <span class="hljs-type">Heap</span> a -&gt; [<span class="hljs-type">Heap</span> a] -&gt; <span class="hljs-type">Heap</span> a
+<span class="hljs-title">merge</span> x (y:ys) = <span class="hljs-keyword">case</span> ys <span class="hljs-keyword">of</span>
+  (z:zs) -&gt; mix x y `mix` merge z zs
+  []     -&gt; mix x y
+<span class="hljs-title">merge</span> x [] = x
+
+<span class="hljs-title">top</span> :: <span class="hljs-type">Heap</span> a -&gt; (<span class="hljs-type">Key</span>, a)
+<span class="hljs-title">top</span> (<span class="hljs-type">Heap</span> i a _ _ _) = (i, a)
+
+<span class="hljs-title">pop</span> :: [<span class="hljs-type">Heap</span> a] -&gt; [<span class="hljs-type">Heap</span> a] -&gt; [<span class="hljs-type">Heap</span> a] -&gt; <span class="hljs-type">Maybe</span> (<span class="hljs-type">Heap</span> a)
+<span class="hljs-title">pop</span> (x:xs) ls     rs = <span class="hljs-type">Just</span> $ fbys (merge x xs) ls rs
+<span class="hljs-title">pop</span> []     (l:ls) rs = <span class="hljs-type">Just</span> $ fbys l ls rs
+<span class="hljs-title">pop</span> []     []     rs = <span class="hljs-keyword">case</span> reverse rs <span class="hljs-keyword">of</span>
+  f:fs -&gt; <span class="hljs-type">Just</span> (fbys f fs [])
+  []   -&gt; <span class="hljs-type">Nothing</span>
+
+<span class="hljs-title">singleton</span> :: <span class="hljs-type">Key</span> -&gt; a -&gt; <span class="hljs-type">Heap</span> a
+<span class="hljs-title">singleton</span> k v = <span class="hljs-type">Heap</span> k v [] [] []
+
+<span class="hljs-title">fromList</span> :: [(<span class="hljs-type">Key</span>,a)] -&gt; <span class="hljs-type">Heap</span> a
+<span class="hljs-title">fromList</span> ((k0,v0):xs) = <span class="hljs-type">Prelude</span>.foldr (\(k,v) r -&gt; mix (singleton k v) r) (singleton k0 v0) xs
+<span class="hljs-title">fromList</span> [] = error <span class="hljs-string">"empty Heap"</span>
+
+<span class="hljs-title">fromAscList</span> :: [(<span class="hljs-type">Key</span>,a)] -&gt; <span class="hljs-type">Heap</span> a
+<span class="hljs-title">fromAscList</span> ((k0,v0):xs) = <span class="hljs-type">Prelude</span>.foldr (\(k,v) r -&gt; fby (singleton k v) r) (singleton k0 v0) xs
+<span class="hljs-title">fromAscList</span> [] = error <span class="hljs-string">"empty Heap"</span>
+
+<span class="hljs-comment">-- * Internals</span>
+
+<span class="hljs-title">fbys</span> :: <span class="hljs-type">Heap</span> a -&gt; [<span class="hljs-type">Heap</span> a] -&gt; [<span class="hljs-type">Heap</span> a] -&gt; <span class="hljs-type">Heap</span> a
+<span class="hljs-title">fbys</span> (<span class="hljs-type">Heap</span> i a <span class="hljs-keyword">as</span> [] []) ls' rs' = <span class="hljs-type">Heap</span> i a <span class="hljs-keyword">as</span> ls' rs'
+<span class="hljs-title">fbys</span> (<span class="hljs-type">Heap</span> i a <span class="hljs-keyword">as</span> ls []) ls' rs' = <span class="hljs-type">Heap</span> i a <span class="hljs-keyword">as</span> ls $ rs' &lt;&gt; reverse ls'
+<span class="hljs-title">fbys</span> (<span class="hljs-type">Heap</span> i a <span class="hljs-keyword">as</span> ls rs) ls' rs' = <span class="hljs-type">Heap</span> i a <span class="hljs-keyword">as</span> ls $ rs' &lt;&gt; reverse ls' &lt;&gt; rs
+
+<span class="hljs-title">pops</span> :: [<span class="hljs-type">Heap</span> a] -&gt; [<span class="hljs-type">Heap</span> a] -&gt; [<span class="hljs-type">Heap</span> a] -&gt; [<span class="hljs-type">Heap</span> a]
+<span class="hljs-title">pops</span> xs     []     [] = xs
+<span class="hljs-title">pops</span> (x:xs) ls     rs = [fbys (merge x xs) ls rs]
+<span class="hljs-title">pops</span> []     (l:ls) rs = [fbys l ls rs]
+<span class="hljs-title">pops</span> []     []     rs = <span class="hljs-keyword">case</span> reverse rs <span class="hljs-keyword">of</span>
+  f:fs -&gt; [fbys f fs []]
+  _    -&gt; [] <span class="hljs-comment">-- caught above by the 'go as [] []' case</span>
+
+<span class="hljs-comment">-- * Instances</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> <span class="hljs-type">Heap</span> <span class="hljs-keyword">where</span></span>
+  fmap f (<span class="hljs-type">Heap</span> k a xs ls rs) = <span class="hljs-type">Heap</span> k (f a) (fmap f &lt;$&gt; xs) (fmap f &lt;$&gt; ls) (fmap f &lt;$&gt; rs)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">FunctorWithIndex</span> <span class="hljs-type">Key</span> <span class="hljs-type">Heap</span> <span class="hljs-keyword">where</span></span>
+  imap f (<span class="hljs-type">Heap</span> k a xs ls rs) = <span class="hljs-type">Heap</span> k (f k a) (imap f &lt;$&gt; xs) (imap f &lt;$&gt; ls) (imap f &lt;$&gt; rs)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Foldable</span> <span class="hljs-type">Heap</span> <span class="hljs-keyword">where</span></span>
+  foldMap f = go <span class="hljs-keyword">where</span>
+    go (<span class="hljs-type">Heap</span> _ a xs ls rs) = <span class="hljs-keyword">case</span> pop xs ls rs <span class="hljs-keyword">of</span>
+      <span class="hljs-type">Nothing</span> -&gt; f a
+      <span class="hljs-type">Just</span> h  -&gt; f a `mappend` go h
+  <span class="hljs-meta">{-# INLINE foldMap #-}</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">FoldableWithIndex</span> <span class="hljs-type">Key</span> <span class="hljs-type">Heap</span> <span class="hljs-keyword">where</span></span>
+  ifoldMap f = go <span class="hljs-keyword">where</span>
+    go (<span class="hljs-type">Heap</span> i a xs ls rs) = <span class="hljs-keyword">case</span> pop xs ls rs <span class="hljs-keyword">of</span>
+      <span class="hljs-type">Nothing</span> -&gt; f i a
+      <span class="hljs-type">Just</span> h  -&gt; f i a `mappend` go h
+  <span class="hljs-meta">{-# INLINE ifoldMap #-}</span>
+
+<span class="hljs-comment">-- this linearizes the heap</span>
+<span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Traversable</span> <span class="hljs-type">Heap</span> <span class="hljs-keyword">where</span></span>
+  traverse f xs = fromAscList &lt;$&gt; traverse (traverse f) (itoList xs)
+  <span class="hljs-meta">{-# INLINE traverse #-}</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">TraversableWithIndex</span> <span class="hljs-type">Key</span> <span class="hljs-type">Heap</span> <span class="hljs-keyword">where</span></span>
+  itraverse f xs = fromAscList &lt;$&gt; traverse (\(k,v) -&gt; (,) k &lt;$&gt; f k v) (itoList xs)
+  <span class="hljs-meta">{-# INLINE itraverse #-}</span>
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">HeapState</span> a</span>
+  = <span class="hljs-type">Start</span> !(<span class="hljs-type">Heap</span> a)
+  | <span class="hljs-type">Ready</span> <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Key</span> a !(<span class="hljs-type">Heap</span> a)
+  | <span class="hljs-type">Final</span> <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Key</span> a
+  | <span class="hljs-type">Finished</span>
+
+<span class="hljs-title">streamHeapWith</span> :: <span class="hljs-type">Monad</span> m =&gt; (a -&gt; a -&gt; a) -&gt; <span class="hljs-type">Maybe</span> (<span class="hljs-type">Heap</span> a) -&gt; <span class="hljs-type">Stream</span> m (<span class="hljs-type">Key</span>, a)
+<span class="hljs-title">streamHeapWith</span> f h0 = <span class="hljs-type">Stream</span> step (maybe <span class="hljs-type">Finished</span> <span class="hljs-type">Start</span> h0) <span class="hljs-type">Unknown</span> <span class="hljs-keyword">where</span>
+  step (<span class="hljs-type">Start</span> (<span class="hljs-type">Heap</span> i a xs ls rs))     = return $ <span class="hljs-type">Skip</span> $ maybe (<span class="hljs-type">Final</span> i a) (<span class="hljs-type">Ready</span> i a) $ pop xs ls rs
+  step (<span class="hljs-type">Ready</span> i a (<span class="hljs-type">Heap</span> j b xs ls rs)) = return $ <span class="hljs-keyword">case</span> compare i j <span class="hljs-keyword">of</span>
+    <span class="hljs-type">LT</span> -&gt; <span class="hljs-type">Yield</span> (i, a)      $ maybe (<span class="hljs-type">Final</span> j b) (<span class="hljs-type">Ready</span> j b) $ pop xs ls rs
+    <span class="hljs-type">EQ</span> | c &lt;- f a b -&gt; <span class="hljs-type">Skip</span> $ maybe (<span class="hljs-type">Final</span> i c) (<span class="hljs-type">Ready</span> i c) $ pop xs ls rs
+    <span class="hljs-type">GT</span> -&gt; <span class="hljs-type">Yield</span> (j, b)      $ maybe (<span class="hljs-type">Final</span> i a) (<span class="hljs-type">Ready</span> i a) $ pop xs ls rs
+  step (<span class="hljs-type">Final</span> i a) = return $ <span class="hljs-type">Yield</span> (i,a) <span class="hljs-type">Finished</span>
+  step <span class="hljs-type">Finished</span>    = return <span class="hljs-type">Done</span>
+  <span class="hljs-meta">{-# INLINE [1] step #-}</span>
+<span class="hljs-meta">{-# INLINE [0] streamHeapWith #-}</span>
+
+<span class="hljs-title">streamHeapWith0</span> :: <span class="hljs-type">Monad</span> m =&gt; (a -&gt; a -&gt; <span class="hljs-type">Maybe</span> a) -&gt; <span class="hljs-type">Maybe</span> (<span class="hljs-type">Heap</span> a) -&gt; <span class="hljs-type">Stream</span> m (<span class="hljs-type">Key</span>, a)
+<span class="hljs-title">streamHeapWith0</span> f h0 = <span class="hljs-type">Stream</span> step (maybe <span class="hljs-type">Finished</span> <span class="hljs-type">Start</span> h0) <span class="hljs-type">Unknown</span> <span class="hljs-keyword">where</span>
+  step (<span class="hljs-type">Start</span> (<span class="hljs-type">Heap</span> i a xs ls rs))     = return $ <span class="hljs-type">Skip</span> $ maybe (<span class="hljs-type">Final</span> i a) (<span class="hljs-type">Ready</span> i a) $ pop xs ls rs
+  step (<span class="hljs-type">Ready</span> i a (<span class="hljs-type">Heap</span> j b xs ls rs)) = return $ <span class="hljs-keyword">case</span> compare i j <span class="hljs-keyword">of</span>
+    <span class="hljs-type">LT</span> -&gt; <span class="hljs-type">Yield</span> (i, a) $ maybe (<span class="hljs-type">Final</span> j b) (<span class="hljs-type">Ready</span> j b) $ pop xs ls rs
+    <span class="hljs-type">EQ</span> -&gt; <span class="hljs-keyword">case</span> f a b <span class="hljs-keyword">of</span>
+      <span class="hljs-type">Nothing</span> -&gt; <span class="hljs-type">Skip</span>  $ maybe <span class="hljs-type">Finished</span> <span class="hljs-type">Start</span> $ pop xs ls rs
+      <span class="hljs-type">Just</span> c  -&gt; <span class="hljs-type">Skip</span>  $ maybe (<span class="hljs-type">Final</span> i c) (<span class="hljs-type">Ready</span> i c) $ pop xs ls rs
+    <span class="hljs-type">GT</span> -&gt; <span class="hljs-type">Yield</span> (j, b) $ maybe (<span class="hljs-type">Final</span> i a) (<span class="hljs-type">Ready</span> i a) $ pop xs ls rs
+  step (<span class="hljs-type">Final</span> i a) = return $ <span class="hljs-type">Yield</span> (i,a) <span class="hljs-type">Finished</span>
+  step <span class="hljs-type">Finished</span> = return <span class="hljs-type">Done</span>
+  <span class="hljs-meta">{-# INLINE [1] step #-}</span>
+<span class="hljs-meta">{-# INLINE [0] streamHeapWith0 #-}</span>
+
+
+
+<span class="hljs-title">main</span> = print $ (fromList [(<span class="hljs-number">10</span>,<span class="hljs-string">"hi"</span>),(<span class="hljs-number">20</span>,<span class="hljs-string">"there"</span>)] `mix` singleton <span class="hljs-number">100</span> <span class="hljs-string">"hello"</span>) `fby` singleton <span class="hljs-number">200</span> <span class="hljs-string">"goodbye"</span>
+
+</code></pre>
+<p>I've left figuring out how to write <code>_Cons</code> and <code>_Snoc</code> as an exercise for the reader.</p>
+<p>With that we can finally concatenate heaps and mix them together as needed, and the stream fusion combinators can be used after the fact to spit out a stream of values that have been merged by our desired concept of addition. What has happened is that we for the most part are able to punt considering anything later in the chain of concatenations until after we've fully explored the stuff nearer to hand.</p>
+<p>In practice this made a couple of orders of magnitude difference in the performance of the resulting code, so all this theoretical nonsense paid off.</p>
+<p>I'd like a version of this that let's me reach the asymptotic bounds on set union set and reached by Erik Demaine et al.'s tour de force <a href="http://dl.acm.org/citation.cfm?id=338634">Adaptive set intersections, unions, and differences</a>, but I don't <em>think</em> we can get there given the extra constraints that we don't fully know the contents of the streams we're skipping over in advance.</p>
+<p>-<a href="mailto:ekmett@gmail.com">Edward Kmett</a></p>
+<p>August 23 2013</p>
+<p><em>Edited September 14th, 2013</em>: Mihály Bárász pointed out to me that I had over-simplified the pairing heap implementation. I've rectified that by replacing <code>foldl mix</code> with <code>merge</code> uniformly throughout the code above. This makes a noticeable improvement in performance.</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/free"><code>free</code></a> · <a href="https://hackage.haskell.org/package/lens"><code>lens</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: School of Haskell. Date displayed by School of Haskell; may reflect a later revision.</p><p><a href="../../../source/articles/revisiting-matrix-multiplication-part-5.md" download>Article Markdown</a> · <a href="../../../source/articles/revisiting-matrix-multiplication-part-5.original.md" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2014/letter-to-a-young-haskell-enthusiast/">Letter to a Young Haskell Enthusiast →</a><a href="../../../reader/2014/cellular-automata-part-1/">Part I: From Theory to Pretty Pictures →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

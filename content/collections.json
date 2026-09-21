@@ -1,0 +1,154 @@
+[
+  {
+    "slug": "moore",
+    "title": "Moore Machines",
+    "origin": "https://www.schoolofhaskell.com/user/edwardk/moore",
+    "path": "reader/series/moore/",
+    "description": "",
+    "links": [
+      {
+        "title": "Moore for Less",
+        "origin": "https://www.schoolofhaskell.com/user/edwardk/moore/for-less"
+      }
+    ],
+    "raw": "content/original/corpus/4c872566bf0de09df4c27f6e.html"
+  },
+  {
+    "slug": "fibonacci",
+    "title": "Fibonacci",
+    "origin": "https://www.schoolofhaskell.com/user/edwardk/fibonacci",
+    "path": "reader/series/fibonacci/",
+    "description": "It is more or less a joke that all that functional programmers care about are ways to compute the Fibonacci numbers.\n\n```haskell\nfibs = 1:1:zipWith (+) fibs (tail fibs)\n```\n\nOur primary benchmark suite for Haskell is named `nofib` after all.\n\nBut what if we embrace this predilection? What tools and powers do we gain?",
+    "links": [
+      {
+        "title": "Part 1: Leonardo Random Access Lists",
+        "origin": "https://www.schoolofhaskell.com/user/edwardk/fibonacci/leonardo"
+      },
+      {
+        "title": "Part 2: Open-Ended Fibonacci Search",
+        "origin": "https://www.schoolofhaskell.com/user/edwardk/fibonacci/search"
+      }
+    ],
+    "raw": "content/original/corpus/5c5e246bb01ead416a7688a0.html"
+  },
+  {
+    "slug": "oblivious",
+    "title": "Cache-Oblivious Data Structures",
+    "origin": "https://www.schoolofhaskell.com/user/edwardk/oblivious",
+    "path": "reader/series/oblivious/",
+    "description": "Cache-Oblivious Data Structures show that by optimizing for any one cache with unknown parameters you simultaneously optimize for all caches asymptotically.\n\nAs we get more and more caches, this model becomes more and more \"true\" over time, and the ability for hand-written code to exceed it by using the cache parameters is lessened by each additional cache we add to the system.",
+    "links": [
+      {
+        "title": "Part I: Deamortized ST",
+        "origin": "https://www.schoolofhaskell.com/user/edwardk/oblivious/deamortized-st"
+      }
+    ],
+    "raw": "content/original/corpus/500ae164a159b19207401fd7.html"
+  },
+  {
+    "slug": "editorial",
+    "title": "Editorials",
+    "origin": "https://www.schoolofhaskell.com/user/edwardk/editorial",
+    "path": "reader/series/editorial/",
+    "description": "Posts of a more polemic nature",
+    "links": [
+      {
+        "title": "Procrustean Mathematics",
+        "origin": "https://www.schoolofhaskell.com/user/edwardk/editorial/procrustean-mathematics"
+      }
+    ],
+    "raw": "content/original/corpus/6fc83a20d4977fade48fa453.html"
+  },
+  {
+    "slug": "cellular-automata",
+    "title": "Cellular Automata",
+    "origin": "https://www.schoolofhaskell.com/user/edwardk/cellular-automata",
+    "path": "reader/series/cellular-automata/",
+    "description": "This is a short series in which I'm exploring ways some interesting structures in Haskell using cellular automata as motivating examples.",
+    "links": [
+      {
+        "title": "Part I: From Theory to Pretty Pictures",
+        "origin": "https://www.schoolofhaskell.com/user/edwardk/cellular-automata/part-1"
+      },
+      {
+        "title": "Part II: PNGs and Moore",
+        "origin": "https://www.schoolofhaskell.com/user/edwardk/cellular-automata/part-2"
+      },
+      {
+        "title": "Part III: A World in a Bottle",
+        "origin": "https://www.schoolofhaskell.com/user/edwardk/cellular-automata/part-3"
+      }
+    ],
+    "raw": "content/original/corpus/c205219b2edb5ae971ae34a7.html"
+  },
+  {
+    "slug": "recursion-schemes",
+    "title": "Recursion Schemes",
+    "origin": "https://www.schoolofhaskell.com/user/edwardk/recursion-schemes",
+    "path": "reader/series/recursion-schemes/",
+    "description": "These posts may eventually grow into a taxonomy of recursion schemes. For now it consists of an old Knol on catamorphisms that I wrote that no longer has a home.",
+    "links": [
+      {
+        "title": "Catamorphisms",
+        "origin": "https://www.schoolofhaskell.com/user/edwardk/recursion-schemes/catamorphisms"
+      }
+    ],
+    "raw": "content/original/corpus/d3ad46f5b2b2f047994e5f40.html"
+  },
+  {
+    "slug": "revisiting-matrix-multiplication",
+    "title": "Revisiting Matrix Multiplication",
+    "origin": "https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication",
+    "path": "reader/series/revisiting-matrix-multiplication/",
+    "description": "This series is a rather lazy exploration of how to work with sparse data in Morton order. Along the way we'll be composing a number of useful data structures and twiddling a lot of bits.",
+    "links": [
+      {
+        "title": "Part I: Bit Shuffling with Lenses and Isomorphisms",
+        "origin": "https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication/part-1"
+      },
+      {
+        "title": "Part II: The Zen of Z-Ordering",
+        "origin": "https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication/part-2"
+      },
+      {
+        "title": "Part III: Extending Vector",
+        "origin": "https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication/part-3"
+      },
+      {
+        "title": "Part IV: IntMap!?",
+        "origin": "https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication/part-4"
+      },
+      {
+        "title": "Part V: Heaps of Performance",
+        "origin": "https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication/part-5"
+      },
+      {
+        "title": "Part VI: A Most Significant Comparison",
+        "origin": "https://www.schoolofhaskell.com/user/edwardk/revisiting-matrix-multiplication/part-6"
+      }
+    ],
+    "raw": "content/original/corpus/03bcba677649dc6ab9f9c7e6.html"
+  },
+  {
+    "slug": "snippets",
+    "title": "Snippets",
+    "origin": "https://www.schoolofhaskell.com/user/edwardk/snippets",
+    "path": "reader/series/snippets/",
+    "description": "This is a holding bin for short interactive code-snippets that aren't worth a whole tutorial.",
+    "links": [
+      {
+        "title": "The free theorem for fmap",
+        "origin": "https://www.schoolofhaskell.com/user/edwardk/snippets/fmap"
+      },
+      {
+        "title": "Once",
+        "origin": "https://www.schoolofhaskell.com/user/edwardk/snippets/once"
+      },
+      {
+        "title": "Mandelbrot",
+        "origin": "https://www.schoolofhaskell.com/user/edwardk/snippets/mandelbrot"
+      }
+    ],
+    "raw": "content/original/corpus/30e2ec6b124c56ea41be90a7.html"
+  }
+]

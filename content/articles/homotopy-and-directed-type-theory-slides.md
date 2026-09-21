@@ -1,0 +1,1 @@
+As requested, here are the slides from Dan Doel's excellent presentation on [Homotopy and Directed Type Theory](http://comonad.com/reader/wp-content/uploads/2011/10/slides.pdf) from this past Monday's [Boston Haskell](http://groups.google.com/group/bostonhaskell/browse_thread/thread/9892caece9ebb4d4).

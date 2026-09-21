@@ -1,0 +1,24 @@
+{
+  "reviewed": "2026-09-21",
+  "method": "Explicit reviewed selections; all unselected records preserved in the raw source.",
+  "comments": [
+    {
+      "id": "comment-16531",
+      "author": "Edward Kmett",
+      "date": "April 29th, 2010 at 11:06 am",
+      "markdown": "@Dougal:\n\nYou’ll still need to use mappend to define them, but a <> b — is so much easier on the eyes than a \\`mappend\\` b when it comes to using them."
+    }
+  ],
+  "decisions": [
+    {
+      "id": "comment-16529",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-16531",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    }
+  ]
+}

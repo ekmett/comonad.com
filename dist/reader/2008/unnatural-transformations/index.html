@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unnatural Transformations · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Category Theory · Comonads · Haskell · Monads · Uncategorized</span><span>Edward Kmett · <time datetime="2008-04-26">26 April 2008</time></span></div><h1>Unnatural Transformations</h1></header><article class="prose"><span id="more-50"></span><p>Back in the days of <a href="http://citeseer.ist.psu.edu/41091.html">HYLO</a>, it was common to write hylomorphisms with an additional natural transformation in them. Well, I was still coding in evil imperative languages back then, but I have it on reliable, er.. well supposition, that this is probably the case, or at least that they liked to do it back in the HYLO papers anyways.</p>
+<p>Transcoding the category theory mumbo-jumbo into Haskell, so I can have a larger audience, we get the following 'frat combinator' -- you can blame Jules Bean from #haskell for that.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">hyloEta</span> :: <span class="hljs-type">Functor</span> f =&gt;
+     (g b -&gt; b) -&gt;
+     (<span class="hljs-keyword">forall</span> a. f a -&gt; g a) -&gt;
+     (a -&gt; f a)
+<span class="hljs-title">hyloEta</span> phi eta psi = phi . eta . fmap (hyloEta phi eta psi) . psi
+</code></pre>
+<p>We placed eta in the middle of the argument list because it is evocative of the fact that it occurs between phi and psi, and because that seems to be where everyone else puts it.</p>
+<p>Now, clearly, we could roll eta into phi and get the more traditional hylo where f = g. Less obviously we could roll it into psi because it is a <a href="http://en.wikipedia.org/wiki/Natural_transformation">natural transformation</a> and so the following diagram commutes:</p>
+<figure class="category-diagram"><img src="../../../figures/unnatural-square.svg" alt="F(A), F(B), G(A), G(B); F⟦f, g⟧, ηₐ, ηᵦ, G⟦f, g⟧"></figure>
+<p>This 'Hylo Shift' property (mentioned in that same paper) allows us to move the 'eta' term into the phi term or into the psi term as we see fit. Since we can move the eta term around and it adds no value to the combinator, it quietly returned to the void from whence it came. hyloEta offers us no more power than hylo, so out it goes.</p>
+<p>So, if its dead, why talk about it?</p>
+<p>Well, when we move to a generalized hylomorphism we have a design decision that has some performance effects, and my initial pass at a generalized hylomorphism isn't as general as it could be. When we open up the generalized hylomorphism and look at its guts (check the slightly updated <a href="../../../haskell/Chronomorphism.hs">source code</a> from yesterday) we see:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">g_hylo'</span> w m f g = liftW f . w . fmap duplicate . fmap (g_hylo' w m f g) . fmap join . m . liftM g
+</code></pre>
+<p>expanding that to include the eta term gives us 4 candidate locations where we can abuse its status as a natural transformation to slot it in.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">g_hylo'1</span> w m f eta g =
+    liftW f .
+    w . eta . fmap duplicate . fmap (g_hylo' w m f g) . fmap join . m .
+    liftM g
+<span class="hljs-title">g_hylo'2</span> w m f eta g =
+    liftW f .
+    w . fmap duplicate . eta . fmap (g_hylo' w m f g) . fmap join . m .
+    liftM g
+<span class="hljs-title">g_hylo'3</span> w m f eta g =
+    liftW f .
+    w . fmap duplicate . fmap (g_hylo' w m f g) . eta . fmap join . m .
+    liftM g
+<span class="hljs-title">g_hylo'4</span> w m f eta g =
+    liftW f .
+    w . fmap duplicate . fmap (g_hylo' w m f g) . fmap join . eta . m .
+    liftM g
+</code></pre>
+<p>g-hylo'1 and g_hylo'4 are particularly interesting because we have functions sitting right next to them that we can fuse it into by generalizing the type signatures only slightly and because that leaves a run of 3 fmaps in a row that we can fuse together. If we generalize the signatures of both w and m we get the following definition that allows you to place it on the left or the right, and for g_hylo to not have to care about it.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">-- new and improved!</span>
+<span class="hljs-title">g_hylo</span> :: (<span class="hljs-type">Comonad</span> w, <span class="hljs-type">Functor</span> f, <span class="hljs-type">Monad</span> m) =&gt;
+    (<span class="hljs-keyword">forall</span> a. f (w a) -&gt; w (g a)) -&gt;
+    (<span class="hljs-keyword">forall</span> a. m (e a) -&gt; f (m a)) -&gt;
+    (g (w b) -&gt; b) -&gt;
+    (a -&gt; e (m a)) -&gt;
+    (a -&gt; b)
+<span class="hljs-title">g_hylo</span> w m f g = extract . g_hylo' w m f g . return
+
+<span class="hljs-comment">-- | the kernel of the generalized hylomorphism</span>
+<span class="hljs-title">g_hylo'</span> :: (<span class="hljs-type">Comonad</span> w, <span class="hljs-type">Functor</span> f, <span class="hljs-type">Monad</span> m) =&gt;
+     (<span class="hljs-keyword">forall</span> a. f (w a) -&gt; w (g a)) -&gt;
+     (<span class="hljs-keyword">forall</span> a. m (e a) -&gt; f (m a)) -&gt;
+     (g (w b) -&gt; b) -&gt;
+     (a -&gt; e (m a)) -&gt;
+     (m a -&gt; w b)
+<span class="hljs-title">g_hylo'</span> w m f g = liftW f . w . fmap (duplicate . g_hylo' w m f g . join) . m . liftM g
+</code></pre>
+<p>The slightly generalized signatures for our two distributive laws now allow them to change functors on the way through, but we shed a superfluous argument.</p>
+<p>Note that while 3 'Functors' e, f and g are involved, only f needs to be a Functor in Hask because we do the duplication, hylomorphism and join all inside f in either case. And most of the time e = f = g. For instance e or g could be <a href="../../../reader/2008/rotten-bananas/">exponential</a> or <a href="http://mathworld.wolfram.com/ContravariantFunctor.html">contravariant</a>.</p>
+<p>So now that we've generalized our generalized hylomorphism we're done right?</p>
+<p>Not quite. Unfortunately the same trick doesn't work for the <a href="../../../reader/2008/time-for-chronomorphisms/">generalized chronomorphism</a> defined last night.</p>
+<p>To see why, we have open up chrono and peek at its guts.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">chrono</span> = g_chrono id id
+</code></pre>
+<p>Well, that was boring. Digging deeper we find:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">g_chrono</span> :: (<span class="hljs-type">Functor</span> f, <span class="hljs-type">Functor</span> g, <span class="hljs-type">Functor</span> m, <span class="hljs-type">Functor</span> w) =&gt;
+      (<span class="hljs-keyword">forall</span> b. f (w b) -&gt; w (f b)) -&gt;
+      (<span class="hljs-keyword">forall</span> b. m (f b) -&gt; f (m b)) -&gt;
+      (f (<span class="hljs-type">Cofree</span> w b) -&gt; b) -&gt;
+      (a -&gt; f (<span class="hljs-type">Free</span> m a)) -&gt;
+      a -&gt; b
+<span class="hljs-title">g_chrono</span> w m = g_hylo (distCofree w) (distFree m)
+</code></pre>
+<p>Sticking in hylo's vestigial natural transformation, we get:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">g_chronoEta</span> :: (<span class="hljs-type">Functor</span> f, <span class="hljs-type">Functor</span> g, <span class="hljs-type">Functor</span> m, <span class="hljs-type">Functor</span> w) =&gt;
+      (<span class="hljs-keyword">forall</span> b. g (w b) -&gt; w (g b)) -&gt;
+      (<span class="hljs-keyword">forall</span> b. m (f b) -&gt; f (m b)) -&gt;
+      (g (<span class="hljs-type">Cofree</span> w b) -&gt; b) -&gt;
+      (<span class="hljs-keyword">forall</span> c. f a -&gt; g a) -&gt;
+      (a -&gt; f (<span class="hljs-type">Free</span> m a)) -&gt;
+      a -&gt; b
+<span class="hljs-title">g_chronoEta</span> w m f eta g = g_hylo (distCofree w . eta) (distFree m) f g
+<span class="hljs-comment">-- g_chronoEta w m f eta g = g_hylo (distCofree w) (eta . distFree m) f g</span>
+</code></pre>
+<p>And so, we roll up our sleeves ready to merge it into something, be it f, g, w, m, anything, but it seems the only places eta can go is to merge into one of the distributive laws, because f and g are executed lifted.</p>
+<p>Unfortunately, the user passed us rules for distributing the base functor of the cofree comonad and free monad, not for distributing the whole cofree comonad. And my efforts to generalize distFree and distCofree have thus far met with some frustration, there isn't much to grab onto there to write the more general signature.</p>
+<p>Ideally, I'd just be able to merge it into one of the distributive laws. Since the HYLO guys liked to put it on the left of the recursive call to the hylomorphism, we'll look at distCofree. The desired signature for distCofree' would be:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">distCofree'</span> ::   (<span class="hljs-type">Functor</span> f, <span class="hljs-type">Functor</span> g, <span class="hljs-type">Functor</span> h) =&gt;
+    (<span class="hljs-keyword">forall</span> a. f (h a) -&gt; h (g a)) -&gt;
+    f (<span class="hljs-type">Cofree</span> h a) -&gt; <span class="hljs-type">Cofree</span> h (g a)
+</code></pre>
+<p>and it should have the property that:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">distCofree'</span> (f . eta) == distCofree' f . eta
+</code></pre>
+<p>Without that, g_chronoEta is more powerful than g_chrono. Naturally.</p>
+<p><a href="../../../haskell/Chronomorphism.hs">Source Code</a></p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/recursion-schemes"><code>recursion-schemes</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/unnatural-transformations.md" download>Article Markdown</a> · <a href="../../../source/articles/unnatural-transformations.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2008/generalized-hylomorphisms/">Generalized Hylomorphisms →</a><a href="../../../reader/2008/time-for-chronomorphisms/">Time for Chronomorphisms →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

@@ -1,0 +1,1026 @@
+{
+  "schemaVersion": "1.0",
+  "researchedOn": "2026-09-21",
+  "scope": "Additional authored writing, papers and interviews outside Comonad.Reader and School of Haskell. Optional entries are explicitly marked.",
+  "datePolicy": "date is ISO day or null; preserve year/month through dateValue/datePrecision. Wavelets original date unknown and archive upper bound separate. Duplicate interview manifestations share id with external-talks.json.",
+  "articles": [
+    {
+      "id": "kmett-1999-harmless-algorithms-01",
+      "title": "Harmless Algorithms — Issue 01: Fine Occlusion Culling Algorithms",
+      "authors": [
+        "Edward Kmett"
+      ],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "author",
+          "alias": "Harmless"
+        }
+      ],
+      "publisher": "Flipcode",
+      "medium": [
+        "technical_article",
+        "column"
+      ],
+      "articleUrl": "https://flipcode.com/archives/Harmless_Algorithms-Issue_01_Fine_Occlusion_Culling_Algorithms.shtml",
+      "url": "https://flipcode.com/archives/Harmless_Algorithms-Issue_01_Fine_Occlusion_Culling_Algorithms.shtml",
+      "date": "1999-04-09",
+      "dateValue": "1999-04-09",
+      "dateBasis": "publication",
+      "datePrecision": "day",
+      "dateConfidence": "high",
+      "dates": [
+        {
+          "value": "1999-04-09",
+          "type": "publication",
+          "precision": "day",
+          "evidence": "Flipcode byline and primary archive index agree."
+        },
+        {
+          "value": "1999-04-08",
+          "type": "author_signature",
+          "precision": "day",
+          "evidence": "Date printed at the article’s closing signature; may precede publication."
+        }
+      ],
+      "description": "Harmless Algorithms — Issue 01: Fine Occlusion Culling Algorithms — Flipcode.",
+      "sourceUrls": [
+        "https://flipcode.com/archives/Harmless_Algorithms-Issue_01_Fine_Occlusion_Culling_Algorithms.shtml",
+        "https://flipcode.com/archives/articles.shtml"
+      ],
+      "preservationSources": [
+        "https://flipcode.com/archives/Harmless_Algorithms-Issue_01_Fine_Occlusion_Culling_Algorithms.shtml"
+      ],
+      "materials": [
+        {
+          "kind": "html_article",
+          "url": "https://flipcode.com/archives/Harmless_Algorithms-Issue_01_Fine_Occlusion_Culling_Algorithms.shtml",
+          "access": "Full public HTML article; code/diagrams inline where present."
+        }
+      ],
+      "uncertainty": [
+        "Surveys S-buffers, binary span trees, C-buffers, active edge lists/heaps, triage masks and beam trees. Some pages retain a boilerplate copyright1999 even when dated2000/2001; use byline/publication date. No coauthors named."
+      ],
+      "inclusion": "recommended",
+      "sameWorkAsVideoEntry": null,
+      "seriesId": "harmless-algorithms",
+      "sequence": 1,
+      "sequenceTotal": 4
+    },
+    {
+      "id": "kmett-1999-harmless-algorithms-02",
+      "title": "Harmless Algorithms — Issue 02: Scene Traversal Algorithms",
+      "authors": [
+        "Edward Kmett"
+      ],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "author",
+          "alias": "Harmless"
+        }
+      ],
+      "publisher": "Flipcode",
+      "medium": [
+        "technical_article",
+        "column"
+      ],
+      "articleUrl": "https://flipcode.com/archives/Harmless_Algorithms-Issue_02_Scene_Traversal_Algorithms.shtml",
+      "url": "https://flipcode.com/archives/Harmless_Algorithms-Issue_02_Scene_Traversal_Algorithms.shtml",
+      "date": "1999-04-30",
+      "dateValue": "1999-04-30",
+      "dateBasis": "publication",
+      "datePrecision": "day",
+      "dateConfidence": "high",
+      "dates": [
+        {
+          "value": "1999-04-30",
+          "type": "publication",
+          "precision": "day",
+          "evidence": "Flipcode byline and primary archive index agree."
+        },
+        {
+          "value": "1999-04-29",
+          "type": "author_signature",
+          "precision": "day",
+          "evidence": "Date printed at the article’s closing signature; may precede publication."
+        }
+      ],
+      "description": "Harmless Algorithms — Issue 02: Scene Traversal Algorithms — Flipcode.",
+      "sourceUrls": [
+        "https://flipcode.com/archives/Harmless_Algorithms-Issue_02_Scene_Traversal_Algorithms.shtml",
+        "https://flipcode.com/archives/articles.shtml"
+      ],
+      "preservationSources": [
+        "https://flipcode.com/archives/Harmless_Algorithms-Issue_02_Scene_Traversal_Algorithms.shtml"
+      ],
+      "materials": [
+        {
+          "kind": "html_article",
+          "url": "https://flipcode.com/archives/Harmless_Algorithms-Issue_02_Scene_Traversal_Algorithms.shtml",
+          "access": "Full public HTML article; code/diagrams inline where present."
+        }
+      ],
+      "uncertainty": [
+        "Discusses traversal of BSP, portal and spatial-subdivision structures. Some pages retain a boilerplate copyright1999 even when dated2000/2001; use byline/publication date. No coauthors named."
+      ],
+      "inclusion": "recommended",
+      "sameWorkAsVideoEntry": null,
+      "seriesId": "harmless-algorithms",
+      "sequence": 2,
+      "sequenceTotal": 4
+    },
+    {
+      "id": "kmett-2000-harmless-algorithms-03",
+      "title": "Harmless Algorithms — Issue 03: Design Patterns And 3D Gaming",
+      "authors": [
+        "Edward Kmett"
+      ],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "author",
+          "alias": "Harmless"
+        }
+      ],
+      "publisher": "Flipcode",
+      "medium": [
+        "technical_article",
+        "column"
+      ],
+      "articleUrl": "https://flipcode.com/archives/Harmless_Algorithms-Issue_03_Design_Patterns_And_3D_Gaming.shtml",
+      "url": "https://flipcode.com/archives/Harmless_Algorithms-Issue_03_Design_Patterns_And_3D_Gaming.shtml",
+      "date": "2000-01-26",
+      "dateValue": "2000-01-26",
+      "dateBasis": "publication",
+      "datePrecision": "day",
+      "dateConfidence": "high",
+      "dates": [
+        {
+          "value": "2000-01-26",
+          "type": "publication",
+          "precision": "day",
+          "evidence": "Flipcode byline and primary archive index agree."
+        },
+        {
+          "value": "2000-01-26",
+          "type": "author_signature",
+          "precision": "day",
+          "evidence": "Date printed at the article’s closing signature; may precede publication."
+        }
+      ],
+      "description": "Harmless Algorithms — Issue 03: Design Patterns And 3D Gaming — Flipcode.",
+      "sourceUrls": [
+        "https://flipcode.com/archives/Harmless_Algorithms-Issue_03_Design_Patterns_And_3D_Gaming.shtml",
+        "https://flipcode.com/archives/articles.shtml"
+      ],
+      "preservationSources": [
+        "https://flipcode.com/archives/Harmless_Algorithms-Issue_03_Design_Patterns_And_3D_Gaming.shtml"
+      ],
+      "materials": [
+        {
+          "kind": "html_article",
+          "url": "https://flipcode.com/archives/Harmless_Algorithms-Issue_03_Design_Patterns_And_3D_Gaming.shtml",
+          "access": "Full public HTML article; code/diagrams inline where present."
+        }
+      ],
+      "uncertainty": [
+        "Design-pattern techniques for 3D engine code, including a typed wrapper around abstract implementation. Some pages retain a boilerplate copyright1999 even when dated2000/2001; use byline/publication date. No coauthors named."
+      ],
+      "inclusion": "recommended",
+      "sameWorkAsVideoEntry": null,
+      "seriesId": "harmless-algorithms",
+      "sequence": 3,
+      "sequenceTotal": 4
+    },
+    {
+      "id": "kmett-2001-harmless-algorithms-04",
+      "title": "Harmless Algorithms — Issue 04: A Hybrid Approach to Visibility",
+      "authors": [
+        "Edward Kmett"
+      ],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "author",
+          "alias": "Harmless"
+        }
+      ],
+      "publisher": "Flipcode",
+      "medium": [
+        "technical_article",
+        "column"
+      ],
+      "articleUrl": "https://flipcode.com/archives/Harmless_Algorithms-Issue_04_A_Hybrid_Approach_to_Visibility.shtml",
+      "url": "https://flipcode.com/archives/Harmless_Algorithms-Issue_04_A_Hybrid_Approach_to_Visibility.shtml",
+      "date": "2001-02-19",
+      "dateValue": "2001-02-19",
+      "dateBasis": "publication",
+      "datePrecision": "day",
+      "dateConfidence": "high",
+      "dates": [
+        {
+          "value": "2001-02-19",
+          "type": "publication",
+          "precision": "day",
+          "evidence": "Flipcode byline and primary archive index agree."
+        },
+        {
+          "value": "2001-02-03",
+          "type": "author_signature",
+          "precision": "day",
+          "evidence": "Date printed at the article’s closing signature; may precede publication."
+        }
+      ],
+      "description": "Harmless Algorithms — Issue 04: A Hybrid Approach to Visibility — Flipcode.",
+      "sourceUrls": [
+        "https://flipcode.com/archives/Harmless_Algorithms-Issue_04_A_Hybrid_Approach_to_Visibility.shtml",
+        "https://flipcode.com/archives/articles.shtml"
+      ],
+      "preservationSources": [
+        "https://flipcode.com/archives/Harmless_Algorithms-Issue_04_A_Hybrid_Approach_to_Visibility.shtml"
+      ],
+      "materials": [
+        {
+          "kind": "html_article",
+          "url": "https://flipcode.com/archives/Harmless_Algorithms-Issue_04_A_Hybrid_Approach_to_Visibility.shtml",
+          "access": "Full public HTML article; code/diagrams inline where present."
+        }
+      ],
+      "uncertainty": [
+        "Combines visibility and spatial-subdivision approaches from the earlier columns in a hybrid engine. Some pages retain a boilerplate copyright1999 even when dated2000/2001; use byline/publication date. No coauthors named."
+      ],
+      "inclusion": "recommended",
+      "sameWorkAsVideoEntry": null,
+      "seriesId": "harmless-algorithms",
+      "sequence": 4,
+      "sequenceTotal": 4
+    },
+    {
+      "id": "kmett-2005-real-time-viseme-extraction",
+      "title": "Real-time viseme extraction",
+      "authors": [
+        "Edward A. Kmett"
+      ],
+      "contributors": [
+        {
+          "name": "Edward A. Kmett",
+          "role": "author"
+        }
+      ],
+      "publisher": "Eastern Michigan University, Senior Honors Theses and Projects 96",
+      "medium": [
+        "thesis",
+        "paper"
+      ],
+      "articleUrl": "https://commons.emich.edu/honors/96/",
+      "url": "https://commons.emich.edu/honors/96/",
+      "date": null,
+      "dateValue": "2005",
+      "dateBasis": "approval",
+      "datePrecision": "year",
+      "dateConfidence": "high for work/year; medium for disambiguating author identity",
+      "dates": [
+        {
+          "value": "2005",
+          "type": "approval",
+          "precision": "year",
+          "evidence": "EMU repository explicitly labels Date Approved: 2005."
+        },
+        {
+          "value": "2009-10-01",
+          "type": "repository_download_tracking_start",
+          "precision": "day",
+          "evidence": "Landing page says Downloads Since October 01, 2009; not evidence for original publication date."
+        }
+      ],
+      "description": "Real-time viseme extraction — Eastern Michigan University, Senior Honors Theses and Projects 96.",
+      "sourceUrls": [
+        "https://commons.emich.edu/honors/96/",
+        "https://commons.emich.edu/2009.html"
+      ],
+      "preservationSources": [
+        "https://commons.emich.edu/honors/96/"
+      ],
+      "materials": [
+        {
+          "kind": "pdf",
+          "url": "https://commons.emich.edu/honors/96/",
+          "access": "Public Download link on landing page; direct target could not be retrieved by browsing tool."
+        }
+      ],
+      "uncertainty": [
+        "No month/day established. Education and graphics background are consistent with Edward Kmett; repository has no profile identifier. Do not manufacture January 1 or use 2009 deposit chronology as thesis date."
+      ],
+      "inclusion": "recommended",
+      "sameWorkAsVideoEntry": null
+    },
+    {
+      "id": "kmett-2009-near-duplicate-image-detection",
+      "title": "Near-Duplicate Image Detection — answer by Edward Kmett",
+      "authors": [
+        "Edward Kmett"
+      ],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "answer author"
+        }
+      ],
+      "publisher": "Stack Overflow",
+      "medium": [
+        "technical_answer"
+      ],
+      "articleUrl": "https://stackoverflow.com/questions/1034900/near-duplicate-image-detection",
+      "url": "https://stackoverflow.com/questions/1034900/near-duplicate-image-detection",
+      "date": "2009-07-02",
+      "dateValue": "2009-07-02T20:23:00",
+      "dateBasis": "publication",
+      "datePrecision": "minute",
+      "dateConfidence": "high",
+      "dates": [
+        {
+          "value": "2009-07-02T20:23:00",
+          "type": "publication",
+          "precision": "minute",
+          "evidence": "Original answer timestamp displayed by Stack Overflow; timezone not explicitly established in page text."
+        },
+        {
+          "value": "2009-07-02T23:26:00",
+          "type": "revision",
+          "precision": "minute",
+          "evidence": "Edited timestamp shown for same answer."
+        }
+      ],
+      "description": "Near-Duplicate Image Detection — answer by Edward Kmett — Stack Overflow.",
+      "sourceUrls": [
+        "https://stackoverflow.com/questions/1034900/near-duplicate-image-detection"
+      ],
+      "preservationSources": [
+        "https://stackoverflow.com/questions/1034900/near-duplicate-image-detection"
+      ],
+      "materials": [],
+      "uncertainty": [
+        "Optional curated technical writing, not a separately commissioned article. Link specifically to Kmett’s answer when obtaining an answer permalink; original question has multiple authors. Preserve revision/attribution history if republishing."
+      ],
+      "inclusion": "optional",
+      "sameWorkAsVideoEntry": null
+    },
+    {
+      "id": "kmett-2013-haskellcast-lenses",
+      "title": "Episode 1 — Edward Kmett on Lenses",
+      "authors": [],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "guest"
+        },
+        {
+          "name": "Rein Henrichs",
+          "role": "host"
+        },
+        {
+          "name": "Chris Forno",
+          "role": "host"
+        }
+      ],
+      "publisher": "The Haskell Cast",
+      "medium": [
+        "podcast",
+        "interview",
+        "video"
+      ],
+      "articleUrl": "https://www.haskellcast.com/episode/001-edward-kmett-on-lenses",
+      "url": "https://www.haskellcast.com/episode/001-edward-kmett-on-lenses",
+      "date": "2013-08-26",
+      "dateValue": "2013-08-26",
+      "dateBasis": "publication",
+      "datePrecision": "day",
+      "dateConfidence": "high",
+      "dates": [
+        {
+          "value": "2013-08-04",
+          "type": "recording",
+          "precision": "day",
+          "evidence": "Original episode page explicitly gives Recorded: 2013-08-04."
+        },
+        {
+          "value": "2013-08-26",
+          "type": "publication",
+          "precision": "day",
+          "evidence": "Original episode page explicitly gives Published: 2013-08-26."
+        },
+        {
+          "value": "2013-09-23",
+          "type": "video_upload",
+          "precision": "day",
+          "evidence": "Official haskellcast channel watch-page metadata: 2013-09-23T05:41:23-07:00; description explicitly identifies uncut video of episode001."
+        }
+      ],
+      "description": "Episode 1 — Edward Kmett on Lenses — The Haskell Cast.",
+      "sourceUrls": [
+        "https://www.haskellcast.com/episode/001-edward-kmett-on-lenses",
+        "https://www.youtube.com/watch?v=6GNDzrgFhGM"
+      ],
+      "preservationSources": [
+        "https://www.haskellcast.com/episode/001-edward-kmett-on-lenses"
+      ],
+      "materials": [
+        {
+          "kind": "mp3",
+          "url": "https://www.haskellcast.com/episode/001-edward-kmett-on-lenses",
+          "access": "Public Download MP3 link provided; direct S3 link failed retrieval."
+        },
+        {
+          "kind": "video",
+          "url": "https://www.haskellcast.com/episode/001-edward-kmett-on-lenses",
+          "access": "Uncut video embedded on same episode page."
+        },
+        {
+          "kind": "video",
+          "url": "https://www.youtube.com/watch?v=6GNDzrgFhGM",
+          "verification": "Direct metadata: official haskellcast uploader; description links exact original episode page.",
+          "uploadDate": "2013-09-23"
+        }
+      ],
+      "uncertainty": [
+        "One interview with edited audio and uncut video. Prefer publication date in archive, disclose recording date. Do not create independent duplicate entries for audio and video. The uncut video upload is 2013-09-23, after the podcast release; preserve it as a manifestation of the same episode."
+      ],
+      "inclusion": "recommended",
+      "sameWorkAsVideoEntry": "kmett-2013-haskellcast-lenses"
+    },
+    {
+      "id": "kmett-2013-11-hcar-contributions",
+      "title": "Edward Kmett’s contributions to Haskell Communities and Activities Report, 2013-11",
+      "authors": [
+        "Edward Kmett"
+      ],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "author of sections explicitly labeled Report by; not sole author of issue"
+        }
+      ],
+      "publisher": "Haskell Communities and Activities Report",
+      "medium": [
+        "collection",
+        "technical_report"
+      ],
+      "articleUrl": "https://www.haskell.org/communities/11-2013/html/report.html",
+      "url": "https://www.haskell.org/communities/11-2013/html/report.html",
+      "date": null,
+      "dateValue": "2013-11",
+      "dateBasis": "publication",
+      "datePrecision": "month",
+      "dateConfidence": "high for issue/month and section attribution",
+      "dates": [
+        {
+          "value": "2013-11",
+          "type": "publication",
+          "precision": "month",
+          "evidence": "Issue heading identifies Twenty-Fifth Edition, 2013-11."
+        }
+      ],
+      "description": "Edward Kmett’s contributions to Haskell Communities and Activities Report, 2013-11 — Haskell Communities and Activities Report.",
+      "sourceUrls": [
+        "https://www.haskell.org/communities/11-2013/html/report.html"
+      ],
+      "preservationSources": [
+        "https://www.haskell.org/communities/11-2013/html/report.html"
+      ],
+      "materials": [
+        {
+          "kind": "pdf",
+          "url": "https://www.haskell.org/communities/11-2013/report.pdf",
+          "access": "Public whole-issue PDF; includes many other authors."
+        }
+      ],
+      "uncertainty": [
+        "Optional collection entry, not every short package notice as an article. Compare successive issues before importing repeated text. Keep section-level participant credit (machines: Anthony Cowley, Shachaf Ben-Kiki, Paul Chiusano, Nathan van Doorn; profunctors: Shachaf Ben-Kiki, Elliott Hird). Participants are project collaborators, not automatically report coauthors. Many sections link to already-covered Comonad.Reader or School of Haskell pieces."
+      ],
+      "inclusion": "optional",
+      "sameWorkAsVideoEntry": null
+    },
+    {
+      "id": "kmett-2014-05-hcar-contributions",
+      "title": "Edward Kmett’s contributions to Haskell Communities and Activities Report, 2014-05",
+      "authors": [
+        "Edward Kmett"
+      ],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "author of sections explicitly labeled Report by; not sole author of issue"
+        }
+      ],
+      "publisher": "Haskell Communities and Activities Report",
+      "medium": [
+        "collection",
+        "technical_report"
+      ],
+      "articleUrl": "https://www.haskell.org/communities/05-2014/html/report.html",
+      "url": "https://www.haskell.org/communities/05-2014/html/report.html",
+      "date": null,
+      "dateValue": "2014-05",
+      "dateBasis": "publication",
+      "datePrecision": "month",
+      "dateConfidence": "high for issue/month and section attribution",
+      "dates": [
+        {
+          "value": "2014-05",
+          "type": "publication",
+          "precision": "month",
+          "evidence": "Issue heading identifies Twenty-Sixth Edition, 2014-05."
+        }
+      ],
+      "description": "Edward Kmett’s contributions to Haskell Communities and Activities Report, 2014-05 — Haskell Communities and Activities Report.",
+      "sourceUrls": [
+        "https://www.haskell.org/communities/05-2014/html/report.html"
+      ],
+      "preservationSources": [
+        "https://www.haskell.org/communities/05-2014/html/report.html"
+      ],
+      "materials": [
+        {
+          "kind": "pdf",
+          "url": "https://www.haskell.org/communities/05-2014/report.pdf",
+          "access": "Public whole-issue PDF; includes many other authors."
+        }
+      ],
+      "uncertainty": [
+        "Optional collection entry, not every short package notice as an article. Compare successive issues before importing repeated text. Keep section-level participant credit (machines: Anthony Cowley, Shachaf Ben-Kiki, Paul Chiusano, Nathan van Doorn; profunctors: Shachaf Ben-Kiki, Elliott Hird). Participants are project collaborators, not automatically report coauthors. Many sections link to already-covered Comonad.Reader or School of Haskell pieces."
+      ],
+      "inclusion": "optional",
+      "sameWorkAsVideoEntry": null
+    },
+    {
+      "id": "kmett-2016-applicativedo",
+      "title": "Desugaring Haskell’s do-Notation into Applicative Operations",
+      "authors": [
+        "Simon Marlow",
+        "Simon Peyton Jones",
+        "Edward Kmett",
+        "Andrey Mokhov"
+      ],
+      "contributors": [
+        {
+          "name": "Simon Marlow",
+          "role": "coauthor"
+        },
+        {
+          "name": "Simon Peyton Jones",
+          "role": "coauthor"
+        },
+        {
+          "name": "Edward Kmett",
+          "role": "coauthor"
+        },
+        {
+          "name": "Andrey Mokhov",
+          "role": "coauthor"
+        }
+      ],
+      "publisher": "Haskell Symposium 2016 / ACM",
+      "medium": [
+        "paper",
+        "conference_paper"
+      ],
+      "articleUrl": "https://simon.peytonjones.org/desugaring-haskell/",
+      "url": "https://simon.peytonjones.org/desugaring-haskell/",
+      "date": null,
+      "dateValue": "2016-09",
+      "dateBasis": "proceedings_publication",
+      "datePrecision": "month",
+      "dateConfidence": "high",
+      "dates": [
+        {
+          "value": "2016-09-01",
+          "type": "author_page_publication",
+          "precision": "day",
+          "evidence": "Simon Peyton Jones’s publication page explicitly says Published: September 1, 2016. May reflect month-level metadata represented as day 1; treat separately from formal publication date."
+        },
+        {
+          "value": "2016-09-22",
+          "type": "scheduled_presentation",
+          "precision": "day",
+          "evidence": "Haskell Symposium program Thursday September 22, 15:45; does not establish which coauthor spoke."
+        },
+        {
+          "value": "2016-09",
+          "type": "proceedings_publication",
+          "precision": "month",
+          "evidence": "Final proceedings PDF identifies Haskell’16 September 22–23, 2016 and DOI; no exact online publication date verified."
+        }
+      ],
+      "description": "Desugaring Haskell’s do-Notation into Applicative Operations — Haskell Symposium 2016 / ACM.",
+      "sourceUrls": [
+        "https://simon.peytonjones.org/desugaring-haskell/",
+        "https://www.haskell.org/haskell-symposium/2016/",
+        "https://www.microsoft.com/en-us/research/wp-content/uploads/2016/08/desugaring-haskell-haskell16.pdf"
+      ],
+      "preservationSources": [
+        "https://simon.peytonjones.org/desugaring-haskell/"
+      ],
+      "materials": [
+        {
+          "kind": "pdf",
+          "url": "https://simon.peytonjones.org/assets/pdfs/desugaring-haskell.pdf",
+          "access": "Public author-hosted PDF."
+        },
+        {
+          "kind": "pdf",
+          "url": "https://www.microsoft.com/en-us/research/wp-content/uploads/2016/08/desugaring-haskell-haskell16.pdf",
+          "access": "Public Microsoft Research final paper."
+        },
+        {
+          "kind": "doi",
+          "url": "https://doi.org/10.1145/2976002.2976007",
+          "access": "DOI printed in original final paper; target access not tested."
+        }
+      ],
+      "uncertainty": [
+        "Keep a single coauthored paper work with copies/editions. SIGPLAN Notices indexing with DOI 10.1145/3241625.2976007 may be duplicate proceedings republication rather than new research; that DOI is only a discovered secondary-source lead here. Do not claim this was a talk delivered by Kmett, because the program names authors without identifying presenter."
+      ],
+      "inclusion": "recommended",
+      "sameWorkAsVideoEntry": null
+    },
+    {
+      "id": "kmett-2017-initialcommit",
+      "title": "An Interview With Haskell Developer Edward Kmett",
+      "authors": [],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "interviewee"
+        },
+        {
+          "name": "_theInitialCommit",
+          "role": "publisher; individual interviewer unverified"
+        }
+      ],
+      "publisher": "_theInitialCommit",
+      "medium": [
+        "written_interview"
+      ],
+      "articleUrl": "https://theinitialcommit.com/2017/01/10/edward-kmett/",
+      "url": "https://theinitialcommit.com/2017/01/10/edward-kmett/",
+      "date": "2017-01-10",
+      "dateValue": "2017-01-10",
+      "dateBasis": "publication",
+      "datePrecision": "day",
+      "dateConfidence": "high for title/date/text in indexed primary source; direct page inaccessible",
+      "dates": [
+        {
+          "value": "2017-01-10",
+          "type": "publication",
+          "precision": "day",
+          "evidence": "Original publisher search result and dated URL explicitly give Jan 10, 2017."
+        }
+      ],
+      "description": "An Interview With Haskell Developer Edward Kmett — _theInitialCommit.",
+      "sourceUrls": [
+        "https://theinitialcommit.com/2017/01/10/edward-kmett/"
+      ],
+      "preservationSources": [
+        "https://theinitialcommit.com/2017/01/10/edward-kmett/"
+      ],
+      "materials": [],
+      "uncertainty": [
+        "This references Learning How To Learn at YOW! 2014; it is a later interview, not a transcript or duplicate of that talk."
+      ],
+      "inclusion": "recommended",
+      "sameWorkAsVideoEntry": null
+    },
+    {
+      "id": "kmett-2021-moderncto",
+      "title": "Episode 404 — Edward Kmett, Head of Software Engineering at Groq — Incredible Processing for AI Models",
+      "authors": [],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "guest"
+        },
+        {
+          "name": "Joel Beasley",
+          "role": "host"
+        }
+      ],
+      "publisher": "Modern CTO",
+      "medium": [
+        "podcast",
+        "interview",
+        "transcript"
+      ],
+      "articleUrl": "https://moderncto.io/edward-kmett/",
+      "url": "https://moderncto.io/edward-kmett/",
+      "date": "2021-11-08",
+      "dateValue": "2021-11-08",
+      "dateBasis": "publication",
+      "datePrecision": "day",
+      "dateConfidence": "high",
+      "dates": [
+        {
+          "value": "2021-11-08",
+          "type": "publication",
+          "precision": "day",
+          "evidence": "Original publisher labels Episode 404 · November 08, 2021."
+        }
+      ],
+      "description": "Episode 404 — Edward Kmett, Head of Software Engineering at Groq — Incredible Processing for AI Models — Modern CTO.",
+      "sourceUrls": [
+        "https://moderncto.io/edward-kmett/"
+      ],
+      "preservationSources": [
+        "https://moderncto.io/edward-kmett/"
+      ],
+      "materials": [
+        {
+          "kind": "audio_and_transcript",
+          "url": "https://moderncto.io/edward-kmett/",
+          "access": "Official episode page with audio and full transcript; direct audio download not separately verified."
+        }
+      ],
+      "uncertainty": [
+        "One podcast episode with transcript; recording date not stated. Groq repost and other podcast-directory copies should be aliases, not independent entries."
+      ],
+      "inclusion": "recommended",
+      "sameWorkAsVideoEntry": null
+    },
+    {
+      "id": "kmett-2019-functionalconf-interview",
+      "title": "Edward Kmett interview after Functional Conf 2019",
+      "authors": [],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "interviewee"
+        },
+        {
+          "name": "Functional Conference",
+          "role": "interviewer/producer; individual interviewer unverified"
+        }
+      ],
+      "publisher": "Functional Conference",
+      "medium": [
+        "interview",
+        "video",
+        "transcript"
+      ],
+      "articleUrl": "https://functionalconf.com/edward-kmett-why-haskell/",
+      "url": "https://functionalconf.com/edward-kmett-why-haskell/",
+      "date": "2021-12-13",
+      "dateValue": "2021-12-13",
+      "dateBasis": "excerpt_publication",
+      "datePrecision": "day",
+      "dateConfidence": "high for excerpt dates; medium for single-interview grouping",
+      "dates": [
+        {
+          "value": "2019",
+          "type": "recording",
+          "precision": "year",
+          "evidence": "Both official excerpt pages say Kmett spoke to them after presenting/delivering his keynote at Functional Conf 2019."
+        },
+        {
+          "value": "2021-12-13",
+          "type": "excerpt_publication",
+          "precision": "day",
+          "evidence": "Official Why Haskell? page date."
+        },
+        {
+          "value": "2022-01-05",
+          "type": "excerpt_publication",
+          "precision": "day",
+          "evidence": "Official How I discovered Functional Programming page date."
+        }
+      ],
+      "description": "Edward Kmett interview after Functional Conf 2019 — Functional Conference.",
+      "sourceUrls": [
+        "https://functionalconf.com/edward-kmett-why-haskell/",
+        "https://functionalconf.com/edward-kmett-how-i-discovered-functional-programming/"
+      ],
+      "preservationSources": [
+        "https://functionalconf.com/edward-kmett-why-haskell/"
+      ],
+      "materials": [
+        {
+          "kind": "video_and_transcript",
+          "title": "Why Haskell?",
+          "url": "https://functionalconf.com/edward-kmett-why-haskell/",
+          "access": "Official excerpt page."
+        },
+        {
+          "kind": "video_and_transcript",
+          "title": "How I discovered Functional Programming",
+          "url": "https://functionalconf.com/edward-kmett-how-i-discovered-functional-programming/",
+          "access": "Official excerpt page."
+        }
+      ],
+      "uncertainty": [
+        "Proposed group: the two clips likely derive from one post-keynote interview, but identical recording session is not conclusively established. Link to Functional Conf 2019 keynote as related, not same work. Sort by first known public excerpt (2021-12-13) with Recorded 2019 label unless a fuller original interview release is found."
+      ],
+      "inclusion": "recommended",
+      "sameWorkAsVideoEntry": null
+    },
+    {
+      "id": "kmett-2022-functional-futures",
+      "title": "Across the Kmettverse with Edward Kmett",
+      "authors": [
+        "Emils Petracenoks"
+      ],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "guest"
+        },
+        {
+          "name": "Jonn",
+          "role": "interviewer; name as shown in transcript"
+        },
+        {
+          "name": "Emils Petracenoks",
+          "role": "author of edited transcript article"
+        }
+      ],
+      "publisher": "Functional Futures / Serokell",
+      "medium": [
+        "podcast",
+        "video",
+        "interview",
+        "edited_transcript"
+      ],
+      "articleUrl": "https://serokell.io/blog/across-the-kmettverse-with-edward-kmett",
+      "url": "https://serokell.io/blog/across-the-kmettverse-with-edward-kmett",
+      "date": "2022-08-18",
+      "dateValue": "2022-08-18",
+      "dateBasis": "episode_publication",
+      "datePrecision": "day",
+      "dateConfidence": "high",
+      "dates": [
+        {
+          "value": "2022-08-18",
+          "type": "episode_publication",
+          "precision": "day",
+          "evidence": "Official show’s syndicated Apple Podcasts episode metadata says August 18, 2022 at 19:36 UTC."
+        },
+        {
+          "value": "2022-08-23",
+          "type": "edited_transcript_publication",
+          "precision": "day",
+          "evidence": "Serokell original article labels August 23rd, 2022."
+        },
+        {
+          "value": "2022-08-18",
+          "type": "video_upload",
+          "precision": "day",
+          "evidence": "Serokell original video jZrCVp5ekbA upload2022-08-18T12:41:38-07:00."
+        }
+      ],
+      "description": "Across the Kmettverse with Edward Kmett — Functional Futures / Serokell.",
+      "sourceUrls": [
+        "https://serokell.io/blog/across-the-kmettverse-with-edward-kmett",
+        "https://podcasts.apple.com/us/podcast/across-the-kmettverse-with-edward-kmett/id1606772921?i=1000576527907",
+        "https://www.youtube.com/watch?v=jZrCVp5ekbA"
+      ],
+      "preservationSources": [
+        "https://serokell.io/blog/across-the-kmettverse-with-edward-kmett"
+      ],
+      "materials": [
+        {
+          "kind": "video",
+          "url": "https://www.youtube.com/watch?v=jZrCVp5ekbA",
+          "access": "Direct public watch-page metadata verified: Serokell uploader, matching title and episode description.",
+          "uploadDate": "2022-08-18"
+        },
+        {
+          "kind": "audio",
+          "url": "https://podcasts.apple.com/us/podcast/across-the-kmettverse-with-edward-kmett/id1606772921?i=1000576527907",
+          "access": "Official podcast syndication; no direct MP3 download independently verified."
+        },
+        {
+          "kind": "edited_transcript",
+          "url": "https://serokell.io/blog/across-the-kmettverse-with-edward-kmett",
+          "access": "Public publisher article."
+        }
+      ],
+      "uncertainty": [
+        "One interview work with audio/video and later edited highlights. Recording date is unknown. References to Stop Treading Water and Type Classes vs. the World are related works, not duplicates. Current serokell.co mirror and serokell.io article should alias one manifestation."
+      ],
+      "inclusion": "recommended",
+      "sameWorkAsVideoEntry": "kmett-2022-functional-futures"
+    },
+    {
+      "id": "kmett-2025-michigan-testimony",
+      "title": "Testimony of Edward Kmett in support of House Bill 4668: Large AI Developers’ Safety and Security Protocols",
+      "authors": [
+        "Edward Kmett"
+      ],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "author, Founder & Chief Scientist, Positron AI"
+        }
+      ],
+      "publisher": "Michigan State House of Representatives, Judiciary Committee",
+      "medium": [
+        "written_testimony"
+      ],
+      "articleUrl": "https://house.mi.gov/Committee/HJUDI",
+      "url": "https://house.mi.gov/Committee/HJUDI",
+      "date": "2025-06-25",
+      "dateValue": "2025-06-25",
+      "dateBasis": "committee_testimony",
+      "datePrecision": "day",
+      "dateConfidence": "high for author/date; medium for downloadable format",
+      "dates": [
+        {
+          "value": "2025-06-25",
+          "type": "committee_testimony",
+          "precision": "day",
+          "evidence": "House Judiciary committee original index explicitly lists June 25, 2025 — HB 4668 — Edward Kmett, Positron AI."
+        }
+      ],
+      "description": "Testimony of Edward Kmett in support of House Bill 4668: Large AI Developers’ Safety and Security Protocols — Michigan State House of Representatives, Judiciary Committee.",
+      "sourceUrls": [
+        "https://house.mi.gov/Committee/HJUDI",
+        "https://www.house.mi.gov/Document/?DocumentId=54834&DocumentType=CommitteeTestimony"
+      ],
+      "preservationSources": [
+        "https://house.mi.gov/Committee/HJUDI"
+      ],
+      "materials": [
+        {
+          "kind": "document",
+          "url": "https://www.house.mi.gov/Document/?DocumentId=54834&DocumentType=CommitteeTestimony",
+          "access": "Public committee download; indexed title ends .docx but delivered MIME type was not established."
+        }
+      ],
+      "uncertainty": [
+        "A substantial authored policy document outside programming; editorial choice whether to include. Date is committee testimony date, not independently verified upload date. Do not infer oral delivery from written testimony."
+      ],
+      "inclusion": "optional",
+      "sameWorkAsVideoEntry": null
+    },
+    {
+      "id": "kmett-pre2001-wavelets-3d-graphics",
+      "title": "Wavelets in 3d Graphics",
+      "authors": [
+        "Edward Kmett"
+      ],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "author"
+        }
+      ],
+      "publisher": "Bloodshed.com / Harmless Entertainment",
+      "medium": [
+        "technical_article"
+      ],
+      "articleUrl": "https://web.archive.org/web/20010526225638/http://www.bloodshed.com:80/wavelets/haar.shtml",
+      "url": "https://web.archive.org/web/20010526225638/http://www.bloodshed.com:80/wavelets/haar.shtml",
+      "date": null,
+      "dateValue": null,
+      "dateBasis": "original publication unknown; archive capture is only an upper bound",
+      "datePrecision": "unknown",
+      "dateConfidence": "high for title/attribution; original date unknown",
+      "dates": [
+        {
+          "value": "2001-05-26",
+          "type": "archive_capture",
+          "precision": "day",
+          "evidence": "Wayback CDX and readable snapshot; establishes article existed by this date, not original publication date."
+        }
+      ],
+      "description": "Wavelets in 3d Graphics — Bloodshed.com / Harmless Entertainment.",
+      "sourceUrls": [
+        "https://web.archive.org/web/20010526225638/http://www.bloodshed.com:80/wavelets/haar.shtml",
+        "https://web.archive.org/web/20011121083059/http://www.bloodshed.com:80/wavelets/start.shtml"
+      ],
+      "preservationSources": [
+        "https://web.archive.org/web/20010526225638/http://www.bloodshed.com:80/wavelets/haar.shtml",
+        "https://web.archive.org/web/20011121083059/http://www.bloodshed.com:80/wavelets/start.shtml"
+      ],
+      "materials": [
+        {
+          "kind": "html_article",
+          "url": "https://web.archive.org/web/20010526225638/http://www.bloodshed.com:80/wavelets/haar.shtml",
+          "access": "Complete archived HTML text, mathematical expressions and illustrations in source; image availability not checked."
+        }
+      ],
+      "uncertainty": [
+        "Haar-wavelet texture compression and comparison with mipmapping for a3D polygonal game engine. Source cites literature through1997 but gives no author/publication date. Adjacent dsp.zip01/16/99 label dates code package, not this paper. Do not assign1999 to paper or treat2001 capture as original publication. No magazine provenance established."
+      ],
+      "inclusion": "recommended",
+      "sameWorkAsVideoEntry": null,
+      "publishedNoLaterThan": "2001-05-26",
+      "originalUrl": "http://www.bloodshed.com/wavelets/haar.shtml"
+    }
+  ],
+  "unresolvedLeads": [
+    {
+      "title": "Unidentified magazine articles",
+      "sourceUrl": "http://comonad.com/reader/2008/kan-extension-iii/#comment-20469",
+      "note": "Edward states he wrote magazine articles but names no publications. No issue/byline verified; do not invent entries."
+    }
+  ]
+}

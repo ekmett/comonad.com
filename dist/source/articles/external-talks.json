@@ -1,0 +1,2482 @@
+{
+  "schemaVersion": "1.0",
+  "researchedOn": "2026-09-21",
+  "scope": "Non-Boston-channel external recordings, including four Monadic Party sessions. Deduplicate supplementalWarsaw file by videoId; do not duplicate interview article/video cards by id.",
+  "datePolicy": "date is exact presentation/publication where verified, otherwise an explicitly labeled upload fallback, or null. dateValue/eventDateValue preserve approximate event year/month. Learning to Learn playback is a2017 mirror of a2014 talk; display2014 as event year and label fallback. Never treat archive captures as publication.",
+  "videos": [
+    {
+      "id": "kmett-2011-lenses-functional-imperative",
+      "videoId": "efv0SQNde5Q",
+      "title": "Lenses: A Functional Imperative",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Boston Area Scala Enthusiasts (BASE), Google Cambridge",
+      "publisher": "Boston Area Scala Enthusiasts (BASE), Google Cambridge",
+      "videoUrl": "https://www.youtube.com/watch?v=efv0SQNde5Q",
+      "date": "2011-05-24",
+      "dateBasis": "presentation",
+      "dateConfidence": "high",
+      "eventDate": "2011-05-24",
+      "eventDateValue": "2011-05-24",
+      "eventYear": "2011",
+      "uploadDate": "2011-05-26",
+      "dateValue": "2011-05-24",
+      "datePrecision": "day",
+      "dateEvidence": [
+        {
+          "value": "2011-05-24",
+          "type": "presentation",
+          "precision": "day",
+          "evidence": "Author-uploaded part1 description explicitly gives BASE, May24,2011,Google Cambridge."
+        },
+        {
+          "value": "2011-05-26",
+          "type": "video_upload",
+          "precision": "day",
+          "evidence": "Part1 upload timestamp2011-05-26T20:26:36-07:00; other parts separately linked without inferred upload dates."
+        }
+      ],
+      "description": "Lenses: A Functional Imperative \u2014 Boston Area Scala Enthusiasts (BASE), Google Cambridge.",
+      "materials": [
+        {
+          "kind": "video_part",
+          "url": "https://www.youtube.com/watch?v=efv0SQNde5Q",
+          "title": "Lenses: A Functional Imperative [1/5]",
+          "sequence": 1,
+          "verification": "Author-channel public search result; part1 watch-page metadata checked."
+        },
+        {
+          "kind": "video_part",
+          "url": "https://www.youtube.com/watch?v=XVmhK8WbRLY",
+          "title": "Lenses: A Functional Imperative [2/5]",
+          "sequence": 2,
+          "verification": "Author-channel public search result; part1 watch-page metadata checked."
+        },
+        {
+          "kind": "video_part",
+          "url": "https://www.youtube.com/watch?v=QjatJWIJBTM",
+          "title": "Lenses: A Functional Imperative [3/5]",
+          "sequence": 3,
+          "verification": "Author-channel public search result; part1 watch-page metadata checked."
+        },
+        {
+          "kind": "video_part",
+          "url": "https://www.youtube.com/watch?v=CXH1V4xS2W0",
+          "title": "Lenses: A Functional Imperative [4/5]",
+          "sequence": 4,
+          "verification": "Author-channel public search result; part1 watch-page metadata checked."
+        },
+        {
+          "kind": "video_part",
+          "url": "https://www.youtube.com/watch?v=YiFcvqRM6AA",
+          "title": "Lenses: A Functional Imperative [5/5]",
+          "sequence": 5,
+          "verification": "Author-channel public search result; part1 watch-page metadata checked."
+        }
+      ],
+      "uncertainty": [
+        "Five files are one presentation, not five separately delivered talks. Match against any existing blog announcement before creating another archive card. Do not confuse BASE with the Boston Haskell channel."
+      ],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=efv0SQNde5Q"
+      ],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "workFamily": null,
+      "inclusion": "recommended",
+      "archiveType": "talk"
+    },
+    {
+      "id": "kmett-2012-lenses-nyc",
+      "videoId": "cefnmjtAolY",
+      "title": "Lenses, Folds and Traversals",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "New York Haskell",
+      "publisher": "New York Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=cefnmjtAolY",
+      "date": "2012-12-12",
+      "dateBasis": "presentation",
+      "dateConfidence": "high",
+      "eventDate": "2012-12-12",
+      "eventDateValue": "2012-12-12",
+      "eventYear": "2012",
+      "uploadDate": null,
+      "dateValue": "2012-12-12",
+      "datePrecision": "day",
+      "dateEvidence": [
+        {
+          "value": "2012-12-12",
+          "type": "presentation",
+          "precision": "day",
+          "evidence": "Lens site preserves announcement for Wednesday December 12, posted November20 2012."
+        },
+        {
+          "value": "2013-01-26",
+          "type": "recording_listing_publication",
+          "precision": "day",
+          "evidence": "Lens project Recent Activity lists recording on this date; YouTube upload not independently verified."
+        }
+      ],
+      "description": "Lenses, Folds and Traversals \u2014 New York Haskell.",
+      "materials": [
+        {
+          "kind": "video",
+          "url": "https://www.youtube.com/watch?v=cefnmjtAolY",
+          "access": "Primary-linked recording."
+        },
+        {
+          "kind": "slides_pdf",
+          "url": "https://comonad.com/haskell/Lenses-Folds-and-Traversals-NYC.pdf",
+          "access": "Primary-linked PDF; fetch failed."
+        }
+      ],
+      "uncertainty": [
+        "Same talk family as Google October18, distinct event. Related Mirrored Lenses article is not automatically a duplicate."
+      ],
+      "sourceUrls": [
+        "https://lens.github.io/",
+        "https://github.com/ekmett/lens"
+      ],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "workFamily": null,
+      "inclusion": "recommended",
+      "archiveType": "talk"
+    },
+    {
+      "id": "kmett-2013-ermine-boston",
+      "videoId": "QCvXlOCBe5A",
+      "title": "The Ermine programming language",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Boston Haskell",
+      "publisher": "Boston Haskell",
+      "videoUrl": "https://www.youtube.com/watch?v=QCvXlOCBe5A",
+      "date": "2013-07-29",
+      "dateBasis": "upload (event day unknown)",
+      "dateConfidence": "upload-only",
+      "eventDate": null,
+      "eventDateValue": "2013-07",
+      "eventYear": "2013",
+      "uploadDate": "2013-07-29",
+      "dateValue": "2013-07",
+      "datePrecision": "month",
+      "dateEvidence": [
+        {
+          "value": "2013-07",
+          "type": "presentation",
+          "precision": "month",
+          "evidence": "Runar Bjarnason recording description says Recorded Boston Haskell July2013."
+        },
+        {
+          "value": "2013-07-29",
+          "type": "video_upload",
+          "precision": "day",
+          "evidence": "YouTube player metadata."
+        }
+      ],
+      "description": "The Ermine programming language \u2014 Boston Haskell.",
+      "materials": [
+        {
+          "kind": "video",
+          "url": "https://www.youtube.com/watch?v=QCvXlOCBe5A",
+          "access": "Project-linked Boston recording; lowercase l after X."
+        }
+      ],
+      "uncertainty": [
+        "Recording by Runar Bjarnason explicitly recorded Boston Haskell July2013. Exact day not established; parent verified player metadata in work/ermine-boston.json. Distinct from CUFP."
+      ],
+      "sourceUrls": [
+        "https://ermine-language.github.io/",
+        "https://www.haskell.org/communities/11-2013/html/report.html",
+        "https://www.youtube.com/watch?v=QCvXlOCBe5A"
+      ],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "workFamily": null,
+      "inclusion": "recommended",
+      "archiveType": "talk"
+    },
+    {
+      "id": "kmett-2013-haskellcast-lenses",
+      "videoId": "6GNDzrgFhGM",
+      "title": "Episode 1 \u2014 Edward Kmett on Lenses",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "The Haskell Cast",
+      "publisher": "The Haskell Cast",
+      "videoUrl": "https://www.youtube.com/watch?v=6GNDzrgFhGM",
+      "date": "2013-08-26",
+      "dateBasis": "publication",
+      "dateConfidence": "high",
+      "eventDate": null,
+      "eventDateValue": null,
+      "eventYear": null,
+      "uploadDate": "2013-09-23",
+      "dateValue": "2013-08-26",
+      "datePrecision": "day",
+      "dateEvidence": [
+        {
+          "value": "2013-08-04",
+          "type": "recording",
+          "precision": "day",
+          "evidence": "Original episode page explicitly gives Recorded: 2013-08-04."
+        },
+        {
+          "value": "2013-08-26",
+          "type": "publication",
+          "precision": "day",
+          "evidence": "Original episode page explicitly gives Published: 2013-08-26."
+        },
+        {
+          "value": "2013-09-23",
+          "type": "video_upload",
+          "precision": "day",
+          "evidence": "Official haskellcast channel watch-page metadata: 2013-09-23T05:41:23-07:00; description explicitly identifies uncut video of episode001."
+        }
+      ],
+      "description": "Episode 1 \u2014 Edward Kmett on Lenses \u2014 The Haskell Cast.",
+      "materials": [
+        {
+          "kind": "mp3",
+          "url": "https://www.haskellcast.com/episode/001-edward-kmett-on-lenses",
+          "access": "Public Download MP3 link provided; direct S3 link failed retrieval."
+        },
+        {
+          "kind": "video",
+          "url": "https://www.haskellcast.com/episode/001-edward-kmett-on-lenses",
+          "access": "Uncut video embedded on same episode page."
+        },
+        {
+          "kind": "video",
+          "url": "https://www.youtube.com/watch?v=6GNDzrgFhGM",
+          "verification": "Direct metadata: official haskellcast uploader; description links exact original episode page.",
+          "uploadDate": "2013-09-23"
+        }
+      ],
+      "uncertainty": [
+        "One interview with edited audio and uncut video. Prefer publication date in archive, disclose recording date. Do not create independent duplicate entries for audio and video. The uncut video upload is 2013-09-23, after the podcast release; preserve it as a manifestation of the same episode."
+      ],
+      "sourceUrls": [
+        "https://www.haskellcast.com/episode/001-edward-kmett-on-lenses",
+        "https://www.youtube.com/watch?v=6GNDzrgFhGM"
+      ],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "guest"
+        },
+        {
+          "name": "Rein Henrichs",
+          "role": "host"
+        },
+        {
+          "name": "Chris Forno",
+          "role": "host"
+        }
+      ],
+      "workFamily": null,
+      "inclusion": "recommended",
+      "archiveType": "interview"
+    },
+    {
+      "id": "kmett-2013-functional-reporting",
+      "videoId": "o3m2NkusI9k",
+      "title": "Functional Reporting",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "CUFP2013",
+      "publisher": "CUFP2013",
+      "videoUrl": "https://www.youtube.com/watch?v=o3m2NkusI9k",
+      "date": "2013-09-22",
+      "dateBasis": "presentation",
+      "dateConfidence": "high",
+      "eventDate": "2013-09-22",
+      "eventDateValue": "2013-09-22",
+      "eventYear": "2013",
+      "uploadDate": null,
+      "dateValue": "2013-09-22",
+      "datePrecision": "day",
+      "dateEvidence": [
+        {
+          "value": "2013-09-22",
+          "type": "presentation",
+          "precision": "day",
+          "evidence": "Contemporary CUFP liveblog dated Sep22; organizer PC member confirms talks day Sep22."
+        }
+      ],
+      "description": "Functional Reporting \u2014 CUFP2013.",
+      "materials": [
+        {
+          "kind": "video",
+          "url": "https://www.youtube.com/watch?v=o3m2NkusI9k",
+          "access": "Project-linked recording."
+        },
+        {
+          "kind": "slides_pdf",
+          "url": "https://ekmett.github.io/presentations/Functional%20Reporting.pdf",
+          "access": "Public file verified via GitHub directory API; full large PDF not inspected."
+        }
+      ],
+      "uncertainty": [
+        "Also styled IQ: Functional Reporting. Presenter Edward, S&P Capital IQ. CUFP scribes report is not a Kmett-authored paper. Project contributors are not co-presenters."
+      ],
+      "sourceUrls": [
+        "https://ermine-language.github.io/",
+        "https://www.syslog.cl.cam.ac.uk/2013/09/22/liveblogging-cufp-2013/",
+        "https://steve.vinoski.net/blog/2013/09/12/cufp-2013-erlang-web-tutorial/"
+      ],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "workFamily": null,
+      "inclusion": "recommended",
+      "archiveType": "talk"
+    },
+    {
+      "id": "kmett-2013-cache-oblivious-maps",
+      "videoId": "P3pLDpbzqCw",
+      "title": "Cache-Oblivious Maps",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Bay Area Haskell User Group at Mozilla San Francisco",
+      "publisher": "Bay Area Haskell User Group at Mozilla San Francisco",
+      "videoUrl": "https://www.youtube.com/watch?v=P3pLDpbzqCw",
+      "date": "2013-10-18",
+      "dateBasis": "presentation",
+      "dateConfidence": "high",
+      "eventDate": "2013-10-18",
+      "eventDateValue": "2013-10-18",
+      "eventYear": "2013",
+      "uploadDate": "2013-10-25",
+      "dateValue": "2013-10-18",
+      "datePrecision": "day",
+      "dateEvidence": [
+        {
+          "value": "2013-10-18",
+          "type": "presentation",
+          "precision": "day",
+          "evidence": "Edward\u2019s own recording description explicitly names October18 2013."
+        },
+        {
+          "value": "2013-10-25",
+          "type": "video_upload",
+          "precision": "day",
+          "evidence": "YouTube indexed publication metadata."
+        },
+        {
+          "value": "2013-10-26",
+          "type": "slide_version",
+          "precision": "day",
+          "evidence": "PDF footer Saturday October26 13; later than talk."
+        }
+      ],
+      "description": "Cache-Oblivious Maps \u2014 Bay Area Haskell User Group at Mozilla San Francisco.",
+      "materials": [
+        {
+          "kind": "video",
+          "url": "https://www.youtube.com/watch?v=P3pLDpbzqCw",
+          "access": "Public recording."
+        },
+        {
+          "kind": "slides_pdf",
+          "url": "https://ekmett.github.io/presentations/Cache-Oblivious%20Data%20Structures.pdf",
+          "access": "Public inspected PDF."
+        },
+        {
+          "kind": "slides_source",
+          "url": "https://raw.githubusercontent.com/ekmett/ekmett.github.com/master/presentations/Cache-Oblivious%20Data%20Structures.key",
+          "access": "Public Keynote file."
+        }
+      ],
+      "uncertainty": [
+        "Do not use slide-version Oct26 as presentation date. Related SoH Deamortized ST article explicitly continues this talk."
+      ],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=P3pLDpbzqCw",
+        "https://ekmett.github.io/presentations/Cache-Oblivious%20Data%20Structures.pdf"
+      ],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "workFamily": null,
+      "inclusion": "recommended",
+      "archiveType": "talk"
+    },
+    {
+      "id": "kmett-2014-on-hask",
+      "videoId": "Klwkt9oJwg0",
+      "title": "On Hask",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Boston Haskell at Akamai, Cambridge",
+      "publisher": "Boston Haskell at Akamai, Cambridge",
+      "videoUrl": "https://www.youtube.com/watch?v=Klwkt9oJwg0",
+      "date": "2014-07-16",
+      "dateBasis": "presentation",
+      "dateConfidence": "high",
+      "eventDate": "2014-07-16",
+      "eventDateValue": "2014-07-16",
+      "eventYear": "2014",
+      "uploadDate": "2014-07-18",
+      "dateValue": "2014-07-16",
+      "datePrecision": "day",
+      "dateEvidence": [
+        {
+          "value": "2014-07-16",
+          "type": "presentation",
+          "precision": "day",
+          "evidence": "Author recording explicitly says Boston Haskell Wednesday July16 2014 at Akamai Cambridge."
+        },
+        {
+          "value": "2014-07-18",
+          "type": "video_upload",
+          "precision": "day",
+          "evidence": "YouTube player metadata."
+        }
+      ],
+      "description": "On Hask \u2014 Boston Haskell at Akamai, Cambridge.",
+      "materials": [
+        {
+          "kind": "video",
+          "url": "https://www.youtube.com/watch?v=Klwkt9oJwg0",
+          "access": "Linked recording."
+        }
+      ],
+      "uncertainty": [
+        "Exact talk date in Edward\u2019s own recording description; source code https://github.com/ekmett/hask. Parent verified original player metadata in work/on-hask.json."
+      ],
+      "sourceUrls": [
+        "https://www.mail-archive.com/haskell%40haskell.org/msg24962.html",
+        "https://www.youtube.com/watch?v=Klwkt9oJwg0"
+      ],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "workFamily": null,
+      "inclusion": "recommended",
+      "archiveType": "talk"
+    },
+    {
+      "id": "discrimination-zurihac-2015",
+      "videoId": "cB8DapKQz-I",
+      "title": "Discrimination is Wrong: Improving Productivity",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "ZuriHac 2015",
+      "publisher": "Google TechTalks",
+      "videoUrl": "https://www.youtube.com/watch?v=cB8DapKQz-I",
+      "date": "2015-05-30",
+      "dateBasis": "presentation",
+      "dateConfidence": "high",
+      "eventDate": "2015-05-30",
+      "eventDateValue": "2015-05-30",
+      "eventYear": "2015",
+      "uploadDate": "2015-07-28",
+      "dateValue": "2015-05-30",
+      "datePrecision": "day",
+      "dateEvidence": [
+        {
+          "value": "2015-05-30",
+          "type": "presentation",
+          "precision": "day",
+          "evidence": "Date corroborated by recording description in parent research: May30,2015. Video upload2015-07-28 is distinct from presentation."
+        },
+        {
+          "value": "2015-07-28",
+          "type": "video_upload",
+          "precision": "day",
+          "evidence": "Direct YouTube metadata; original offset timestamp 2015-07-28T10:58:33-07:00"
+        }
+      ],
+      "description": "Discrimination is Wrong: Improving Productivity \u2014 ZuriHac 2015.",
+      "materials": [
+        {
+          "kind": "slides_pdf",
+          "url": "https://raw.githubusercontent.com/zfoh/HaskellerZ/master/meetups/20150530-ZuriHac2015_Edward_Kmett-Discrimination_is_Wrong_Improving_Productivity/Discrimination%20-%20Zurihac.pdf",
+          "verification": "linked_by_primary_source"
+        },
+        {
+          "kind": "video",
+          "url": "https://www.youtube.com/watch?v=cB8DapKQz-I",
+          "verification": "Parent directly checked recording metadata: ZuriHac2015 and explicit presentation date2015-05-30."
+        }
+      ],
+      "uncertainty": [
+        "Date corroborated by recording description in parent research: May30,2015. Video upload2015-07-28 is distinct from presentation."
+      ],
+      "sourceUrls": [
+        "https://github.com/zfoh/HaskellerZ",
+        "https://github.com/zfoh/HaskellerZ/tree/master/meetups/20150530-ZuriHac2015_Edward_Kmett-Discrimination_is_Wrong_Improving_Productivity",
+        "https://www.youtube.com/watch?v=cB8DapKQz-I"
+      ],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "workFamily": "discrimination-is-wrong",
+      "inclusion": "recommended",
+      "archiveType": "talk",
+      "editorialNote": "Presented at ZuriHac 2015; recording published by Google TechTalks."
+    },
+    {
+      "id": "monad-homomorphisms-zurihac-2016",
+      "videoId": "YTaNkWjd-ac",
+      "title": "Monad Homomorphisms",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "ZuriHac 2016",
+      "publisher": "ZuriHac 2016",
+      "videoUrl": "https://www.youtube.com/watch?v=YTaNkWjd-ac",
+      "date": "2016-07-23",
+      "dateBasis": "presentation",
+      "dateConfidence": "high",
+      "eventDate": "2016-07-23",
+      "eventDateValue": "2016-07-23",
+      "eventYear": "2016",
+      "uploadDate": null,
+      "dateValue": "2016-07-23",
+      "datePrecision": "day",
+      "dateEvidence": [
+        {
+          "value": "2016-07-23",
+          "type": "presentation",
+          "precision": "day",
+          "evidence": "Google retrospective publication 2016-09-30 is not the talk date."
+        }
+      ],
+      "description": "Monad Homomorphisms \u2014 ZuriHac 2016.",
+      "materials": [
+        {
+          "kind": "video",
+          "url": "https://www.youtube.com/watch?v=YTaNkWjd-ac",
+          "verification": "title_fetched_and_primary_linked"
+        }
+      ],
+      "uncertainty": [
+        "Google retrospective publication 2016-09-30 is not the talk date."
+      ],
+      "sourceUrls": [
+        "https://github.com/zfoh/HaskellerZ",
+        "https://opensource.googleblog.com/2016/09/another-year-of-haskell-hacking-in.html"
+      ],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "workFamily": "monad-homomorphisms-zurihac-2016",
+      "inclusion": "recommended",
+      "archiveType": "talk"
+    },
+    {
+      "id": "efficient-modern-cpus-zurihac-2017",
+      "videoId": "KzqNQMpRbac",
+      "title": "Efficiently coding for modern CPUs",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "ZuriHac 2017",
+      "publisher": "ZuriHac 2017",
+      "videoUrl": "https://www.youtube.com/watch?v=KzqNQMpRbac",
+      "date": "2017-06-11",
+      "dateBasis": "presentation",
+      "dateConfidence": "high",
+      "eventDate": "2017-06-11",
+      "eventDateValue": "2017-06-11",
+      "eventYear": "2017",
+      "uploadDate": "2017-07-06",
+      "dateValue": "2017-06-11",
+      "datePrecision": "day",
+      "dateEvidence": [
+        {
+          "value": "2017-06-11",
+          "type": "presentation",
+          "precision": "day",
+          "evidence": "Organizer program gives June11 slot; recording upload2017-07-06T22:29:18-07:00 is distinct."
+        },
+        {
+          "value": "2017-07-06",
+          "type": "video_upload",
+          "precision": "day",
+          "evidence": "Direct YouTube metadata; original offset timestamp 2017-07-06T22:29:18-07:00"
+        }
+      ],
+      "description": "Efficiently coding for modern CPUs \u2014 ZuriHac 2017.",
+      "materials": [
+        {
+          "kind": "video",
+          "url": "https://www.youtube.com/watch?v=KzqNQMpRbac",
+          "verification": "Parent directly checked metadata: uploader OST \u2013 Ostschweizer Fachhochschule; title correct; description dates event June9\u201311."
+        }
+      ],
+      "uncertainty": [
+        "Organizer program gives June11 slot; recording upload2017-07-06T22:29:18-07:00 is distinct."
+      ],
+      "sourceUrls": [
+        "https://2017.zurihac.info/",
+        "https://www.youtube.com/watch?v=KzqNQMpRbac"
+      ],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "workFamily": "efficient-modern-cpus-zurihac-2017",
+      "inclusion": "recommended",
+      "archiveType": "talk"
+    },
+    {
+      "id": "kmett-2014-stop-treading-water",
+      "videoId": "j0XmixCsWjs",
+      "title": "Stop Treading Water: Learning to Learn",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "YOW!2014",
+      "publisher": "YOW!2014",
+      "videoUrl": "https://www.youtube.com/watch?v=j0XmixCsWjs",
+      "date": "2017-12-05",
+      "dateBasis": "mirror_upload (presentation year known; exact day unknown)",
+      "dateConfidence": "upload-only",
+      "eventDate": null,
+      "eventDateValue": "2014",
+      "eventYear": "2014",
+      "uploadDate": "2017-12-05",
+      "dateValue": "2014",
+      "datePrecision": "year",
+      "dateEvidence": [
+        {
+          "value": "2014",
+          "type": "presentation",
+          "precision": "year",
+          "evidence": "Edward\u2019s own 2017 interview confirms learning-to-learn talk at YOW!2014. Attendee identifies Sydney."
+        }
+      ],
+      "description": "Stop Treading Water: Learning to Learn \u2014 YOW!2014.",
+      "materials": [
+        {
+          "kind": "video",
+          "url": "https://www.youtube.com/watch?v=Z8KcCU-p8QA",
+          "access": "Linked by later author interview; parent retrieving metadata.",
+          "availability": "unavailable on 2026-09-21 via direct watch-page metadata"
+        },
+        {
+          "kind": "video_historical",
+          "url": "https://yow.eventer.com/yow-2014-1222/stop-treading-water-learning-to-learn-by-edward-kmett-1750",
+          "access": "Original organizer recording URL, currently unresolved."
+        },
+        {
+          "kind": "slides_pdf",
+          "url": "https://slides.yowconference.com/yow2014/Kmett-StopTreadingWater.pdf",
+          "verification": "Organizer slide URL linked by contemporary attendee and surviving mirror; file availability not independently established."
+        },
+        {
+          "kind": "video_mirror",
+          "url": "https://www.youtube.com/watch?v=j0XmixCsWjs",
+          "uploader": "Adam Piper",
+          "uploadDate": "2017-12-05",
+          "uploadTimestamp": "2017-12-05T13:23:08-08:00",
+          "verification": "Direct metadata; explicitly links original YOW eventer video and organizer slides. Unofficial mirror; audiovisual identity not compared."
+        }
+      ],
+      "uncertainty": [
+        "Scheduled-title conflict: ConfEngine YOW2014 Sydney/Melbourne/Brisbane list Functionally Oblivious and Succinct. Delivered Stop Treading Water attested; retain both until city-specific provenance resolved. Do not use 2015-05-07 report publication as talk date. Legacy organizer-linked YouTube Z8KcCU-p8QA currently returns Video unavailable. Keep it as historical alias, use the clearly labeled surviving mirror if desired. Mirror upload2017-12-05 is not the2014 talk date."
+      ],
+      "sourceUrls": [
+        "https://theinitialcommit.com/2017/01/10/edward-kmett/",
+        "https://www.grahamlea.com/2015/05/ed-kmett-stop-treading-water-learning-to-learn-yow-2014/",
+        "https://www.youtube.com/watch?v=j0XmixCsWjs"
+      ],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "workFamily": null,
+      "inclusion": "recommended",
+      "archiveType": "talk",
+      "editorialNote": "YOW! 2014. This surviving recording is an unofficial mirror uploaded by Adam Piper in 2017; the original organizer-linked video is unavailable."
+    },
+    {
+      "id": "combinators-yow-2018",
+      "videoId": "zhj_tUMwTe0",
+      "title": "Combinators Revisited",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "YOW! Lambda Jam 2018, Sydney",
+      "publisher": "YOW! Lambda Jam 2018, Sydney",
+      "videoUrl": "https://www.youtube.com/watch?v=zhj_tUMwTe0",
+      "date": "2018-05-22",
+      "dateBasis": "presentation",
+      "dateConfidence": "high",
+      "eventDate": "2018-05-22",
+      "eventDateValue": "2018-05-22",
+      "eventYear": "2018",
+      "uploadDate": null,
+      "dateValue": "2018-05-22",
+      "datePrecision": "day",
+      "dateEvidence": [
+        {
+          "value": "2018-05-22",
+          "type": "presentation",
+          "precision": "day",
+          "evidence": ""
+        }
+      ],
+      "description": "Combinators Revisited \u2014 YOW! Lambda Jam 2018, Sydney.",
+      "materials": [
+        {
+          "kind": "slides_pdf",
+          "url": "https://yowconference.com.au/slides/yowlambdajam2018/Kmett-Combinators.pdf",
+          "verification": "linked_by_primary_source"
+        },
+        {
+          "kind": "slides_pdf_redirect",
+          "url": "https://slides.yowconference.com/yowlambdajam2018/Kmett-Combinators.pdf",
+          "verification": "redirect_observed_not_fetched"
+        },
+        {
+          "kind": "video",
+          "url": "https://www.youtube.com/watch?v=zhj_tUMwTe0",
+          "verification": "linked_by_primary_source"
+        }
+      ],
+      "uncertainty": [],
+      "sourceUrls": [
+        "https://confengine.com/conferences/yow-lambda-jam-2018/proposal/5919/combinators-revisited"
+      ],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "workFamily": "combinators-revisited",
+      "inclusion": "recommended",
+      "archiveType": "talk"
+    },
+    {
+      "id": "combinators-zurihac-2018",
+      "videoId": "PA1Fc7DNKtA",
+      "title": "Combinators Revisited",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "ZuriHac 2018",
+      "publisher": "ZuriHac 2018",
+      "videoUrl": "https://www.youtube.com/watch?v=PA1Fc7DNKtA",
+      "date": "2018-06-10",
+      "dateBasis": "presentation",
+      "dateConfidence": "high",
+      "eventDate": "2018-06-10",
+      "eventDateValue": "2018-06-10",
+      "eventYear": "2018",
+      "uploadDate": null,
+      "dateValue": "2018-06-10",
+      "datePrecision": "day",
+      "dateEvidence": [
+        {
+          "value": "2018-06-10",
+          "type": "presentation",
+          "precision": "day",
+          "evidence": "Google publication 2018-08-17 is not presentation date; recording differs from YOW."
+        }
+      ],
+      "description": "Combinators Revisited \u2014 ZuriHac 2018.",
+      "materials": [
+        {
+          "kind": "video",
+          "url": "https://www.youtube.com/watch?v=PA1Fc7DNKtA",
+          "verification": "linked_by_primary_source"
+        }
+      ],
+      "uncertainty": [
+        "Google publication 2018-08-17 is not presentation date; recording differs from YOW."
+      ],
+      "sourceUrls": [
+        "https://2018.zurihac.info/",
+        "https://opensource.googleblog.com/2018/08/zurihac-2018-haskell-hackathon-in.html"
+      ],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "workFamily": "combinators-revisited",
+      "inclusion": "recommended",
+      "archiveType": "talk"
+    },
+    {
+      "id": "2019-monadic-party-guanxi-1",
+      "title": "Edward Kmett - Guanxi - Logic Programming in Haskell 1/4",
+      "programTitle": "Guanxi - Logic Programming in Haskell 1/4",
+      "type": "talk",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Monadic Party 2019",
+      "location": "Pozna\u0144, Poland",
+      "publisher": "Monadic Warsaw",
+      "videoId": "D7rlJWc3474",
+      "videoUrl": "https://www.youtube.com/watch?v=D7rlJWc3474",
+      "uploadDate": "2019-07-04",
+      "uploadTimestamp": "2019-07-04T14:28:24-07:00",
+      "eventDate": "2019-06-18",
+      "date": "2019-06-18",
+      "dateBasis": "presentation (scheduled session; recording confirms event and part)",
+      "scheduledStartLocal": "14:00",
+      "eventTimezone": "Europe/Warsaw",
+      "datePrecision": "day",
+      "dateConfidence": "high",
+      "seriesId": "monadic-party-2019-guanxi",
+      "series": "Guanxi - Logic Programming in Haskell (Monadic Party 2019)",
+      "sequence": 1,
+      "sequenceTotal": 4,
+      "durationSeconds": 2851,
+      "description": "Monadic Party 2019 - https://monadic.party",
+      "sourceUrls": [
+        "https://github.com/mkawalec/monadic-party/blob/87898f578f99bd50550ef40e9fe1e6b5cc55be36/src/index.html#L50-L53",
+        "https://github.com/mkawalec/monadic-party/blob/87898f578f99bd50550ef40e9fe1e6b5cc55be36/src/index.html#L744-L752",
+        "https://www.youtube.com/watch?v=D7rlJWc3474"
+      ],
+      "sources": [
+        {
+          "url": "https://github.com/mkawalec/monadic-party/blob/87898f578f99bd50550ef40e9fe1e6b5cc55be36/src/index.html#L50-L53",
+          "role": "Organizer site source: June 18\u201321, 2019 in Pozna\u0144",
+          "source_type": "primary"
+        },
+        {
+          "url": "https://github.com/mkawalec/monadic-party/blob/87898f578f99bd50550ef40e9fe1e6b5cc55be36/src/index.html#L744-L752",
+          "role": "Organizer schedule: session 1/4 at 14:00; weekday derived as date within printed event interval",
+          "source_type": "primary"
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=D7rlJWc3474",
+          "role": "Organizer recording; title identifies part, description names Monadic Party2019; metadata records upload separately",
+          "source_type": "primary"
+        }
+      ],
+      "materials": [
+        {
+          "kind": "video",
+          "url": "https://www.youtube.com/watch?v=D7rlJWc3474",
+          "verification": "Primary channel metadata retrieved; playable status OK"
+        },
+        {
+          "kind": "related workshop subject source repository",
+          "url": "https://github.com/ekmett/guanxi",
+          "verification": "Organizer abstract says workshop tours the guanxi library; author repository verified. No event-specific code snapshot or slide deck asserted."
+        }
+      ],
+      "uncertainty": [
+        "Exact scheduled day and local start are preserved in the organizer source. No independent timestamp inside recording was checked; recordings correspond by event and sequence. Parts3/4 omit Guanxi in video title although program uses it throughout. Monadic Warsaw is the publisher/organizer, not the host city. No separate slides found."
+      ],
+      "channelId": "UCCeiYYR2fCXarkfSqqFBwuA",
+      "relationships": [
+        {
+          "relation": "related_topic_not_duplicate",
+          "target": "youtube-DyPzPeOPgUE",
+          "note": "Boston2015 Propagators is a separate performance."
+        }
+      ]
+    },
+    {
+      "id": "2019-monadic-party-guanxi-2",
+      "title": "Edward Kmett - Guanxi - Logic Programming in Haskell 2/4",
+      "programTitle": "Guanxi - Logic Programming in Haskell 2/4",
+      "type": "talk",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Monadic Party 2019",
+      "location": "Pozna\u0144, Poland",
+      "publisher": "Monadic Warsaw",
+      "videoId": "s5OnhepyL7w",
+      "videoUrl": "https://www.youtube.com/watch?v=s5OnhepyL7w",
+      "uploadDate": "2019-07-04",
+      "uploadTimestamp": "2019-07-04T14:31:39-07:00",
+      "eventDate": "2019-06-18",
+      "date": "2019-06-18",
+      "dateBasis": "presentation (scheduled session; recording confirms event and part)",
+      "scheduledStartLocal": "15:00",
+      "eventTimezone": "Europe/Warsaw",
+      "datePrecision": "day",
+      "dateConfidence": "high",
+      "seriesId": "monadic-party-2019-guanxi",
+      "series": "Guanxi - Logic Programming in Haskell (Monadic Party 2019)",
+      "sequence": 2,
+      "sequenceTotal": 4,
+      "durationSeconds": 2624,
+      "description": "Monadic Party 2019 - https://monadic.party",
+      "sourceUrls": [
+        "https://github.com/mkawalec/monadic-party/blob/87898f578f99bd50550ef40e9fe1e6b5cc55be36/src/index.html#L50-L53",
+        "https://github.com/mkawalec/monadic-party/blob/87898f578f99bd50550ef40e9fe1e6b5cc55be36/src/index.html#L753-L761",
+        "https://www.youtube.com/watch?v=s5OnhepyL7w"
+      ],
+      "sources": [
+        {
+          "url": "https://github.com/mkawalec/monadic-party/blob/87898f578f99bd50550ef40e9fe1e6b5cc55be36/src/index.html#L50-L53",
+          "role": "Organizer site source: June 18\u201321, 2019 in Pozna\u0144",
+          "source_type": "primary"
+        },
+        {
+          "url": "https://github.com/mkawalec/monadic-party/blob/87898f578f99bd50550ef40e9fe1e6b5cc55be36/src/index.html#L753-L761",
+          "role": "Organizer schedule: session 2/4 at 15:00; weekday derived as date within printed event interval",
+          "source_type": "primary"
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=s5OnhepyL7w",
+          "role": "Organizer recording; title identifies part, description names Monadic Party2019; metadata records upload separately",
+          "source_type": "primary"
+        }
+      ],
+      "materials": [
+        {
+          "kind": "video",
+          "url": "https://www.youtube.com/watch?v=s5OnhepyL7w",
+          "verification": "Primary channel metadata retrieved; playable status OK"
+        },
+        {
+          "kind": "related workshop subject source repository",
+          "url": "https://github.com/ekmett/guanxi",
+          "verification": "Organizer abstract says workshop tours the guanxi library; author repository verified. No event-specific code snapshot or slide deck asserted."
+        }
+      ],
+      "uncertainty": [
+        "Exact scheduled day and local start are preserved in the organizer source. No independent timestamp inside recording was checked; recordings correspond by event and sequence. Parts3/4 omit Guanxi in video title although program uses it throughout. Monadic Warsaw is the publisher/organizer, not the host city. No separate slides found."
+      ],
+      "channelId": "UCCeiYYR2fCXarkfSqqFBwuA",
+      "relationships": [
+        {
+          "relation": "related_topic_not_duplicate",
+          "target": "youtube-DyPzPeOPgUE",
+          "note": "Boston2015 Propagators is a separate performance."
+        }
+      ]
+    },
+    {
+      "id": "2019-monadic-party-guanxi-3",
+      "title": "Edward Kmett - Logic Programming in Haskell 3/4",
+      "programTitle": "Guanxi - Logic Programming in Haskell 3/4",
+      "type": "talk",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Monadic Party 2019",
+      "location": "Pozna\u0144, Poland",
+      "publisher": "Monadic Warsaw",
+      "videoId": "c3UE41eYXHA",
+      "videoUrl": "https://www.youtube.com/watch?v=c3UE41eYXHA",
+      "uploadDate": "2019-07-06",
+      "uploadTimestamp": "2019-07-06T13:22:36-07:00",
+      "eventDate": "2019-06-20",
+      "date": "2019-06-20",
+      "dateBasis": "presentation (scheduled session; recording confirms event and part)",
+      "scheduledStartLocal": "10:00",
+      "eventTimezone": "Europe/Warsaw",
+      "datePrecision": "day",
+      "dateConfidence": "high",
+      "seriesId": "monadic-party-2019-guanxi",
+      "series": "Guanxi - Logic Programming in Haskell (Monadic Party 2019)",
+      "sequence": 3,
+      "sequenceTotal": 4,
+      "durationSeconds": 2791,
+      "description": "Monadic Party 2019 - https://monadic.party",
+      "sourceUrls": [
+        "https://github.com/mkawalec/monadic-party/blob/87898f578f99bd50550ef40e9fe1e6b5cc55be36/src/index.html#L50-L53",
+        "https://github.com/mkawalec/monadic-party/blob/87898f578f99bd50550ef40e9fe1e6b5cc55be36/src/index.html#L1067-L1075",
+        "https://www.youtube.com/watch?v=c3UE41eYXHA"
+      ],
+      "sources": [
+        {
+          "url": "https://github.com/mkawalec/monadic-party/blob/87898f578f99bd50550ef40e9fe1e6b5cc55be36/src/index.html#L50-L53",
+          "role": "Organizer site source: June 18\u201321, 2019 in Pozna\u0144",
+          "source_type": "primary"
+        },
+        {
+          "url": "https://github.com/mkawalec/monadic-party/blob/87898f578f99bd50550ef40e9fe1e6b5cc55be36/src/index.html#L1067-L1075",
+          "role": "Organizer schedule: session 3/4 at 10:00; weekday derived as date within printed event interval",
+          "source_type": "primary"
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=c3UE41eYXHA",
+          "role": "Organizer recording; title identifies part, description names Monadic Party2019; metadata records upload separately",
+          "source_type": "primary"
+        }
+      ],
+      "materials": [
+        {
+          "kind": "video",
+          "url": "https://www.youtube.com/watch?v=c3UE41eYXHA",
+          "verification": "Primary channel metadata retrieved; playable status OK"
+        },
+        {
+          "kind": "related workshop subject source repository",
+          "url": "https://github.com/ekmett/guanxi",
+          "verification": "Organizer abstract says workshop tours the guanxi library; author repository verified. No event-specific code snapshot or slide deck asserted."
+        }
+      ],
+      "uncertainty": [
+        "Exact scheduled day and local start are preserved in the organizer source. No independent timestamp inside recording was checked; recordings correspond by event and sequence. Parts3/4 omit Guanxi in video title although program uses it throughout. Monadic Warsaw is the publisher/organizer, not the host city. No separate slides found."
+      ],
+      "channelId": "UCCeiYYR2fCXarkfSqqFBwuA",
+      "relationships": [
+        {
+          "relation": "related_topic_not_duplicate",
+          "target": "youtube-DyPzPeOPgUE",
+          "note": "Boston2015 Propagators is a separate performance."
+        }
+      ]
+    },
+    {
+      "id": "2019-monadic-party-guanxi-4",
+      "title": "Edward Kmett - Logic Programming in Haskell 4/4",
+      "programTitle": "Guanxi - Logic Programming in Haskell 4/4",
+      "type": "talk",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Monadic Party 2019",
+      "location": "Pozna\u0144, Poland",
+      "publisher": "Monadic Warsaw",
+      "videoId": "TnohBRvoUJk",
+      "videoUrl": "https://www.youtube.com/watch?v=TnohBRvoUJk",
+      "uploadDate": "2019-07-06",
+      "uploadTimestamp": "2019-07-06T11:50:03-07:00",
+      "eventDate": "2019-06-20",
+      "date": "2019-06-20",
+      "dateBasis": "presentation (scheduled session; recording confirms event and part)",
+      "scheduledStartLocal": "11:00",
+      "eventTimezone": "Europe/Warsaw",
+      "datePrecision": "day",
+      "dateConfidence": "high",
+      "seriesId": "monadic-party-2019-guanxi",
+      "series": "Guanxi - Logic Programming in Haskell (Monadic Party 2019)",
+      "sequence": 4,
+      "sequenceTotal": 4,
+      "durationSeconds": 3128,
+      "description": "Monadic Party 2019 - https://monadic.party",
+      "sourceUrls": [
+        "https://github.com/mkawalec/monadic-party/blob/87898f578f99bd50550ef40e9fe1e6b5cc55be36/src/index.html#L50-L53",
+        "https://github.com/mkawalec/monadic-party/blob/87898f578f99bd50550ef40e9fe1e6b5cc55be36/src/index.html#L1076-L1084",
+        "https://www.youtube.com/watch?v=TnohBRvoUJk"
+      ],
+      "sources": [
+        {
+          "url": "https://github.com/mkawalec/monadic-party/blob/87898f578f99bd50550ef40e9fe1e6b5cc55be36/src/index.html#L50-L53",
+          "role": "Organizer site source: June 18\u201321, 2019 in Pozna\u0144",
+          "source_type": "primary"
+        },
+        {
+          "url": "https://github.com/mkawalec/monadic-party/blob/87898f578f99bd50550ef40e9fe1e6b5cc55be36/src/index.html#L1076-L1084",
+          "role": "Organizer schedule: session 4/4 at 11:00; weekday derived as date within printed event interval",
+          "source_type": "primary"
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=TnohBRvoUJk",
+          "role": "Organizer recording; title identifies part, description names Monadic Party2019; metadata records upload separately",
+          "source_type": "primary"
+        }
+      ],
+      "materials": [
+        {
+          "kind": "video",
+          "url": "https://www.youtube.com/watch?v=TnohBRvoUJk",
+          "verification": "Primary channel metadata retrieved; playable status OK"
+        },
+        {
+          "kind": "related workshop subject source repository",
+          "url": "https://github.com/ekmett/guanxi",
+          "verification": "Organizer abstract says workshop tours the guanxi library; author repository verified. No event-specific code snapshot or slide deck asserted."
+        }
+      ],
+      "uncertainty": [
+        "Exact scheduled day and local start are preserved in the organizer source. No independent timestamp inside recording was checked; recordings correspond by event and sequence. Parts3/4 omit Guanxi in video title although program uses it throughout. Monadic Warsaw is the publisher/organizer, not the host city. No separate slides found."
+      ],
+      "channelId": "UCCeiYYR2fCXarkfSqqFBwuA",
+      "relationships": [
+        {
+          "relation": "related_topic_not_duplicate",
+          "target": "youtube-DyPzPeOPgUE",
+          "note": "Boston2015 Propagators is a separate performance."
+        }
+      ]
+    },
+    {
+      "id": "cadenza-yow-2020",
+      "videoId": "25RmUl88jSw",
+      "title": "Cadenza: Building Fast Functional Languages Fast",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "YOW! Lambda Jam 2020, online",
+      "publisher": "YOW! Lambda Jam 2020, online",
+      "videoUrl": "https://www.youtube.com/watch?v=25RmUl88jSw",
+      "date": "2020-07-24",
+      "dateBasis": "presentation",
+      "dateConfidence": "high",
+      "eventDate": "2020-07-24",
+      "eventDateValue": "2020-07-24",
+      "eventYear": "2020",
+      "uploadDate": null,
+      "dateValue": "2020-07-24",
+      "datePrecision": "day",
+      "dateEvidence": [
+        {
+          "value": "2020-07-24",
+          "type": "presentation",
+          "precision": "day",
+          "evidence": "Live coding normalization by evaluation and Graal/Truffle. Distinct occurrence from Haskell Day 2019."
+        }
+      ],
+      "description": "Cadenza: Building Fast Functional Languages Fast \u2014 YOW! Lambda Jam 2020, online.",
+      "materials": [
+        {
+          "kind": "video",
+          "url": "https://www.youtube.com/watch?v=25RmUl88jSw",
+          "verification": "linked_by_primary_source"
+        }
+      ],
+      "uncertainty": [
+        "Live coding normalization by evaluation and Graal/Truffle. Distinct occurrence from Haskell Day 2019."
+      ],
+      "sourceUrls": [
+        "https://confengine.com/conferences/yow-lambda-jam-2020/proposal/14531/cadenza-building-fast-functional-languages-fast"
+      ],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "workFamily": "cadenza",
+      "inclusion": "recommended",
+      "archiveType": "talk"
+    },
+    {
+      "id": "kmett-2022-functional-futures",
+      "videoId": "jZrCVp5ekbA",
+      "title": "Across the Kmettverse with Edward Kmett",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Functional Futures / Serokell",
+      "publisher": "Functional Futures / Serokell",
+      "videoUrl": "https://www.youtube.com/watch?v=jZrCVp5ekbA",
+      "date": "2022-08-18",
+      "dateBasis": "episode_publication",
+      "dateConfidence": "high",
+      "eventDate": null,
+      "eventDateValue": null,
+      "eventYear": null,
+      "uploadDate": "2022-08-18",
+      "dateValue": "2022-08-18",
+      "datePrecision": "day",
+      "dateEvidence": [
+        {
+          "value": "2022-08-18",
+          "type": "episode_publication",
+          "precision": "day",
+          "evidence": "Official show\u2019s syndicated Apple Podcasts episode metadata says August 18, 2022 at 19:36 UTC."
+        },
+        {
+          "value": "2022-08-23",
+          "type": "edited_transcript_publication",
+          "precision": "day",
+          "evidence": "Serokell original article labels August 23rd, 2022."
+        },
+        {
+          "value": "2022-08-18",
+          "type": "video_upload",
+          "precision": "day",
+          "evidence": "Serokell original video jZrCVp5ekbA upload2022-08-18T12:41:38-07:00."
+        }
+      ],
+      "description": "Across the Kmettverse with Edward Kmett \u2014 Functional Futures / Serokell.",
+      "materials": [
+        {
+          "kind": "video",
+          "url": "https://www.youtube.com/watch?v=jZrCVp5ekbA",
+          "access": "Direct public watch-page metadata verified: Serokell uploader, matching title and episode description.",
+          "uploadDate": "2022-08-18"
+        },
+        {
+          "kind": "audio",
+          "url": "https://podcasts.apple.com/us/podcast/across-the-kmettverse-with-edward-kmett/id1606772921?i=1000576527907",
+          "access": "Official podcast syndication; no direct MP3 download independently verified."
+        },
+        {
+          "kind": "edited_transcript",
+          "url": "https://serokell.io/blog/across-the-kmettverse-with-edward-kmett",
+          "access": "Public publisher article."
+        }
+      ],
+      "uncertainty": [
+        "One interview work with audio/video and later edited highlights. Recording date is unknown. References to Stop Treading Water and Type Classes vs. the World are related works, not duplicates. Current serokell.co mirror and serokell.io article should alias one manifestation."
+      ],
+      "sourceUrls": [
+        "https://serokell.io/blog/across-the-kmettverse-with-edward-kmett",
+        "https://podcasts.apple.com/us/podcast/across-the-kmettverse-with-edward-kmett/id1606772921?i=1000576527907",
+        "https://www.youtube.com/watch?v=jZrCVp5ekbA"
+      ],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "guest"
+        },
+        {
+          "name": "Jonn",
+          "role": "interviewer; name as shown in transcript"
+        },
+        {
+          "name": "Emils Petracenoks",
+          "role": "author of edited transcript article"
+        }
+      ],
+      "workFamily": null,
+      "inclusion": "recommended",
+      "archiveType": "interview"
+    }
+  ],
+  "unrecordedTalks": [
+    {
+      "id": "kmett-2012-online-lca",
+      "title": "Purely Functional Data Structures for On-Line LCA",
+      "medium": [
+        "talk"
+      ],
+      "eventOrPublisher": "Boston Haskell",
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "authors": [],
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "date": "2012-05-30",
+      "dateValue": "2012-05-30",
+      "dateBasis": "presentation",
+      "datePrecision": "day",
+      "dates": [
+        {
+          "value": "2012-05-30",
+          "type": "presentation",
+          "precision": "day",
+          "evidence": "Date transcribed from reproduced title slide; primary title-slide visual not rechecked."
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://www.slideshare.net/slideshow/skewbinary-online-lowest-common-ancestor-search/13144385",
+          "label": "Author SlideShare",
+          "kind": "primary",
+          "status": "verified",
+          "evidence": "Exact title, Edward uploader, 43 slides."
+        },
+        {
+          "url": "https://github.com/ekmett/lca",
+          "label": "Author lca repository",
+          "kind": "primary",
+          "status": "verified",
+          "evidence": "Links deck."
+        },
+        {
+          "url": "https://www.slideserve.com/tauret/purely-functional-data-structures-for-on-line-lca",
+          "label": "Reproduced deck",
+          "kind": "secondary",
+          "status": "verified",
+          "evidence": "Cover transcript names Boston Haskell May30 2012."
+        }
+      ],
+      "sourceUrls": [
+        "https://www.slideshare.net/slideshow/skewbinary-online-lowest-common-ancestor-search/13144385",
+        "https://github.com/ekmett/lca",
+        "https://www.slideserve.com/tauret/purely-functional-data-structures-for-on-line-lca"
+      ],
+      "materials": [
+        {
+          "kind": "slides",
+          "url": "https://www.slideshare.net/slideshow/skewbinary-online-lowest-common-ancestor-search/13144385",
+          "access": "Public deck."
+        }
+      ],
+      "videoIds": [],
+      "videoUrl": null,
+      "confidence": "high for title/authorship; medium for exact date",
+      "inclusion": "recommended",
+      "notes": "Exact date has medium confidence; related SoH article is separately signed September14 2013 with later migrated header.",
+      "workFamily": null,
+      "relationships": []
+    },
+    {
+      "id": "kmett-2012-lenses-google",
+      "title": "Lenses, Folds, and Traversals",
+      "medium": [
+        "talk"
+      ],
+      "eventOrPublisher": "Google San Francisco / Bay Area Haskell Users",
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "authors": [],
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "date": "2012-10-18",
+      "dateValue": "2012-10-18",
+      "dateBasis": "presentation",
+      "datePrecision": "day",
+      "dates": [
+        {
+          "value": "2012-10-18",
+          "type": "presentation",
+          "precision": "day",
+          "evidence": "Organizer report explicitly names Thursday October 18 2012."
+        },
+        {
+          "value": "2012-10-24",
+          "type": "organizer_report_publication",
+          "precision": "day",
+          "evidence": "Google Open Source blog dateline."
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://opensource.googleblog.com/2012/10/lenses-folds-and-traversals-haskell.html",
+          "label": "Google organizer report",
+          "kind": "primary",
+          "status": "verified",
+          "evidence": "Title, presenter and event date."
+        }
+      ],
+      "sourceUrls": [
+        "https://opensource.googleblog.com/2012/10/lenses-folds-and-traversals-haskell.html"
+      ],
+      "materials": [],
+      "videoIds": [],
+      "videoUrl": null,
+      "confidence": "high",
+      "inclusion": "recommended",
+      "notes": "Separate presentation from NYC December 12; NYC recording should not be assigned to this occurrence.",
+      "workFamily": null,
+      "relationships": []
+    },
+    {
+      "id": "kmett-2013-wavelet-ljubljana",
+      "title": "What\u2019s a wavelet tree? Why do we care?",
+      "medium": [
+        "talk"
+      ],
+      "eventOrPublisher": "University of Ljubljana FMF seminar",
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "authors": [],
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "date": "2013-11-15",
+      "dateValue": "2013-11-15",
+      "dateBasis": "presentation",
+      "datePrecision": "day",
+      "dates": [
+        {
+          "value": "2013-11-15",
+          "type": "presentation",
+          "precision": "day",
+          "evidence": "Organizer gives November15, 12:00\u201314:00; room3.06 Jadranska21."
+        },
+        {
+          "value": "2013-11-12",
+          "type": "announcement_publication",
+          "precision": "day",
+          "evidence": "Organizer page publication."
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://www.fmf.uni-lj.si/en/news/news/28291/edward-kmett-whats-a-wavelet-tree-why-do-we-care/",
+          "label": "University organizer announcement",
+          "kind": "primary",
+          "status": "verified",
+          "evidence": "Exact date, title, presenter, abstract."
+        }
+      ],
+      "sourceUrls": [
+        "https://www.fmf.uni-lj.si/en/news/news/28291/edward-kmett-whats-a-wavelet-tree-why-do-we-care/"
+      ],
+      "materials": [],
+      "videoIds": [],
+      "videoUrl": null,
+      "confidence": "high",
+      "inclusion": "recommended",
+      "notes": "No recording or slides located.",
+      "workFamily": null,
+      "relationships": []
+    },
+    {
+      "id": "kmett-2014-yow-lambda-functionally-oblivious",
+      "title": "Functionally Oblivious and Succinct",
+      "medium": [
+        "talk"
+      ],
+      "eventOrPublisher": "YOW! Lambda Jam2014",
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "authors": [],
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "date": null,
+      "dateValue": "2014",
+      "dateBasis": "event",
+      "datePrecision": "year",
+      "dates": [
+        {
+          "value": "2014",
+          "type": "event",
+          "precision": "year",
+          "evidence": "Organizer ConfEngine archive identifies YOW! Lambda Jam2014."
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://confengine.com/user/edward-kmett",
+          "label": "Organizer speaker archive",
+          "kind": "primary",
+          "status": "verified",
+          "evidence": "Title, event, 30-minute invited talk."
+        },
+        {
+          "url": "https://confengine.com/conferences/yow-lambda-jam-2014/proposal/12793/functionally-oblivious-and-succinct",
+          "label": "Organizer session URL",
+          "kind": "primary_linked",
+          "status": "verified",
+          "evidence": "Linked from speaker archive; direct retrieval failed."
+        }
+      ],
+      "sourceUrls": [
+        "https://confengine.com/user/edward-kmett",
+        "https://confengine.com/conferences/yow-lambda-jam-2014/proposal/12793/functionally-oblivious-and-succinct"
+      ],
+      "materials": [],
+      "videoIds": [],
+      "videoUrl": null,
+      "confidence": "high for scheduled talk/event/year; date precision limited",
+      "inclusion": "recommended",
+      "notes": "Exact talk day/material version unresolved. Relative age in ConfEngine reflects import and must not be used as date. 2015 Kefalonia PDF is later version.",
+      "workFamily": null,
+      "relationships": []
+    },
+    {
+      "id": "kmett-2014-succinct-jhu",
+      "title": "Succinct Functional Data Structures",
+      "medium": [
+        "talk"
+      ],
+      "eventOrPublisher": "Johns Hopkins Computer Science seminar",
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "authors": [],
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "date": "2014-04-22",
+      "dateValue": "2014-04-22",
+      "dateBasis": "presentation",
+      "datePrecision": "day",
+      "dates": [
+        {
+          "value": "2014-04-22",
+          "type": "presentation",
+          "precision": "day",
+          "evidence": "Official seminar archive exact date."
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://www.cs.jhu.edu/seminar-archive-spring-2014/",
+          "label": "JHU organizer archive",
+          "kind": "primary",
+          "status": "verified",
+          "evidence": "Title, date, presenter, abstract and Video Recording link."
+        }
+      ],
+      "sourceUrls": [
+        "https://www.cs.jhu.edu/seminar-archive-spring-2014/"
+      ],
+      "materials": [],
+      "videoIds": [],
+      "videoUrl": null,
+      "confidence": "high",
+      "inclusion": "recommended",
+      "notes": "Historical recording link exists but target was not recovered. Related Ljubljana talk family, distinct occurrence.",
+      "workFamily": null,
+      "relationships": []
+    },
+    {
+      "id": "kmett-2014-zurihac",
+      "title": "[Persistent data structures based on cache-oblivious algorithms]",
+      "medium": [
+        "talk"
+      ],
+      "eventOrPublisher": "ZuriHac2014",
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "authors": [],
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "date": null,
+      "dateValue": "2014-06-06/2014-06-08",
+      "dateBasis": "event_interval",
+      "datePrecision": "interval",
+      "dates": [
+        {
+          "value": "2014-06-06/2014-06-08",
+          "type": "event_interval",
+          "precision": "interval",
+          "evidence": "Organizer report says three-day event began June6; exact talk day unknown."
+        },
+        {
+          "value": "2014-06-30",
+          "type": "organizer_report_publication",
+          "precision": "day",
+          "evidence": "Report dateline."
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://opensource.googleblog.com/2014/06/zurihac-2014-haskell-hackathon-in-zurich.html",
+          "label": "Organizer report by Johan Tibell",
+          "kind": "primary",
+          "status": "verified",
+          "evidence": "Confirms Edward talk after Simon Marlow."
+        }
+      ],
+      "sourceUrls": [
+        "https://opensource.googleblog.com/2014/06/zurihac-2014-haskell-hackathon-in-zurich.html"
+      ],
+      "materials": [],
+      "videoIds": [],
+      "videoUrl": null,
+      "confidence": "high for occurrence and event interval; title/exact day unestablished",
+      "inclusion": "recommended",
+      "notes": "Bracketed title is descriptive, not an attested formal title. No material located.",
+      "workFamily": null,
+      "relationships": []
+    },
+    {
+      "id": "discrimination-yow-2015",
+      "title": "Discrimination is Wrong: Improving Productivity",
+      "medium": [
+        "talk"
+      ],
+      "eventOrPublisher": "YOW! Lambda Jam 2015",
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "authors": [],
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "date": null,
+      "dateValue": "2015",
+      "dateBasis": "presentation",
+      "datePrecision": "year",
+      "dates": [
+        {
+          "value": "2015",
+          "type": "presentation",
+          "precision": "year",
+          "evidence": "Exact presentation day unresolved. cB8DapKQz-I is a ZuriHac performance, not YOW."
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://confengine.com/user/edward-kmett",
+          "role": "Organizer occurrence and title",
+          "source_type": "primary"
+        }
+      ],
+      "sourceUrls": [
+        "https://confengine.com/user/edward-kmett"
+      ],
+      "materials": [],
+      "videoIds": [],
+      "videoUrl": null,
+      "confidence": "medium",
+      "inclusion": "recommended",
+      "notes": "Exact presentation day unresolved. cB8DapKQz-I is a ZuriHac performance, not YOW.",
+      "workFamily": "discrimination-is-wrong",
+      "relationships": []
+    },
+    {
+      "id": "functionally-oblivious-ifip-2015",
+      "title": "Functionally Oblivious (and Succinct)",
+      "medium": [
+        "talk_and_slides"
+      ],
+      "eventOrPublisher": "IFIP WG2.8 33rd meeting, Kefalonia",
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "authors": [],
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "date": "2015-05-26",
+      "dateValue": "2015-05-26",
+      "dateBasis": "presentation",
+      "datePrecision": "day",
+      "dates": [
+        {
+          "value": "2015-05-26",
+          "type": "presentation",
+          "precision": "day",
+          "evidence": "Minutes say title; supplied PDF supplies actual title. Slot 11:50\u201312:30. Linked 2014 videos are prior performances, not recordings of this occurrence."
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://www.cs.ox.ac.uk/ralf.hinze/WG2.8/33/minutes.html",
+          "role": "Date and speaker",
+          "source_type": "primary"
+        },
+        {
+          "url": "https://www.cs.ox.ac.uk/ralf.hinze/WG2.8/33/slides/Edward.pdf",
+          "role": "Title and authorship",
+          "source_type": "primary"
+        }
+      ],
+      "sourceUrls": [
+        "https://www.cs.ox.ac.uk/ralf.hinze/WG2.8/33/minutes.html",
+        "https://www.cs.ox.ac.uk/ralf.hinze/WG2.8/33/slides/Edward.pdf"
+      ],
+      "materials": [
+        {
+          "kind": "slides_pdf",
+          "url": "https://www.cs.ox.ac.uk/ralf.hinze/WG2.8/33/slides/Edward.pdf",
+          "verification": "fetched"
+        },
+        {
+          "kind": "slides_keynote",
+          "url": "https://www.cs.ox.ac.uk/ralf.hinze/WG2.8/33/slides/Edward.key",
+          "verification": "linked_by_primary_source"
+        }
+      ],
+      "videoIds": [],
+      "videoUrl": null,
+      "confidence": "high",
+      "inclusion": "recommended",
+      "notes": "Minutes say title; supplied PDF supplies actual title. Slot 11:50\u201312:30. Linked 2014 videos are prior performances, not recordings of this occurrence.",
+      "workFamily": "functionally-oblivious-and-succinct",
+      "relationships": []
+    },
+    {
+      "id": "transients-yow-2017",
+      "title": "Transients",
+      "medium": [
+        "talk"
+      ],
+      "eventOrPublisher": "YOW! Lambda Jam 2017",
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "authors": [],
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "date": null,
+      "dateValue": "2017",
+      "dateBasis": "presentation",
+      "datePrecision": "year",
+      "dates": [
+        {
+          "value": "2017",
+          "type": "presentation",
+          "precision": "year",
+          "evidence": "Exact day unresolved; July2 secondary link date not adopted."
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://confengine.com/user/edward-kmett",
+          "role": "Organizer occurrence, 45-minute invited talk",
+          "source_type": "primary"
+        },
+        {
+          "url": "https://confengine.com/conferences/yow-lambda-jam-2017/proposal/12492/transients",
+          "role": "Session URL linked by organizer",
+          "source_type": "primary"
+        }
+      ],
+      "sourceUrls": [
+        "https://confengine.com/user/edward-kmett",
+        "https://confengine.com/conferences/yow-lambda-jam-2017/proposal/12492/transients"
+      ],
+      "materials": [],
+      "videoIds": [],
+      "videoUrl": null,
+      "confidence": "medium",
+      "inclusion": "recommended",
+      "notes": "Exact day unresolved; July2 secondary link date not adopted.",
+      "workFamily": "transients",
+      "relationships": []
+    },
+    {
+      "id": "lets-lens-yow-2018",
+      "title": "Let's Lens",
+      "medium": [
+        "workshop"
+      ],
+      "eventOrPublisher": "YOW! Lambda Jam 2018",
+      "contributors": [
+        {
+          "name": "Tony Morris",
+          "role": "presenter"
+        },
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "authors": [],
+      "speakers": [
+        "Tony Morris",
+        "Edward Kmett"
+      ],
+      "date": null,
+      "dateValue": "2018",
+      "dateBasis": "presentation",
+      "datePrecision": "year",
+      "dates": [
+        {
+          "value": "2018",
+          "type": "presentation",
+          "precision": "year",
+          "evidence": "Exact day unresolved."
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://confengine.com/user/edward-kmett",
+          "role": "Organizer occurrence, author order, full-day workshop",
+          "source_type": "primary"
+        }
+      ],
+      "sourceUrls": [
+        "https://confengine.com/user/edward-kmett"
+      ],
+      "materials": [],
+      "videoIds": [],
+      "videoUrl": null,
+      "confidence": "medium",
+      "inclusion": "recommended",
+      "notes": "Exact day unresolved.",
+      "workFamily": "lets-lens",
+      "relationships": []
+    },
+    {
+      "id": "lets-lens-yow-2019",
+      "title": "Let's Lens",
+      "medium": [
+        "workshop"
+      ],
+      "eventOrPublisher": "YOW! Lambda Jam 2019",
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        },
+        {
+          "name": "Tony Morris",
+          "role": "presenter"
+        }
+      ],
+      "authors": [],
+      "speakers": [
+        "Edward Kmett",
+        "Tony Morris"
+      ],
+      "date": null,
+      "dateValue": "2019",
+      "dateBasis": "presentation",
+      "datePrecision": "year",
+      "dates": [
+        {
+          "value": "2019",
+          "type": "presentation",
+          "precision": "year",
+          "evidence": "Exact day unresolved."
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://confengine.com/user/edward-kmett",
+          "role": "Organizer occurrence, author order, full-day workshop",
+          "source_type": "primary"
+        }
+      ],
+      "sourceUrls": [
+        "https://confengine.com/user/edward-kmett"
+      ],
+      "materials": [],
+      "videoIds": [],
+      "videoUrl": null,
+      "confidence": "medium",
+      "inclusion": "recommended",
+      "notes": "Exact day unresolved.",
+      "workFamily": "lets-lens",
+      "relationships": []
+    },
+    {
+      "id": "logic-a-la-carte-yow-2019",
+      "title": "Logic Programming \u00e0 la Carte",
+      "medium": [
+        "talk"
+      ],
+      "eventOrPublisher": "YOW! Lambda Jam 2019",
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "authors": [],
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "date": null,
+      "dateValue": "2019",
+      "dateBasis": "presentation",
+      "datePrecision": "year",
+      "dates": [
+        {
+          "value": "2019",
+          "type": "presentation",
+          "precision": "year",
+          "evidence": "Exact day unresolved."
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://confengine.com/user/edward-kmett",
+          "role": "Organizer occurrence, 30-minute invited talk",
+          "source_type": "primary"
+        }
+      ],
+      "sourceUrls": [
+        "https://confengine.com/user/edward-kmett"
+      ],
+      "materials": [],
+      "videoIds": [],
+      "videoUrl": null,
+      "confidence": "medium",
+      "inclusion": "recommended",
+      "notes": "Exact day unresolved.",
+      "workFamily": "logic-programming-a-la-carte",
+      "relationships": []
+    },
+    {
+      "id": "cadenza-haskellday-2019",
+      "title": "Cadenza: Building fast functional languages on the JVM",
+      "medium": [
+        "talk"
+      ],
+      "eventOrPublisher": "Haskell Day 2019, Haskell-jp, Tokyo",
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "authors": [],
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "date": "2019-11-09",
+      "dateValue": "2019-11-09",
+      "dateBasis": "presentation",
+      "datePrecision": "day",
+      "dates": [
+        {
+          "value": "2019-11-09",
+          "type": "presentation",
+          "precision": "day",
+          "evidence": "Scheduled occurrence; no slides or recording found in this pass. Title differs from 2020 Cadenza."
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://techplay.jp/event/727059",
+          "role": "Organizer listing gives event date and 17:00 special-talk slot",
+          "source_type": "primary"
+        }
+      ],
+      "sourceUrls": [
+        "https://techplay.jp/event/727059"
+      ],
+      "materials": [],
+      "videoIds": [],
+      "videoUrl": null,
+      "confidence": "high",
+      "inclusion": "recommended",
+      "notes": "Scheduled occurrence; no slides or recording found in this pass. Title differs from 2020 Cadenza.",
+      "workFamily": "cadenza",
+      "relationships": []
+    },
+    {
+      "id": "logic-a-la-carte-fnconf-2019",
+      "title": "Logic Programming \u00e0 la Carte",
+      "medium": [
+        "keynote_slides_video"
+      ],
+      "eventOrPublisher": "Functional Conf 2019, Bengaluru",
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "authors": [],
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "date": "2019-11-15",
+      "dateValue": "2019-11-15",
+      "dateBasis": "presentation",
+      "datePrecision": "day",
+      "dates": [
+        {
+          "value": "2019-11-15",
+          "type": "presentation",
+          "precision": "day",
+          "evidence": ""
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://confengine.com/conferences/functional-conf-2019/schedule",
+          "role": "Organizer title, date and 09:30\u201310:15 IST slot",
+          "source_type": "primary"
+        },
+        {
+          "url": "https://confengine.com/conferences/functional-conf-2019/proposal/12701/logic-programming-la-carte",
+          "role": "Session URL linked by organizer",
+          "source_type": "primary"
+        }
+      ],
+      "sourceUrls": [
+        "https://confengine.com/conferences/functional-conf-2019/schedule",
+        "https://confengine.com/conferences/functional-conf-2019/proposal/12701/logic-programming-la-carte"
+      ],
+      "materials": [
+        {
+          "kind": "slides_landing",
+          "url": "https://confengine.com/conferences/functional-conf-2019/schedule",
+          "verification": "Google Drive slides link observed; direct target unresolved"
+        },
+        {
+          "kind": "video_landing",
+          "url": "https://confengine.com/conferences/functional-conf-2019/schedule",
+          "verification": "YouTube link observed; direct target unresolved"
+        }
+      ],
+      "videoIds": [],
+      "videoUrl": null,
+      "confidence": "high",
+      "inclusion": "recommended",
+      "notes": "",
+      "workFamily": "logic-programming-a-la-carte",
+      "relationships": []
+    },
+    {
+      "id": "panel-fnconf-2019",
+      "title": "Q & A Session With Functional Conf Speakers",
+      "medium": [
+        "panel_video"
+      ],
+      "eventOrPublisher": "Functional Conf 2019, Bengaluru",
+      "contributors": [
+        {
+          "name": "Naresh Jain",
+          "role": "presenter"
+        },
+        {
+          "name": "Aaron Hsu",
+          "role": "presenter"
+        },
+        {
+          "name": "Andrea Leopardi",
+          "role": "presenter"
+        },
+        {
+          "name": "Bruce Tate",
+          "role": "presenter"
+        },
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        },
+        {
+          "name": "Saurabh Nanda",
+          "role": "presenter"
+        }
+      ],
+      "authors": [],
+      "speakers": [
+        "Naresh Jain",
+        "Aaron Hsu",
+        "Andrea Leopardi",
+        "Bruce Tate",
+        "Edward Kmett",
+        "Saurabh Nanda"
+      ],
+      "date": "2019-11-16",
+      "dateValue": "2019-11-16",
+      "dateBasis": "presentation",
+      "datePrecision": "day",
+      "dates": [
+        {
+          "value": "2019-11-16",
+          "type": "presentation",
+          "precision": "day",
+          "evidence": "Participants, not a solely Edward-authored talk. Organizer labels this as keynote."
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://confengine.com/conferences/functional-conf-2019/schedule",
+          "role": "Organizer date, title, 17:00\u201317:45 IST slot and participants",
+          "source_type": "primary"
+        },
+        {
+          "url": "https://confengine.com/conferences/functional-conf-2019/proposal/13521/q-a-session-with-functional-conf-speakers",
+          "role": "Session URL linked by organizer",
+          "source_type": "primary"
+        }
+      ],
+      "sourceUrls": [
+        "https://confengine.com/conferences/functional-conf-2019/schedule",
+        "https://confengine.com/conferences/functional-conf-2019/proposal/13521/q-a-session-with-functional-conf-speakers"
+      ],
+      "materials": [
+        {
+          "kind": "video_landing",
+          "url": "https://confengine.com/conferences/functional-conf-2019/schedule",
+          "verification": "YouTube link observed; direct target unresolved"
+        }
+      ],
+      "videoIds": [],
+      "videoUrl": null,
+      "confidence": "high",
+      "inclusion": "recommended",
+      "notes": "Participants, not a solely Edward-authored talk. Organizer labels this as keynote.",
+      "workFamily": "panel-fnconf-2019",
+      "relationships": []
+    },
+    {
+      "id": "propagators-fnconf-2019",
+      "title": "Propagators",
+      "medium": [
+        "demonstration_video"
+      ],
+      "eventOrPublisher": "Functional Conf 2019, Bengaluru",
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "authors": [],
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "date": "2019-11-16",
+      "dateValue": "2019-11-16",
+      "dateBasis": "presentation",
+      "datePrecision": "day",
+      "dates": [
+        {
+          "value": "2019-11-16",
+          "type": "presentation",
+          "precision": "day",
+          "evidence": ""
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://confengine.com/conferences/functional-conf-2019/schedule",
+          "role": "Organizer date, title, 11:00\u201311:45 IST slot and recording link",
+          "source_type": "primary"
+        },
+        {
+          "url": "https://confengine.com/conferences/functional-conf-2019/proposal/12713/propagators",
+          "role": "Session URL linked by organizer",
+          "source_type": "primary"
+        }
+      ],
+      "sourceUrls": [
+        "https://confengine.com/conferences/functional-conf-2019/schedule",
+        "https://confengine.com/conferences/functional-conf-2019/proposal/12713/propagators"
+      ],
+      "materials": [
+        {
+          "kind": "video_landing",
+          "url": "https://confengine.com/conferences/functional-conf-2019/schedule",
+          "verification": "YouTube link observed; direct target unresolved"
+        }
+      ],
+      "videoIds": [],
+      "videoUrl": null,
+      "confidence": "high",
+      "inclusion": "recommended",
+      "notes": "",
+      "workFamily": "propagators",
+      "relationships": []
+    },
+    {
+      "id": "lets-lens-fnconf-2019",
+      "title": "Let's Lens",
+      "medium": [
+        "workshop"
+      ],
+      "eventOrPublisher": "Functional Conf 2019, Bengaluru",
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        },
+        {
+          "name": "Tony Morris",
+          "role": "presenter"
+        }
+      ],
+      "authors": [],
+      "speakers": [
+        "Edward Kmett",
+        "Tony Morris"
+      ],
+      "date": "2019-11-17",
+      "dateValue": "2019-11-17",
+      "dateBasis": "presentation",
+      "datePrecision": "day",
+      "dates": [
+        {
+          "value": "2019-11-17",
+          "type": "presentation",
+          "precision": "day",
+          "evidence": "No media links found on session page."
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://confengine.com/conferences/functional-conf-2019/proposal/12476/lets-lens",
+          "role": "Organizer title, co-presenters, 10:00\u201318:00 IST date",
+          "source_type": "primary"
+        }
+      ],
+      "sourceUrls": [
+        "https://confengine.com/conferences/functional-conf-2019/proposal/12476/lets-lens"
+      ],
+      "materials": [],
+      "videoIds": [],
+      "videoUrl": null,
+      "confidence": "high",
+      "inclusion": "recommended",
+      "notes": "No media links found on session page.",
+      "workFamily": "lets-lens",
+      "relationships": []
+    },
+    {
+      "id": "linear-optics-bx-2021",
+      "title": "A Taste of Linear Optics",
+      "medium": [
+        "keynote_slides"
+      ],
+      "eventOrPublisher": "Bx 2021 / STAF, online",
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "authors": [],
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "date": "2021-06-21",
+      "dateValue": "2021-06-21",
+      "dateBasis": "presentation",
+      "datePrecision": "day",
+      "dates": [
+        {
+          "value": "2021-06-21",
+          "type": "presentation",
+          "precision": "day",
+          "evidence": "Mike Shulman credited as prior-work source in abstract, not coauthor. No recording found."
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://bx-community.wikidot.com/bx2021:home",
+          "role": "Title, speaker, event date",
+          "source_type": "primary"
+        },
+        {
+          "url": "https://bx-community.wikidot.com/bx2021:program",
+          "role": "09:10\u201310:30 CEST slot and downloadable slides",
+          "source_type": "primary"
+        },
+        {
+          "url": "https://ceur-ws.org/Vol-2999/bxpreface.pdf",
+          "role": "Proceedings retrospective confirms event and keynote",
+          "source_type": "primary"
+        }
+      ],
+      "sourceUrls": [
+        "https://bx-community.wikidot.com/bx2021:home",
+        "https://bx-community.wikidot.com/bx2021:program",
+        "https://ceur-ws.org/Vol-2999/bxpreface.pdf"
+      ],
+      "materials": [
+        {
+          "kind": "slides_pdf",
+          "url": "http://bx-community.wdfiles.com/local--files/bx2021:program/Keynote-slides.pdf",
+          "verification": "linked_by_primary_source"
+        }
+      ],
+      "videoIds": [],
+      "videoUrl": null,
+      "confidence": "high",
+      "inclusion": "recommended",
+      "notes": "Mike Shulman credited as prior-work source in abstract, not coauthor. No recording found.",
+      "workFamily": "linear-optics-bx-2021",
+      "relationships": []
+    },
+    {
+      "id": "kmett-undated-bound-slides",
+      "title": "Making de Bruijn Succ Less",
+      "medium": [
+        "talk"
+      ],
+      "eventOrPublisher": "SlideShare / event unidentified",
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "authors": [],
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "date": null,
+      "dateValue": null,
+      "dateBasis": "unknown",
+      "datePrecision": "unknown",
+      "dates": [],
+      "sources": [
+        {
+          "url": "https://www.slideshare.net/slideshow/bound-making-de-bruijn-succ-less/13768903",
+          "label": "Author SlideShare",
+          "kind": "primary",
+          "status": "verified",
+          "evidence": "50-slide deck, title and author-upload."
+        }
+      ],
+      "sourceUrls": [
+        "https://www.slideshare.net/slideshow/bound-making-de-bruijn-succ-less/13768903"
+      ],
+      "materials": [
+        {
+          "kind": "slides",
+          "url": "https://www.slideshare.net/slideshow/bound-making-de-bruijn-succ-less/13768903",
+          "access": "Public slides."
+        }
+      ],
+      "videoIds": [],
+      "videoUrl": null,
+      "confidence": "high for title and attribution; date unknown",
+      "inclusion": "candidate",
+      "notes": "Likely2012, date/event not established. Bound library contributors must not be converted to slide coauthors.",
+      "workFamily": null,
+      "relationships": []
+    }
+  ],
+  "candidateRecordings": [
+    {
+      "id": "propagators-yow-lambda-2016",
+      "videoId": "acZkF6Q2XKs",
+      "title": "Propagators",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "YOW! Lambda Jam 2016",
+      "publisher": "YOW! Lambda Jam 2016",
+      "videoUrl": "https://www.youtube.com/watch?v=acZkF6Q2XKs",
+      "date": null,
+      "dateBasis": "unknown exact day; see dateValue",
+      "dateConfidence": "approximate",
+      "eventDate": null,
+      "eventDateValue": "2016",
+      "eventYear": "2016",
+      "uploadDate": null,
+      "dateValue": "2016",
+      "datePrecision": "year",
+      "dateEvidence": [
+        {
+          "value": "2016",
+          "type": "presentation",
+          "precision": "year",
+          "evidence": "Exact day unresolved. Video discovered in gwils gist; do not inherit its erroneous Boston year."
+        }
+      ],
+      "description": "Propagators \u2014 YOW! Lambda Jam 2016.",
+      "materials": [
+        {
+          "kind": "video",
+          "url": "https://www.youtube.com/watch?v=acZkF6Q2XKs",
+          "verification": "candidate_secondary_resource_list"
+        }
+      ],
+      "uncertainty": [
+        "Exact day unresolved. Video discovered in gwils gist; do not inherit its erroneous Boston year. Candidate video URL returned no usable videoDetails in current retrieval; organizer occurrence is established separately."
+      ],
+      "sourceUrls": [
+        "https://confengine.com/user/edward-kmett"
+      ],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "workFamily": "propagators",
+      "inclusion": "recommended",
+      "archiveType": "talk"
+    },
+    {
+      "id": "propagators-yow-west-2016",
+      "videoId": "ctT425sPAm4",
+      "title": "Propagators",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "YOW! West 2016",
+      "publisher": "YOW! West 2016",
+      "videoUrl": "https://www.youtube.com/watch?v=ctT425sPAm4",
+      "date": null,
+      "dateBasis": "unknown exact day; see dateValue",
+      "dateConfidence": "approximate",
+      "eventDate": null,
+      "eventDateValue": "2016",
+      "eventYear": "2016",
+      "uploadDate": null,
+      "dateValue": "2016",
+      "datePrecision": "year",
+      "dateEvidence": [
+        {
+          "value": "2016",
+          "type": "presentation",
+          "precision": "year",
+          "evidence": "Exact day unresolved. Distinct occurrence from Lambda Jam and Boston."
+        }
+      ],
+      "description": "Propagators \u2014 YOW! West 2016.",
+      "materials": [
+        {
+          "kind": "video",
+          "url": "https://www.youtube.com/watch?v=ctT425sPAm4",
+          "verification": "candidate_secondary_resource_list"
+        }
+      ],
+      "uncertainty": [
+        "Exact day unresolved. Distinct occurrence from Lambda Jam and Boston. Candidate video URL returned no usable videoDetails in current retrieval; organizer occurrence is established separately."
+      ],
+      "sourceUrls": [
+        "https://confengine.com/user/edward-kmett",
+        "https://confengine.com/conferences/yow-west-2016/proposal/13117/propagators"
+      ],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "presenter"
+        }
+      ],
+      "workFamily": "propagators",
+      "inclusion": "recommended",
+      "archiveType": "talk"
+    }
+  ]
+}

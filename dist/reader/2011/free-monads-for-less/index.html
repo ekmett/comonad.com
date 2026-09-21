@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free Monads for Less (Part 1 of 3): Codensity · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Algorithms · Category Theory · Data Structures · Haskell · Kan Extensions · Monads</span><span>Edward Kmett · <time datetime="2011-06-23">23 June 2011</time></span></div><h1>Free Monads for Less (Part 1 of 3): Codensity</h1></header><details class="contents"><summary>On this page</summary><ol><li><a href="#monads-for-free">Monads for Free</a></li><li><a href="#free-is-a-monad-transformer">Free is a Monad Transformer</a></li><li><a href="#monadfree">MonadFree</a></li><li><a href="#the-dual-of-substitution-is-redecoration">The dual of substitution is redecoration</a></li><li><a href="#putting-codensity-to-work">Putting Codensity to Work</a></li></ol></details><article class="prose"><span id="more-218"></span><p>A couple of years back <a href="http://www.iai.uni-bonn.de/~jv/">Janis Voigtländer</a> wrote <a href="http://www.iai.uni-bonn.de/~jv/mpc08.pdf">a nice paper</a> on how one can use the codensity monad to improve the asymptotic complexity of algorithms using the free monads. He didn't use the name <a href="https://hackage.haskell.org/packages/archive/kan-extensions/0.5.0/doc/html/Control-Monad-Codensity.html">Codensity</a> in the paper, but this is essentially the meaning of his type <code>C</code>.</p>
+<p>I just returned from <a href="http://www.cas.mcmaster.ca/~anand/DSL2011.html">running a workshop on domain-specific languages at McMaster University</a> with the more than able assistance of <a href="http://llama.freegeek.org/~wren/thornton_cv.pdf">Wren Ng Thornton</a>. Among the many topics covered, I spent a lot of time talking about how to use free monads to build up term languages for various DSLs with simple evaluators, and then made them efficient by using <code>Codensity</code>.</p>
+<p>This has been shown to be a sufficient tool for this task, but is it necessary?</p>
+<p>First, some context:</p>
+<h2 id="monads-for-free">Monads for Free</h2>
+<p>Given that <em>f</em> is a <code>Functor</code>, we get that</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Free</span> f a = <span class="hljs-type">Pure</span> a | <span class="hljs-type">Free</span> (<span class="hljs-title">f</span> (<span class="hljs-type">Free</span> <span class="hljs-title">f</span> <span class="hljs-title">a</span>))</span>
+</code></pre>
+<p>is a <code>Monad</code> for free:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> f =&gt; <span class="hljs-type">Functor</span> (<span class="hljs-type">Free</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+   fmap f (<span class="hljs-type">Pure</span> a) = <span class="hljs-type">Pure</span> (f a)
+   fmap f (<span class="hljs-type">Free</span> <span class="hljs-keyword">as</span>) = <span class="hljs-type">Free</span> (fmap (fmap f) <span class="hljs-keyword">as</span>)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> f =&gt; <span class="hljs-type">Monad</span> (<span class="hljs-type">Free</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+   return = <span class="hljs-type">Pure</span>
+   <span class="hljs-type">Pure</span> a &gt;&gt;= f = f a <span class="hljs-comment">-- the first monad law!</span>
+   <span class="hljs-type">Free</span> <span class="hljs-keyword">as</span> &gt;&gt;= f = <span class="hljs-type">Free</span> (fmap (&gt;&gt;= f) <span class="hljs-keyword">as</span>)
+</code></pre>
+<p>The definition is also free in a particular categorical sense, that if <em>f</em> is a monad, then, and you have a forgetful functor that forgets that it is a monad and just yields the functor, then the the free construction above is left adjoint to it.</p>
+<p>This type and much of the code below is actually provided by <a href="https://hackage.haskell.org/packages/archive/comonad-transformers/1.7/doc/html/Control-Monad-Trans-Free.html">Control.Monad.Trans.Free</a> in the <a href="https://hackage.haskell.org/package/comonad-transformers">comonad-transformers</a> package on hackage.</p>
+<p>For a while, Free lived in a separate, now defunct, package named <code>free</code> with its dual <a href="https://hackage.haskell.org/packages/archive/comonad-transformers/1.7/doc/html/Control-Comonad-Trans-Cofree.html">Cofree</a>, but it was merged into comonad-transformers due to complications involving <a href="https://hackage.haskell.org/package/comonads-fd">comonads-fd</a>, the comonadic equivalent of the mtl. Arguably, a better home would be transformers, to keep symmetry.</p>
+<h2 id="free-is-a-monad-transformer">Free is a Monad Transformer</h2>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">MonadTrans</span> <span class="hljs-type">Free</span> <span class="hljs-keyword">where</span></span>
+    lift = <span class="hljs-type">Free</span> . liftM <span class="hljs-type">Pure</span>
+</code></pre>
+<p>and there exists a <a href="http://en.wikipedia.org/wiki/Retract_(category_theory)">retraction</a> for lift</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">retract</span> :: <span class="hljs-type">Monad</span> f =&gt; <span class="hljs-type">Free</span> f a -&gt; f a
+<span class="hljs-title">retract</span> (<span class="hljs-type">Pure</span> a) = return a
+<span class="hljs-title">retract</span> (<span class="hljs-type">Free</span> <span class="hljs-keyword">as</span>) = <span class="hljs-keyword">as</span> &gt;&gt;= retract
+</code></pre>
+<p>such that <code>retract . lift = id</code>. I've <a href="http://stackoverflow.com/questions/6221531/how-to-convert-a-free-monad-into-a-functor/6231795#6231795">spoken about this on Stack Overflow</a>, including the rather trivial proof, previously.</p>
+<p>This lets us work in <code>Free m a</code>, then flatten back down to a single layer of <em>m</em>.</p>
+<p>This digression will be useful in a subsequent post.</p>
+<h2 id="monadfree">MonadFree</h2>
+<p>What Janis encapsulated in his paper is the notion that we can abstract out the extra power granted by a free monad to add layers of <em>f</em> to some monad <em>m</em>, and then use a better representation to improve the asymptotic performance of the monad.</p>
+<p>The names below have been changed slightly from his presentation.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> (<span class="hljs-type">Monad</span> <span class="hljs-title">m</span>, <span class="hljs-type">Functor</span> <span class="hljs-title">f</span>) =&gt; <span class="hljs-type">MonadFree</span> f m | m -&gt; f <span class="hljs-keyword">where</span></span>
+    wrap :: f (m a) -&gt; m a
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> f =&gt; <span class="hljs-type">MonadFree</span> f (<span class="hljs-type">Free</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+    wrap = <span class="hljs-type">Free</span>
+</code></pre>
+<p>instances can easily be supplied to lift <code>MonadFree</code> over the common monad transformers. For instance:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> (<span class="hljs-type">Functor</span> <span class="hljs-title">f</span>, <span class="hljs-type">MonadFree</span> <span class="hljs-title">f</span> <span class="hljs-title">m</span>) =&gt; <span class="hljs-type">MonadFree</span> f (<span class="hljs-type">ReaderT</span> <span class="hljs-title">e</span> <span class="hljs-title">m</span>) <span class="hljs-keyword">where</span></span>
+    wrap fs = <span class="hljs-type">ReaderT</span> $ \e -&gt; wrap $ fmap (`runReaderT` e) fs
+</code></pre>
+<p>This functionality is provided by <a href="https://hackage.haskell.org/packages/archive/comonads-fd/1.7/doc/html/Control-Monad-Free-Class.html">Control.Monad.Free.Class</a>.</p>
+<p>Janis then proceeded to define the aforementioned type <code>C</code>, which is effectively identical to</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Codensity</span> f a = <span class="hljs-type">Codensity</span> (<span class="hljs-title">forall</span> <span class="hljs-title">r</span>. (<span class="hljs-title">a</span> -&gt; <span class="hljs-title">f</span> <span class="hljs-title">r</span>) -&gt; f r)</span>
+</code></pre>
+<p>This type is supplied by <a href="https://hackage.haskell.org/packages/archive/kan-extensions/0.5.0/doc/html/Control-Monad-Codensity.html">Control.Monad.Codensity</a> from my <a href="https://hackage.haskell.org/package/kan-extensions">kan-extensions</a> package on hackage.</p>
+<p>I have spoken about this type (and another that will arise in a subsequent post) on this blog previously, in a series of posts on Kan Extensions. [ <a href="../../../reader/2008/kan-extensions/">1</a>, <a href="../../../reader/2008/kan-extensions-ii/">2</a>, <a href="../../../reader/2008/kan-extension-iii/">3</a>]</p>
+<p><code>Codensity f</code> is a <code>Monad</code>, <strong>regardless</strong> of what <em>f</em> is!</p>
+<p>In fact, you can quite literally cut and paste much of the definitions for <code>return</code>, <code>fmap</code>, and <code>(&gt;&gt;=)</code> from the code for the <code>ContT</code> monad transformer! Compare</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> (<span class="hljs-type">Codensity</span> <span class="hljs-title">k</span>) <span class="hljs-keyword">where</span></span>
+  fmap f (<span class="hljs-type">Codensity</span> m) = <span class="hljs-type">Codensity</span> (\k -&gt; m (k . f))
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> (<span class="hljs-type">Codensity</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+  return x = <span class="hljs-type">Codensity</span> (\k -&gt; k x)
+  m &gt;&gt;= k = <span class="hljs-type">Codensity</span> (\c -&gt; runCodensity m (\a -&gt; runCodensity (k a) c))
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">MonadTrans</span> <span class="hljs-type">Codensity</span> <span class="hljs-keyword">where</span></span>
+   lift m = <span class="hljs-type">Codensity</span> (m &gt;&gt;=)
+</code></pre>
+<p>from <a href="https://hackage.haskell.org/packages/archive/kan-extensions/0.5.0/doc/html/src/Control-Monad-Codensity.html">Control.Monad.Codensity</a> in <a href="https://hackage.haskell.org/package/kan-extensions">kan-extensions</a> with</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> (<span class="hljs-type">ContT</span> <span class="hljs-title">r</span> <span class="hljs-title">m</span>) <span class="hljs-keyword">where</span></span>
+    fmap f m = <span class="hljs-type">ContT</span> $ \c -&gt; runContT m (c . f)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> (<span class="hljs-type">ContT</span> <span class="hljs-title">r</span> <span class="hljs-title">m</span>) <span class="hljs-keyword">where</span></span>
+    return a = <span class="hljs-type">ContT</span> ($ a)
+    m &gt;&gt;= k  = <span class="hljs-type">ContT</span> $ \c -&gt; runContT m (\a -&gt; runContT (k a) c)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">MonadTrans</span> (<span class="hljs-type">ContT</span> <span class="hljs-title">r</span>) <span class="hljs-keyword">where</span></span>
+    lift m = <span class="hljs-type">ContT</span> (m &gt;&gt;=)
+</code></pre>
+<p>from the <a href="https://hackage.haskell.org/packages/archive/transformers/0.2.2.0/doc/html/src/Control-Monad-Trans-Cont.html">Control.Monad.Trans.Cont</a> in <a href="https://hackage.haskell.org/package/transformers-0.2.2.0">transformers</a>.</p>
+<p><code>Codensity m a</code> is effectively <code>forall r. ContT r m a</code>. This turns out to be just enough of a restriction to rule out the use of <a href="https://hackage.haskell.org/packages/archive/transformers/0.2.2.0/doc/html/Control-Monad-Trans-Cont.html#v:callCC">callCC</a>, while leaving the very powerful fact that when you lower them back down using</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">lowerCodensity</span> :: <span class="hljs-type">Monad</span> m =&gt; <span class="hljs-type">Codensity</span> m a -&gt; m a
+<span class="hljs-title">lowerCodensity</span> (<span class="hljs-type">Codensity</span> m) = m return
+</code></pre>
+<p>or</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">runContT</span> :: <span class="hljs-type">ContT</span> r m a -&gt; m r
+<span class="hljs-title">runContT</span> (<span class="hljs-type">ContT</span> m) = m return
+</code></pre>
+<p><code>ContT</code> and <code>Codensity</code> both yield a result in which all of the uses of the underlying monad's <code>(&gt;&gt;=)</code> are right associated.</p>
+<p>This can be convenient for two reasons:</p>
+<p>First, some almost-monads are not associative, and converting to ContT or Codensity can be used to fix this fact.</p>
+<p>Second, in many monads, when you build a big structure using left associated binds, like:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">    (f &gt;&gt;= g) &gt;&gt;= h
+</code></pre>
+<p>rather than use right associated binds like</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">   f &gt;&gt;= \x -&gt; g x &gt;&gt;= h
+</code></pre>
+<p>then you wind up building a structure, then tearing it down and building up a whole new structure. This can compromise the productivity of the result, and it can also affect the asymptotic performance of your code.</p>
+<p>Even though the monad laws say these two yield the same answer.</p>
+<h2 id="the-dual-of-substitution-is-redecoration">The dual of substitution is redecoration</h2>
+<p>To see that, first, it is worth noting that about ten years back, Tarmo Uustalu and Varmo Vene wrote "<a href="http://www.ioc.ee/~tarmo/papers/sfp01-book.pdf">The dual of substitition is redecoration</a>", which among other things quite eloquently described how monads are effectively about substituting new tree-like structures, and then renormalizing.</p>
+<p>This can be seen in terms of the more categorical viewpoint, where we define a monad in terms of <code>return</code>, <code>fmap</code> and <code>join</code>, rather than <code>return</code> and <code>(&gt;&gt;=)</code>. In that presentation:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">m</span> &gt;&gt;= f = join (fmap f m)
+</code></pre>
+<p><code>fmap</code> is performing substitution. and <code>join</code> is dealing with any renormalization.</p>
+<p>Done this way, <code>(m &gt;&gt;= f)</code> on the <code>Maybe</code> monad would first <code>fmap</code> to obtain <code>Just (Just a)</code>, <code>Just Nothing</code> or <code>Nothing</code> before flattening.</p>
+<p>In the Maybe a case, the association of your binds is largely immaterial, the normalization pass fixes things up to basically the same size, but in the special case of a free monad the monad is <strong>purely defined in terms of substitution</strong>, since:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">-- join :: Functor f =&gt; Free f (Free f a) -&gt; Free f a</span>
+<span class="hljs-comment">-- join (Pure a) = a</span>
+<span class="hljs-comment">-- join (Free as) = Free (fmap join as)</span>
+</code></pre>
+<p>This means that every time you <code>&gt;&gt;=</code> a free monad you are accumulating structure -- structure that you have traverse past to deal with subsequent left-associated invocations of <code>&gt;&gt;=</code>! Free monads never shrink after a bind and the main body of the tree never changes.</p>
+<p>More concretely, you could build a binary tree with</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">-- data Tree a = Tip a | Bin (Tree a) (Tree a)</span>
+</code></pre>
+<p>and make a monad out of it, writing out your <code>return</code> and <code>(&gt;&gt;=)</code>, etc. by hand</p>
+<p>The same monad could be had 'for free' by taking the free monad of</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Bin</span> a = <span class="hljs-type">Bin</span> a a</span>
+    <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Functor</span>, <span class="hljs-type">Foldable</span>, <span class="hljs-type">Traversable</span>)
+    <span class="hljs-comment">-- using LANGUAGE DeriveFunctor, DeriveFoldable, DeriveTraversable</span>
+</code></pre>
+<p>yielding the admittedly slightly less convenient type signature</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Tree</span> = <span class="hljs-type">Free</span> <span class="hljs-type">Bin</span></span>
+</code></pre>
+<p>Now you can use <code>return</code> for <code>Tip</code>, and</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">bin</span> :: <span class="hljs-type">MonadFree</span> <span class="hljs-type">Bin</span> m =&gt; m a -&gt; m a -&gt; m a
+<span class="hljs-title">bin</span> l r = wrap (<span class="hljs-type">Bin</span> l r)
+</code></pre>
+<p>to construct a binary tree node, using any free monad representation.</p>
+<p>Now, if that representation is <code>Free Bin</code> (or the original more direct <code>Tree</code> type above) then code that looks like <code>f &gt;&gt;= \x -&gt; g x &gt;&gt;= h</code> performs fine, but <code>(f &gt;&gt;= g) &gt;&gt;= h</code> will retraverse the unchanging 'trunk' of the tree structure twice. That isn't so bad, but given n uses of &gt;&gt;= we'll traverse an ever-growing trunk over and over <em>n</em> times!</p>
+<h2 id="putting-codensity-to-work">Putting Codensity to Work</h2>
+<p>But, we have a tool that can fix this, <code>Codensity</code>!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">MonadFree</span> f m =&gt; <span class="hljs-type">MonadFree</span> f (<span class="hljs-type">Codensity</span> <span class="hljs-title">m</span>) <span class="hljs-keyword">where</span></span>
+  wrap t = <span class="hljs-type">Codensity</span> (\h -&gt; wrap (fmap (\p -&gt; runCodensity p h) t))
+</code></pre>
+<p>Janis packaged up the use of <code>Codensity</code> into a nice combinator that you can sprinkle through your code, so that your users never need know it exists. Moreover, it prevents them from accidentally using any of the extra power of the intermediate representation. If your code typechecks before you use improve somewhere within it, and it type checks after, then it will yield the same answer.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">improve</span> :: <span class="hljs-type">Functor</span> f =&gt; (<span class="hljs-keyword">forall</span> m. <span class="hljs-type">MonadFree</span> f m =&gt; m a) -&gt; <span class="hljs-type">Free</span> f a
+<span class="hljs-title">improve</span> m = lowerCodensity m
+</code></pre>
+<p>By now, it should be clear that the power of <code>Codensity</code> is sufficient to the task, but is it necessary?</p>
+<p>More Soon.</p>
+<p>[Edit; Fixed minor typographical errors pointed out by ShinNoNoir, ivanm, and Josef Svenningsson, including a whole bunch of them found by Noah Easterly]</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/comonad-transformers"><code>comonad-transformers</code></a> · <a href="https://hackage.haskell.org/package/comonads-fd"><code>comonads-fd</code></a> · <a href="https://hackage.haskell.org/package/kan-extensions"><code>kan-extensions</code></a> · <a href="https://hackage.haskell.org/package/free"><code>free</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><section class="comments" id="comments"><h2>From the original discussion</h2><p class="editorial">Selected questions, explanations, and corrections. Original wording and dates; spam and automated trackbacks omitted.</p><article class="comment" id="comment-105455"><header><strong>Yo Eight</strong><a href="../../../reader/2011/free-monads-for-less/#comment-105455">July 5th, 2012 at 6:52 am</a></header><p>Hi,</p>
+<p>Thank you for this very informative post.</p>
+<p>You’ve just forgotten to declare f to be a functor when defining MonadFree f (Codensity m) instance.</p>
+<p>Regards</p>
+</article><article class="comment" id="comment-105460"><header><strong>Edward Kmett</strong><a href="../../../reader/2011/free-monads-for-less/#comment-105460">July 5th, 2012 at 11:41 am</a></header><p>Fixed. I updated it by constraining MonadFree instead. It works correctly in the library I referenced. =)</p>
+</article><article class="comment" id="comment-106387"><header><strong>Tac-Tics</strong><a href="../../../reader/2011/free-monads-for-less/#comment-106387">October 26th, 2012 at 6:59 pm</a></header><p>I’m really fascinated by the idea of correct-by-construction monads. One question, though. Control.Monad.Free seems very similar to the Control.Monad.Prompt module. What is the relationship between the two?</p>
+</article><article class="comment" id="comment-106591"><header><strong>Edward Kmett</strong><a href="../../../reader/2011/free-monads-for-less/#comment-106591">November 18th, 2012 at 12:21 pm</a></header><p>@Tac-Tics: They are more or less identical.</p>
+</article><article class="comment" id="comment-125515"><header><strong>Rafael  Calsaverini</strong><a href="../../../reader/2011/free-monads-for-less/#comment-125515">June 21st, 2014 at 10:06 am</a></header><p>Hi,<br>
+I was looking for the Free type on the package indicated in the post, but it seems that in the latest version there’s no Control.Monad.Trans.Free subpackage.</p>
+<p>Was it moved somewhere else?</p>
+<p>Thanks.</p>
+</article></section><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/free-monads-for-less.md" download>Article Markdown</a> · <a href="../../../source/articles/free-monads-for-less.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2011/free-monads-for-less-2/">Free Monads for Less (Part 2 of 3): Yoneda →</a><a href="../../../reader/2011/free-monads-for-less-3/">Free Monads for Less (Part 3 of 3): Yielding IO →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

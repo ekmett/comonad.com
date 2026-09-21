@@ -1,0 +1,29 @@
+{
+  "reviewed": "2026-09-21",
+  "method": "Explicit reviewed selections; all unselected records preserved in the raw source.",
+  "comments": [
+    {
+      "id": "comment-104329",
+      "author": "Edward Kmett",
+      "date": "April 4th, 2012 at 12:34 am",
+      "markdown": "Pseudonym: Of course. :D In general the ’strong record conjecture’ can be viewed of as just a version of wadler’s original law, with a subset of the semantics separated out, since if you factor out the 2^4 factor, it IS the same law (modulo comments), but you could go back to the original 1992 version of the law, and … finish killing the joke completely."
+    }
+  ],
+  "decisions": [
+    {
+      "id": "comment-104328",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-104329",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-104342",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    }
+  ]
+}

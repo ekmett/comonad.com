@@ -1,0 +1,24 @@
+<figure class="experiment associativity" aria-labelledby="associativity-title">
+<div class="section-heading"><h3 id="associativity-title">Change the grouping</h3><p>The same three fragments, in the same order. Each grouping is calculated separately in Haskell.</p></div>
+<div class="associative-inputs">
+<label for="assoc-a">A<input id="assoc-a" aria-label="Associativity fragment A" value="1" maxlength="256" spellcheck="false" disabled></label>
+<label for="assoc-b">B<input id="assoc-b" aria-label="Associativity fragment B" value="23" maxlength="256" spellcheck="false" disabled></label>
+<label for="assoc-c">C<input id="assoc-c" aria-label="Associativity fragment C" value="456789" maxlength="256" spellcheck="false" disabled></label>
+</div>
+<div class="groupings">
+<div class="grouping"><h4>(A ⊗ B) ⊗ C</h4>
+<div class="group-step"><span>First, A ⊗ B</span><dl><dt>Remainder</dt><dd id="assoc-ab-p">—</dd><dt>Shift</dt><dd id="assoc-ab-m">—</dd></dl></div>
+<div class="group-step group-result"><span>Then, (A ⊗ B) ⊗ C</span><dl><dt>Remainder</dt><dd id="assoc-left-p">—</dd><dt>Shift</dt><dd id="assoc-left-m">—</dd><dt>CRC-32</dt><dd id="assoc-left-crc">—</dd></dl></div>
+</div>
+<div class="grouping"><h4>A ⊗ (B ⊗ C)</h4>
+<div class="group-step"><span>First, B ⊗ C</span><dl><dt>Remainder</dt><dd id="assoc-bc-p">—</dd><dt>Shift</dt><dd id="assoc-bc-m">—</dd></dl></div>
+<div class="group-step group-result"><span>Then, A ⊗ (B ⊗ C)</span><dl><dt>Remainder</dt><dd id="assoc-right-p">—</dd><dt>Shift</dt><dd id="assoc-right-m">—</dd><dt>CRC-32</dt><dd id="assoc-right-crc">—</dd></dl></div>
+</div>
+</div>
+<p class="associativity-status" id="assoc-match" role="status">Waiting for Haskell</p>
+<p class="footnote" id="assoc-direct">The combined result is also checked against a direct CRC of A ++ B ++ C.</p>
+<div class="associativity-proof"><p>The equality holds for every triple. Write A = (p, m), B = (q, n), C = (r, s):</p>
+<!-- associativity-proof -->
+<p>Distributivity and associativity of polynomial multiplication and XOR give the same pair on both sides. Here ⊗ is composition of summaries; + is XOR and multiplication is modulo the CRC polynomial.</p></div>
+<noscript><p>The algebra above is available without JavaScript. Enable JavaScript to edit the fragments.</p></noscript>
+</figure>

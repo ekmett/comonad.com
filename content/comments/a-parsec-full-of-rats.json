@@ -1,0 +1,24 @@
+{
+  "reviewed": "2026-09-21",
+  "method": "Explicit reviewed selections; all unselected records preserved in the raw source.",
+  "comments": [
+    {
+      "id": "comment-75969",
+      "author": "Edward Kmett",
+      "date": "September 24th, 2011 at 9:41 pm",
+      "markdown": "@Victor:\n\nNot yet.\n\nHaskell is one of my use cases though, which is why the Literate and Layout parser transformers exist in the first place. My current focus has been on getting a usable C preprocessing parser transformer and rudimentary packrat support (because otherwise layout parsing is particularly expensive re-playing the ‘whiteSpace/virtual semicolon/virtual right brace’ parser at the same location over and over.\n\nThis is what led to this pair of articles.\n\nI do have a small prototype implementation of Daan Leijen’s HMF which uses trifecta to parse. Once I’m happier with it and obtain final permission to release it, that may serve as such a tutorial."
+    }
+  ],
+  "decisions": [
+    {
+      "id": "comment-75955",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-75969",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "reviewed": "2026-09-21",
+  "method": "Explicit reviewed selections; all unselected records preserved in the raw source.",
+  "comments": [
+    {
+      "id": "comment-10809",
+      "author": "stulli",
+      "date": "August 2nd, 2009 at 9:01 am",
+      "markdown": "Hi, do you have a working code example for the file position example? I get following error:\n\n\\`Reducer SourcePosition’ is not applied to enough type arguments  \nExpected kind \\`\\*’, but \\`Reducer SourcePosition’ has kind \\`\\* -> \\*’  \nIn the instance declaration for \\`Reducer SourcePosition’"
+    },
+    {
+      "id": "comment-10826",
+      "author": "Edward Kmeft",
+      "date": "August 3rd, 2009 at 6:33 am",
+      "markdown": "@Stulli\n\nLook on hackage at any revision of monoids before 0.2.0, and it will contain Data.Monoid.Lexical.SourcePosition — I recently slimmed the package down and plan to move the remaining functionality into a monoid-extras style package so that the core functionality is available without a laundry list of dependencies.\n\nYour kind error comes from the fact that when I added Pos, I added an argument to the type to make it a Pointed Functor. So you need to make Monoid (SourcePosition f) and Reducer Char (SourcePosition f).\n\nI explained the extra argument as part of the narrative during the talk, but naked slides do not provide me such opportunity for elaboration. :)"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "comment-10767",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-10769",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-10771",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-10772",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-10773",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-10775",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-10777",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-10782",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-10809",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-10826",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    }
+  ]
+}

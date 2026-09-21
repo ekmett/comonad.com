@@ -1,0 +1,33 @@
+{
+  "parallel-crc": {
+    "_GF(2^32)_": "$\\mathrm{GF}(2^{32})$",
+    "_GF(2^n)_": "$\\mathrm{GF}(2^n)$",
+    "coefficient of x^31": "coefficient of $x^{31}$",
+    "`1 = x^0`": "$1 = x^0$",
+    "`x * p(x)`": "$x \\cdot p(x)$",
+    "`x^n`": "$x^n$",
+    "`crc(r,0^m)`": "$\\operatorname{crc}(r,0^m)$",
+    "`x^m`": "$x^m$",
+    "`0^m`": "$0^m$",
+    "`m = x^|a|`": "$m = x^{|a|}$",
+    "`x^0`": "$x^0$",
+    "`crc(INIT,0^m)`": "$\\operatorname{crc}(\\mathrm{INIT},0^m)$",
+    "`Z/nZ`": "$\\mathbb{Z}/n\\mathbb{Z}$",
+    "`x^k`": "$x^k$",
+    "`2^k mod n`": "$2^k \\bmod n$",
+    "`crc(a) = r`": "$\\operatorname{crc}(a) = r$",
+    "`crc(r,a) = r'`": "$\\operatorname{crc}(r,a) = r'$",
+    "`r'`": "$r'$",
+    "`crc(0,a)`": "$\\operatorname{crc}(0,a)$",
+    "`INIT = FINAL = 0`": "$\\mathrm{INIT} = \\mathrm{FINAL} = 0$",
+    "`p = crc(0,a)`": "$p = \\operatorname{crc}(0,a)$",
+    "`crc(0,\"\") = 0`": "$\\operatorname{crc}(0,\\text{\\texttt{\"\"}}) = 0$",
+    "`r`": "$r$",
+    "`a`": "$a$",
+    "`b`": "$b$",
+    "`p`": "$p$",
+    "`m`": "$m$",
+    "`n`": "$n$",
+    "`x`": "$x$"
+  }
+}

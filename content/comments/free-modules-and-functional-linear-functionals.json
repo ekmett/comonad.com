@@ -1,0 +1,83 @@
+{
+  "reviewed": "2026-09-21",
+  "method": "Explicit reviewed selections; all unselected records preserved in the raw source.",
+  "comments": [
+    {
+      "id": "comment-64100",
+      "author": "Edward Kmett",
+      "date": "July 11th, 2011 at 10:19 pm",
+      "markdown": "Without commutative addition, you don’t get many normalization opportunities. So, in the interest of drawing the line somewhere I left that off. ;) I also avoided talking about left-seminnearings and right-seminearrings. =) I do enjoy playing with the individual grains of sand in my sandbox though."
+    },
+    {
+      "id": "comment-64175",
+      "author": "Paul Keir",
+      "date": "July 12th, 2011 at 3:07 am",
+      "markdown": "You say “If we get rid of the additive and multiplicative unit on our Rig we get down to what some authors call a Ringoid, but which we’ll call a Semiring”, but earlier you “…go to a Rig (often called a Semiring)”. Are both of them Semirings?"
+    },
+    {
+      "id": "comment-64180",
+      "author": "Edward Kmett",
+      "date": "July 12th, 2011 at 3:46 am",
+      "markdown": "This is what I get for trying to nod to the fact that different authors use the same words for different things.\n\nThe vocabulary I’m working with here is that a semiring is a pair of semigroups with a pair of distributive laws and that a rig adds a 0 and 1 to a semiring.\n\nSome authors call what I am calling a rig above a semiring, which is somewhat annoying because the semi- just means ‘not-quite’ in this setting, and has no connection to the relationship between group and semigroup. Moreover it leaves the question of what to call the pair-of-semigroups construction that I’m calling semiring above. The name those authors often use is “ringoid”, but that conflicts with the much more useful use of ringoid for referring to Ab-enriched categories, which is likely to wind up in my semigroupoid package.\n\nIf a group is a groupoid with one object then a ringoid is a ringoid with one object.\n\nSo in the vocabuary I’m using here, we get:\n\nSemiring <= Rig <= Ring\n\nwhich parallels\n\nSemigroup <= Monoid <= Group\n\nby adding unit(s) and additive inverses respectively.\n\nI’ll see if I can clear up the verbage to make it clearer."
+    },
+    {
+      "id": "comment-64213",
+      "author": "beroal",
+      "date": "July 12th, 2011 at 6:49 am",
+      "markdown": "_We could capture this invariant in the type by saying that instead we want_  \nCan you please explain what “invariant” you are talking about?"
+    },
+    {
+      "id": "comment-64236",
+      "author": "Edward Kmett",
+      "date": "July 12th, 2011 at 9:21 am",
+      "markdown": "@beroal: i didn’t make them symbolic because they have the problem that what do you name the three different operators for ((N+1)\\*), (N\\*) and (Z\\*) ?\n\nwhereas the precedent of log1p at least gives some intuition to the name replicate1p, and the action of replicate on lists if the repetition of a monoidal value. I had, however originally started using (#\\*) and (\\*#) for times and may revert. They are mostly provided as reasonable default implementations for the natural number multiplication and integer multiplication requirements placed on you by the module superclasses.\n\nAs for the free module, technically I’m permitting the infinite free module. Haskell provides me a largely coinductive universe, I’d be remiss in not taking advantage of it. I’ll throw an (infinite) in there. ;) But unlike the classical case I can’t prove the duality in most cases to begin with and I’m not able to enumerate the set of all e in E such that E -> R is non-zero except when the set E is finitely enumerable itself, because I can’t intensionally inspect the function I’m given. Effectively the constraint moves from requiring the function to have a finite number of non-zeros to requiring that any linear functional can only inspect a finite number of vectors, which being constructive is all it can do anyways.\n\nThe invariant in question is linearity. One (potentially conservative) way to enforce that would be to never apply our continuation vector twice and take the product of the results (or add it to some value in the ring), but instead only multiply it by values we have lying around in the ring or add and subtract them. If you think about it, quantifying over the choice of a module then prevents violations of linearity. \\\\k -> r .\\* f k is well typed, we can plumb in zeroes, etc, but \\\\k -> f k \\* f k requires our module be strengthened to a semiring, and the unmentioned but also non-linear \\\\k -> f k + r also would fail to type check, since f k :: m, and under quantification over the module all we’re permitted to do is use the (.\\*) and the (+) from our module. the reason this is a problem is if you want to use the zero from a semigroup-with-zero module, you’d need a new type.\n\nThere is also a performance impact from the fact that we effectively use the LeftModule dictionary as an interpreter, and most damningly it costs us the ability to use representable-tries for cheap memoization."
+    }
+  ],
+  "decisions": [
+    {
+      "id": "comment-64094",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-64100",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-64175",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-64180",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-64199",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-64208",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-64213",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-64233",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-64236",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    }
+  ]
+}

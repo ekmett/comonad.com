@@ -1,0 +1,194 @@
+[
+  {
+    "slug": "natural-deduction-sequent-calculus-and-type-classes",
+    "before": "$ \\inference{A \\,\\,\\,\\,\\,\\,\\,\\,\\, B}{A \\wedge B}[$\\wedge$-I]$",
+    "after": "$ \\frac{A \\,\\,\\,\\,\\,\\,\\,\\,\\, B}{A \\wedge B}\\;\\wedge\\text{-I}$",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "natural-deduction-sequent-calculus-and-type-classes",
+    "before": "$ \\inference{A \\wedge B}{A}[$\\wedge$-E1] \\,\\,\\,\\,\\,\\, \\inference{A \\wedge B}{B}[$\\wedge$-E2]$",
+    "after": "$ \\frac{A \\wedge B}{A}\\;\\wedge\\text{-E1} \\,\\,\\,\\,\\,\\, \\frac{A \\wedge B}{B}\\;\\wedge\\text{-E2}$",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "natural-deduction-sequent-calculus-and-type-classes",
+    "before": "$ \\inference{\\Gamma, A \\vdash B}{\\Gamma \\vdash A \\rightarrow B}[$\\rightarrow$-I] $",
+    "after": "$ \\frac{\\Gamma, A \\vdash B}{\\Gamma \\vdash A \\rightarrow B}\\;\\rightarrow\\text{-I} $",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "natural-deduction-sequent-calculus-and-type-classes",
+    "before": "$ \\inference{\\Gamma \\vdash A \\rightarrow B \\,\\,\\,\\,\\,\\,\\,\\,\\, \\Gamma \\vdash A}{\\Gamma \\vdash B}[$\\rightarrow$-E] $",
+    "after": "$ \\frac{\\Gamma \\vdash A \\rightarrow B \\,\\,\\,\\,\\,\\,\\,\\,\\, \\Gamma \\vdash A}{\\Gamma \\vdash B}\\;\\rightarrow\\text{-E} $",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "natural-deduction-sequent-calculus-and-type-classes",
+    "before": "$ \\inference{\\Gamma \\vdash M : A \\,\\,\\,\\,\\,\\,\\,\\,\\, \\Gamma \\vdash N : B}{\\Gamma \\vdash (M, N) : A \\times B}[$\\times$-I] $",
+    "after": "$ \\frac{\\Gamma \\vdash M : A \\,\\,\\,\\,\\,\\,\\,\\,\\, \\Gamma \\vdash N : B}{\\Gamma \\vdash (M, N) : A \\times B}\\;\\times\\text{-I} $",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "natural-deduction-sequent-calculus-and-type-classes",
+    "before": "$ \\inference{\\Gamma \\vdash M : A \\times B}{\\Gamma \\vdash \\mathsf{fst}\\, M : A}[$\\times$-E1] $",
+    "after": "$ \\frac{\\Gamma \\vdash M : A \\times B}{\\Gamma \\vdash \\mathsf{fst}\\, M : A}\\;\\times\\text{-E1} $",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "natural-deduction-sequent-calculus-and-type-classes",
+    "before": "$ \\inference{\\Gamma \\vdash M : A \\times B}{\\Gamma \\vdash \\mathsf{snd}\\, M : B}[$\\times$-E2] $",
+    "after": "$ \\frac{\\Gamma \\vdash M : A \\times B}{\\Gamma \\vdash \\mathsf{snd}\\, M : B}\\;\\times\\text{-E2} $",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "natural-deduction-sequent-calculus-and-type-classes",
+    "before": "$ \\inference{\\Gamma, x : A \\vdash M : B}{\\Gamma \\vdash (\\lambda x:A. \\,\\, M) : A \\rightarrow B}[$\\rightarrow$-I] $",
+    "after": "$ \\frac{\\Gamma, x : A \\vdash M : B}{\\Gamma \\vdash (\\lambda x:A. \\,\\, M) : A \\rightarrow B}\\;\\rightarrow\\text{-I} $",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "natural-deduction-sequent-calculus-and-type-classes",
+    "before": "$ \\inference{\\Gamma \\vdash M : A \\rightarrow B \\,\\,\\,\\,\\,\\,\\,\\,\\, \\Gamma \\vdash N : A}{\\Gamma \\vdash M \\, N : B}[$\\rightarrow$-E] $",
+    "after": "$ \\frac{\\Gamma \\vdash M : A \\rightarrow B \\,\\,\\,\\,\\,\\,\\,\\,\\, \\Gamma \\vdash N : A}{\\Gamma \\vdash M \\, N : B}\\;\\rightarrow\\text{-E} $",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "natural-deduction-sequent-calculus-and-type-classes",
+    "before": "$ \\inference{\\Gamma \\vdash A \\,\\,\\,\\,\\,\\,\\,\\,\\, \\Gamma \\vdash B}{\\Gamma \\vdash A \\wedge B}[$\\wedge$-R] $",
+    "after": "$ \\frac{\\Gamma \\vdash A \\,\\,\\,\\,\\,\\,\\,\\,\\, \\Gamma \\vdash B}{\\Gamma \\vdash A \\wedge B}\\;\\wedge\\text{-R} $",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "natural-deduction-sequent-calculus-and-type-classes",
+    "before": "$ \\inference{\\Gamma, A, B \\vdash C}{\\Gamma, A \\wedge B \\vdash C}[$\\wedge$-L] $",
+    "after": "$ \\frac{\\Gamma, A, B \\vdash C}{\\Gamma, A \\wedge B \\vdash C}\\;\\wedge\\text{-L} $",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "natural-deduction-sequent-calculus-and-type-classes",
+    "before": "$\\inference{\\Gamma, A \\vdash C}{\\Gamma, A \\wedge B \\vdash C}[$\\wedge$-L1]$",
+    "after": "$\\frac{\\Gamma, A \\vdash C}{\\Gamma, A \\wedge B \\vdash C}\\;\\wedge\\text{-L1}$",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "natural-deduction-sequent-calculus-and-type-classes",
+    "before": "$\\inference{\\Gamma, B \\vdash C}{\\Gamma, A \\wedge B \\vdash C}[$\\wedge$-L2]$",
+    "after": "$\\frac{\\Gamma, B \\vdash C}{\\Gamma, A \\wedge B \\vdash C}\\;\\wedge\\text{-L2}$",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "natural-deduction-sequent-calculus-and-type-classes",
+    "before": "$ \\inference{\\Gamma, x : A, y : B \\vdash M : C}{\\Gamma, (x, y) : A \\times B \\vdash M : C}[$\\times$-L] $",
+    "after": "$ \\frac{\\Gamma, x : A, y : B \\vdash M : C}{\\Gamma, (x, y) : A \\times B \\vdash M : C}\\;\\times\\text{-L} $",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "natural-deduction-sequent-calculus-and-type-classes",
+    "before": "$ \\inference{\\Gamma, x : A, y : B \\vdash M : C}{\\Gamma, p : A \\times B \\vdash M[x := \\mathsf{fst}\\, p, y := \\mathsf{snd}\\, p] : C}[$\\times$-L] $",
+    "after": "$ \\frac{\\Gamma, x : A, y : B \\vdash M : C}{\\Gamma, p : A \\times B \\vdash M[x := \\mathsf{fst}\\, p, y := \\mathsf{snd}\\, p] : C}\\;\\times\\text{-L} $",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "natural-deduction-sequent-calculus-and-type-classes",
+    "before": "$ \\inference{\\Gamma, \\mathbf{Eq} \\, a \\vdash M : T}{\\Gamma, \\mathbf{Ord} \\,  a \\vdash M : T}[Eq-pre-Ord] $",
+    "after": "$ \\frac{\\Gamma, \\mathbf{Eq} \\, a \\vdash M : T}{\\Gamma, \\mathbf{Ord} \\,  a \\vdash M : T}\\;\\text{Eq-pre-Ord} $",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "natural-deduction-sequent-calculus-and-type-classes",
+    "before": "$ \\inference{\\Gamma, \\mathbf{Eq} \\, (a, b) \\vdash M : T}{\\Gamma, \\mathbf{Eq} \\, a, \\mathbf{Eq} \\, b \\vdash M : T}[Eq-pair] $",
+    "after": "$ \\frac{\\Gamma, \\mathbf{Eq} \\, (a, b) \\vdash M : T}{\\Gamma, \\mathbf{Eq} \\, a, \\mathbf{Eq} \\, b \\vdash M : T}\\;\\text{Eq-pair} $",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "natural-deduction-sequent-calculus-and-type-classes",
+    "before": "$\\inference{\\Gamma, \\mathbf{Show\\, Int} \\vdash M : T}{\\Gamma \\vdash M : T}[Show-Int] $",
+    "after": "$\\frac{\\Gamma, \\mathbf{Show\\, Int} \\vdash M : T}{\\Gamma \\vdash M : T}\\;\\text{Show-Int} $",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "natural-deduction-sequent-calculus-and-type-classes",
+    "before": "$ \\inference{\\Gamma, eqd : \\mathbf{Eq} \\, a \\vdash M : T}{\\Gamma, ordd : \\mathbf{Ord} \\,  a \\vdash M[eqd := \\mathsf{eqOrdPrj}\\, ordd] : T}[Eq-pre-Ord] $",
+    "after": "$ \\frac{\\Gamma, eqd : \\mathbf{Eq} \\, a \\vdash M : T}{\\Gamma, ordd : \\mathbf{Ord} \\,  a \\vdash M[eqd := \\mathsf{eqOrdPrj}\\, ordd] : T}\\;\\text{Eq-pre-Ord} $",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "natural-deduction-sequent-calculus-and-type-classes",
+    "before": "$\\inference{\\Gamma, peq : \\mathbf{Eq} \\, (a, b) \\vdash M : T}{\\Gamma, aeq : \\mathbf{Eq} \\, a, beq : \\mathbf{Eq} \\, b \\vdash M[peq := \\mathsf{eqPair} \\, aeq \\, beq] : T}[Eq-pair]$",
+    "after": "$\\frac{\\Gamma, peq : \\mathbf{Eq} \\, (a, b) \\vdash M : T}{\\Gamma, aeq : \\mathbf{Eq} \\, a, beq : \\mathbf{Eq} \\, b \\vdash M[peq := \\mathsf{eqPair} \\, aeq \\, beq] : T}\\;\\text{Eq-pair}$",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "just-fokkinga-abide",
+    "before": "$\\varobar$",
+    "after": "$\\mathbin{\\text{⦶}}$",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "just-fokkinga-abide",
+    "before": "$\\varominus$",
+    "after": "$\\ominus$",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "just-fokkinga-abide",
+    "before": "$(a \\varominus b) \\varobar (c \\varominus d) = (a \\varobar c) \\varominus (b \\varobar d)$",
+    "after": "$(a \\ominus b) \\mathbin{\\text{⦶}} (c \\ominus d) = (a \\mathbin{\\text{⦶}} c) \\ominus (b \\mathbin{\\text{⦶}} d)$",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "unnatural-transformations",
+    "before": "$\\bfig \\square/>`>`>`>/[F(A)`F(B)`G(A)`G(B);F {[}\\hspace{-0.8pt}{[}f, g{]}\\hspace{-0.8pt}{]} `\\eta_A`\\eta_B`G {[}\\hspace{-0.8pt}{[}f, g{]}\\hspace{-0.8pt}{]}] \\efig $",
+    "after": "\n\n<figure class=\"category-diagram\"><img src=\"/figures/unnatural-square.svg\" alt=\"F(A), F(B), G(A), G(B); F⟦f, g⟧, ηₐ, ηᵦ, G⟦f, g⟧\"></figure>\n\n",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "overloaded-functions-with-subtyping",
+    "before": "$ \\inference{\\Gamma \\vdash M:W_1 \\leq \\lbrace\\neg U_i\\rbrace_{i\\leq(n-1)} & \\Gamma \\vdash N : W_2 \\leq \\neg U_n}{\\Gamma \\vdash (M \\binampersand N) : \\lbrace \\neg U_i \\rbrace_{i \\leq n }}[$\\lbrace\\rbrace$-I]$",
+    "after": "$ \\frac{\\Gamma \\vdash M:W_1 \\leq \\lbrace\\neg U_i\\rbrace_{i\\leq(n-1)} \\qquad  \\Gamma \\vdash N : W_2 \\leq \\neg U_n}{\\Gamma \\vdash (M \\mathbin{\\&} N) : \\lbrace \\neg U_i \\rbrace_{i \\leq n }}\\;\\lbrace\\rbrace\\text{-I}$",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "overloaded-functions-with-subtyping",
+    "before": "$ \\inference{\\Gamma \\vdash M : \\lbrace \\neg U_i \\rbrace_{i \\in I} & \\Gamma \\vdash N : U & U_j = \\min_{i \\in I} \\lbrace U_i \\vert U \\leq U_i \\rbrace } {\\Gamma \\vdash M \\bullet N : \\perp }[$\\lbrace\\rbrace$-E]$",
+    "after": "$ \\frac{\\Gamma \\vdash M : \\lbrace \\neg U_i \\rbrace_{i \\in I} \\qquad  \\Gamma \\vdash N : U \\qquad  U_j = \\min_{i \\in I} \\lbrace U_i \\vert U \\leq U_i \\rbrace }{\\Gamma \\vdash M \\bullet N : \\perp }\\;\\lbrace\\rbrace\\text{-E}$",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "hello-world",
+    "before": "$ \\inference{}{\\Gamma, x:\\tau \\vdash x:\\tau}[var]$",
+    "after": "$ \\frac{}{\\Gamma, x:\\tau \\vdash x:\\tau}\\;\\text{var}$",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "hello-world",
+    "before": "$ \\inference{\\Gamma,x:\\sigma \\vdash M:\\tau}{\\Gamma \\vdash \\lambda x : \\sigma. M : \\sigma \\rightarrow \\tau}[abs]$",
+    "after": "$ \\frac{\\Gamma,x:\\sigma \\vdash M:\\tau}{\\Gamma \\vdash \\lambda x : \\sigma. M : \\sigma \\rightarrow \\tau}\\;\\text{abs}$",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "hello-world",
+    "before": "$ \\inference{\\Gamma \\vdash M : \\sigma \\rightarrow \\tau & \\Gamma \\vdash N:\\sigma}{\\Gamma \\vdash M N : \\tau}[app]$",
+    "after": "$ \\frac{\\Gamma \\vdash M : \\sigma \\rightarrow \\tau \\qquad  \\Gamma \\vdash N:\\sigma}{\\Gamma \\vdash M N : \\tau}\\;\\text{app}$",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "hello-world",
+    "before": "$\\bfig \\square/>>`>`>` >\\to/[A`B`C`D;e`f`g`m] \\morphism(500,500)|m|/.>/< -500,-500>[B`C;h] \\efig $",
+    "after": "\n\n<figure class=\"category-diagram\"><img src=\"/figures/lifting-square.svg\" alt=\"A, B, C, D; e, f, g, m\"></figure>\n\n",
+    "reason": "Local typesetting of legacy proof notation or editable vector diagram."
+  },
+  {
+    "slug": "unnatural-transformations-and-quantifiers",
+    "before": "$ \\bfig \\square<1000,1000>[Fa`Ga`Fb`Gb;\\phi_a`Ff`Gf`\\phi_b]\\efig $",
+    "after": "\n\n<figure class=\"category-diagram\"><img src=\"/figures/naturality-square.svg\" alt=\"Fa, Ga, Fb, Gb; ϕₐ, Ff, Gf, ϕᵦ\"></figure>\n\n",
+    "reason": "Vector redraw of original commutative diagram."
+  },
+  {
+    "slug": "unnatural-transformations-and-quantifiers",
+    "before": "$ \\bfig\\square<1000,1000>[\\mathbf{Hask}_M(a,b)`Ub`\\mathbf{Hask}_M(a,c)`Uc;\\phi_a`\\mathbf{Hask}_M(a,f)`Uf`\\phi_h]\\efig $",
+    "after": "\n\n<figure class=\"category-diagram\"><img src=\"/figures/representable-square.svg\" alt=\"Haskₘ(a, b), Ub, Haskₘ(a, c), Uc; ϕₐ, Haskₘ(a, f), Uf, ϕₕ\"></figure>\n\n",
+    "reason": "Vector redraw of original commutative diagram."
+  }
+]

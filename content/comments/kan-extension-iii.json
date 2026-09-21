@@ -1,0 +1,346 @@
+{
+  "reviewed": "2026-09-21",
+  "method": "Explicit reviewed selections; all unselected records preserved in the raw source.",
+  "comments": [
+    {
+      "id": "comment-1682",
+      "author": "Grant B",
+      "date": "June 13th, 2008 at 5:41 pm",
+      "markdown": "I’m curious as to how you would motivate Kan extensions as a functional programming (specifically Haskell) tool. The right Kan extension almost looks like the CPS-transform of “a”, except with variant answer types. Shan’s [thesis](http://www.cs.rutgers.edu/~ccshan/dissertation/book.pdf) on page 73 shows how the ordinary function type is modified via the presence of delimited control into something like a right Kan extension.\n\nCare to shed some light on this (and its dual)?"
+    },
+    {
+      "id": "comment-1685",
+      "author": "Edward Kmett",
+      "date": "June 14th, 2008 at 8:16 am",
+      "markdown": "Well, you can look at the Codensity monad (Ran m m) of a monad m as a weaker form of ContT which isn’t allowed to use the type of the ultimate return value to ‘pull any tricks’. Consequently, it has fewer inhabitants than ContT and we can say more about them. My favorite example so far is in:\n\n[http://wwwtcs.inf.tu-dresden.de/~voigt/mpc08.pdf](http://wwwtcs.inf.tu-dresden.de/~voigt/mpc08.pdf)\n\nThat paper shows that you can substitute a reference to the Codensity monad of a free monad in many places where you’d use the original free monad and change the asymptotic performance of the resulting algorithm because the continuation ‘linearizes’ the cost of repeatedly traversing the tree by piling the cost up in the continuation so you only traverse once.\n\nI’d conjecture that the left Kan extension of a cofree comonad should let us pile up the cost of mapping or extending cofree comonads similarly. Though here I have yet to actually generate any performance results here due to other distractions.\n\nWe \\_can\\_ however definitely do the same thing with the Yoneda and Coyoneda lemmas. The resulting (co)monads fit very closely to the operational characteristics of the base monad.\n\nIf you transform a monad with Yoneda you get a monad that has the same overall costs for return and >>=, but where if your monad had a non constant cost for map (such as in the free monad of anything other than the trivial functor that maps everything to \\_|\\_), you can fuse the costs of all of your maps together by accumulating them and applying them all at once during the next (>>=) (or when you extract f from the Yoneda f).\n\nSimilarly CoYoneda accumulates maps for comonads, which is a win if map is expensive (such as in the cofree comonad case).\n\nYou can get a feel for why this works by looking at:\n\n[http://comonad.com/haskell/category-extras/src/Control/Functor/Yoneda.hs](http://comonad.com/haskell/category-extras/src/Control/Functor/Yoneda.hs)\n\nand noting what fmap does and how >>= works for Yoneda. and how fmap and extend work for CoYoneda.\n\nIn category-extras I have generalized all of the constructive algorithmic morphisms that use the free monad or cofree comonad (histomorphisms, futumorphisms, dynamorphisms, chronomorphisms) to support the codensity monad of the free monad, density comonad of the cofree comonad, Yoneda of the free monad, Coyoneda of the cofree comonad, etc by defining a couple of extra typeclasses that express their ‘Free-Like’ behavior in the spirit of the above linked paper by Voigtlaender in\n\n[http://comonad.com/haskell/category-extras/src/Control/Monad/Free.hs](http://comonad.com/haskell/category-extras/src/Control/Monad/Free.hs)\n\nThe generalization can be seen in use here:\n\n[http://comonad.com/haskell/category-extras/src/Control/Morphism/Futu.hs](http://comonad.com/haskell/category-extras/src/Control/Morphism/Futu.hs)\n\nand the instances for Codensity here:\n\n[http://comonad.com/haskell/category-extras/src/Control/Monad/Codensity.hs](http://comonad.com/haskell/category-extras/src/Control/Monad/Codensity.hs)"
+    },
+    {
+      "id": "comment-6412",
+      "author": "Dan P",
+      "date": "February 25th, 2009 at 7:45 pm",
+      "markdown": "Now that I’ve been thinking about these things I can point out a tiny tiny typo:\n\ndata LanT k t c m m’ = LanT (k m -> c) (t m)\n\nshould probably be\n\ndata LanT k t c m m’ = LanT (k m -> c) (t m’)\n\nthough it makes no difference in the definition of Lan.\n\nOn a less trivial level, I still don’t know what theorem I could quote to justify that, say,\n\ntype DinaturalFromObject x s = x -> forall a. s a a\n\ndefines dinaturals from a constant functor. For a specific choice of s dinaturality is a free theorem. But how do you uniformly prove this for all s, implemented in Haskell, with the right c/contravariance in the arguments?"
+    },
+    {
+      "id": "comment-6414",
+      "author": "Edward Kmett",
+      "date": "February 25th, 2009 at 9:02 pm",
+      "markdown": "Hey Dan,\n\nFixed the LanT definition. (Woops!)\n\nRe the dinatural transformation piece, I’m not as deep as I used to be in this area, so I’ll go back and see what I can dig up from whatever notes I still have from when I wrote this. I recall it seeming quite obvious at the time, but now I can only barely remember what dinaturality is. :) I’d be quite surprised (and pleased) if you came up with a counterexample, however. ;)"
+    },
+    {
+      "id": "comment-6418",
+      "author": "sigfpe",
+      "date": "February 26th, 2009 at 12:29 am",
+      "markdown": "All of the various types of naturality (including dinaturality and extranaturality) seem to arise as free theorems but I’ve not seen a paper spelling this out clearly – at least not in a form I’d recognise. I can’t tell if it’s because nobody has figured it the details, or if the papers are just over my head."
+    },
+    {
+      "id": "comment-12474",
+      "author": "wren ng thornton",
+      "date": "October 17th, 2009 at 11:15 pm",
+      "markdown": "Just a minor typo note:\n\n\\> newtype RanT f g c m m’ = (c -> K m) -> T m’\n\nShould be:\n\n\\> newtype RanT k t c m m’ = (c -> k m) -> t m’\n\nright?"
+    },
+    {
+      "id": "comment-12490",
+      "author": "Edward Kmett",
+      "date": "October 18th, 2009 at 4:35 pm",
+      "markdown": "Wren: Fixed!"
+    },
+    {
+      "id": "comment-63349",
+      "author": "Mike Stay",
+      "date": "July 7th, 2011 at 6:44 pm",
+      "markdown": "Isn’t the type (exists a. f a a) the coproduct rather than the coend? The coend is the coproduct modulo the relation imposed by the commuting square (degenerate hexagon) in the definition of a dinatural transformation."
+    }
+  ],
+  "decisions": [
+    {
+      "id": "comment-1481",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-1489",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-1682",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-1685",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-6412",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-6414",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-6418",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-12474",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-12490",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-20353",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-20469",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-61241",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-63349",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-106090",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-126706",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211447",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-211565",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212043",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-212177",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213123",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213237",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213351",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213520",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213740",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-213862",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214122",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214225",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214377",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214638",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214729",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-214870",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215093",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215165",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215294",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215354",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215480",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215542",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215594",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215711",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215764",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215906",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-215963",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216014",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216245",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216431",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216550",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-216856",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217000",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-217398",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-218088",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219012",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219607",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219798",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-219983",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-221113",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-221261",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-223400",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-224167",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    }
+  ]
+}

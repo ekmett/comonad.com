@@ -1,0 +1,287 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head profile="http://gmpg.org/xfn/11">
+        <link rel="shortcut icon" href="http://comonad.com/reader/wp-content/themes/connections/favicon.ico" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>The Comonad.Reader &raquo; Clearer Reflections</title>
+	<meta name="generator" content="WordPress 2.8.4" />
+	<style type="text/css" media="screen">@import url( http://comonad.com/reader/wp-content/themes/connections/style.css );</style>
+	<!--[if IE]><style type="text/css"> img { behavior: url(/reader/pngbehavior/pngbehavior.htc); } </style><![endif]-->
+        <link rel="openid.server" href="https://api.screenname.aol.com/auth/openidServer"/>
+        <link rel="openid.delegate" href="http://openid.aol.com/edwardallankmett"/>
+
+	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://comonad.com/reader/feed/" />
+	<link rel="alternate" type="application/atom+xml" title="Atom 0.3" href="http://comonad.com/reader/feed/atom/" />
+	<link rel="pingback" href="http://comonad.com/reader/xmlrpc.php" />
+    	<link rel='archives' title='October 2022' href='http://comonad.com/reader/2022/10/' />
+	<link rel='archives' title='January 2018' href='http://comonad.com/reader/2018/01/' />
+	<link rel='archives' title='January 2016' href='http://comonad.com/reader/2016/01/' />
+	<link rel='archives' title='September 2015' href='http://comonad.com/reader/2015/09/' />
+	<link rel='archives' title='July 2015' href='http://comonad.com/reader/2015/07/' />
+	<link rel='archives' title='May 2015' href='http://comonad.com/reader/2015/05/' />
+	<link rel='archives' title='April 2015' href='http://comonad.com/reader/2015/04/' />
+	<link rel='archives' title='February 2015' href='http://comonad.com/reader/2015/02/' />
+	<link rel='archives' title='December 2014' href='http://comonad.com/reader/2014/12/' />
+	<link rel='archives' title='August 2014' href='http://comonad.com/reader/2014/08/' />
+	<link rel='archives' title='April 2014' href='http://comonad.com/reader/2014/04/' />
+	<link rel='archives' title='May 2013' href='http://comonad.com/reader/2013/05/' />
+	<link rel='archives' title='April 2013' href='http://comonad.com/reader/2013/04/' />
+	<link rel='archives' title='January 2013' href='http://comonad.com/reader/2013/01/' />
+	<link rel='archives' title='December 2012' href='http://comonad.com/reader/2012/12/' />
+	<link rel='archives' title='September 2012' href='http://comonad.com/reader/2012/09/' />
+	<link rel='archives' title='August 2012' href='http://comonad.com/reader/2012/08/' />
+	<link rel='archives' title='June 2012' href='http://comonad.com/reader/2012/06/' />
+	<link rel='archives' title='May 2012' href='http://comonad.com/reader/2012/05/' />
+	<link rel='archives' title='April 2012' href='http://comonad.com/reader/2012/04/' />
+	<link rel='archives' title='December 2011' href='http://comonad.com/reader/2011/12/' />
+	<link rel='archives' title='November 2011' href='http://comonad.com/reader/2011/11/' />
+	<link rel='archives' title='October 2011' href='http://comonad.com/reader/2011/10/' />
+	<link rel='archives' title='September 2011' href='http://comonad.com/reader/2011/09/' />
+	<link rel='archives' title='July 2011' href='http://comonad.com/reader/2011/07/' />
+	<link rel='archives' title='June 2011' href='http://comonad.com/reader/2011/06/' />
+	<link rel='archives' title='July 2010' href='http://comonad.com/reader/2010/07/' />
+	<link rel='archives' title='May 2010' href='http://comonad.com/reader/2010/05/' />
+	<link rel='archives' title='April 2010' href='http://comonad.com/reader/2010/04/' />
+	<link rel='archives' title='September 2009' href='http://comonad.com/reader/2009/09/' />
+	<link rel='archives' title='August 2009' href='http://comonad.com/reader/2009/08/' />
+	<link rel='archives' title='July 2009' href='http://comonad.com/reader/2009/07/' />
+	<link rel='archives' title='June 2009' href='http://comonad.com/reader/2009/06/' />
+	<link rel='archives' title='March 2009' href='http://comonad.com/reader/2009/03/' />
+	<link rel='archives' title='December 2008' href='http://comonad.com/reader/2008/12/' />
+	<link rel='archives' title='November 2008' href='http://comonad.com/reader/2008/11/' />
+	<link rel='archives' title='June 2008' href='http://comonad.com/reader/2008/06/' />
+	<link rel='archives' title='May 2008' href='http://comonad.com/reader/2008/05/' />
+	<link rel='archives' title='April 2008' href='http://comonad.com/reader/2008/04/' />
+	<link rel='archives' title='March 2008' href='http://comonad.com/reader/2008/03/' />
+	<link rel='archives' title='January 2008' href='http://comonad.com/reader/2008/01/' />
+	<link rel='archives' title='July 2007' href='http://comonad.com/reader/2007/07/' />
+	<link rel='archives' title='May 2007' href='http://comonad.com/reader/2007/05/' />
+	<link rel='archives' title='November 2006' href='http://comonad.com/reader/2006/11/' />
+	<link rel='archives' title='October 2006' href='http://comonad.com/reader/2006/10/' />
+	<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader &raquo; Clearer Reflections Comments Feed" href="http://comonad.com/reader/2009/clearer-reflection/feed/" />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://comonad.com/reader/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://comonad.com/reader/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='The Comonad.Reader' href='http://comonad.com/reader' />
+<link rel='start' title='Hello, World!' href='http://comonad.com/reader/2006/hello-world/' />
+<link rel='prev' title='Slides from Hac Phi: &#8220;All About Monoids&#8221;' href='http://comonad.com/reader/2009/hac-phi-slides/' />
+<link rel='next' title='Iteratees, Parsec and Monoids (Slides)' href='http://comonad.com/reader/2009/iteratees-parsec-and-monoid/' />
+<meta name="generator" content="WordPress 2.8.4" />
+</head>
+<body>
+<div id="rap">
+	<div id="header">
+	<ul id="topnav">
+		<li><a href="/reader" id="navHome" title="Posted Recently" accesskey="h">Home |</a></li>
+		<li><a href="/reader/about/" id="navAbout" title="About the Author" accesskey="a">About |</a></li>
+		<li><a href="/reader/source;item=libraries" id="navSource" title="Source Code" accesskey="s">Source |</a></li>
+		<li><a href="mailto:ekmett@gmail.com" id="navContact" title="Contact the Author" accesskey="c">Contact </a></li>
+	</ul>
+	<a href="http://comonad.com/reader" id="logoHome" title="Posted Recently"><img id="logo" src="/reader/pngbehavior/blank.gif" ></a>
+	<h1><a href="http://comonad.com/reader" title="The Comonad.Reader">The Comonad.Reader</a></h1>		
+	<div id="desc">types, (co)monads, substructural logic</div>
+</div>
+	
+	<div id="main">
+	<div id="content">
+
+						<div class="post">
+				<p class="post-date">Sat 15 Aug 2009</p>
+<div class="post-info"><h2 class="post-title"><a href="http://comonad.com/reader/2009/clearer-reflection/" rel="bookmark" title="Permanent Link: Clearer Reflections">Clearer Reflections</a></h2>
+Posted by Edward Kmett under <a href="http://comonad.com/reader/category/haskell/" title="View all posts in Haskell" rel="category tag">Haskell</a> ,  <a href="http://comonad.com/reader/category/monads/" title="View all posts in Monads" rel="category tag">Monads</a> ,  <a href="http://comonad.com/reader/category/monoids/" title="View all posts in Monoids" rel="category tag">Monoids</a> ,  <a href="http://comonad.com/reader/category/type-hackery/" title="View all posts in Type Hackery" rel="category tag">Type Hackery</a> <br/><a href="http://comonad.com/reader/2009/clearer-reflection/#comments" title="Comment on Clearer Reflections">[7] Comments</a>&nbsp;</div>
+<div class="post-content">
+	<p>I have updated the <a href="http://hackage.haskell.org/package/reflection-0.2.0">reflection</a> package on hackage to use <a href="http://www.haskell.org/pipermail/haskell-cafe/2009-August/065237.html">an idea for avoiding dummy arguments</a> posted to the <a href="http://www.haskell.org/mailman/listinfo/haskell-cafe">Haskell cafe mailing list</a> by Bertram Felgenhauer, which adapts nicely to the case of handling Reflection. The reflection package implements the ideas from the <a href="http://www.cs.rutgers.edu/~ccshan/prepose/prepose.pdf">Functional Pearl: Implicit Configurations</a> paper by Oleg Kiselyov and Chung-chieh Shan. </p>
+<p>Now, you no longer need to use big scary undefineds throughout your code and can instead program with implicit configurations more naturally, using Applicative and Monad sugar.</p>
+<p><span id="more-93"></span></p>
+<pre class="haskell">&nbsp;
+*Data.Reflection&gt; reify <span style="color: green;">&#40;</span>+<span style="color: green;">&#41;</span>
+    <span style="color: green;">&#40;</span>reflect &lt; *&gt; pure <span style="color: red;">1</span> &lt; *&gt; <span style="color: green;">&#40;</span>reflect &lt; *&gt; pure <span style="color: red;">2</span> &lt; *&gt; pure <span style="color: red;">3</span><span style="color: green;">&#41;</span><span style="color: green;">&#41;</span>
+&gt; <span style="color: red;">6</span>
+&nbsp;</pre>
+<p>The Monad in question just replaces the lambda with a phantom type parameter, enabling the compiler to more readily notice that no instance can actually even try to use the value of the type parameter.</p>
+<p>An <a href="http://www.mail-archive.com/haskell-cafe@haskell.org/msg57747.html">example from the old API</a> can be seen on the Haskell cafe.</p>
+<p>This example can be made appreciably less scary now!</p>
+<pre class="haskell">&nbsp;
+<span style="color: #5d478b; font-style: italic;">{-# LANGUAGE
+     MultiParamTypeClasses,
+     FlexibleInstances, Rank2Types,
+     FlexibleContexts, UndecidableInstances #-}</span>
+<span style="color: #06c; font-weight: bold;">import</span> Control.Applicative
+<span style="color: #06c; font-weight: bold;">import</span> Data.Reflection
+<span style="color: #06c; font-weight: bold;">import</span> Data.Monoid
+<span style="color: #06c; font-weight: bold;">import</span> Data.Tagged
+&nbsp;
+<span style="color: #06c; font-weight: bold;">newtype</span> M s a = M a
+&nbsp;
+<span style="color: #06c; font-weight: bold;">instance</span> Reifies s <span style="color: green;">&#40;</span>a,a → a → a<span style="color: green;">&#41;</span> ⇒ Monoid <span style="color: green;">&#40;</span>M s a<span style="color: green;">&#41;</span> <span style="color: #06c; font-weight: bold;">where</span>
+    mempty = tagMonoid $ <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:fst"><span style="font-weight: bold;">fst</span></a> &lt; $&gt; reflect
+    a `mappend` b = tagMonoid $
+        <a href="http://haskell.org/ghc/docs/latest/html/libraries/base/Prelude.html#v:snd"><span style="font-weight: bold;">snd</span></a> &lt; $&gt; reflect &lt; *&gt; monoidTag a &lt; *&gt; monoidTag b
+&nbsp;
+monoidTag :: M s a → Tagged s a
+monoidTag <span style="color: green;">&#40;</span>M a<span style="color: green;">&#41;</span> = Tagged a
+&nbsp;
+tagMonoid :: Tagged s a → M s a
+tagMonoid <span style="color: green;">&#40;</span>Tagged a<span style="color: green;">&#41;</span> = M a
+&nbsp;
+withMonoid :: a → <span style="color: green;">&#40;</span>a → a → a<span style="color: green;">&#41;</span> →
+    <span style="color: green;">&#40;</span>∀s. Reifies s <span style="color: green;">&#40;</span>a, a → a → a<span style="color: green;">&#41;</span> ⇒ M s w<span style="color: green;">&#41;</span> → w
+withMonoid e op m = reify <span style="color: green;">&#40;</span>e,op<span style="color: green;">&#41;</span> <span style="color: green;">&#40;</span>monoidTag m<span style="color: green;">&#41;</span>
+&nbsp;</pre>
+<p>And with that we can cram a Monoid dictionary -- or any other -- with whatever methods we want and our safety is assured by parametricity due to the rank 2 type, just like with the ST monad.</p>
+<pre class="haskell">&nbsp;
+*&gt; withMonoid <span style="color: red;">0</span> <span style="color: green;">&#40;</span>+<span style="color: green;">&#41;</span> <span style="color: green;">&#40;</span>M <span style="color: red;">5</span> `mappend` M <span style="color: red;">4</span> `mappend` mempty<span style="color: green;">&#41;</span>
+<span style="color: red;">9</span>
+&nbsp;</pre>
+<p>[Edit: factored Tagged out into Data.Tagged in a separate package, and modified reflection to use that instead, with an appropriate version bump to satisfy the package versioning policy]</p>
+	<div class="post-info">
+			</div>
+	<div class="post-footer">&nbsp;</div>
+</div>
+				
+<!-- You can start editing here. -->
+
+	<h3 id="comments">7 Responses to &#8220;Clearer Reflections&#8221;</h3> 
+
+	<ol class="commentlist">
+
+	
+		<li class="alt" id="comment-11055">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=d1ebab09bebbec2202d4cf316d41b548&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://www-ps.informatik.uni-kiel.de/~sebf/' rel='external nofollow' class='url'>Sebastian</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-11055" title="">August 15th, 2009 at 9:26 am</a> </small>
+			<br clear="all"/>
+
+			<p>Is the `Unused` typeclass defined in version 0.2.0 of the reflection package a pun? It seems, like the name suggests, neither used nor exported.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-11056">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=9c51a8b8afa2366a2ef4650c411f187a&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://comonad.com/' rel='external nofollow' class='url'>Edward Kmett</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-11056" title="">August 15th, 2009 at 9:41 am</a> </small>
+			<br clear="all"/>
+
+			<p>@Sebastian:</p>
+<p>Actually, I went through and tried to minimize the number of language extensions the package required. Two of the ones I eliminated were EmptyDataDecls and KindSignatures, since you can define a &#8216;bottom only&#8217; datatype with a newtype wrapper, and you can perform some shenanigans to avoid the kind signatures once it is a newtype.</p>
+<p>However, when you don&#8217;t use the newtype&#8217;s constructor anywhere, -Wall gives you a warning. Rather than have the module spit out 8-9 warnings, I wrote the Unused typeclass to give a single reference to each constructor and to silence the compiler.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-11058">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=1d86a6cad1a1713a2c5ae9c0f2926bad&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite>Cale</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-11058" title="">August 15th, 2009 at 11:20 am</a> </small>
+			<br clear="all"/>
+
+			<p>Somehow spurious extra spaces are getting inserted into your code&#8230;</p>
+<p>Perhaps a bug in whatever script is responsible for converting characters to HTML character codes?</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-11059">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=1d86a6cad1a1713a2c5ae9c0f2926bad&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite>Cale</cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-11059" title="">August 15th, 2009 at 11:24 am</a> </small>
+			<br clear="all"/>
+
+			<p>Haha, and then the example I copied into my comment was deleted from the comment entirely.</p>
+<p>Let&#8217;s try&#8230; &lt; *&gt;</p>
+<p>I&#8217;m always amazed at how badly blog software manages to screw up text processing.</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-11060">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=9c51a8b8afa2366a2ef4650c411f187a&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://comonad.com/' rel='external nofollow' class='url'>Edward Kmett</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-11060" title="">August 15th, 2009 at 12:17 pm</a> </small>
+			<br clear="all"/>
+
+			<p>@Cale:</p>
+<p>Yeah, it seems to be a bug in the package I&#8217;m using for syntax highlighting. =/ I swapped it out like 3 times, and eventually just moved on. If you have a suggestion for a good WordPress syntax highlighter that does Haskell, I&#8217;m all ears.</p>
+		</li>
+
+	
+	
+		<li class="" id="comment-11212">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=ba340386ad2afc76d4a9602410b4e449&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://w3future.com/weblog/' rel='external nofollow' class='url'>Sjoerd Visscher</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-11212" title="">August 22nd, 2009 at 7:54 pm</a> </small>
+			<br clear="all"/>
+
+			<p>Is there a reason not to make a Monoid instance of Tagged, skipping M and monoidTag and tagMonoid?</p>
+		</li>
+
+	
+	
+		<li class="alt" id="comment-11224">
+		        <a href="http://en.gravatar.com/site/signup"><img style="padding-right: 2px" src="http://www.gravatar.com/avatar.php?gravatar_id=9c51a8b8afa2366a2ef4650c411f187a&amp;rating=R&amp;size=40&d=wavatar" align="left"></a>
+			<cite><a href='http://comonad.com/' rel='external nofollow' class='url'>Edward Kmett</a></cite> Says:
+						<br />
+
+			<small class="commentmetadata"><a href="#comment-11224" title="">August 23rd, 2009 at 8:39 am</a> </small>
+			<br clear="all"/>
+
+			<p>@Sjoerd:</p>
+<p>The problem with that is that Monoid isn&#8217;t the only kind of thing we might want to reify into a type so we can reflect it as a dictionary. </p>
+<p>If any other type had the same dictionary shape, and you took that approach then you could very easily conflate instances.</p>
+<p>If the reflection library wanted to concern itself with every type class in Haskell, that would work fine, but otherwise, you would be stuck with orphan instances. ;)</p>
+		</li>
+
+	
+	
+	</ol>
+
+ 
+
+			</div>
+					<p align="center"></p>		
+	</div>
+	<div id="sidebar">
+		<h2>Archived Entry</h2>
+	<ul>
+	<li><strong>Post Date :</strong></li>
+	<li>Saturday, Aug 15th, 2009 at 4:04 am</li>
+	<li><strong>Category :</strong></li>
+	<li><a href="http://comonad.com/reader/category/haskell/" title="View all posts in Haskell" rel="category tag">Haskell</a> and  <a href="http://comonad.com/reader/category/monads/" title="View all posts in Monads" rel="category tag">Monads</a> and  <a href="http://comonad.com/reader/category/monoids/" title="View all posts in Monoids" rel="category tag">Monoids</a> and  <a href="http://comonad.com/reader/category/type-hackery/" title="View all posts in Type Hackery" rel="category tag">Type Hackery</a></li>
+	<li><strong>Do More :</strong></li>
+	<li>							Both comments and pings are currently closed.			
+						
+						</li>
+	</ul>
+		
+	<h2><label for="s">Search</label></h2>
+	<ul>
+		<li>
+			<form id="searchform" method="get" action="/reader/index.php">
+				<div style="text-align:center">
+					<p><input type="text" name="s" id="s" size="10" /> <input type="submit" name="submit" value="Search" /></p>
+				</div>
+			</form>
+		</li>
+	</ul>
+<h2>RSS Feeds</h2>
+	<ul>
+		<li>
+			<a title="RSS2 Feed for Posts" href="http://comonad.com/reader/feed/">Posts</a> | <a title="RSS2 Feed for Comments" href="http://comonad.com/reader/comments/feed/">Comments</a></li>	
+	</ul>	
+</div>
+<p id="footer">Design based on <a href="http://www.vanillamist.com" title="Vanilla Mist">www.vanillamist.com</a></p></div>
+</div>
+</body>
+</html>

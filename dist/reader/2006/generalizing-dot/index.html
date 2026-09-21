@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Generalizing (.) · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Haskell · Monads</span><span>Edward Kmett · <time datetime="2006-11-09">9 November 2006</time></span></div><h1>Generalizing (.)</h1></header><article class="prose"><span id="more-35"></span><p>If we take a look at the Haskell (.) operator:</p>
+<p><code>   (.) :: (a -&gt; b) -&gt; (e -&gt; a) -&gt; e -&gt; b   </code></p>
+<p>and take a moment to reflect on the type of fmap</p>
+<p><code>   fmap :: Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b   </code></p>
+<p>and the unnamed Reader monad from <a href="http://haskell.org/ghc/docs/latest/html/libraries/mtl/Control-Monad-Reader.html">Control.Monad.Reader</a></p>
+<p><code>   instance Functor ((-&gt;) r)   </code></p>
+<p>we see that fmap applied to the Reader functor rederives (.).</p>
+<p><code>   fmap_reader :: (a -&gt; b) -&gt; (e -&gt; a) -&gt; e -&gt; b   </code></p>
+<p>So if we were willing to forgo ease of learning, and to bake in the Reader monad as a primitive, we could quite concisely redefine (.) to give it a more general signature:</p>
+<p><code>   module Dot where   import Control.Monad.Reader   import Prelude hiding ((.))   infixr 0 .   (.) :: Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b   (.) = fmap   </code></p>
+<p>In this context, existing code continues to type check. For instance,</p>
+<p><code>   ((+2) . (*3)) 5 ==&gt; 17   </code></p>
+<p>And the . above doubles as filling the role of the * map operator mentioned in Richard Bird's 1990 Calculus of Functions paper generalized to any Functor.</p>
+<p><code>   ((+2) . (*3)) . [1..10] ==&gt; [5,8,..32]   ((+2) . (*3)) . Just 5 ==&gt; Just 17   ((+2) . (*3)) . Nothing ==&gt; Nothing   </code></p>
+<p>I was able to test this with the just about every example golfed back and forth on the <a href="irc://irc.freenode.net/%23haskell">#haskell</a> channel in the last 6 months.</p>
+<p>I'm not advocating this as a practice for Haskell as it is somewhat terrifying to think of how to teach to new programmers, but I found the exercise to be enlightening.</p>
+</article><section class="comments" id="comments"><h2>From the original discussion</h2><p class="editorial">Selected questions, explanations, and corrections. Original wording and dates; spam and automated trackbacks omitted.</p><article class="comment" id="comment-3"><header><strong>Edward Kmett</strong><a href="../../../reader/2006/generalizing-dot/#comment-3">November 9th, 2006 at 1:22 am</a></header><p>As an aside, the idea came from observing the fact that <a href="http://www.cse.unsw.edu.au/~dons/lambdabot.html">lambdabot</a>’s pointfree conversion command @pl had taken to using `fmap` instead of (.) in a lot of places.</p>
+</article><article class="comment" id="comment-251"><header><strong>Edward Kmett</strong><a href="../../../reader/2006/generalizing-dot/#comment-251">July 24th, 2007 at 10:05 am</a></header><p>Thanks. Fixed.</p>
+<p>I honestly, just typed that off the cuff.</p>
+<p>Thats what I get for not actually compiling it before posting ;)</p>
+</article><article class="comment" id="comment-42556"><header><strong>Paul Keir</strong><a href="../../../reader/2006/generalizing-dot/#comment-42556">March 11th, 2011 at 7:44 am</a></header><p>Another great post and really neat idea. I tried<br>
+((+2) . (*3)) 5<br>
+and also<br>
+((+2) . (*3)) $ 5<br>
+but this<br>
+(+2) . (*3) $ 5<br>
+complains about a missing Num instance for the literal ‘5′. It makes me wonder why the 5 is accepted in any case, as it’s not (here at least) an instance of Functor?</p>
+</article><article class="comment" id="comment-42597"><header><strong>Edward Kmett</strong><a href="../../../reader/2006/generalizing-dot/#comment-42597">March 11th, 2011 at 3:02 pm</a></header><p>Paul:</p>
+<p>Back when I wrote this post I gave the updated (.) the wrong precedence, it should be</p>
+<p>infixr 9 .</p>
+</article></section><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/generalizing-dot.md" download>Article Markdown</a> · <a href="../../../source/articles/generalizing-dot.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2006/overloaded-functions-with-subtyping/">Overloaded Functions with Subtyping →</a><a href="../../../reader/2006/logic/">##logic →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

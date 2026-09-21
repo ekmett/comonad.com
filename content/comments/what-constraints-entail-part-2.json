@@ -1,0 +1,139 @@
+{
+  "reviewed": "2026-09-21",
+  "method": "Explicit reviewed selections; all unselected records preserved in the raw source.",
+  "comments": [
+    {
+      "id": "comment-84914",
+      "author": "Doug McClean",
+      "date": "November 16th, 2011 at 3:17 pm",
+      "markdown": "Working on the problem of expressing the pattern behind the relationship between sort/sortBy, maximum/maximumBy, etc, I have a few observations.\n\nFirst, you’ve shown the existence of a type Dict :: Constraint -> \\* (which I suggest might more naturally be named Evidence in keeping with most of the work I have seen on qualified types, but that’s not important). A little bit of magic (the TH approach that you mention would do it) should suffice to make this a surjective type function. There’s a plausible argument that it’s injective as well (since we take a nominal typing approach to constraints and ignore ordering of constraint conjunctions), but I don’t think this accomplishes much so let’s ignore it.\n\nSecond, I postulate the existence of another (surjective, but surely not injective) type function Qualifier :: \\* -> Constraint which extracts the context of its argument and returns the empty constraint if its argument is unqualified.\n\nThird, twisting the same idea, I postulate the existence of another surjective type function (for which I don’t have a good name…) Unqualified :: \\* -> \\* which discards the context if its argument is qualified and is otherwise the identity function.\n\nTaking 1 and assuming 2 and 3, then shouldn’t we be able to have a function:\n\nby :: t -> Evidence (Qualifier t) -> Unqualified t?\n\nWorking through the translation for an example, and ignoring the term level for a bit, we’d get:\n\nsort :: (Ord a) => \\[a\\] -> \\[a\\]  \nQualifier ((Ord a) => \\[a\\] -> \\[a\\]) ~ Ord a  \nEvidence (Ord a) ~ OrdDict a  \nUnqualified ((Ord a) => \\[a\\] -> \\[a\\]) ~ \\[a\\] -> \\[a\\]\n\n(sort \\`by\\`) :: OrdDict a -> \\[a\\] -> \\[a\\]\n\n… which is what we were looking for.\n\nSadly/oddly this is applicable at types which are not (possibly-qualified) arrow types, but it seems fairly harmless:\n\n(True \\`by\\`) :: () -> Bool (assuming () is the type of evidence for the empty constraint?)\n\nDid I skip any steps? Is there a reason in principle why we couldn’t write either Qualifier or Unqualified (I could see how we might need a language extension…).\n\nStepping back to the term level, I’m a bit stuck. I think I am stuck on understanding your concrete syntax more than on any fundamental reason why this is impossible, but I’m not sure."
+    },
+    {
+      "id": "comment-84919",
+      "author": "Doug McClean",
+      "date": "November 16th, 2011 at 3:30 pm",
+      "markdown": "One more note:  \nThe existence of GHC is a proof for the possibility of doing this at the term level, right, because it erases qualified types during the translation to the core language by doing this same evidence passing scheme?"
+    },
+    {
+      "id": "comment-84920",
+      "author": "Doug McClean",
+      "date": "November 16th, 2011 at 3:32 pm",
+      "markdown": "Oops, one more:  \nIf you really were concerned about expressions like (True \\`by\\`) you could strengthen the type of by from\n\nby :: t -> Evidence (Qualifier t) -> Unqualified t\n\nto\n\nby :: (Unqualified t ~ a -> b) => t -> Evidence (Qualifier t) -> Unqualified t"
+    },
+    {
+      "id": "comment-84931",
+      "author": "Edward Kmett",
+      "date": "November 16th, 2011 at 5:28 pm",
+      "markdown": "The problem with Qualifier and Unqualified is that unification of types involving => isn’t done by simple unification, but instead by bi-implication for constraints, so while you can write some types with them, you typically can’t build inhabitants."
+    },
+    {
+      "id": "comment-84938",
+      "author": "Doug McClean",
+      "date": "November 16th, 2011 at 5:51 pm",
+      "markdown": "That explains why you can’t define them in Haskell, but I don’t think it bars you from adding them as primitives, does it? And the type checker already has the implementation that would back the primitive?\n\nI don’t have access to a machine with bleeding edge GHC on it at the moment, but is (c => t) -> Dict c -> t a syntactically valid type? If not, why not?"
+    },
+    {
+      "id": "comment-84952",
+      "author": "Edward Kmett",
+      "date": "November 16th, 2011 at 7:20 pm",
+      "markdown": "discharge :: (c => t) -> Dict c -> t  \ndischarge t Dict = t\n\nworks fine.\n\nas for whether the type checker has the machinery, that is somewhat harder to answer, becuase it would depend on the details of the largely underspecified constraint simplifier."
+    },
+    {
+      "id": "comment-84953",
+      "author": "Edward Kmett",
+      "date": "November 16th, 2011 at 7:23 pm",
+      "markdown": "Dan Peebles has some nice examples for things like a more polymorphic ‘on’ that could benefit, but in the meantime, one can use explicit proxies to work around the inability to name the constraint implicitly."
+    },
+    {
+      "id": "comment-85115",
+      "author": "Edward Kmett",
+      "date": "November 17th, 2011 at 2:13 pm",
+      "markdown": "As an aside, you can \\_write\\_\n\ntype family Constraints t :: Constraints  \ntype instance Constraints (p => q) = p\n\nyou just can’t use it anywhere. =/\n\nThe compiler complains when you go to use it that you need LiberalTypeSynonyms even if you have LiberalTypeSynonyms turned on. ;)"
+    },
+    {
+      "id": "comment-85119",
+      "author": "Doug McClean",
+      "date": "November 17th, 2011 at 2:43 pm",
+      "markdown": "Yeah, I was thinking of that definition and the corresponding\n\ntype family Unqualified t :: \\*  \ntype instance Unqualified (p => q) = q\n\nAlas there is a logical reason why it doesn’t make sense.\n\n{-# LANGUAGE CommunistTypeSynonyms #-}?"
+    },
+    {
+      "id": "comment-85122",
+      "author": "Edward Kmett",
+      "date": "November 17th, 2011 at 2:57 pm",
+      "markdown": "I raised the issue to Max. Not sure there is a good way for it to be defined in user land, because\n\n() => q and q are interchangeable, so it would require compiler support.\n\nThe most compelling use case is to make code like\n\non :: (p a, p b) => (c -> c -> d) -> (forall x. p x => x -> c) -> a -> b -> d\n\ninhabitable for\n\n((++) \\`on\\` show)\n\nbut it impacts all sorts of unrelated areas in the compiler."
+    },
+    {
+      "id": "comment-103013",
+      "author": "Philip J-F",
+      "date": "March 1st, 2012 at 2:04 am",
+      "markdown": "Inspired by this discussion I wrote a post showing how to get multiple, passable, effectively first-class, instances. I borrowed your applicative example: [http://joyoftypes.blogspot.com/2012/02/haskell-supports-first-class-instances.html](http://joyoftypes.blogspot.com/2012/02/haskell-supports-first-class-instances.html)"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "comment-84914",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-84919",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-84920",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-84931",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-84938",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-84952",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-84953",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-85094",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-85115",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-85119",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-85122",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-103013",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-105341",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    }
+  ]
+}

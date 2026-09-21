@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Parsec Full of Rats, Part 1 · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Algorithms · Data Structures · Haskell · Monads · Parsing · Uncategorized</span><span>Edward Kmett · <time datetime="2011-09-23">23 September 2011</time></span></div><h1>A Parsec Full of Rats, Part 1</h1></header><article class="prose"><span id="more-380"></span><blockquote>
+<p>You never heard of the Millenium Falcon? It's the ship that made the Kessel Run in 12 parsecs.</p>
+</blockquote>
+<p>I've been working on a parser combinator library called <a href="https://hackage.haskell.org/package/trifecta">trifecta</a>, and so I decided I'd share some thoughts on parsing.</p>
+<p><a href="http://pdos.csail.mit.edu/~baford/packrat/">Packrat parsing</a> (as provided by <a href="https://hackage.haskell.org/package/frisby">frisby</a>, <a href="https://hackage.haskell.org/package/pappy">pappy</a>, <a href="http://cs.nyu.edu/rgrimm/xtc/">rats!</a> and the Scala parsing combinators) and more traditional recursive descent parsers (like Parsec) are often held up as somehow different.</p>
+<p>Today I'll show that you can add monadic parsing to a packrat parser, sacrificing asymptotic guarantees in exchange for the convenient context sensitivity, and conversely how you can easily add packrat parsing to a traditional monadic parser combinator library.</p>
+<p>To keep this post self-contained, I'm going to start by defining a small packrat parsing library by hand, which acts rather like parsec in its backtracking behavior. First, some imports:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE RecordWildCards, ViewPatterns, DeriveFunctor #-}</span>
+<span class="hljs-keyword">import</span> Control.Applicative
+<span class="hljs-keyword">import</span> Control.Monad (<span class="hljs-type">MonadPlus(..)</span>, <span class="hljs-title">guard</span>)
+<span class="hljs-keyword">import</span> Control.Monad.Fix (<span class="hljs-title">fix</span>)
+<span class="hljs-keyword">import</span> Data.Char (<span class="hljs-title">isDigit</span>, <span class="hljs-title">digitToInt</span>, <span class="hljs-title">isSpace</span>)
+</code></pre>
+<p>Second, we'll define a bog simple parser, which consumes an input stream of type d, yielding a possible answer and telling us whether or not it has actually consumed any input as it went.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Rat</span> d a = <span class="hljs-type">Rat</span> { <span class="hljs-title">runRat</span> :: <span class="hljs-title">d</span> -&gt; <span class="hljs-type">Result</span> <span class="hljs-title">d</span> <span class="hljs-title">a</span> }</span>
+  <span class="hljs-keyword">deriving</span> <span class="hljs-type">Functor</span>
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Result</span> d a</span>
+  = <span class="hljs-type">Pure</span> a             <span class="hljs-comment">-- didn't consume anything, can backtrack</span>
+  | <span class="hljs-type">Commit</span> d a      <span class="hljs-comment">-- consumed input</span>
+  | <span class="hljs-type">Fail</span> <span class="hljs-type">String</span> <span class="hljs-type">Bool</span> <span class="hljs-comment">-- failed, flagged if consumed</span>
+  <span class="hljs-keyword">deriving</span> <span class="hljs-type">Functor</span>
+</code></pre>
+<p>Now, we can finally implement some type classes:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Applicative</span> (<span class="hljs-type">Rat</span> <span class="hljs-title">d</span>) <span class="hljs-keyword">where</span></span>
+  pure a = <span class="hljs-type">Rat</span> $ \ _ -&gt; <span class="hljs-type">Pure</span> a
+  <span class="hljs-type">Rat</span> mf &lt; *&gt; <span class="hljs-type">Rat</span> ma = <span class="hljs-type">Rat</span> $ \ d -&gt; <span class="hljs-keyword">case</span> mf d <span class="hljs-keyword">of</span>
+    <span class="hljs-type">Pure</span> f      -&gt; fmap f (ma d)
+    <span class="hljs-type">Fail</span> s c    -&gt; <span class="hljs-type">Fail</span> s c
+    <span class="hljs-type">Commit</span> d' f -&gt; <span class="hljs-keyword">case</span> ma d' <span class="hljs-keyword">of</span>
+      <span class="hljs-type">Pure</span> a       -&gt; <span class="hljs-type">Commit</span> d' (f a)
+      <span class="hljs-type">Fail</span> s _     -&gt; <span class="hljs-type">Fail</span> s <span class="hljs-type">True</span>
+      <span class="hljs-type">Commit</span> d'' a -&gt; <span class="hljs-type">Commit</span> d'' (f a)
+</code></pre>
+<p>including an instance of Alternative that behaves like parsec, only backtracking on failure if no input was unconsumed.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Alternative</span> (<span class="hljs-type">Rat</span> <span class="hljs-title">d</span>) <span class="hljs-keyword">where</span></span>
+  <span class="hljs-type">Rat</span> ma &lt; |&gt; <span class="hljs-type">Rat</span> mb = <span class="hljs-type">Rat</span> $ \ d -&gt; <span class="hljs-keyword">case</span> ma d <span class="hljs-keyword">of</span>
+    <span class="hljs-type">Fail</span> _ <span class="hljs-type">False</span> -&gt; mb d
+    x            -&gt; x
+  empty = <span class="hljs-type">Rat</span> $ \ _ -&gt; <span class="hljs-type">Fail</span> <span class="hljs-string">"empty"</span> <span class="hljs-type">False</span>
+</code></pre>
+<p>For those willing to forego the asymptotic guarantees of packrat, we'll offer a monad.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Monad</span> (<span class="hljs-type">Rat</span> <span class="hljs-title">d</span>) <span class="hljs-keyword">where</span></span>
+  return a = <span class="hljs-type">Rat</span> $ \_ -&gt; <span class="hljs-type">Pure</span> a
+  <span class="hljs-type">Rat</span> m &gt;&gt;= k = <span class="hljs-type">Rat</span> $ \d -&gt; <span class="hljs-keyword">case</span> m d <span class="hljs-keyword">of</span>
+    <span class="hljs-type">Pure</span> a -&gt; runRat (k a) d
+    <span class="hljs-type">Commit</span> d' a -&gt; <span class="hljs-keyword">case</span> runRat (k a) d' <span class="hljs-keyword">of</span>
+      <span class="hljs-type">Pure</span> b -&gt; <span class="hljs-type">Commit</span> d' b
+      <span class="hljs-type">Fail</span> s _ -&gt; <span class="hljs-type">Fail</span> s <span class="hljs-type">True</span>
+      commit -&gt; commit
+    <span class="hljs-type">Fail</span> s c -&gt; <span class="hljs-type">Fail</span> s c
+  fail s = <span class="hljs-type">Rat</span> $ \ _ -&gt; <span class="hljs-type">Fail</span> s <span class="hljs-type">False</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">MonadPlus</span> (<span class="hljs-type">Rat</span> <span class="hljs-title">d</span>) <span class="hljs-keyword">where</span></span>
+  mplus = (&lt; |&gt;)
+  mzero = empty
+</code></pre>
+<p>and a Parsec-style "try", which rewinds on failure, so that &lt; |&gt; can try again.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">try</span> :: <span class="hljs-type">Rat</span> d a -&gt; <span class="hljs-type">Rat</span> d a
+<span class="hljs-title">try</span> (<span class="hljs-type">Rat</span> m) = <span class="hljs-type">Rat</span> $ \d -&gt; <span class="hljs-keyword">case</span> m d <span class="hljs-keyword">of</span>
+  <span class="hljs-type">Fail</span> s _ -&gt; <span class="hljs-type">Fail</span> s <span class="hljs-type">False</span>
+  x        -&gt; x
+</code></pre>
+<p>Since we've consumed &lt; |&gt; with parsec semantics. Let's give a PEG-style backtracking (&lt; /&gt;).</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">(&lt; /&gt;) :: <span class="hljs-type">Rat</span> d a -&gt; <span class="hljs-type">Rat</span> d a -&gt; <span class="hljs-type">Rat</span> d a
+<span class="hljs-title">p</span> &lt; /&gt; q = try p &lt; |&gt; q
+<span class="hljs-keyword">infixl</span> <span class="hljs-number">3</span> &lt; /&gt;
+</code></pre>
+<p>So far nothing we have done involves packrat at all. These are all general purpose recursive descent combinators.</p>
+<p>We can define an input stream and a number of combinators to read input.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Stream</span> d <span class="hljs-keyword">where</span></span>
+  anyChar :: <span class="hljs-type">Rat</span> d <span class="hljs-type">Char</span>
+
+<span class="hljs-title">whiteSpace</span> :: <span class="hljs-type">Stream</span> d =&gt; <span class="hljs-type">Rat</span> d ()
+<span class="hljs-title">whiteSpace</span> = () &lt; $ many (satisfy isSpace)
+<span class="hljs-title">phrase</span> :: <span class="hljs-type">Stream</span> d =&gt; <span class="hljs-type">Rat</span> d a -&gt; <span class="hljs-type">Rat</span> d a
+<span class="hljs-title">phrase</span> m = whiteSpace *&gt; m &lt; * eof
+
+<span class="hljs-title">notFollowedBy</span> :: <span class="hljs-type">Rat</span> d a -&gt; <span class="hljs-type">Rat</span> d ()
+<span class="hljs-title">notFollowedBy</span> (<span class="hljs-type">Rat</span> m) = <span class="hljs-type">Rat</span> $ \d -&gt; <span class="hljs-keyword">case</span> m d <span class="hljs-keyword">of</span>
+  <span class="hljs-type">Fail</span>{} -&gt; <span class="hljs-type">Pure</span> ()
+  _      -&gt; <span class="hljs-type">Fail</span> <span class="hljs-string">"unexpected"</span> <span class="hljs-type">False</span>
+
+<span class="hljs-title">eof</span> :: <span class="hljs-type">Stream</span> d =&gt; <span class="hljs-type">Rat</span> d ()
+<span class="hljs-title">eof</span> = notFollowedBy anyChar
+
+<span class="hljs-title">satisfy</span> :: <span class="hljs-type">Stream</span> d =&gt; (<span class="hljs-type">Char</span> -&gt; <span class="hljs-type">Bool</span>) -&gt; <span class="hljs-type">Rat</span> d <span class="hljs-type">Char</span>
+<span class="hljs-title">satisfy</span> p = try $ <span class="hljs-keyword">do</span>
+  x &lt; - anyChar
+  x &lt;$ guard (p x)
+
+<span class="hljs-title">char</span> :: <span class="hljs-type">Stream</span> d =&gt; <span class="hljs-type">Char</span> -&gt; <span class="hljs-type">Rat</span> d <span class="hljs-type">Char</span>
+<span class="hljs-title">char</span> c = satisfy (c ==)
+
+<span class="hljs-title">lexeme</span> :: <span class="hljs-type">Stream</span> d =&gt; <span class="hljs-type">Rat</span> d a -&gt; <span class="hljs-type">Rat</span> d a
+<span class="hljs-title">lexeme</span> m = m &lt; * whiteSpace
+
+<span class="hljs-title">symbol</span> :: <span class="hljs-type">Stream</span> d =&gt; <span class="hljs-type">Char</span> -&gt; <span class="hljs-type">Rat</span> d <span class="hljs-type">Char</span>
+<span class="hljs-title">symbol</span> c = lexeme (char c)
+
+<span class="hljs-title">digit</span> :: <span class="hljs-type">Stream</span> d =&gt; <span class="hljs-type">Rat</span> d <span class="hljs-type">Int</span>
+<span class="hljs-title">digit</span> = digitToInt &lt; $&gt; satisfy isDigit
+</code></pre>
+<p>And we can of course use a string as our input stream:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Stream</span> [<span class="hljs-type">Char</span>] <span class="hljs-keyword">where</span></span>
+  anyChar = <span class="hljs-type">Rat</span> $ \s -&gt; <span class="hljs-keyword">case</span> s <span class="hljs-keyword">of</span>
+    (x:xs) -&gt; <span class="hljs-type">Commit</span> xs x
+    [] -&gt; <span class="hljs-type">Fail</span> <span class="hljs-string">"EOF"</span> <span class="hljs-type">False</span>
+</code></pre>
+<p>Now that we've built a poor man's Parsec, let's do something more interesting. Instead of just using String as out input stream, let's include slots for use in memoizing the results from our various parsers at each location. To keep things concrete, we'll memoize the ArithPackrat.hs example that Bryan Ford used in his initial packrat presentation enriched with some whitespace handling.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">D</span> = <span class="hljs-type">D</span></span>
+  { _add        :: <span class="hljs-type">Result</span> <span class="hljs-type">D</span> <span class="hljs-type">Int</span>
+  , _mult       :: <span class="hljs-type">Result</span> <span class="hljs-type">D</span> <span class="hljs-type">Int</span>
+  , _primary    :: <span class="hljs-type">Result</span> <span class="hljs-type">D</span> <span class="hljs-type">Int</span>
+  , _decimal    :: <span class="hljs-type">Result</span> <span class="hljs-type">D</span> <span class="hljs-type">Int</span>
+  , anyCharD    :: <span class="hljs-type">Result</span> <span class="hljs-type">D</span> <span class="hljs-type">Char</span>
+  }
+</code></pre>
+<p>If you look at the type of each of those functions you'll see that <code>_add :: D -&gt; Result D Int</code>, which is exactly our Rat newtype expects as its argument, we we can bundle them directly:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">add</span>, mult, primary, decimal :: <span class="hljs-type">Rat</span> <span class="hljs-type">D</span> <span class="hljs-type">Int</span>
+<span class="hljs-title">add</span>     = <span class="hljs-type">Rat</span> _add
+<span class="hljs-title">mult</span>    = <span class="hljs-type">Rat</span> _mult
+<span class="hljs-title">primary</span> = <span class="hljs-type">Rat</span> _primary
+<span class="hljs-title">decimal</span> = <span class="hljs-type">Rat</span> _decimal
+</code></pre>
+<p>We can similarly juse use the character parse result.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Stream</span> <span class="hljs-type">D</span> <span class="hljs-keyword">where</span></span>
+  anyChar = <span class="hljs-type">Rat</span> anyCharD
+</code></pre>
+<p>Now we just need to build a D from a String. I'm using view patterns and record wildcards to shrink the amount of repetitive naming.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">parse</span> :: <span class="hljs-type">String</span> -&gt; <span class="hljs-type">D</span>
+<span class="hljs-title">parse</span> s = fix $ \d -&gt; <span class="hljs-keyword">let</span>
+  <span class="hljs-type">Rat</span> (dv d -&gt; _add) =
+        (+) &lt; $&gt; mult &lt; * symbol <span class="hljs-string">'+'</span> &lt;*&gt; add
+     &lt; /&gt; mult
+  <span class="hljs-type">Rat</span> (dv d -&gt; _mult) =
+        (*) &lt; $&gt; primary &lt; * symbol <span class="hljs-string">'*'</span> &lt;*&gt; mult
+    &lt; /&gt; primary
+  <span class="hljs-type">Rat</span> (dv d -&gt; _primary) =
+        symbol <span class="hljs-string">'('</span> *&gt; add &lt; * symbol <span class="hljs-string">')'</span>
+    &lt;/&gt; decimal
+  <span class="hljs-type">Rat</span> (dv d -&gt; _decimal) =
+     foldl' (\b a -&gt; b * <span class="hljs-number">10</span> + a) <span class="hljs-number">0</span> &lt; $&gt; lexeme (some digit)
+  anyCharD = <span class="hljs-keyword">case</span> s <span class="hljs-keyword">of</span>
+    (x:xs) -&gt; <span class="hljs-type">Commit</span> (parse xs) x
+    []     -&gt; <span class="hljs-type">Fail</span> <span class="hljs-string">"EOF"</span> <span class="hljs-type">False</span>
+  <span class="hljs-keyword">in</span> <span class="hljs-type">D</span> { .. }
+
+<span class="hljs-title">dv</span> :: d -&gt; (d -&gt; b) -&gt; b
+<span class="hljs-title">dv</span> d f = f d
+</code></pre>
+<p>Note that we didn't really bother factoring the grammar, since packrat will take care of memoizing the redundant calls!</p>
+<p>And with that, we can define an evaluator.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">eval</span> :: <span class="hljs-type">String</span> -&gt; <span class="hljs-type">Int</span>
+<span class="hljs-title">eval</span> s = <span class="hljs-keyword">case</span> runRat (whiteSpace *&gt; add &lt; * eof) (parse s) <span class="hljs-keyword">of</span>
+  <span class="hljs-type">Pure</span> a -&gt; a
+  <span class="hljs-type">Commit</span> _ a -&gt; a
+  <span class="hljs-type">Fail</span> s _ -&gt; error s
+</code></pre>
+<p>Note that because the input stream D contains the result directly and parse is the only thing that ever generates a D, and it does so when we start up, it should be obvious that the parse results for each location can't depend on any additional information smuggled in via our monad.</p>
+<p>Next time, we'll add a packratted Stream type directly to Parsec, which will necessitate some delicate handling of user state.</p>
+<p>The small parser implemented here can be <a href="https://github.com/ekmett/trifecta/blob/master/wip/Rat.hs">found on my github account</a>, where it hasn't been adulterated with unnecessary spaces by my blog software.</p>
+<p>P.S. To explain the quote, had I thought of it earlier, I could have named my parsing combinator library "Kessel Run" as by the time I'm done with it "it will contain at least 12 parsecs" between its different parser implementations.</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/trifecta"><code>trifecta</code></a> · <a href="https://hackage.haskell.org/package/parsers"><code>parsers</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><section class="comments" id="comments"><h2>From the original discussion</h2><p class="editorial">Selected questions, explanations, and corrections. Original wording and dates; spam and automated trackbacks omitted.</p><article class="comment" id="comment-75969"><header><strong>Edward Kmett</strong><a href="../../../reader/2011/a-parsec-full-of-rats/#comment-75969">September 24th, 2011 at 9:41 pm</a></header><p>@Victor:</p>
+<p>Not yet.</p>
+<p>Haskell is one of my use cases though, which is why the Literate and Layout parser transformers exist in the first place. My current focus has been on getting a usable C preprocessing parser transformer and rudimentary packrat support (because otherwise layout parsing is particularly expensive re-playing the ‘whiteSpace/virtual semicolon/virtual right brace’ parser at the same location over and over.</p>
+<p>This is what led to this pair of articles.</p>
+<p>I do have a small prototype implementation of Daan Leijen’s HMF which uses trifecta to parse. Once I’m happier with it and obtain final permission to release it, that may serve as such a tutorial.</p>
+</article></section><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/a-parsec-full-of-rats.md" download>Article Markdown</a> · <a href="../../../source/articles/a-parsec-full-of-rats.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2011/a-parsec-full-of-rats-part-2/">A Parsec Full of Rats, Part 2 →</a><a href="../../../reader/2011/hac-boston/">Hac Boston! →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

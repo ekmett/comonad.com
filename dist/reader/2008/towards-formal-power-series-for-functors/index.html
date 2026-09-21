@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Towards Formal Power Series for Functors · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Category Theory · Haskell · Mathematics · Type Theory</span><span>Edward Kmett · <time datetime="2008-05-13">13 May 2008</time></span></div><h1>Towards Formal Power Series for Functors</h1></header><article class="prose"><span id="more-57"></span><p>The post below will only compile on a version of GHC &gt;= 6.9, since it uses type families.</p>
+<p>There has been a lot of posting recently about automatic differentiation in Haskell, and I wanted to try the same thing with functors in the spirit of Conor McBride's <a href="http://strictlypositive.org/CJ.pdf">Clowns to the Left of me, Jokers to the Right</a> and <a href="http://citeseer.ist.psu.edu/472190.html">The derivative of a regular type is its type of one hole contexts</a>, figuring that a Power Series could fully generalize Christophe Poucet's <a href="http://notvincenz.blogspot.com/2007/07/higher-order-zippers.html">Higher Order Zippers</a>, and might provide me with a neat extension to the zipper comonadic automata I've been aluding to recently.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# OPTIONS -fglasgow-exts -fallow-undecidable-instances -fallow-overlapping-instances #-}</span>
+<span class="hljs-keyword">module</span> Derivatives <span class="hljs-keyword">where</span>
+<span class="hljs-keyword">import</span> Control.Monad.Identity
+<span class="hljs-keyword">import</span> Control.Arrow ((+++),(***),(&amp;&amp;&amp;))
+<span class="hljs-keyword">import</span> Data.Monoid
+<span class="hljs-keyword">infixl</span> <span class="hljs-number">9</span> :.:
+<span class="hljs-keyword">infixl</span> <span class="hljs-number">7</span> :*:
+<span class="hljs-keyword">infixl</span> <span class="hljs-number">6</span> :+:
+</code></pre>
+<p>To avoid importing <a href="https://hackage.haskell.org/package/category-extras-0.44.4">category-extras</a> and keep this post self-contained (modulo GHC 6.9!), we'll define some preliminaries such as Bifunctors:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Bifunctor</span> f <span class="hljs-keyword">where</span></span>
+  bimap :: (a -&gt; c) -&gt; (b -&gt; d) -&gt; f a b -&gt; f c d
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Bifunctor</span> (,) <span class="hljs-keyword">where</span></span>
+  bimap f g ~(a,b) = (f a, g b)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Bifunctor</span> <span class="hljs-type">Either</span> <span class="hljs-keyword">where</span></span>
+  bimap f _ (<span class="hljs-type">Left</span> a) = <span class="hljs-type">Left</span> (f a)
+  bimap _ g (<span class="hljs-type">Right</span> b) = <span class="hljs-type">Right</span> (g b)
+</code></pre>
+<p>Constant functors:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Void</span></span>
+<span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Show</span> <span class="hljs-type">Void</span> <span class="hljs-keyword">where</span></span> show _ = <span class="hljs-string">"Void"</span>
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Const</span> k a = <span class="hljs-type">Const</span> { <span class="hljs-title">runConst</span> :: <span class="hljs-title">k</span> } <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Show</span>)</span>
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Zero</span> = <span class="hljs-type">Const</span> <span class="hljs-type">Void</span></span>
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">One</span> = <span class="hljs-type">Const</span> ()</span>
+<span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> (<span class="hljs-type">Const</span> <span class="hljs-title">k</span>) <span class="hljs-keyword">where</span></span>
+  fmap f = <span class="hljs-type">Const</span> . runConst
+</code></pre>
+<p>and functor products and coproducts:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Lift</span> p f g a = <span class="hljs-type">Lift</span> { <span class="hljs-title">runLift</span> ::  <span class="hljs-title">p</span> (<span class="hljs-title">f</span> <span class="hljs-title">a</span>) (<span class="hljs-title">g</span> <span class="hljs-title">a</span>) }</span>
+<span class="hljs-class"><span class="hljs-keyword">type</span> (:+:) = <span class="hljs-type">Lift</span> <span class="hljs-type">Either</span></span>
+<span class="hljs-class"><span class="hljs-keyword">type</span> (:*:) = <span class="hljs-type">Lift</span> (,)</span>
+<span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Show</span> (<span class="hljs-title">p</span> (<span class="hljs-title">f</span> <span class="hljs-title">a</span>) (<span class="hljs-title">g</span> <span class="hljs-title">a</span>)) =&gt; <span class="hljs-type">Show</span> (<span class="hljs-type">Lift</span> <span class="hljs-title">p</span> <span class="hljs-title">f</span> <span class="hljs-title">g</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  show (<span class="hljs-type">Lift</span> x) = <span class="hljs-string">"(Lift ("</span> ++ show x ++ <span class="hljs-string">"))"</span>
+<span class="hljs-class"><span class="hljs-keyword">instance</span> (<span class="hljs-type">Bifunctor</span> <span class="hljs-title">p</span>, <span class="hljs-type">Functor</span> <span class="hljs-title">f</span>, <span class="hljs-type">Functor</span> <span class="hljs-title">g</span>) =&gt; <span class="hljs-type">Functor</span> (<span class="hljs-type">Lift</span> <span class="hljs-title">p</span> <span class="hljs-title">f</span> <span class="hljs-title">g</span>) <span class="hljs-keyword">where</span></span>
+  fmap f = <span class="hljs-type">Lift</span> . bimap (fmap f) (fmap f) . runLift
+</code></pre>
+<p>and finally functor composition</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> (<span class="hljs-title">f</span> :.: <span class="hljs-title">g</span>) a = <span class="hljs-type">Comp</span> { <span class="hljs-title">runComp</span> :: <span class="hljs-title">f</span> (<span class="hljs-title">g</span> <span class="hljs-title">a</span>) } <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Show</span>)</span>
+<span class="hljs-class"><span class="hljs-keyword">instance</span> (<span class="hljs-type">Functor</span> <span class="hljs-title">f</span>, <span class="hljs-type">Functor</span> <span class="hljs-title">g</span>) =&gt; <span class="hljs-type">Functor</span> (<span class="hljs-title">f</span> :.: <span class="hljs-title">g</span>) <span class="hljs-keyword">where</span></span>
+  fmap f = <span class="hljs-type">Comp</span> . fmap (fmap f) . runComp
+</code></pre>
+<p>So then, an ideal type for repeated differentiation would look something like the following, for some definition of D.</p>
+<p>[Edit: sigfpe pointed out, quite rightly, that this is just repeated differentiation, and apfelmus pointed out that it not a power series, because I have no division!]</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">AD</span> f a  = <span class="hljs-type">AD</span> { <span class="hljs-title">runAD</span> :: (<span class="hljs-title">f</span> <span class="hljs-title">a</span>,  <span class="hljs-type">AD</span> (<span class="hljs-type">D</span> <span class="hljs-title">f</span>) <span class="hljs-title">a</span>) }</span>
+</code></pre>
+<p>As a first crack at D, you might be tempted to just go with a type family:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">{-
+type family D (f :: * -&gt; *) :: * -&gt; *
+type instance D Identity = One
+type instance D (Const k) = Zero
+type instance D (f :+: g) = D f :+: D g
+type instance D (f :*: g) = f :*: D g :+: D f :*: g
+type instance D (f :.: g) = (D f :.: g) :*: D g
+-}</span>
+</code></pre>
+<p>This could take you pretty far, but unfortunately doesn't adequately provide you with any constraints on the type so that we can treat AD f as a functor.</p>
+<p>So, we'll go with:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> (<span class="hljs-type">Functor</span> (<span class="hljs-type">D</span> <span class="hljs-title">f</span>), <span class="hljs-type">Functor</span> f) =&gt; <span class="hljs-type">Derivable</span> (<span class="hljs-title">f</span> :: * -&gt; *) <span class="hljs-keyword">where</span></span>
+  <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">D</span> f :: * -&gt; *</span>
+</code></pre>
+<p>and cherry pick the instances necessary to handle the above cases:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Derivable</span> <span class="hljs-type">Identity</span> <span class="hljs-keyword">where</span></span>
+  <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">D</span> <span class="hljs-type">Identity</span> = <span class="hljs-type">One</span></span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Derivable</span> (<span class="hljs-type">Const</span> <span class="hljs-title">k</span>) <span class="hljs-keyword">where</span></span>
+  <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">D</span> (<span class="hljs-type">Const</span> <span class="hljs-title">k</span>) = <span class="hljs-type">Zero</span></span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Derivable</span> <span class="hljs-title">f</span>, <span class="hljs-type">Derivable</span> <span class="hljs-title">g</span>) =&gt; <span class="hljs-type">Derivable</span> (<span class="hljs-title">f</span> :+: <span class="hljs-title">g</span>) <span class="hljs-keyword">where</span></span>
+  <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">D</span> (<span class="hljs-title">f</span> :+: <span class="hljs-title">g</span>) = <span class="hljs-type">D</span> f :+: <span class="hljs-type">D</span> g</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Derivable</span> <span class="hljs-title">f</span>, <span class="hljs-type">Derivable</span> <span class="hljs-title">g</span>) =&gt; <span class="hljs-type">Derivable</span> (<span class="hljs-title">f</span> :*: <span class="hljs-title">g</span>) <span class="hljs-keyword">where</span></span>
+  <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">D</span> (<span class="hljs-title">f</span> :*: <span class="hljs-title">g</span>) = f :*: <span class="hljs-type">D</span> g :+: <span class="hljs-type">D</span> f :*: g</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Derivable</span> <span class="hljs-title">f</span>, <span class="hljs-type">Derivable</span> <span class="hljs-title">g</span>) =&gt; <span class="hljs-type">Derivable</span> (<span class="hljs-title">f</span> :.: <span class="hljs-title">g</span>) <span class="hljs-keyword">where</span></span>
+  <span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">D</span> (<span class="hljs-title">f</span> :.: <span class="hljs-title">g</span>) = (<span class="hljs-type">D</span> <span class="hljs-title">f</span> :.: <span class="hljs-title">g</span>) :*: <span class="hljs-type">D</span> g</span>
+</code></pre>
+<p>With those instances in hand, we can define the definition of a Functor for the automatic differentiation of a Functor built out of these primitives:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> (<span class="hljs-type">Derivable</span> <span class="hljs-title">f</span>, <span class="hljs-type">Functor</span> (<span class="hljs-type">AD</span> (<span class="hljs-type">D</span> <span class="hljs-title">f</span>))) =&gt; <span class="hljs-type">Functor</span> (<span class="hljs-type">AD</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+  fmap f = <span class="hljs-type">Power</span> . bimap (fmap f) (fmap f) . runPower
+</code></pre>
+<p>Unfortunately, here is where I run out of steam, because any attempt to actually use the construct in question blows the context stack because the recursion for Functor (AD f) isn't well founded and my attempts to force it to be so through overlapping-instances have thus-far failed.</p>
+<p>Thoughts?</p>
+<p>[<a href="../../../haskell/Derivatives.hs">Source Code</a>]</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/category-extras"><code>category-extras</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><section class="comments" id="comments"><h2>From the original discussion</h2><p class="editorial">Selected questions, explanations, and corrections. Original wording and dates; spam and automated trackbacks omitted.</p><article class="comment" id="comment-1273"><header><strong>apfelmus</strong><a href="../../../reader/2008/towards-formal-power-series-for-functors/#comment-1273">May 13th, 2008 at 7:38 am</a></header><p>I don’t see why you’d need overlapping or undecidable instances, all your class instances look like H98 (modulo the type family).</p>
+<p>There seems to be a problem with the power series constructor, I fail to see how it’s different from</p>
+<p>newtype Power _ a = P (a, Power _ a)</p>
+<p>i.e. an infinite stream of a . The instance then simply becomes</p>
+<p>instance Functor (Power f) where<br>
+fmap f = Power . bimap f (fmap f) . runPower</p>
+<p>This is probably not what you want. In the case you want, the real obstruction is that for power series, the functor in question must be differentiable an infinite number of times. In other words, something like</p>
+<p>instance Differentiable f =&gt; Differentiable (D f) where …</p>
+<p>Then, a context</p>
+<p>instance Differentiable f =&gt; Functor (Power f)</p>
+<p>should be enough.</p>
+</article><article class="comment" id="comment-1274"><header><strong>Edward Kmett</strong><a href="../../../reader/2008/towards-formal-power-series-for-functors/#comment-1274">May 13th, 2008 at 10:04 am</a></header><p>Good point. OTOH:</p>
+<p>instance Differentiable f =&gt; Differentiable (D f)</p>
+<p>doesn’t work because D isn’t a type constructor for the compiler to grab onto, which is why I started beating my head against the other part.</p>
+<p>What i was looking for was actually to say:<br>
+newtype Power f a = Power (f a, Power (D f) a)</p>
+<p>instead of</p>
+<p>newtype Power f a = Power (a, Power (D f) a)</p>
+<p>[Edit: fixed]</p>
+</article><article class="comment" id="comment-1275"><header><strong>apfelmus</strong><a href="../../../reader/2008/towards-formal-power-series-for-functors/#comment-1275">May 13th, 2008 at 11:08 am</a></header><p>Yeah, just<br>
+<code>instance Differentiable f =&gt; Differentiable (D f)</code><br>
+doesn’t work.</p>
+<p>And concerning the power series, I think what you really want is</p>
+<p><code>newtype Power f a = Power (f () :+: (a :*: Power (D f) a))</code></p>
+<p>but that’s wrong too, because you would have to divide by $latex \frac1{n!}$ somewhere. Power series are different from (but related to) automatic differentiation! Most likely, the impossible division can be included by using bags of n elements instead of powers <code>a :*: a :*: ...</code> (= ordered pairs) of n elements. In any case, the functor instance for power series is no problem, since a is used explicitly.</p>
+<p>Not sure in the case of automatic differentiation; the main problem here is indeed to somehow tell the compiler that<br>
+<code>instance Functor f =&gt; Functor (D f)</code><br>
+But since type families are open, I guess that’s not possible. I mean, a “mischievous” person could add a new case for this type family which violates this condition. So, the problem is not that the compiler doesn’t grok it, the problem is that there is a good reason that the compiler doesn’t accept it.</p>
+</article><article class="comment" id="comment-1277"><header><strong>Edward Kmett</strong><a href="../../../reader/2008/towards-formal-power-series-for-functors/#comment-1277">May 13th, 2008 at 11:32 am</a></header><p>True enough. I just started down this path because I was thinking in terms of inductive families of types, and realized with open type functions that you could put a more interesting operation in than just a pair, etc.</p>
+<p>And yeah, without a notion of type division (maybe using <a href="http://lambda-the-ultimate.org/node/2785">species</a>?), I don’t see how to get from this form of AD to a power series.</p>
+</article><article class="comment" id="comment-1278"><header><strong>Edward Kmett</strong><a href="../../../reader/2008/towards-formal-power-series-for-functors/#comment-1278">May 13th, 2008 at 11:43 am</a></header><p>Oh, maybe a more interesting instance for this would probably be the notion of a derivative for a list since that doesn’t zero out:</p>
+<p>instance Derivable [] where<br>
+type D [] = [] :*: []</p>
+<p>I also would like to find out a way to include a simplification step in the type function to go through and do the Zero :*: x = Zero step, etc to make the encoding a little less naive.</p>
+</article><article class="comment" id="comment-1280"><header><strong>Dan Doel</strong><a href="../../../reader/2008/towards-formal-power-series-for-functors/#comment-1280">May 13th, 2008 at 3:21 pm</a></header><p>Although the context on Functor (AD f) is sufficient, it seems (to me) like the wrong place to specify it. Since</p>
+<p>AD f a ~~ (f a, AD (D f) a)</p>
+<p>With (Derivable f) =&gt; Functor (AD f) you only need (Derivable (D f)) to justify using bimap (fmap f) (fmap f). So, it seems like what you’d really want is:</p>
+<p>class (Functor f, Derivable (D f)) =&gt; Derivable f where<br>
+type D f :: * -&gt; *</p>
+<p>instance (Derivable f) =&gt; Functor (AD f) where …</p>
+<p>Where the context on Derivable enforces that all such functors are arbitrarily differentiable. But, of course, GHC complains about a cycle there (in 6.8, at least. I don’t have 6.9 handy).</p>
+<p>Simplification should, I think, be possible with total type families once they go into 6.9. For instance:</p>
+<p>type family (f :: * -&gt; *) :+: (g :: * -&gt; *) :: * -&gt; * where<br>
+Zero :+: g = g<br>
+f :+: Zero = f<br>
+f :+: g = Lift Either f g</p>
+<p>You’re allowed to overlap instances for total type families, because they’re closed.</p>
+</article><article class="comment" id="comment-1282"><header><strong>apfelmus</strong><a href="../../../reader/2008/towards-formal-power-series-for-functors/#comment-1282">May 13th, 2008 at 3:30 pm</a></header><p>Concerning the division, we can appeal to the special case</p>
+<p><code>a^n / n! = Bag n a</code></p>
+<p>i.e. the multiset (bag) with n elements of type a. So, the power series expansion for a data type just counts how many different sets of elements it may contain. So, <code>a :*: a</code> contains two bags of two a (one for each permutation in the tuple).</p>
+<p>Btw, as the differential equation for the list type suggests, we have the power series expansion<br>
+<code>[a] = 1 + a + a^2 + a^3 + ...</code><br>
+which “is” 1/(1-a).</p>
+</article><article class="comment" id="comment-1288"><header><strong>Edward Kmett</strong><a href="../../../reader/2008/towards-formal-power-series-for-functors/#comment-1288">May 13th, 2008 at 8:04 pm</a></header><p>Yeah, mostly i was just trying to see what an inductive family of types built over an open type function would look like.</p>
+<p>I left the fixed point cases off because I was still trying to get the finite cases to terminate and once I ran up against the wall of type-ability I didn’t check that what I had so far was what I thought I had so far.</p>
+<p>It has been a while since I did anything with classical analysis. Hrmm. Back to the drawing board I guess until I figure out how to do what I really want.</p>
+</article><article class="comment" id="comment-1289"><header><strong>Edward Kmett</strong><a href="../../../reader/2008/towards-formal-power-series-for-functors/#comment-1289">May 13th, 2008 at 8:41 pm</a></header><p>Hrmm,</p>
+<p>So a simple encoding of the basic AD rules leaves your Dual class, just one level up.</p>
+<p>data D f g a = D (f a) (g a)</p>
+<p>type family (:+&gt;) (f :: * -&gt; *) (g :: * -&gt; *) :: * -&gt; *<br>
+type family (:*&gt;) (f :: * -&gt; *) (g :: * -&gt; *) :: * -&gt; *<br>
+type family DLift (f :: (* -&gt; *) -&gt; * -&gt; *) (f’ :: (* -&gt; *) -&gt; * -&gt; *) (g :: * -&gt; *) :: * -&gt; *<br>
+type instance (D x a :+&gt; D y b) = D (x :+: y) (a :+: b)<br>
+type instance (D x a :*&gt; D y b) = D (x :*: y) (x :*: b :+: a :*: y)<br>
+type instance DLift f f’ (D x a) = D (f x) (a :+: f’ x)</p>
+<p>dConst :: a -&gt; D Identity Zero a<br>
+dConst z = D (Identity z) zero</p>
+<p>dVar :: a -&gt; D Identity One a<br>
+dVar z = D (Identity z) (suck zero)</p>
+<p>I think the general AD case requires polymorphic kinds, so yeah something like Omega is probably better suited. Alas.</p>
+</article></section><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/towards-formal-power-series-for-functors.md" download>Article Markdown</a> · <a href="../../../source/articles/towards-formal-power-series-for-functors.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2008/just-fokkinga-abide/">Just Fokkinga Abide →</a><a href="../../../reader/2008/generatingfunctorology/">Generatingfunctorology →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

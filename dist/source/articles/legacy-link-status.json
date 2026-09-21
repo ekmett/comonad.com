@@ -1,0 +1,42 @@
+[
+  {
+    "url": "http://comonad.com/reader/wiki?item=CPS+transformation",
+    "referencedBy": [
+      "overloaded-functions-with-subtyping"
+    ],
+    "status": 200,
+    "finalURL": "http://comonad.com/reader/wiki/?item=CPS+transformation",
+    "title": "The Comonad.Reader &raquo; Wiki",
+    "bytes": 7432
+  },
+  {
+    "url": "http://comonad.com/reader/wiki;item=slipwave",
+    "referencedBy": [
+      "wikipress"
+    ],
+    "status": 404,
+    "finalURL": "http://comonad.com/reader/wiki;item=slipwave",
+    "title": "The Comonad.Reader &raquo; Page not found",
+    "bytes": 7939
+  },
+  {
+    "url": "http://comonad.com/reader/source;item=Data;Haskell",
+    "referencedBy": [
+      "wikipress"
+    ],
+    "status": 404,
+    "finalURL": "http://comonad.com/reader/source;item=Data;Haskell",
+    "title": "The Comonad.Reader &raquo; Page not found",
+    "bytes": 7939
+  },
+  {
+    "url": "http://comonad.com/reader/wiki?mode=category&item=continuations",
+    "referencedBy": [
+      "wikipress"
+    ],
+    "status": 200,
+    "finalURL": "http://comonad.com/reader/wiki/?mode=category&item=continuations",
+    "title": "The Comonad.Reader &raquo; Wiki",
+    "bytes": 7432
+  }
+]

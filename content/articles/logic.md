@@ -1,0 +1,3 @@
+A number of us from the freenode [#haskell](irc://irc.freenode.net/%23haskell) channel have gone and formed/revived [##logic](irc://irc.freenode.net/%23%23logic) to avoid overwhelming the main Haskell channel with traffic. Originally, I just wanted to revive the #logic channel that was already there, but upon talking to the freenode staff, it appears that they have [channel naming guidelines](http://freenode.net/policy.shtml#topicalchannels) that preclude topical discussion channels getting single # names without some sort of clear trademark. They were however nice enough to forward the previous #logic channel to the new location.
+
+In any event, if you are interested in logic at pretty much any level, feel free to stop by the channel.

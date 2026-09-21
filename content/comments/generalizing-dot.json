@@ -1,0 +1,67 @@
+{
+  "reviewed": "2026-09-21",
+  "method": "Explicit reviewed selections; all unselected records preserved in the raw source.",
+  "comments": [
+    {
+      "id": "comment-3",
+      "author": "Edward Kmett",
+      "date": "November 9th, 2006 at 1:22 am",
+      "markdown": "As an aside, the idea came from observing the fact that [lambdabot](http://www.cse.unsw.edu.au/~dons/lambdabot.html)’s pointfree conversion command @pl had taken to using \\`fmap\\` instead of (.) in a lot of places."
+    },
+    {
+      "id": "comment-251",
+      "author": "Edward Kmett",
+      "date": "July 24th, 2007 at 10:05 am",
+      "markdown": "Thanks. Fixed.\n\nI honestly, just typed that off the cuff.\n\nThats what I get for not actually compiling it before posting ;)"
+    },
+    {
+      "id": "comment-42556",
+      "author": "Paul Keir",
+      "date": "March 11th, 2011 at 7:44 am",
+      "markdown": "Another great post and really neat idea. I tried  \n((+2) . (\\*3)) 5  \nand also  \n((+2) . (\\*3)) $ 5  \nbut this  \n(+2) . (\\*3) $ 5  \ncomplains about a missing Num instance for the literal ‘5′. It makes me wonder why the 5 is accepted in any case, as it’s not (here at least) an instance of Functor?"
+    },
+    {
+      "id": "comment-42597",
+      "author": "Edward Kmett",
+      "date": "March 11th, 2011 at 3:02 pm",
+      "markdown": "Paul:\n\nBack when I wrote this post I gave the updated (.) the wrong precedence, it should be\n\ninfixr 9 ."
+    }
+  ],
+  "decisions": [
+    {
+      "id": "comment-3",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-43",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-44",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-250",
+      "disposition": "not-selected",
+      "reason": "Not selected during screening. Raw snapshot retained; no claim of individual manual spam classification."
+    },
+    {
+      "id": "comment-251",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-42556",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    },
+    {
+      "id": "comment-42597",
+      "disposition": "include",
+      "reason": "Substantive question, explanation, correction, or historical context reviewed for this edition."
+    }
+  ]
+}

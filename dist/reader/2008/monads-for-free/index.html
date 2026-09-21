@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Monads for Free · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Haskell · Monads</span><span>Edward Kmett · <time datetime="2008-04-11">11 April 2008</time></span></div><h1>Monads for Free</h1></header><article class="prose"><span id="more-46"></span><p>Today I'd like to talk about free monads.</p>
+<p>The free monad of a functor is a monad that is uniquely determined by the functor (up to isomorphism, etc), given by:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Free</span> f a = <span class="hljs-type">Roll</span> (<span class="hljs-title">f</span> (<span class="hljs-type">Free</span> <span class="hljs-title">f</span> <span class="hljs-title">a</span>)) | <span class="hljs-type">Return</span> a</span>
+<span class="hljs-comment">-- newtype Free f a = Free { unfree :: Either a (f (Free f a))) }</span>
+</code></pre>
+<p>Usually the above is written up using a newtype around a sum (Either) so you can write it using nice point-free style, but I think this makes for clearer introduction this way.</p>
+<p>The idea is that you take the functor and recursively fold it in upon a choice of either itself or a naked variable.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> f =&gt; <span class="hljs-type">Functor</span> (<span class="hljs-type">Free</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+  fmap f (<span class="hljs-type">Roll</span> x) = <span class="hljs-type">Roll</span> $ fmap (fmap f) x
+  fmap f (<span class="hljs-type">Return</span> x) = <span class="hljs-type">Return</span> (f x)
+</code></pre>
+<p>Now, we wouldn't call it the free 'monad' without reason. Return is the obvious candidate for 'return', but bind is a little trickier:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> f =&gt; <span class="hljs-type">Monad</span> (<span class="hljs-type">Free</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+  return = <span class="hljs-type">Return</span>
+  <span class="hljs-type">Return</span> m &gt;&gt;= k = k m <span class="hljs-comment">-- given by: return m &gt;&gt;= k = k m</span>
+  <span class="hljs-type">Roll</span> m &gt;&gt;= k = <span class="hljs-type">Roll</span> $ fmap (&gt;&gt;= k) m
+</code></pre>
+<p>(&gt;&gt;=) substitutes 'subtrees' for all of the naked variables in our monad. This is the gist of the monads of (co)trees section of Uustalu and Vene's <a href="http://citeseer.ist.psu.edu/uustalu02dual.html">The Dual of Substitution is Redecoration</a>.</p>
+<p>We can define a form of catamorphism for the free monad:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">foldF</span> :: <span class="hljs-type">Functor</span> f =&gt; (f a -&gt; a) -&gt; <span class="hljs-type">Free</span> f a -&gt; a
+<span class="hljs-title">foldF</span> phi (<span class="hljs-type">Roll</span> x) = phi $ fmap (foldF phi) x
+<span class="hljs-title">foldF</span> _ (<span class="hljs-type">Return</span> x) = x
+</code></pre>
+<p>The problem is you want to be able to perform different folds that return different types, so lets quantify over the variable in the monad.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Forall</span> f = <span class="hljs-type">Forall</span> { <span class="hljs-title">unforall</span> :: <span class="hljs-title">forall</span> <span class="hljs-title">a</span>. <span class="hljs-title">f</span> <span class="hljs-title">a</span> }</span>
+
+<span class="hljs-title">cataF</span> :: <span class="hljs-type">Functor</span> f =&gt; (f a -&gt; a) -&gt; <span class="hljs-type">Forall</span> (<span class="hljs-type">Free</span> f) -&gt; a
+<span class="hljs-title">cataF</span> phi = foldF phi . unforall
+</code></pre>
+<p>Lets motivate this with an example. Take the identity functor, and give it a funny name:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Succ</span> a = <span class="hljs-type">Succ</span> a</span>
+<span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> <span class="hljs-type">Succ</span> <span class="hljs-keyword">where</span></span>
+  fmap f (<span class="hljs-type">Succ</span> a) = <span class="hljs-type">Succ</span> (f a)
+</code></pre>
+<p>We can steal a nice typeclass from Laemmel and Rypacek:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> (<span class="hljs-type">Show</span> <span class="hljs-title">a</span>, <span class="hljs-type">Show</span> (<span class="hljs-title">f</span> (<span class="hljs-type">Free</span> <span class="hljs-title">f</span> <span class="hljs-title">a</span>))) =&gt; <span class="hljs-type">Show</span> (<span class="hljs-type">Free</span> <span class="hljs-title">f</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  show (<span class="hljs-type">Roll</span> x) = <span class="hljs-string">"(Roll ("</span> ++ show x ++ <span class="hljs-string">"))"</span>
+  show (<span class="hljs-type">Return</span> x) = <span class="hljs-string">"(Return ("</span> ++ show x ++ <span class="hljs-string">"))"</span>
+</code></pre>
+<p>And with it we can see that the members of the monad "Free Succ" are terms of the form:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">Return</span> x
+<span class="hljs-type">Roll</span> (<span class="hljs-type">Succ</span> (<span class="hljs-type">Return</span> x))
+<span class="hljs-type">Roll</span> (<span class="hljs-type">Succ</span> (<span class="hljs-type">Roll</span> (<span class="hljs-type">Succ</span> (<span class="hljs-type">Return</span> x))))
+...
+</code></pre>
+<p>Which if we look through it with goggles that quantify over x and ignore the Return/Roll noise looks like the Peano numerals!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Peano</span> = <span class="hljs-type">Forall</span> (<span class="hljs-type">Free</span> <span class="hljs-type">Succ</span>)</span>
+</code></pre>
+<p>Then working in the monad "Free Succ", the bind function (&gt;&gt;=) hunts down the value of the 'a' term and substitutes the<br>
+output of the function.</p>
+<p>For example:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">Roll</span> (<span class="hljs-type">Succ</span> (<span class="hljs-type">Roll</span> (<span class="hljs-type">Succ</span> ()))) &gt;&gt;= const <span class="hljs-type">Roll</span> (<span class="hljs-type">Succ</span> ())
+    == <span class="hljs-type">Roll</span> (<span class="hljs-type">Succ</span> (<span class="hljs-type">Roll</span> (<span class="hljs-type">Succ</span> (<span class="hljs-type">Roll</span> (<span class="hljs-type">Succ</span> ()))))
+</code></pre>
+<p>We can easily convert natural numbers to Peano form, exploiting this:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">toNat</span> :: <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Free</span> <span class="hljs-type">Succ</span> ()
+<span class="hljs-title">toNat</span> n | n &gt; <span class="hljs-number">0</span> = toNat (n - <span class="hljs-number">1</span>) &gt;&gt; <span class="hljs-type">Succ</span> ()
+<span class="hljs-title">toNat</span> <span class="hljs-number">0</span>         = return ()
+</code></pre>
+<p>And we can translate back from Peano form, by first replacing the () with a 0, and then using the non-polymorphic<br>
+fold operation from before.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">toInt</span> :: <span class="hljs-type">Free</span> <span class="hljs-type">Succ</span> a -&gt; <span class="hljs-type">Int</span>
+<span class="hljs-title">toInt</span> = foldF phi . fmap (const <span class="hljs-number">0</span>) <span class="hljs-keyword">where</span>
+  phi (<span class="hljs-type">Succ</span> n) = n + <span class="hljs-number">1</span>
+</code></pre>
+<p>The need to set a constant base case is common enough that we may want to box that up into a function:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">cata'</span> :: (f a -&gt; a) -&gt; a -&gt; <span class="hljs-type">Forall</span> (<span class="hljs-type">Free</span> f) -&gt; a
+<span class="hljs-title">cata'</span> phi z =  phi $ fmap (const z) . unforall
+</code></pre>
+<p>With that example in hand you might be tempted to try the same trick with a different type: (,)</p>
+<p>First we note that (,) is a Bifunctor:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-type">Bifunctor</span> f <span class="hljs-keyword">where</span></span>
+  bimap :: (a -&gt; c) -&gt; (b -&gt; d) -&gt; f a b -&gt; f c d
+  first :: (a -&gt; b) -&gt; f a c -&gt; f b c
+  first f = bimap f id
+  second :: (a -&gt; b) -&gt; f c a -&gt; f c b
+  second f = bimap id f
+</code></pre>
+<p>The definition for (,) is quite straightforward.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Bifunctor</span> (,) <span class="hljs-keyword">where</span></span>
+  bimap f g ~(x,y) = (f x, g y)
+
+<span class="hljs-comment">-- the reader comonad!</span>
+<span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> ((,)a) <span class="hljs-keyword">where</span></span>
+  fmap f (e,a) = (e,f a)
+</code></pre>
+<p>Ideally we would like to be able to say</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">--instance Bifunctor f =&gt; Functor (f a) where fmap = second</span>
+</code></pre>
+<p>but this can lead to ambiguous cases in the type checker, does it look for a Bifunctor or something else? So, we'll just think that very loudly whenever we define a bifunctor.</p>
+<p>So, lets see if Free ((,)a) x can rederive the list functor. You can get pretty close:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-type">Return</span> x
+<span class="hljs-type">Roll</span> (a, <span class="hljs-type">Return</span> x)
+<span class="hljs-type">Roll</span> (a, <span class="hljs-type">Roll</span> (a, <span class="hljs-type">Return</span> x))
+...
+</code></pre>
+<p>Looks a lot like it, but its a different functor. The free monad "Free (Cons a)" varies the type of the term<br>
+carried around in nil (aka Return) (the type of the result of applying a catamorphism). Quantifying over that gets you closer:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">List</span> a = <span class="hljs-type">List</span> (<span class="hljs-type">Forall</span> (<span class="hljs-type">Free</span> ((,)a)))</span>
+</code></pre>
+<p>We had to make it a newtype in order to be able to make it an instance of monad and functor in its own right.</p>
+<p>Now, to remap the 'first' term in the bifunctor, we add a new tool to our belt:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">bimapfree</span> :: <span class="hljs-type">Bifunctor</span> f =&gt; (a -&gt; b) -&gt; <span class="hljs-type">Free</span> (f a) c -&gt; <span class="hljs-type">Free</span> (f b) c
+<span class="hljs-title">bimapfree</span> f (<span class="hljs-type">Return</span> x) = <span class="hljs-type">Return</span> x
+<span class="hljs-title">bimapfree</span> f (<span class="hljs-type">Roll</span> x) = <span class="hljs-type">Roll</span> $ bimap f (bimapfree f) x
+</code></pre>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> <span class="hljs-type">List</span> <span class="hljs-keyword">where</span></span>
+  fmap f (<span class="hljs-type">List</span> (<span class="hljs-type">Forall</span> x)) = <span class="hljs-type">List</span> $ <span class="hljs-type">Forall</span> (bimapfree f x)
+</code></pre>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">length</span> :: <span class="hljs-type">List</span> a -&gt; <span class="hljs-type">Int</span>
+<span class="hljs-title">length</span> (<span class="hljs-type">List</span> (<span class="hljs-type">Forall</span> x)) = cata' phi <span class="hljs-number">0</span> x <span class="hljs-keyword">where</span>
+  phi (_,b) = <span class="hljs-number">1</span> + b
+
+<span class="hljs-title">sum</span> :: <span class="hljs-type">List</span> <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Int</span>
+<span class="hljs-title">sum</span> (<span class="hljs-type">List</span> (<span class="hljs-type">Forall</span> x)) = cata' phi <span class="hljs-number">0</span> x <span class="hljs-keyword">where</span>
+  phi (a,b) = a + b
+</code></pre>
+<p>Now, if you've been paying attention for the last couple of posts, you may have noticed a connection between the free monad 'Free f a' and the Fegaras/Sheard 'Rec f a':</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Rec</span> f a = <span class="hljs-type">Roll</span> (<span class="hljs-title">f</span> (<span class="hljs-type">Rec</span> <span class="hljs-title">f</span> <span class="hljs-title">a</span>)) | <span class="hljs-type">Place</span> a</span>
+</code></pre>
+<p>They are the same construction!</p>
+<p>That said, when you have 'a' occurring in negative position in the functor (aka you have an exponential functor), then you find your hands tied in certain fundamental ways. First and foremost, the free monad fails to become a monad (well, in the category <strong>Hask</strong>, anyways)! Secondly you lose the ability to define hylomorphisms because the result of an anamorphism can't be turned into an input for a catamorphism.</p>
+<p>More later.</p>
+<p>[Edit: corrected the definition of cataF based on an observation by Daniel James]</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/free"><code>free</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><section class="comments" id="comments"><h2>From the original discussion</h2><p class="editorial">Selected questions, explanations, and corrections. Original wording and dates; spam and automated trackbacks omitted.</p><article class="comment" id="comment-1042"><header><strong>Jaak</strong><a href="../../../reader/2008/monads-for-free/#comment-1042">April 12th, 2008 at 10:29 am</a></header><p>I’m sorry, but what is the Place constructor in the Functor instance of Free? Looks to me that it sould be “Return (f x)” instead.</p>
+<p>- Jaak</p>
+</article><article class="comment" id="comment-1043"><header><strong>Omar</strong><a href="../../../reader/2008/monads-for-free/#comment-1043">April 12th, 2008 at 12:50 pm</a></header><p>data Free f a = Roll (f (Free f a)) | Return a</p>
+<p>newtype Free f a = Free { unfree :: (a, f (Free f a)) }</p>
+<p>Aren’t those two different types? Isn’t the first a sum and the second a product? Should g = Free f a satisfy g=(f g) + a or g=(f g) x a?</p>
+</article><article class="comment" id="comment-1044"><header><strong>Edward Kmett</strong><a href="../../../reader/2008/monads-for-free/#comment-1044">April 13th, 2008 at 2:06 am</a></header><p>Woops, thats what I get for typing both of those in from memory rather than pasting from the working code. Yes, and yes. Fixed in the post.</p>
+<p>I’ll include the cofree comonad next time. I just wanted to put things out in digestible chunks. ;)</p>
+<p>The free monad should use a sum, the cofree comonad uses a product.</p>
+</article><article class="comment" id="comment-21220"><header><strong>Edward Kmett</strong><a href="../../../reader/2008/monads-for-free/#comment-21220">September 22nd, 2010 at 3:27 pm</a></header><p>There are plenty of non-monadic ways to deal with control flow. Applicatives, comonads, continuation passing style, lazy request/response lists, etc.</p>
+<p>The Haskell community has converged on monads because out of the alternatives, monads seem to give you the most bang for the buck (and Wadler wrote a lot of the early papers, so they have geek cred.)</p>
+</article></section><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/monads-for-free.md" download>Article Markdown</a> · <a href="../../../source/articles/monads-for-free.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2008/higher-order-abstract-syntax-a-la-carte/">Higher-Order Abstract Syntax à la Carte →</a><a href="../../../reader/2008/generalized-hylomorphisms/">Generalized Hylomorphisms →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>

@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Part I: Bit Shuffling with Lenses and Isomorphisms · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Haskell</span><span>Edward Kmett · <time datetime="2013-08-25">25 August 2013</time></span></div><h1>Part I: Bit Shuffling with Lenses and Isomorphisms</h1></header><details class="contents"><summary>On this page</summary><ol><li><a href="#morton-ordering">Morton Ordering</a></li><li><a href="#every-day-i-m-shuffling">Every Day I'm Shuffling</a></li><li><a href="#a-strange-game">A Strange Game</a></li></ol></details><article class="prose"><p>I'm going to try a few new things today.</p>
+<p>First, I'm trying to write a post using the School of Haskell.</p>
+<p>Second, I'm going to try to work through some code in a rather collaborative fashion. That is to say, I have a general idea of where I'm going and how to make it fast, but I have yet to do so and I'd like to actively encourage you to help me figure it out.</p>
+<p>So, what are we hacking on?</p>
+<p>I was recently reminded by Carter Schonwald about some properties of Morton ordering that turned out to be particularly relevant to sparse matrix multiplication. Along the way I discovered a particularly nice formulation of the problem, and I figured it would be a fun way to get my feet wet writing stuff here.</p>
+<p>Hopefully, this series will have a bit of something for everybody: Some lenses, some bit bashing, worries about cache coherence, stream fusion, nice recursion patterns, finding simpler formulations for traditional algorithms, and general functional programming fun.</p>
+<p>I'll also try to call out opportunities for readers to help as I go along. Particularly in the later parts, there will be a lot of room for improvement and many hands make light work!</p>
+<p>The code for this project is available on github at <a href="https://github.com/ekmett/sparse">github.com/ekmett/sparse</a> if you are impatient and want to skip ahead. It isn't quite the last page in a murder mystery, and I haven't been shy about talking about this stuff, but I fully intend to crank away on development in there, so it may get pretty far in advance of these posts -- especially if you are late to the party!</p>
+<p>Later on, we'll get to some numerics, and maybe they'll even perform decently, but today is mostly just setting up key space.</p>
+<p>I'm hoping that by throwing open development a bit, I can help showcase a bit about how I think and attack a new problem as a Haskell programmer.</p>
+<p>The latter parts are definitely currently unoptimized, but showcase what I think is a new technique (or at least a "new to me" technique) that I want to play with.</p>
+<p>With all that out of the way, lets move on to</p>
+<h2 id="morton-ordering">Morton Ordering</h2>
+<p><a href="http://en.wikipedia.org/wiki/Z-order_curve">Morton ordering</a> (aka the Z-curve) is a technique for getting cache locality in multiple dimensions by interleaving the bits of your different keys rather than storing them lexicographically. It was discovered way back in 1966, so I figured it was time to  write up an article about it.</p>
+<p><img loading="lazy" src="../../../assets/imported/a3c0720604f7-Four-level_Z.svg" alt="z-order"></p>
+<p>The idea is that instead of picking one of the keys to put first you interleave their bits. Now, you are in some sense slightly screwed up when it comes to sorting by either axis, but you're more or less equally screwed no matter which way you go, and you're less screwed than you would be if you were cutting row-wise across a column-major or column-wise across a row-major ordered version of things. In general you get to exploit locality in either dimension to some degree. The extra locality you get isn't as good as you can get with a proper <a href="http://en.wikipedia.org/wiki/Hilbert_curve">Hilbert curve</a> or with one of the other high end space filling curves, but those start requiring a lot more bit twiddling.</p>
+<p>(If someone wants to follow along the later parts with a Hilbert or H curve and find where my tricks fail, I'd love to see the result!)</p>
+<p>I want to work through how we can work with keys in Morton order in two ways. Today I'll walk through the first way.</p>
+<p>Neither of these techniques is particularly new, but having at least one of them is necessary for what is to come.</p>
+<h2 id="every-day-i-m-shuffling"><a href="http://www.youtube.com/watch?v=KQ6zr6kCPj8&t=3m38s">Every Day I'm Shuffling</a></h2>
+<p>We can turn to <a href="http://www.hackersdelight.org/">Hacker's Delight</a> to find a routine for interleaving the high and low parts of a word together.</p>
+<pre tabindex="0" aria-label="c code"><code class="language-c"><span class="hljs-type">unsigned</span> <span class="hljs-title function_">shuffle1</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> x)</span> {
+<span class="hljs-comment">// ------------------------------ cut ----------------------------------</span>
+   x = (x &amp; <span class="hljs-number">0x0000FF00</span>) &lt;&lt; <span class="hljs-number">8</span> | (x &gt;&gt; <span class="hljs-number">8</span>) &amp; <span class="hljs-number">0x0000FF00</span> | x &amp; <span class="hljs-number">0xFF0000FF</span>;
+   x = (x &amp; <span class="hljs-number">0x00F000F0</span>) &lt;&lt; <span class="hljs-number">4</span> | (x &gt;&gt; <span class="hljs-number">4</span>) &amp; <span class="hljs-number">0x00F000F0</span> | x &amp; <span class="hljs-number">0xF00FF00F</span>;
+   x = (x &amp; <span class="hljs-number">0x0C0C0C0C</span>) &lt;&lt; <span class="hljs-number">2</span> | (x &gt;&gt; <span class="hljs-number">2</span>) &amp; <span class="hljs-number">0x0C0C0C0C</span> | x &amp; <span class="hljs-number">0xC3C3C3C3</span>;
+   x = (x &amp; <span class="hljs-number">0x22222222</span>) &lt;&lt; <span class="hljs-number">1</span> | (x &gt;&gt; <span class="hljs-number">1</span>) &amp; <span class="hljs-number">0x22222222</span> | x &amp; <span class="hljs-number">0x99999999</span>;
+<span class="hljs-comment">// ---------------------------- end cut --------------------------------</span>
+   <span class="hljs-keyword">return</span> x;
+}
+</code></pre>
+<p>What this does is take a bunch of bits like</p>
+<pre tabindex="0" aria-label="text code"><code class="language-text">abcd efgh ijkl mnop ABCD EFGH IJKL MNOP
+</code></pre>
+<p>and then shuffles them until they are fully interleaved in parallel within the word carefully.</p>
+<pre tabindex="0" aria-label="text code"><code class="language-text">abcd efgh ABCD EFGH ijkl mnop IJKL MNOP
+abcd ABCD efgh EFGH ijkl IJKL mnop MNOP
+abAB cdCD efEF ghGH ijIJ klKL mnMN opOP
+aAbB cCdD eEfF gGhH iIjJ kKlL mMnN oOpP
+</code></pre>
+<p>We can view this technique perhaps as an early precursor to something out of the more the modern SWAR (SIMD within a register) <a href="http://aggregate.org/SWAR/Dis/dissertation.pdf">toolbox</a>, but we'll be doing everything by hand.</p>
+<p>Now, I want to work with slightly larger keys, and I'd rather work in Haskell, so we can transcode that and reimplement it to work on larger word sizes with appropriate tweaks to the constants involved.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">
+<span class="hljs-keyword">import</span> Data.Bits
+<span class="hljs-keyword">import</span> Data.Word
+<span class="hljs-keyword">import</span> Control.Lens
+<span class="hljs-keyword">import</span> Numeric.Lens
+
+
+<span class="hljs-title">shuffle</span> :: <span class="hljs-type">Word64</span> -&gt; <span class="hljs-type">Word64</span>
+<span class="hljs-title">shuffle</span> k0 = k5 <span class="hljs-keyword">where</span>
+  k1 = unsafeShiftL (k0 .&amp;. <span class="hljs-number">0x00000000FFFF0000</span>) <span class="hljs-number">16</span> .|. unsafeShiftR k0 <span class="hljs-number">16</span> .&amp;. <span class="hljs-number">0x00000000FFFF0000</span> .|. k0 .&amp;. <span class="hljs-number">0xFFFF00000000FFFF</span>
+  k2 = unsafeShiftL (k1 .&amp;. <span class="hljs-number">0x0000FF000000FF00</span>) <span class="hljs-number">8</span>  .|. unsafeShiftR k1 <span class="hljs-number">8</span>  .&amp;. <span class="hljs-number">0x0000FF000000FF00</span> .|. k1 .&amp;. <span class="hljs-number">0xFF0000FFFF0000FF</span>
+  k3 = unsafeShiftL (k2 .&amp;. <span class="hljs-number">0x00F000F000F000F0</span>) <span class="hljs-number">4</span>  .|. unsafeShiftR k2 <span class="hljs-number">4</span>  .&amp;. <span class="hljs-number">0x00F000F000F000F0</span> .|. k2 .&amp;. <span class="hljs-number">0xF00FF00FF00FF00F</span>
+  k4 = unsafeShiftL (k3 .&amp;. <span class="hljs-number">0x0C0C0C0C0C0C0C0C</span>) <span class="hljs-number">2</span>  .|. unsafeShiftR k3 <span class="hljs-number">2</span>  .&amp;. <span class="hljs-number">0x0C0C0C0C0C0C0C0C</span> .|. k3 .&amp;. <span class="hljs-number">0xC3C3C3C3C3C3C3C3</span>
+  k5 = unsafeShiftL (k4 .&amp;. <span class="hljs-number">0x2222222222222222</span>) <span class="hljs-number">1</span>  .|. unsafeShiftR k4 <span class="hljs-number">1</span>  .&amp;. <span class="hljs-number">0x2222222222222222</span> .|. k4 .&amp;. <span class="hljs-number">0x9999999999999999</span>
+
+<span class="hljs-comment">-- show main</span>
+<span class="hljs-title">main</span> = print $ base <span class="hljs-number">2</span> # shuffle <span class="hljs-number">0x00000000FFFFFFFF</span>
+
+</code></pre>
+<p>Now we can build our <code>Key</code> type:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Key</span> = <span class="hljs-type">Key</span> <span class="hljs-type">Word64</span></span>
+
+<span class="hljs-title">key</span> :: <span class="hljs-type">Word32</span> -&gt; <span class="hljs-type">Word32</span> -&gt; <span class="hljs-type">Key</span>
+<span class="hljs-title">key</span> i j = <span class="hljs-type">Key</span> $ shuffle $ unsafeShiftL (fromIntegral i) <span class="hljs-number">32</span> .|. fromIntegral j
+</code></pre>
+<figure class="interactive-figure" id="morton-figure" data-demo="morton">
+  <div class="figure-controls"><label>x <input data-control="x" type="range" min="0" max="7" value="2"></label><label>y <input data-control="y" type="range" min="0" max="7" value="3"></label><label>Path <select data-control="order"><option value="morton">Z-order</option><option value="row">Row-major</option></select></label><label>Cells per block <select data-control="block"><option>2</option><option selected>4</option><option>8</option><option>16</option></select></label></div>
+  <svg data-view="grid" class="morton-grid" viewBox="0 0 360 360" role="img" aria-label="Eight by eight grid and traversal path" />
+  <div class="morton-bits" data-view="bits"></div><p data-view="blocks"></p>
+  <figcaption><span data-view="status" role="status">Loading the Haskell figure…</span> Choose a cell; the shaded 2 × 2 window moves with it and stays inside the grid. x runs right, y runs down. Block counts model aligned, contiguous memory blocks, not hardware timings. <a href="../../../source/MortonDemo.hs">Haskell source</a> · <a href="../../../source/browser-sources.zip">All Haskell sources</a>.</figcaption>
+  <noscript>Enable JavaScript and WebAssembly to explore bit interleaving. The first coordinate occupies odd bit positions, the second even positions.</noscript>
+</figure>
+<p>For convenience, it'd be nice to see what the key was originally to show it, and later on to be able to project it back out, so first, lets define an <code>unshuffle</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-keyword">import</span> Data.Bits
+<span class="hljs-keyword">import</span> Data.Word
+<span class="hljs-keyword">import</span> Control.Lens
+<span class="hljs-keyword">import</span> Numeric.Lens
+
+
+<span class="hljs-title">unshuffle</span> :: <span class="hljs-type">Word64</span> -&gt; <span class="hljs-type">Word64</span>
+<span class="hljs-title">unshuffle</span> k0 = k5 <span class="hljs-keyword">where</span>
+  t0 = xor k0 (unsafeShiftR k0 <span class="hljs-number">1</span> ) .&amp;. <span class="hljs-number">0x2222222222222222</span>
+  k1 = k0 `xor` t0 `xor` unsafeShiftL t0 <span class="hljs-number">1</span>
+  t1 = xor k1 (unsafeShiftR k1 <span class="hljs-number">2</span> ) .&amp;. <span class="hljs-number">0x0C0C0C0C0C0C0C0C</span>
+  k2 = k1 `xor` t1 `xor` unsafeShiftL t1 <span class="hljs-number">2</span>
+  t2 = xor k2 (unsafeShiftR k2 <span class="hljs-number">4</span> ) .&amp;. <span class="hljs-number">0x00F000F000F000F0</span>
+  k3 = k2 `xor` t2 `xor` unsafeShiftL t2 <span class="hljs-number">4</span>
+  t3 = xor k3 (unsafeShiftR k3 <span class="hljs-number">8</span> ) .&amp;. <span class="hljs-number">0x0000FF000000FF00</span>
+  k4 = k3 `xor` t3 `xor` unsafeShiftL t3 <span class="hljs-number">8</span>
+  t4 = xor k4 (unsafeShiftR k4 <span class="hljs-number">16</span>) .&amp;. <span class="hljs-number">0x00000000FFFF0000</span>
+  k5 = k4 `xor` t4 `xor` unsafeShiftL t4 <span class="hljs-number">16</span>
+
+<span class="hljs-meta">{-# INLINE unshuffle #-}</span>
+
+<span class="hljs-comment">-- show main</span>
+<span class="hljs-title">main</span> = print $ base <span class="hljs-number">2</span> # unshuffle <span class="hljs-number">0xAAAAAAAAAAAAAAAA</span>
+
+</code></pre>
+<blockquote>
+<p><strong>No-Prize Opportunity #1:</strong></p>
+<p>There exists an <code>unshuffle</code> that works much more like <code>shuffle</code>! What is the definition? The first reader to email me a working version of it wins a No-Prize.</p>
+<p>[<strong>Edit:</strong> No-Prize #1 has been awarded to <a href="https://twitter.com/SCombinator">Sanjoy Das</a>. However, <a href="http://reddit.com/user/riotnerd">riotnerd</a> was the first to provide both a working unshuffle alongside the <a href="http://www.reddit.com/r/haskell/comments/1kecqt/revisiting_matrix_multiplication_part_i_by_edward/cbo8qwy?context=3">proof</a> that they compose to identity and so he has earned an honorable mention. His presentation showed good style and demonstrated the equality via clean equational rewriting.]</p>
+</blockquote>
+<blockquote>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">unshuffle</span> k0 = k5 <span class="hljs-keyword">where</span>
+  k5 = unsafeShiftL (k4 .&amp;. <span class="hljs-number">0x00000000FFFF0000</span>) <span class="hljs-number">16</span> .|. unsafeShiftR k4 <span class="hljs-number">16</span> .&amp;. <span class="hljs-number">0x00000000FFFF0000</span> .|. k4 .&amp;. <span class="hljs-number">0xFFFF00000000FFFF</span>
+  k4 = unsafeShiftL (k3 .&amp;. <span class="hljs-number">0x0000FF000000FF00</span>) <span class="hljs-number">8</span>  .|. unsafeShiftR k3 <span class="hljs-number">8</span>  .&amp;. <span class="hljs-number">0x0000FF000000FF00</span> .|. k3 .&amp;. <span class="hljs-number">0xFF0000FFFF0000FF</span>
+  k3 = unsafeShiftL (k2 .&amp;. <span class="hljs-number">0x00F000F000F000F0</span>) <span class="hljs-number">4</span>  .|. unsafeShiftR k2 <span class="hljs-number">4</span>  .&amp;. <span class="hljs-number">0x00F000F000F000F0</span> .|. k2 .&amp;. <span class="hljs-number">0xF00FF00FF00FF00F</span>
+  k2 = unsafeShiftL (k1 .&amp;. <span class="hljs-number">0x0C0C0C0C0C0C0C0C</span>) <span class="hljs-number">2</span>  .|. unsafeShiftR k1 <span class="hljs-number">2</span>  .&amp;. <span class="hljs-number">0x0C0C0C0C0C0C0C0C</span> .|. k1 .&amp;. <span class="hljs-number">0xC3C3C3C3C3C3C3C3</span>
+  k1 = unsafeShiftL (k0 .&amp;. <span class="hljs-number">0x2222222222222222</span>) <span class="hljs-number">1</span>  .|. unsafeShiftR k0 <span class="hljs-number">1</span>  .&amp;. <span class="hljs-number">0x2222222222222222</span> .|. k0 .&amp;. <span class="hljs-number">0x9999999999999999</span>
+</code></pre>
+</blockquote>
+<p>Interestingly, with <code>-fllvm</code>, that change, and a high enough optimization level, GHC is smart enough to realize <code>shuffle . unshuffle = id</code>!</p>
+<p>With that, we can implement</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">unkey</span> :: <span class="hljs-type">Key</span> -&gt; (<span class="hljs-type">Word32</span>, <span class="hljs-type">Word32</span>)
+</code></pre>
+<p>Now, we have what we need to make an isomorphism.</p>
+<p>We could define</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">keyed</span> :: <span class="hljs-type">Iso'</span> (<span class="hljs-type">Word32</span>,<span class="hljs-type">Word32</span>) <span class="hljs-type">Key</span>
+<span class="hljs-title">keyed</span> = iso (uncurry key) unkey
+</code></pre>
+<p>and then we could expose field accessors that work like Key was a pair using the overloaded field accessors in <code>lens</code>:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Field1</span> <span class="hljs-type">Key</span> <span class="hljs-type">Key</span> <span class="hljs-type">Word32</span> <span class="hljs-type">Word32</span> <span class="hljs-keyword">where</span></span>
+  _1 = from keyed._1
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Field2</span> <span class="hljs-type">Key</span> <span class="hljs-type">Key</span> <span class="hljs-type">Word32</span> <span class="hljs-type">Word32</span> <span class="hljs-keyword">where</span></span>
+  _2 = from keyed._2
+</code></pre>
+<p>With this we can take a key, and freely manipulate one side of it with the lens combinators. e.g.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">key</span> <span class="hljs-number">100</span> <span class="hljs-number">200</span> ^. _2 = <span class="hljs-number">200</span>
+<span class="hljs-title">key</span> <span class="hljs-number">100</span> <span class="hljs-number">200</span> &amp; _2 .~ <span class="hljs-number">300</span> = key <span class="hljs-number">100</span> <span class="hljs-number">300</span>
+</code></pre>
+<p>and we can use these to make a custom <code>Show</code> and <code>Read</code> for our <code>Key</code> type that isn't so eyebleedingly tough to read:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Show</span> <span class="hljs-type">Key</span> <span class="hljs-keyword">where</span></span>
+  showsPrec d w = <span class="hljs-keyword">case</span> unkey w <span class="hljs-keyword">of</span>
+    (i,j) -&gt; showParen (d &gt; <span class="hljs-number">10</span>) $
+      showString <span class="hljs-string">"key "</span> . <span class="hljs-type">Prelude</span>.showsPrec <span class="hljs-number">11</span> i .
+           showChar <span class="hljs-string">' '</span> . <span class="hljs-type">Prelude</span>.showsPrec <span class="hljs-number">11</span> j
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Read</span> <span class="hljs-type">Key</span> <span class="hljs-keyword">where</span></span>
+  readsPrec d = readParen (d &gt; <span class="hljs-number">10</span>) $ \r -&gt;
+    [ (key i j, u)
+    | (<span class="hljs-string">"key"</span>,s) &lt;- lex r
+    , (i,t) &lt;- readsPrec <span class="hljs-number">11</span> s
+    , (j,u) &lt;- readsPrec <span class="hljs-number">11</span> t
+    ]
+</code></pre>
+<p>now most users don't need to care too much about the internal implementation of <code>Key</code>.</p>
+<p>That said, we revisit our awesomely succinct implementation for <code>_1</code> and <code>_2</code> above, because we can implement <code>_1</code> and <code>_2</code> much more efficiently if we don't bother to shuffle and unshuffle the other side at all!</p>
+<p>Fortunately, once again the Hacker's Delight has our backs.</p>
+<p>This time I'm going to encode the indexed lens directly rather than compose it out of simpler pieces:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">-- | Masks for the interleaved components of a key</span>
+<span class="hljs-title">m1</span>, m2 :: <span class="hljs-type">Word64</span>
+<span class="hljs-title">m1</span> = <span class="hljs-number">0xAAAAAAAAAAAAAAAA</span> <span class="hljs-comment">-- the mask for the first component of our key.</span>
+<span class="hljs-title">m2</span> = <span class="hljs-number">0x5555555555555555</span> <span class="hljs-comment">-- the mask for the second component of our key.</span>
+<span class="hljs-meta">{-# INLINE m1 #-}</span>
+<span class="hljs-meta">{-# INLINE m2 #-}</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-title">a</span> ~ <span class="hljs-type">Word32</span>, <span class="hljs-title">b</span> ~ <span class="hljs-type">Word32</span>) =&gt; <span class="hljs-type">Field2</span> <span class="hljs-type">Key</span> <span class="hljs-type">Key</span> a b <span class="hljs-keyword">where</span></span>
+  _2 f (<span class="hljs-type">Key</span> ij) = indexed f (<span class="hljs-number">1</span> :: <span class="hljs-type">Int</span>) (fromIntegral k5) &lt;&amp;&gt; \j -&gt; <span class="hljs-keyword">let</span>
+         j0 = fromIntegral j
+         j1 = unsafeShiftL (j0 .&amp;. <span class="hljs-number">0x00000000FFFF0000</span>) <span class="hljs-number">16</span> .|. j0 .&amp;. <span class="hljs-number">0xFFFF00000000FFFF</span>
+         j2 = unsafeShiftL (j1 .&amp;. <span class="hljs-number">0x0000FF000000FF00</span>) <span class="hljs-number">8</span>  .|. j1 .&amp;. <span class="hljs-number">0xFF0000FFFF0000FF</span>
+         j3 = unsafeShiftL (j2 .&amp;. <span class="hljs-number">0x00F000F000F000F0</span>) <span class="hljs-number">4</span>  .|. j2 .&amp;. <span class="hljs-number">0xF00FF00FF00FF00F</span>
+         j4 = unsafeShiftL (j3 .&amp;. <span class="hljs-number">0x0C0C0C0C0C0C0C0C</span>) <span class="hljs-number">2</span>  .|. j3 .&amp;. <span class="hljs-number">0xC3C3C3C3C3C3C3C3</span>
+         j5 = unsafeShiftL (j4 .&amp;. <span class="hljs-number">0x2222222222222222</span>) <span class="hljs-number">1</span>  .|. j4 .&amp;. <span class="hljs-number">0x9999999999999999</span>
+      <span class="hljs-keyword">in</span> <span class="hljs-type">Key</span> (ij .&amp;. m1 .|. j5)
+    <span class="hljs-keyword">where</span>
+      k0 = ij .&amp;. m2
+      k1 = (unsafeShiftR k0 <span class="hljs-number">1</span>  .|. k0) .&amp;. <span class="hljs-number">0x3333333333333333</span>
+      k2 = (unsafeShiftR k1 <span class="hljs-number">2</span>  .|. k1) .&amp;. <span class="hljs-number">0x0F0F0F0F0F0F0F0F</span>
+      k3 = (unsafeShiftR k2 <span class="hljs-number">4</span>  .|. k2) .&amp;. <span class="hljs-number">0x00FF00FF00FF00FF</span>
+      k4 = (unsafeShiftR k3 <span class="hljs-number">8</span>  .|. k3) .&amp;. <span class="hljs-number">0x0000FFFF0000FFFF</span>
+      k5 = (unsafeShiftR k4 <span class="hljs-number">16</span> .|. k4) .&amp;. <span class="hljs-number">0x00000000FFFFFFFF</span>
+</code></pre>
+<p>Here _2 is being made manually into an 'indexed lens' (really just to make the Field typeclass happy), it is always index 1, and it half-unshuffles out the right hand side of my <code>Word64</code> to make a Word32 suitable for consumption, and when given a replacement, shuffles it into place, and masks off what it is replacing in the <code>Key</code>.</p>
+<p>I had a slightly fiddly issue with the signature that arose, because I needed to use a type equality rather than the more obvious <code>Field2 Key Key Word32 Word32</code> instance to make it so that <code>(.~)</code> selects the right instance.</p>
+<p>Exercise: Try changing it to the obvious version in the module at the bottom of this file and see what happens to main!</p>
+<blockquote>
+<p><strong>No-Prize opportunity #2</strong></p>
+<p>I'm currently using the following definition for <code>_1</code>, but what does a cleaner version that avoids the shifts on <code>i5</code> and <code>k0</code> with modified masks/shifts look like? Email me first with the answer for your No-Prize.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> (<span class="hljs-title">a</span> ~ <span class="hljs-type">Word32</span>, <span class="hljs-title">b</span> ~ <span class="hljs-type">Word32</span>) =&gt; <span class="hljs-type">Field2</span> <span class="hljs-type">Key</span> <span class="hljs-type">Key</span> a b <span class="hljs-keyword">where</span></span>
+  _1 f (<span class="hljs-type">Key</span> ij) = indexed f (<span class="hljs-number">0</span> :: <span class="hljs-type">Int</span>) (fromIntegral k5) &lt;&amp;&gt; \i -&gt; <span class="hljs-keyword">let</span>
+         i0 = fromIntegral i
+         i1 = unsafeShiftL (i0 .&amp;. <span class="hljs-number">0x00000000FFFF0000</span>) <span class="hljs-number">16</span> .|. i0 .&amp;. <span class="hljs-number">0xFFFF00000000FFFF</span>
+         i2 = unsafeShiftL (i1 .&amp;. <span class="hljs-number">0x0000FF000000FF00</span>) <span class="hljs-number">8</span>  .|. i1 .&amp;. <span class="hljs-number">0xFF0000FFFF0000FF</span>
+         i3 = unsafeShiftL (i2 .&amp;. <span class="hljs-number">0x00F000F000F000F0</span>) <span class="hljs-number">4</span>  .|. i2 .&amp;. <span class="hljs-number">0xF00FF00FF00FF00F</span>
+         i4 = unsafeShiftL (i3 .&amp;. <span class="hljs-number">0x0C0C0C0C0C0C0C0C</span>) <span class="hljs-number">2</span>  .|. i3 .&amp;. <span class="hljs-number">0xC3C3C3C3C3C3C3C3</span>
+         i5 = unsafeShiftL (i4 .&amp;. <span class="hljs-number">0x2222222222222222</span>) <span class="hljs-number">1</span>  .|. i4 .&amp;. <span class="hljs-number">0x9999999999999999</span>
+      <span class="hljs-keyword">in</span> <span class="hljs-type">Key</span> (unsafeShiftL i5 <span class="hljs-number">1</span> .|. ij .&amp;. m2)
+    <span class="hljs-keyword">where</span>
+      k0 = unsafeShiftR (ij .&amp;. m1) <span class="hljs-number">1</span>
+      k1 = (unsafeShiftR k0 <span class="hljs-number">1</span>  .|. k0) .&amp;. <span class="hljs-number">0x3333333333333333</span>
+      k2 = (unsafeShiftR k1 <span class="hljs-number">2</span>  .|. k1) .&amp;. <span class="hljs-number">0x0F0F0F0F0F0F0F0F</span>
+      k3 = (unsafeShiftR k2 <span class="hljs-number">4</span>  .|. k2) .&amp;. <span class="hljs-number">0x00FF00FF00FF00FF</span>
+      k4 = (unsafeShiftR k3 <span class="hljs-number">8</span>  .|. k3) .&amp;. <span class="hljs-number">0x0000FFFF0000FFFF</span>
+      k5 = (unsafeShiftR k4 <span class="hljs-number">16</span> .|. k4) .&amp;. <span class="hljs-number">0x00000000FFFFFFFF</span>
+</code></pre>
+<p>[ Edit: No-Prize #2 is has been (partially!) awarded to <a href="http://www.thenewsh.com/~newsham/">Tim Newsham</a>, who provided the solution by carefully working the shifts back through the masks after he was stymied in his quest for No-Prize #1 by being too late to the party. His solution resolves the shifts on <code>k5</code>, but not <code>i0</code>. Can we do better? Why or why not? I also realize that in practice the reduction in constant sharing may likely outweigh the removal of the shift.]</p>
+</blockquote>
+<blockquote>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> (<span class="hljs-title">a</span> ~ <span class="hljs-type">Word32</span>, <span class="hljs-title">b</span> ~ <span class="hljs-type">Word32</span>) =&gt; <span class="hljs-type">Field2</span> <span class="hljs-type">Key</span> <span class="hljs-type">Key</span> a b <span class="hljs-keyword">where</span></span>
+  _1 f (<span class="hljs-type">Key</span> ij) = indexed f (<span class="hljs-number">0</span> :: <span class="hljs-type">Int</span>) (fromIntegral k5) &lt;&amp;&gt; \i -&gt; <span class="hljs-keyword">let</span>
+         i0 = fromIntegral i
+         i1 = unsafeShiftL (i0 .&amp;. <span class="hljs-number">0x00000000FFFF0000</span>) <span class="hljs-number">17</span> .|. i0 .&amp;. <span class="hljs-number">0xFFFE00000001FFFE</span>
+         i2 = unsafeShiftL (i1 .&amp;. <span class="hljs-number">0x0000FF000000FF00</span>) <span class="hljs-number">9</span>  .|. i1 .&amp;. <span class="hljs-number">0xFE0001FFFE0001FE</span>
+         i3 = unsafeShiftL (i2 .&amp;. <span class="hljs-number">0x00F000F000F000F0</span>) <span class="hljs-number">5</span>  .|. i2 .&amp;. <span class="hljs-number">0xE01FE01FE01FE01E</span>
+         i4 = unsafeShiftL (i3 .&amp;. <span class="hljs-number">0x0C0C0C0C0C0C0C0C</span>) <span class="hljs-number">3</span>  .|. i3 .&amp;. <span class="hljs-number">0x0F0F0F0F0F0F0F0E</span>
+         i5 = unsafeShiftL (i4 .&amp;. <span class="hljs-number">0x2222222222222222</span>) <span class="hljs-number">2</span>  .|. i4 .&amp;. <span class="hljs-number">0x3333333333333332</span>
+      <span class="hljs-keyword">in</span> <span class="hljs-type">Key</span> (unsafeShiftL <span class="hljs-number">1</span> i5 .|. ij .&amp;. m2)
+    <span class="hljs-keyword">where</span>
+      k0 = ij .&amp;. m1
+      k1 = (unsafeShiftR k0 <span class="hljs-number">2</span>  .|. k0) .&amp;. <span class="hljs-number">0x6666666666666666</span>
+      k2 = (unsafeShiftR k1 <span class="hljs-number">3</span>  .|. k1) .&amp;. <span class="hljs-number">0x1E1E1E1E1E1E1E1E</span>
+      k3 = (unsafeShiftR k2 <span class="hljs-number">5</span>  .|. k2) .&amp;. <span class="hljs-number">0x01FE01FE01FE01FE</span>
+      k4 = (unsafeShiftR k3 <span class="hljs-number">9</span>  .|. k3) .&amp;. <span class="hljs-number">0x0001FFFE0001FFFE</span>
+      k5 = (unsafeShiftR k4 <span class="hljs-number">15</span> .|. k4) .&amp;. <span class="hljs-number">0x00000001FFFFFFFE</span>
+</code></pre>
+</blockquote>
+<p>The current implementation of this code, with whatever changes have been made in the meantime, sans some cleanup for presentation is currently available as <a href="https://github.com/ekmett/sparse/blob/master/src/Sparse/Matrix/Key.hs">Sparse/Matrix/Key.hs</a>.</p>
+<p>Now we can compare two keys for Morton order just by embedding them and comparing them, but can we do better?</p>
+<h2 id="a-strange-game"><a href="http://www.youtube.com/watch?v=uOoXwxqeVzg">A Strange Game</a></h2>
+<p>I'll pick up next time with how we can compare two keys by their Morton ordering without actually performing the interleaving at all! This technique will be important in what is to come, even if we may not use it directly for the keys themselves.</p>
+<p>Hopefully by parts 3 or 4 we'll be deep in the bowels of Vector carving up custom stream fusion combinators and rethinking whether we want to partition a matrix or "thin" it to build an efficient sparse matrix multiplication routine.</p>
+<p>I've included a current copy of the <code>Key</code> code below as an active document with minor alterations to enable you to play with it interactively. (It has a few cosmetic differences from the code above.)</p>
+<p>-<a href="mailto:ekmett@gmail.com">Edward Kmett</a>
+August 14th, 2013</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-comment">-- show Sparse/Matrix/Key.hs</span>
+<span class="hljs-meta">{-# LANGUAGE KindSignatures #-}</span>
+<span class="hljs-meta">{-# LANGUAGE DefaultSignatures #-}</span>
+<span class="hljs-meta">{-# LANGUAGE TypeFamilies #-}</span>
+<span class="hljs-meta">{-# LANGUAGE FlexibleContexts #-}</span>
+<span class="hljs-meta">{-# LANGUAGE FlexibleInstances #-}</span>
+<span class="hljs-meta">{-# LANGUAGE UndecidableInstances #-}</span>
+<span class="hljs-meta">{-# LANGUAGE MultiParamTypeClasses #-}</span>
+
+<span class="hljs-comment">-----------------------------------------------------------------------------</span>
+<span class="hljs-comment">-- |</span>
+<span class="hljs-comment">-- Copyright   :  (C) 2013 Edward Kmett</span>
+<span class="hljs-comment">-- License     :  BSD-style (see the file LICENSE)</span>
+<span class="hljs-comment">-- Maintainer  :  Edward Kmett &lt;ekmett@gmail.com&gt;</span>
+<span class="hljs-comment">-- Stability   :  experimental</span>
+<span class="hljs-comment">-- Portability :  non-portable</span>
+<span class="hljs-comment">--</span>
+<span class="hljs-comment">-- Keys in Morton order</span>
+<span class="hljs-comment">--</span>
+<span class="hljs-comment">-- This module provides combinators for shuffling together the bits of two</span>
+<span class="hljs-comment">-- key components to get a key that is based on their interleaved bits.</span>
+<span class="hljs-comment">--</span>
+<span class="hljs-comment">-- See &lt;http://en.wikipedia.org/wiki/Z-order_curve&gt; for more information</span>
+<span class="hljs-comment">-- about Morton order.</span>
+<span class="hljs-comment">--</span>
+<span class="hljs-comment">----------------------------------------------------------------------------</span>
+
+<span class="hljs-keyword">import</span> Control.Lens
+<span class="hljs-keyword">import</span> Data.Bits
+<span class="hljs-keyword">import</span> Data.Word
+
+<span class="hljs-comment">-- * Morton Order</span>
+
+<span class="hljs-comment">-- | @key i j@ interleaves the bits of the keys @i@ and @j@.</span>
+<span class="hljs-comment">--</span>
+<span class="hljs-comment">-- Keys are then just values sorted in \"Morton Order\".</span>
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Key</span> = <span class="hljs-type">Key</span> { <span class="hljs-title">runKey</span> :: <span class="hljs-type">Word64</span> }</span>
+  <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Eq</span>, <span class="hljs-type">Ord</span>)
+
+<span class="hljs-comment">-- | Construct a key from a pair of indices.</span>
+<span class="hljs-comment">--</span>
+<span class="hljs-comment">-- @</span>
+<span class="hljs-comment">-- key i j ^. _1 = i</span>
+<span class="hljs-comment">-- key i j ^. _2 = j</span>
+<span class="hljs-comment">-- @</span>
+<span class="hljs-title">key</span> :: <span class="hljs-type">Word32</span> -&gt; <span class="hljs-type">Word32</span> -&gt; <span class="hljs-type">Key</span>
+<span class="hljs-title">key</span> i j = <span class="hljs-type">Key</span> k5 <span class="hljs-keyword">where</span>
+  k0 = unsafeShiftL (fromIntegral i) <span class="hljs-number">32</span> .|. fromIntegral j
+  k1 = unsafeShiftL (k0 .&amp;. <span class="hljs-number">0x00000000FFFF0000</span>) <span class="hljs-number">16</span> .|. unsafeShiftR k0 <span class="hljs-number">16</span> .&amp;. <span class="hljs-number">0x00000000FFFF0000</span> .|. k0 .&amp;. <span class="hljs-number">0xFFFF00000000FFFF</span>
+  k2 = unsafeShiftL (k1 .&amp;. <span class="hljs-number">0x0000FF000000FF00</span>) <span class="hljs-number">8</span>  .|. unsafeShiftR k1 <span class="hljs-number">8</span>  .&amp;. <span class="hljs-number">0x0000FF000000FF00</span> .|. k1 .&amp;. <span class="hljs-number">0xFF0000FFFF0000FF</span>
+  k3 = unsafeShiftL (k2 .&amp;. <span class="hljs-number">0x00F000F000F000F0</span>) <span class="hljs-number">4</span>  .|. unsafeShiftR k2 <span class="hljs-number">4</span>  .&amp;. <span class="hljs-number">0x00F000F000F000F0</span> .|. k2 .&amp;. <span class="hljs-number">0xF00FF00FF00FF00F</span>
+  k4 = unsafeShiftL (k3 .&amp;. <span class="hljs-number">0x0C0C0C0C0C0C0C0C</span>) <span class="hljs-number">2</span>  .|. unsafeShiftR k3 <span class="hljs-number">2</span>  .&amp;. <span class="hljs-number">0x0C0C0C0C0C0C0C0C</span> .|. k3 .&amp;. <span class="hljs-number">0xC3C3C3C3C3C3C3C3</span>
+  k5 = unsafeShiftL (k4 .&amp;. <span class="hljs-number">0x2222222222222222</span>) <span class="hljs-number">1</span>  .|. unsafeShiftR k4 <span class="hljs-number">1</span>  .&amp;. <span class="hljs-number">0x2222222222222222</span> .|. k4 .&amp;. <span class="hljs-number">0x9999999999999999</span>
+<span class="hljs-meta">{-# INLINE key #-}</span>
+
+<span class="hljs-comment">-- | This isomorphism lets you build a key from a pair of indices.</span>
+<span class="hljs-comment">--</span>
+<span class="hljs-comment">-- @</span>
+<span class="hljs-comment">-- key i j ≡ (i,j)^.shuffled</span>
+<span class="hljs-comment">-- @</span>
+<span class="hljs-comment">--</span>
+<span class="hljs-comment">-- @</span>
+<span class="hljs-comment">-- 'shuffled' . 'unshuffled' = 'id'</span>
+<span class="hljs-comment">-- 'unshuffled' . 'shuffled' = 'id'</span>
+<span class="hljs-comment">-- @</span>
+<span class="hljs-title">shuffled</span> :: <span class="hljs-type">Iso'</span> (<span class="hljs-type">Word32</span>, <span class="hljs-type">Word32</span>) <span class="hljs-type">Key</span>
+<span class="hljs-title">shuffled</span> = iso (uncurry key) unshuffle
+<span class="hljs-meta">{-# INLINE shuffled #-}</span>
+
+<span class="hljs-comment">-- | This isomorphism lets you build a pair of indices from a key.</span>
+<span class="hljs-title">unshuffled</span> :: <span class="hljs-type">Iso'</span> <span class="hljs-type">Key</span> (<span class="hljs-type">Word32</span>, <span class="hljs-type">Word32</span>)
+<span class="hljs-title">unshuffled</span> = iso unshuffle (uncurry key)
+<span class="hljs-meta">{-# INLINE unshuffled #-}</span>
+
+<span class="hljs-title">unshuffle</span> :: <span class="hljs-type">Key</span> -&gt; (<span class="hljs-type">Word32</span>, <span class="hljs-type">Word32</span>)
+<span class="hljs-title">unshuffle</span> (<span class="hljs-type">Key</span> k0) = (fromIntegral (unsafeShiftR k5 <span class="hljs-number">32</span>), fromIntegral k5) <span class="hljs-keyword">where</span>
+  t0 = xor k0 (unsafeShiftR k0 <span class="hljs-number">1</span> ) .&amp;. <span class="hljs-number">0x2222222222222222</span>
+  k1 = k0 `xor` t0 `xor` unsafeShiftL t0 <span class="hljs-number">1</span>
+  t1 = xor k1 (unsafeShiftR k1 <span class="hljs-number">2</span> ) .&amp;. <span class="hljs-number">0x0C0C0C0C0C0C0C0C</span>
+  k2 = k1 `xor` t1 `xor` unsafeShiftL t1 <span class="hljs-number">2</span>
+  t2 = xor k2 (unsafeShiftR k2 <span class="hljs-number">4</span> ) .&amp;. <span class="hljs-number">0x00F000F000F000F0</span>
+  k3 = k2 `xor` t2 `xor` unsafeShiftL t2 <span class="hljs-number">4</span>
+  t3 = xor k3 (unsafeShiftR k3 <span class="hljs-number">8</span> ) .&amp;. <span class="hljs-number">0x0000FF000000FF00</span>
+  k4 = k3 `xor` t3 `xor` unsafeShiftL t3 <span class="hljs-number">8</span>
+  t4 = xor k4 (unsafeShiftR k4 <span class="hljs-number">16</span>) .&amp;. <span class="hljs-number">0x00000000FFFF0000</span>
+  k5 = k4 `xor` t4 `xor` unsafeShiftL t4 <span class="hljs-number">16</span>
+<span class="hljs-meta">{-# INLINE unshuffle #-}</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-title">a</span> ~ <span class="hljs-type">Word32</span>, <span class="hljs-title">b</span> ~ <span class="hljs-type">Word32</span>) =&gt; <span class="hljs-type">Field1</span> <span class="hljs-type">Key</span> <span class="hljs-type">Key</span> a b <span class="hljs-keyword">where</span></span>
+  _1 f (<span class="hljs-type">Key</span> ij) = indexed f (<span class="hljs-number">0</span> :: <span class="hljs-type">Int</span>) (fromIntegral k5) &lt;&amp;&gt; \i -&gt; <span class="hljs-keyword">let</span>
+         i0 = fromIntegral i
+         i1 = unsafeShiftL (i0 .&amp;. <span class="hljs-number">0x00000000FFFF0000</span>) <span class="hljs-number">16</span> .|. i0 .&amp;. <span class="hljs-number">0xFFFF00000000FFFF</span>
+         i2 = unsafeShiftL (i1 .&amp;. <span class="hljs-number">0x0000FF000000FF00</span>) <span class="hljs-number">8</span>  .|. i1 .&amp;. <span class="hljs-number">0xFF0000FFFF0000FF</span>
+         i3 = unsafeShiftL (i2 .&amp;. <span class="hljs-number">0x00F000F000F000F0</span>) <span class="hljs-number">4</span>  .|. i2 .&amp;. <span class="hljs-number">0xF00FF00FF00FF00F</span>
+         i4 = unsafeShiftL (i3 .&amp;. <span class="hljs-number">0x0C0C0C0C0C0C0C0C</span>) <span class="hljs-number">2</span>  .|. i3 .&amp;. <span class="hljs-number">0xC3C3C3C3C3C3C3C3</span>
+         i5 = unsafeShiftL (i4 .&amp;. <span class="hljs-number">0x2222222222222222</span>) <span class="hljs-number">1</span>  .|. i4 .&amp;. <span class="hljs-number">0x9999999999999999</span>
+      <span class="hljs-keyword">in</span> <span class="hljs-type">Key</span> (unsafeShiftL i5 <span class="hljs-number">1</span> .|. ij .&amp;. m2)
+    <span class="hljs-keyword">where</span>
+      k0 = unsafeShiftR (ij .&amp;. m1) <span class="hljs-number">1</span>
+      k1 = (unsafeShiftR k0 <span class="hljs-number">1</span>  .|. k0) .&amp;. <span class="hljs-number">0x3333333333333333</span>
+      k2 = (unsafeShiftR k1 <span class="hljs-number">2</span>  .|. k1) .&amp;. <span class="hljs-number">0x0F0F0F0F0F0F0F0F</span>
+      k3 = (unsafeShiftR k2 <span class="hljs-number">4</span>  .|. k2) .&amp;. <span class="hljs-number">0x00FF00FF00FF00FF</span>
+      k4 = (unsafeShiftR k3 <span class="hljs-number">8</span>  .|. k3) .&amp;. <span class="hljs-number">0x0000FFFF0000FFFF</span>
+      k5 = (unsafeShiftR k4 <span class="hljs-number">16</span> .|. k4) .&amp;. <span class="hljs-number">0x00000000FFFFFFFF</span>
+  <span class="hljs-comment">-- _1 = unshuffled._1 -- reference implementation</span>
+  <span class="hljs-meta">{-# INLINE _1 #-}</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-title">a</span> ~ <span class="hljs-type">Word32</span>, <span class="hljs-title">b</span> ~ <span class="hljs-type">Word32</span>) =&gt; <span class="hljs-type">Field2</span> <span class="hljs-type">Key</span> <span class="hljs-type">Key</span> a b <span class="hljs-keyword">where</span></span>
+  _2 f (<span class="hljs-type">Key</span> ij) = indexed f (<span class="hljs-number">1</span> :: <span class="hljs-type">Int</span>) (fromIntegral k5) &lt;&amp;&gt; \j -&gt; <span class="hljs-keyword">let</span>
+         j0 = fromIntegral j
+         j1 = unsafeShiftL (j0 .&amp;. <span class="hljs-number">0x00000000FFFF0000</span>) <span class="hljs-number">16</span> .|. j0 .&amp;. <span class="hljs-number">0xFFFF00000000FFFF</span>
+         j2 = unsafeShiftL (j1 .&amp;. <span class="hljs-number">0x0000FF000000FF00</span>) <span class="hljs-number">8</span>  .|. j1 .&amp;. <span class="hljs-number">0xFF0000FFFF0000FF</span>
+         j3 = unsafeShiftL (j2 .&amp;. <span class="hljs-number">0x00F000F000F000F0</span>) <span class="hljs-number">4</span>  .|. j2 .&amp;. <span class="hljs-number">0xF00FF00FF00FF00F</span>
+         j4 = unsafeShiftL (j3 .&amp;. <span class="hljs-number">0x0C0C0C0C0C0C0C0C</span>) <span class="hljs-number">2</span>  .|. j3 .&amp;. <span class="hljs-number">0xC3C3C3C3C3C3C3C3</span>
+         j5 = unsafeShiftL (j4 .&amp;. <span class="hljs-number">0x2222222222222222</span>) <span class="hljs-number">1</span>  .|. j4 .&amp;. <span class="hljs-number">0x9999999999999999</span>
+      <span class="hljs-keyword">in</span> <span class="hljs-type">Key</span> (ij .&amp;. m1 .|. j5)
+    <span class="hljs-keyword">where</span>
+      k0 = ij .&amp;. m2
+      k1 = (unsafeShiftR k0 <span class="hljs-number">1</span>  .|. k0) .&amp;. <span class="hljs-number">0x3333333333333333</span>
+      k2 = (unsafeShiftR k1 <span class="hljs-number">2</span>  .|. k1) .&amp;. <span class="hljs-number">0x0F0F0F0F0F0F0F0F</span>
+      k3 = (unsafeShiftR k2 <span class="hljs-number">4</span>  .|. k2) .&amp;. <span class="hljs-number">0x00FF00FF00FF00FF</span>
+      k4 = (unsafeShiftR k3 <span class="hljs-number">8</span>  .|. k3) .&amp;. <span class="hljs-number">0x0000FFFF0000FFFF</span>
+      k5 = (unsafeShiftR k4 <span class="hljs-number">16</span> .|. k4) .&amp;. <span class="hljs-number">0x00000000FFFFFFFF</span>
+  <span class="hljs-comment">-- _2 = unshuffled._2 -- reference implementation</span>
+  <span class="hljs-meta">{-# INLINE _2 #-}</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Show</span> <span class="hljs-type">Key</span> <span class="hljs-keyword">where</span></span>
+  showsPrec d w = <span class="hljs-keyword">case</span> unshuffle w <span class="hljs-keyword">of</span>
+    (i,j) -&gt; showParen (d &gt; <span class="hljs-number">10</span>) $
+      showString <span class="hljs-string">"key "</span> . <span class="hljs-type">Prelude</span>.showsPrec <span class="hljs-number">11</span> i .
+           showChar <span class="hljs-string">' '</span> . <span class="hljs-type">Prelude</span>.showsPrec <span class="hljs-number">11</span> j
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Read</span> <span class="hljs-type">Key</span> <span class="hljs-keyword">where</span></span>
+  readsPrec d = readParen (d &gt; <span class="hljs-number">10</span>) $ \r -&gt;
+    [ (key i j, u)
+    | (<span class="hljs-string">"key"</span>,s) &lt;- lex r
+    , (i,t) &lt;- readsPrec <span class="hljs-number">11</span> s
+    , (j,u) &lt;- readsPrec <span class="hljs-number">11</span> t
+    ]
+
+<span class="hljs-comment">-- * Utilities</span>
+
+<span class="hljs-comment">-- | Masks for the interleaved components of a key</span>
+<span class="hljs-title">m1</span>, m2 :: <span class="hljs-type">Word64</span>
+<span class="hljs-title">m1</span> = <span class="hljs-number">0xAAAAAAAAAAAAAAAA</span>
+<span class="hljs-title">m2</span> = <span class="hljs-number">0x5555555555555555</span>
+<span class="hljs-meta">{-# INLINE m1 #-}</span>
+<span class="hljs-meta">{-# INLINE m2 #-}</span>
+
+
+<span class="hljs-comment">-- show playground</span>
+<span class="hljs-title">main</span> :: <span class="hljs-type">IO</span> ()
+<span class="hljs-title">main</span> = <span class="hljs-keyword">do</span>
+ print $ key <span class="hljs-number">100</span> <span class="hljs-number">200</span> ^. _2
+ print $ key <span class="hljs-number">100</span> <span class="hljs-number">200</span> &amp; _1 .~ <span class="hljs-number">300</span>
+
+</code></pre>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/lens"><code>lens</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><aside class="edition-note"><details><summary>About this edition</summary><p>The interactive figure is a new companion to the article. Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: School of Haskell. Date displayed by School of Haskell; may reflect a later revision.</p><p><a href="../../../source/articles/revisiting-matrix-multiplication-part-1.md" download>Article Markdown</a> · <a href="../../../source/articles/revisiting-matrix-multiplication-part-1.original.md" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2013/revisiting-matrix-multiplication-part-2/">Part II: The Zen of Z-Ordering →</a><a href="../../../reader/2013/snippets-once/">Once →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main><script type="module" src="../../../article-demos.js"></script></body></html>

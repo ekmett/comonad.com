@@ -1,0 +1,8 @@
+<figure class="interactive-figure" id="lca-figure" data-demo="lca">
+  <div class="figure-controls"><label>Node A <select data-control="a"></select></label><label>Node B <select data-control="b"></select></label><button type="button" data-control="grow">Add child to A</button><label>Tree version <select data-control="version"></select></label></div>
+  <div class="figure-diagram"><svg data-view="tree" class="lca-tree" viewBox="0 0 500 400" role="img" aria-label="Rooted tree with selected nodes and their common ancestor"></svg></div>
+  <p data-view="answer" aria-live="polite"></p>
+  <details open><summary>Compare the searches</summary><p data-view="digits"></p><div class="lca-searches"><div><span class="figure-label">Skew-binary paths</span><output data-view="skew"></output></div><div><span class="figure-label">Parent-by-parent</span><output data-view="naive"></output></div></div><p class="figure-editorial">The companion corrects a subtree-width bookkeeping error in the historical <code>lcaT</code> (using <code>w2</code> for <code>ra</code>); the original sample is retained for review.</p></details>
+  <figcaption><span data-view="status" role="status">Loading the Haskell figure…</span> Each pair is an actual node-ID comparison after aligning depths; trimming work is excluded. Add up to 24 nodes; earlier versions remain selectable. <a href="{{root}}source/LCADemo.hs">Haskell source</a> · <a href="{{root}}source/browser-sources.zip">All Haskell sources</a>.</figcaption>
+  <noscript>Enable JavaScript and WebAssembly to grow a tree and compare the two ancestor searches.</noscript>
+</figure>

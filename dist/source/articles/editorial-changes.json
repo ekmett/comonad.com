@@ -1,0 +1,102 @@
+[
+  {
+    "article": "kan-extensions-ii",
+    "before": "more generalize relationship",
+    "after": "more general relationship",
+    "reason": "Unambiguous prose grammar.",
+    "status": "applied"
+  },
+  {
+    "article": "kan-extensions-ii",
+    "before": "Similarly ,",
+    "after": "Similarly,",
+    "reason": "Punctuation spacing.",
+    "status": "applied"
+  },
+  {
+    "article": "cellular-automata-part-1",
+    "before": "you wind you looking",
+    "after": "you wind up looking",
+    "reason": "Unambiguous prose typo.",
+    "status": "applied"
+  },
+  {
+    "article": "deriving-strength-from-laziness",
+    "before": "with a the use of",
+    "after": "with the use of",
+    "reason": "Duplicated article, also reported by a reader.",
+    "status": "applied"
+  },
+  {
+    "article": "cellular-automata-part-3",
+    "before": "](webchat.freenode.net/",
+    "after": "](https://webchat.freenode.net/",
+    "reason": "Restore missing URL scheme; historical service may no longer operate.",
+    "status": "applied"
+  },
+  {
+    "article": "computational-quadrinitarianism-curious-correspondences-go-cubical",
+    "before": "http://comonad.com/reader/2018/computational-quadrinitarianism-curious-correspondences-go-cubical/www2.math.uu.se/",
+    "after": "https://www2.math.uu.se/",
+    "reason": "Restore missing URL scheme on external reference.",
+    "status": "applied"
+  },
+  {
+    "article": "free-monads-for-less-2",
+    "comment": "comment-104638",
+    "note": "Review rank of forall in improve signature.",
+    "status": "review"
+  },
+  {
+    "article": "elgot-coalgebras",
+    "comment": "comment-106278",
+    "note": "Review strength-prime signature.",
+    "status": "review"
+  },
+  {
+    "article": "deriving-strength-from-laziness",
+    "comment": "comment-126210",
+    "note": "Author correction: review claimed costrength laws; substantive erratum, not a typo.",
+    "status": "review"
+  },
+  {
+    "article": "kan-extension-iii",
+    "comment": "comment-12474",
+    "note": "Review RanT variable names against current article.",
+    "status": "review"
+  },
+  {
+    "article": "generalizing-dot",
+    "comment": "comment-42556",
+    "note": "Review operator precedence discussion.",
+    "status": "review"
+  },
+  {
+    "article": "cellular-automata-part-1",
+    "before": "After a each loop iteration",
+    "after": "After each loop iteration",
+    "reason": "Unambiguous prose or URL typo.",
+    "status": "applied"
+  },
+  {
+    "article": "cellular-automata-part-1",
+    "before": "from out existing",
+    "after": "from our existing",
+    "reason": "Unambiguous prose or URL typo.",
+    "status": "applied"
+  },
+  {
+    "article": "parameterized-monads-in-haskell",
+    "before": "type.http://citeseer.ist.psu.edu/273929.html",
+    "after": "http://citeseer.ist.psu.edu/273929.html",
+    "reason": "Unambiguous prose or URL typo.",
+    "status": "applied"
+  },
+  {
+    "article": "online-lca",
+    "before": "lcaT w2 la lb (consT w ra ts)",
+    "after": "lcaT w2 la lb (consT w2 ra ts)",
+    "reason": "Technical correction for review: ra is a subtree of width w2. The new interactive companion uses w2 and checks both the resulting path and cached size against ancestor lists. Both occurrences in the historical article remain unchanged.",
+    "status": "review"
+  }
+]

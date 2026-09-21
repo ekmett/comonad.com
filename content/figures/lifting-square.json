@@ -1,0 +1,17 @@
+{
+  "id": "lifting-square",
+  "objects": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "arrows": [
+    "e",
+    "f",
+    "g",
+    "m"
+  ],
+  "diagonal": "h",
+  "originalTex": "\\bfig \\square/>>`>`>` >\\to/[A`B`C`D;e`f`g`m] \\morphism(500,500)|m|/.>/< -500,-500>[B`C;h] \\efig "
+}

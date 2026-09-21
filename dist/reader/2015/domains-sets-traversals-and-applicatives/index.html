@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Domains, Sets, Traversals and Applicatives · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Category Theory · Comonads · Data Structures · Haskell · Mathematics · Monads</span><span>Dan Doel · <time datetime="2015-04-29">29 April 2015</time></span></div><h1>Domains, Sets, Traversals and Applicatives</h1></header><article class="prose"><p>Last time I looked at free monoids, and noticed that in Haskell lists don't really cut it. This is a consequence of laziness and general recursion. To model a language with those properties, one needs to use domains and monotone, continuous maps, rather than sets and total functions (a call-by-value language with general recursion would use domains and strict maps instead).</p>
+<p>This time I'd like to talk about some other examples of this, and point out how doing so can (perhaps) resolve some disagreements that people have about the specific cases.</p>
+<p>The first example is not one that I came up with: induction. It's sometimes said that Haskell does not have inductive types at all, or that we cannot reason about functions on its data types by induction. However, I think this is (techincally) inaccurate. What's true is that we cannot simply pretend that that our types are sets and use the induction principles for sets to reason about Haskell programs. Instead, one has to figure out what inductive domains would be, and what their proof principles are.</p>
+<p>Fortunately, there are some papers about doing this. The most recent (that I'm aware of) is <a href="http://arxiv.org/pdf/1206.0357.pdf">Generic Fibrational Induction</a>. I won't get too into the details, but it shows how one can talk about induction in a general setting, where one has a category that roughly corresponds to the type theory/programming language, and a second category of proofs that is 'indexed' by the first category's objects. Importantly, it is not required that the second category is somehow 'part of' the type theory being reasoned about, as is often the case with dependent types, although that is also a special case of their construction.</p>
+<p>One of the results of the paper is that this framework can be used to talk about induction principles for types that don't make sense as sets. Specifically:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Hyp</span> = <span class="hljs-type">Hyp</span> ((<span class="hljs-type">Hyp</span> -&gt; <span class="hljs-type">Int</span>) -&gt; <span class="hljs-type">Int</span>)</span>
+</code></pre>
+<p>the type of "hyperfunctions". Instead of interpreting this type as a set, where it would effectively require a set that is isomorphic to the power set of its power set, they interpret it in the category of domains and strict functions mentioned earlier. They then construct the proof category in a similar way as one would for sets, except instead of talking about predicates as sub<em>sets</em>, we talk about sub-<em>domains</em> instead. Once this is done, their framework gives a notion of induction for this type.</p>
+<p>This example is suitable for ML (and suchlike), due to the strict functions, and sort of breaks the idea that we can really get away with only thinking about sets, even there. Sets are good enough for some simple examples (like flat domains where we don't care about ⊥), but in general we have to generalize induction itself to apply to all types in the 'good' language.</p>
+<p>While I haven't worked out how the generic induction would work out for Haskell, I have little doubt that it would, because ML actually contains all of Haskell's data types (and vice versa). So the fact that the framework gives meaning to induction for ML implies that it does so for Haskell. If one wants to know what induction for Haskell's 'lazy naturals' looks like, they can study the ML analogue of:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">LNat</span> = <span class="hljs-type">Zero</span> | <span class="hljs-type">Succ</span> (() -&gt; <span class="hljs-type">LNat</span>)</span>
+</code></pre>
+<p>because function spaces lift their codomain, and make things 'lazy'.</p>
+<p>----</p>
+<p>The other example I'd like to talk about hearkens back to the previous article. I explained how <code>foldMap</code> is the proper fundamental method of the <code>Foldable</code> class, because it can be massaged to look like:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">foldMap</span> :: <span class="hljs-type">Foldable</span> f =&gt; f a -&gt; <span class="hljs-type">FreeMonoid</span> a
+</code></pre>
+<p>and lists are not the free monoid, because they do not work properly for various infinite cases.</p>
+<p>I also mentioned that <code>foldMap</code> looks a lot like <code>traverse</code>:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">foldMap</span>  :: (<span class="hljs-type">Foldable</span> t   , <span class="hljs-type">Monoid</span> m)      =&gt; (a -&gt; m)   -&gt; t a -&gt; m
+<span class="hljs-title">traverse</span> :: (<span class="hljs-type">Traversable</span> t, <span class="hljs-type">Applicative</span> f) =&gt; (a -&gt; f b) -&gt; t a -&gt; f (t b)
+</code></pre>
+<p>And of course, we have <code>Monoid m =&gt; Applicative (Const m)</code>, and the functions are expected to agree in this way when applicable.</p>
+<p>Now, people like to get in arguments about whether traversals are allowed to be infinite. I know Ed Kmett likes to argue that they can be, because he has lots of examples. But, not everyone agrees, and especially people who have papers proving things about traversals tend to side with the finite-only side. I've heard this includes one of the inventors of <code>Traversable</code>, Conor McBride.</p>
+<p>In my opinion, the above disagreement is just another example of a situation where we have a generic notion instantiated in two different ways, and intuition about one does not quite transfer to the other. If you are working in a language like Agda or Coq (for proving), you will be thinking about traversals in the context of sets and total functions. And there, traversals are finite. But in Haskell, there are infinitary cases to consider, and they should work out all right when thinking about domains instead of sets. But I should probably put forward some argument for this position (and even if I don't need to, it leads somewhere else interesting).</p>
+<p>One example that people like to give about finitary traversals is that they can be done via lists. Given a finite traversal, we can traverse to get the elements (using <code>Const [a]</code>), traverse the list, then put them back where we got them by traversing again (using <code>State [a]</code>). Usually when you see this, though, there's some subtle cheating in relying on the list to be exactly the right length for the second traversal. It will be, because we got it from a traversal of the same structure, but I would expect that proving the function is actually total to be a lot of work. Thus, I'll use this as an excuse to do my own cheating later.</p>
+<p>Now, the above uses lists, but why are we using lists when we're in Haskell? We know they're deficient in certain ways. It turns out that we can give a lot of the same relevant structure to the better free monoid type:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">FM</span> a = <span class="hljs-type">FM</span> (<span class="hljs-title">forall</span> <span class="hljs-title">m</span>. <span class="hljs-type">Monoid</span> <span class="hljs-title">m</span> =&gt; (<span class="hljs-title">a</span> -&gt; <span class="hljs-title">m</span>) -&gt; m) <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Functor</span>)</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Applicative</span> <span class="hljs-type">FM</span> <span class="hljs-keyword">where</span></span>
+  pure x = <span class="hljs-type">FM</span> ($ x)
+  <span class="hljs-type">FM</span> ef &lt; *&gt; <span class="hljs-type">FM</span> ex = <span class="hljs-type">FM</span> $ \k -&gt; ef $ \f -&gt; ex $ \x -&gt; k (f x)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monoid</span> (<span class="hljs-type">FM</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  mempty = <span class="hljs-type">FM</span> $ \_ -&gt; mempty
+  mappend (<span class="hljs-type">FM</span> l) (<span class="hljs-type">FM</span> r) = <span class="hljs-type">FM</span> $ \k -&gt; l k &lt;&gt; r k
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Foldable</span> <span class="hljs-type">FM</span> <span class="hljs-keyword">where</span></span>
+  foldMap f (<span class="hljs-type">FM</span> e) = e f
+
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Ap</span> f b = <span class="hljs-type">Ap</span> { <span class="hljs-title">unAp</span> :: <span class="hljs-title">f</span> <span class="hljs-title">b</span> }</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Applicative</span> <span class="hljs-title">f</span>, <span class="hljs-type">Monoid</span> <span class="hljs-title">b</span>) =&gt; <span class="hljs-type">Monoid</span> (<span class="hljs-type">Ap</span> <span class="hljs-title">f</span> <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+  mempty = <span class="hljs-type">Ap</span> $ pure mempty
+  mappend (<span class="hljs-type">Ap</span> l) (<span class="hljs-type">Ap</span> r) = <span class="hljs-type">Ap</span> $ (&lt;&gt;) &lt; $&gt; l &lt; *&gt; r
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Traversable</span> <span class="hljs-type">FM</span> <span class="hljs-keyword">where</span></span>
+  traverse f (<span class="hljs-type">FM</span> e) = unAp . e $ <span class="hljs-type">Ap</span> . fmap pure . f
+</code></pre>
+<p>So, free monoids are <code>Monoids</code> (of course), <code>Foldable</code>, and even <code>Traversable</code>. At least, we can define something with the right type that wouldn't bother anyone if it were written in a total language with the right features, but in Haskell it happens to allow various infinite things that people don't like.</p>
+<p>Now it's time to cheat. First, let's define a function that can take any <code>Traversable</code> to our free monoid:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">toFreeMonoid</span> :: <span class="hljs-type">Traversable</span> t =&gt; t a -&gt; <span class="hljs-type">FM</span> a
+<span class="hljs-title">toFreeMonoid</span> f = <span class="hljs-type">FM</span> $ \k -&gt; getConst $ traverse (<span class="hljs-type">Const</span> . k) f
+</code></pre>
+<p>Now let's define a <code>Monoid</code> that's not a monoid:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Cheat</span> a = <span class="hljs-type">Empty</span> | <span class="hljs-type">Single</span> a | <span class="hljs-type">Append</span> (<span class="hljs-type">Cheat</span> <span class="hljs-title">a</span>) (<span class="hljs-type">Cheat</span> <span class="hljs-title">a</span>)</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Monoid</span> (<span class="hljs-type">Cheat</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  mempty = <span class="hljs-type">Empty</span>
+  mappend = <span class="hljs-type">Append</span>
+</code></pre>
+<p>You may recognize this as the data version of the free monoid from the previous article, where we get the real free monoid by taking a quotient. using this, we can define an <code>Applicative</code> that's not valid:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Cheating</span> b a =</span>
+  <span class="hljs-type">Cheating</span> { prosper :: <span class="hljs-type">Cheat</span> b -&gt; a } <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Functor</span>)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Applicative</span> (<span class="hljs-type">Cheating</span> <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+  pure x = <span class="hljs-type">Cheating</span> $ \_ -&gt; x
+
+  <span class="hljs-type">Cheating</span> f &lt; *&gt; <span class="hljs-type">Cheating</span> x = <span class="hljs-type">Cheating</span> $ \c -&gt; <span class="hljs-keyword">case</span> c <span class="hljs-keyword">of</span>
+    <span class="hljs-type">Append</span> l r -&gt; f l (x r)
+</code></pre>
+<p>Given these building blocks, we can define a function to relabel a traversable using a free monoid:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">relabel</span> :: <span class="hljs-type">Traversable</span> t =&gt; t a -&gt; <span class="hljs-type">FM</span> b -&gt; t b
+<span class="hljs-title">relabel</span> t (<span class="hljs-type">FM</span> m) = propser (traverse (const hope) t) (m <span class="hljs-type">Single</span>)
+ <span class="hljs-keyword">where</span>
+ hope = <span class="hljs-type">Cheating</span> $ \c -&gt; <span class="hljs-keyword">case</span> c <span class="hljs-keyword">of</span>
+   <span class="hljs-type">Single</span> x -&gt; x
+</code></pre>
+<p>And we can implement any traversal by taking a trip through the free monoid:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">slowTraverse</span>
+  :: (<span class="hljs-type">Applicative</span> f, <span class="hljs-type">Traversable</span> t) =&gt; (a -&gt; f b) -&gt; t a -&gt; f (t b)
+<span class="hljs-title">slowTraverse</span> f t = fmap (relabel t) . traverse f . toFreeMonoid $ t
+</code></pre>
+<p>And since we got our free monoid via traversing, all the partiality I hid in the above won't blow up in practice, rather like the case with lists and finite traversals.</p>
+<p>Arguably, this is worse cheating. It relies on the exact association structure to work out, rather than just number of elements. The reason is that for infinitary cases, you cannot flatten things out, and there's really no way to detect when you have something infinitary. The finitary traversals have the luxury of being able to reassociate everything to a canonical form, while the infinite cases force us to not do any reassociating at all. So this might be somewhat unsatisfying.</p>
+<p>But, what if we didn't have to cheat at all? We can get the free monoid by tweaking <code>foldMap</code>, and it looks like <code>traverse</code>, so what happens if we do the same manipulation to the latter?</p>
+<p>It turns out that lens has a type for this purpose, a slight specialization of which is:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Bazaar</span> a b t =</span>
+  <span class="hljs-type">Bazaar</span> { runBazaar :: <span class="hljs-keyword">forall</span> f. <span class="hljs-type">Applicative</span> f =&gt; (a -&gt; f b) -&gt; f t }
+</code></pre>
+<p>Using this type, we can reorder <code>traverse</code> to get:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">howBizarre</span> :: <span class="hljs-type">Traversable</span> t =&gt; t a -&gt; <span class="hljs-type">Bazaar</span> a b (t b)
+<span class="hljs-title">howBizarre</span> t = <span class="hljs-type">Bazaar</span> $ \k -&gt; traverse k t
+</code></pre>
+<p>But now, what do we do with this? And what even is it? [1]</p>
+<p>If we continue drawing on intuition from <code>Foldable</code>, we know that <code>foldMap</code> is related to the free monoid. <code>Traversable</code> has more indexing, and instead of <code>Monoid</code> uses <code>Applicative</code>. But the latter are actually related to the former; <code>Applicative</code>s are monoidal (closed) functors. And it turns out, <code>Bazaar</code> has to do with free <code>Applicative</code>s.</p>
+<p>If we want to construct free <code>Applicative</code>s, we can use our universal property encoding trick:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Free</span> p f a =</span>
+  <span class="hljs-type">Free</span> { gratis :: <span class="hljs-keyword">forall</span> g. p g =&gt; (<span class="hljs-keyword">forall</span> x. f x -&gt; g x) -&gt; g a }
+</code></pre>
+<p>This is a higher-order version of the free <code>p</code>, where we parameterize over the constraint we want to use to represent structures. So <code>Free Applicative f</code> is the free <code>Applicative</code> over a type constructor <code>f</code>. I'll leave the instances as an exercise.</p>
+<p>Since free monoid is a monad, we'd expect <code>Free p</code> to be a monad, too. In this case, it is a McBride style indexed monad, as seen in <a href="https://personal.cis.strath.ac.uk/conor.mcbride/Kleisli.pdf">The Kleisli Arrows of Outrageous Fortune</a>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">type</span> f ~&gt; g = forall x. f x -&gt; g x</span>
+
+<span class="hljs-title">embed</span> :: f ~&gt; <span class="hljs-type">Free</span> p f
+<span class="hljs-title">embed</span> fx = <span class="hljs-type">Free</span> $ \k -&gt; k fx
+
+<span class="hljs-title">translate</span> :: (f ~&gt; g) -&gt; <span class="hljs-type">Free</span> p f ~&gt; <span class="hljs-type">Free</span> p g
+<span class="hljs-title">translate</span> tr (<span class="hljs-type">Free</span> e) = <span class="hljs-type">Free</span> $ \k -&gt; e (k . tr)
+
+<span class="hljs-title">collapse</span> :: <span class="hljs-type">Free</span> p (<span class="hljs-type">Free</span> p f) ~&gt; <span class="hljs-type">Free</span> p f
+<span class="hljs-title">collapse</span> (<span class="hljs-type">Free</span> e) = <span class="hljs-type">Free</span> $ \k -&gt; e $ \(<span class="hljs-type">Free</span> e') -&gt; e' k
+</code></pre>
+<p>That paper explains how these are related to Atkey style indexed monads:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">At</span> key i j <span class="hljs-keyword">where</span></span>
+  <span class="hljs-type">At</span> :: key -&gt; <span class="hljs-type">At</span> key i i
+
+<span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-type">Atkey</span> m i j a = m (<span class="hljs-type">At</span> <span class="hljs-title">a</span> <span class="hljs-title">j</span>) i</span>
+
+<span class="hljs-title">ireturn</span> :: <span class="hljs-type">IMonad</span> m =&gt; a -&gt; <span class="hljs-type">Atkey</span> m i i a
+<span class="hljs-title">ireturn</span> = ...
+
+<span class="hljs-title">ibind</span> :: <span class="hljs-type">IMonad</span> m =&gt; <span class="hljs-type">Atkey</span> m i j a -&gt; (a -&gt; <span class="hljs-type">Atkey</span> m j k b) -&gt; <span class="hljs-type">Atkey</span> m i k b
+<span class="hljs-title">ibind</span> = ...
+</code></pre>
+<p>It turns out, <code>Bazaar</code> is exactly the Atkey indexed monad derived from the <code>Free Applicative</code> indexed monad (with some arguments shuffled) [2]:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">hence</span> :: <span class="hljs-type">Bazaar</span> a b t -&gt; <span class="hljs-type">Atkey</span> (<span class="hljs-type">Free</span> <span class="hljs-type">Applicative</span>) t b a
+<span class="hljs-title">hence</span> bz = <span class="hljs-type">Free</span> $ \tr -&gt; runBazaar bz $ tr . <span class="hljs-type">At</span>
+
+<span class="hljs-title">forth</span> :: <span class="hljs-type">Atkey</span> (<span class="hljs-type">Free</span> <span class="hljs-type">Applicative</span>) t b a -&gt; <span class="hljs-type">Bazaar</span> a b t
+<span class="hljs-title">forth</span> fa = <span class="hljs-type">Bazaar</span> $ \g -&gt; gratis fa $ \(<span class="hljs-type">At</span> a) -&gt; g a
+
+<span class="hljs-title">imap</span> :: (a -&gt; b) -&gt; <span class="hljs-type">Bazaar</span> a i j -&gt; <span class="hljs-type">Bazaar</span> b i j
+<span class="hljs-title">imap</span> f (<span class="hljs-type">Bazaar</span> e) = <span class="hljs-type">Bazaar</span> $ \k -&gt; e (k . f)
+
+<span class="hljs-title">ipure</span> :: a -&gt; <span class="hljs-type">Bazaar</span> a i i
+<span class="hljs-title">ipure</span> x = <span class="hljs-type">Bazaar</span> ($ x)
+
+(&gt;&gt;&gt;=) :: <span class="hljs-type">Bazaar</span> a j i -&gt; (a -&gt; <span class="hljs-type">Bazaar</span> b k j) -&gt; <span class="hljs-type">Bazaar</span> b k i
+<span class="hljs-type">Bazaar</span> e &gt;&gt;&gt;= f = <span class="hljs-type">Bazaar</span> $ \k -&gt; e $ \x -&gt; runBazaar (f x) k
+
+(&gt;==&gt;) :: (s -&gt; <span class="hljs-type">Bazaar</span> i o t) -&gt; (i -&gt; <span class="hljs-type">Bazaar</span> a b o) -&gt; s -&gt; <span class="hljs-type">Bazaar</span> a b t
+(f &gt;==&gt; g) x = f x &gt;&gt;&gt;= g
+</code></pre>
+<p>As an aside, <code>Bazaar</code> is also an (Atkey) indexed comonad, and the one that characterizes traversals, similar to how indexed store characterizes lenses. A <code>Lens s t a b</code> is equivalent to a coalgebra <code>s -&gt; Store a b t</code>. A traversal is a similar <code>Bazaar</code> coalgebra:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">  s -&gt; <span class="hljs-type">Bazaar</span> a b t
+    ~
+  s -&gt; <span class="hljs-keyword">forall</span> f. <span class="hljs-type">Applicative</span> f =&gt; (a -&gt; f b) -&gt; f t
+    ~
+  <span class="hljs-keyword">forall</span> f. <span class="hljs-type">Applicative</span> f =&gt; (a -&gt; f b) -&gt; s -&gt; f t
+</code></pre>
+<p>It so happens that Kleisli composition of the Atkey indexed monad above <code>(&gt;==&gt;)</code> is traversal composition.</p>
+<p>Anyhow, <code>Bazaar</code> also inherits <code>Applicative</code> structure from <code>Free Applicative</code>:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> (<span class="hljs-type">Bazaar</span> <span class="hljs-title">a</span> <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+  fmap f (<span class="hljs-type">Bazaar</span> e) = <span class="hljs-type">Bazaar</span> $ \k -&gt; fmap f (e k)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Applicative</span> (<span class="hljs-type">Bazaar</span> <span class="hljs-title">a</span> <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+  pure x = <span class="hljs-type">Bazaar</span> $ \_ -&gt; pure x
+  <span class="hljs-type">Bazaar</span> ef &lt; *&gt; <span class="hljs-type">Bazaar</span> ex = <span class="hljs-type">Bazaar</span> $ \k -&gt; ef k &lt; *&gt; ex k
+</code></pre>
+<p>This is actually analogous to the <code>Monoid</code> instance for the free monoid; we just delegate to the underlying structure.</p>
+<p>The more exciting thing is that we can fold and traverse over the first argument of <code>Bazaar</code>, just like we can with the free monoid:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">bfoldMap</span> :: <span class="hljs-type">Monoid</span> m =&gt; (a -&gt; m) -&gt; <span class="hljs-type">Bazaar</span> a b t -&gt; m
+<span class="hljs-title">bfoldMap</span> f (<span class="hljs-type">Bazaar</span> e) = getConst $ e (<span class="hljs-type">Const</span> . f)
+
+<span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Comp</span> g f a = <span class="hljs-type">Comp</span> { <span class="hljs-title">getComp</span> :: <span class="hljs-title">g</span> (<span class="hljs-title">f</span> <span class="hljs-title">a</span>) } <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Functor</span>)</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> (<span class="hljs-type">Applicative</span> <span class="hljs-title">f</span>, <span class="hljs-type">Applicative</span> <span class="hljs-title">g</span>) =&gt; <span class="hljs-type">Applicative</span> (<span class="hljs-type">Comp</span> <span class="hljs-title">g</span> <span class="hljs-title">f</span>) <span class="hljs-keyword">where</span></span>
+  pure = <span class="hljs-type">Comp</span> . pure . pure
+  <span class="hljs-type">Comp</span> f &lt; *&gt; <span class="hljs-type">Comp</span> x = <span class="hljs-type">Comp</span> $ liftA2 (&lt; *&gt;) f x
+
+<span class="hljs-title">btraverse</span>
+  :: (<span class="hljs-type">Applicative</span> f) =&gt; (a -&gt; f a') -&gt; <span class="hljs-type">Bazaar</span> a b t -&gt; <span class="hljs-type">Bazaar</span> a' b t
+<span class="hljs-title">btraverse</span> f (<span class="hljs-type">Bazaar</span> e) = getComp $ e (c . fmap ipure . f)
+</code></pre>
+<p>This is again analogous to the free monoid code. <code>Comp</code> is the analogue of <code>Ap</code>, and we use <code>ipure</code> in <code>traverse</code>. I mentioned that <code>Bazaar</code> is a comonad:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">extract</span> :: <span class="hljs-type">Bazaar</span> b b t -&gt; t
+<span class="hljs-title">extract</span> (<span class="hljs-type">Bazaar</span> e) = runIdentity $ e <span class="hljs-type">Identity</span>
+</code></pre>
+<p>And now we are finally prepared to not cheat:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">honestTraverse</span>
+  :: (<span class="hljs-type">Applicative</span> f, <span class="hljs-type">Traversable</span> t) =&gt; (a -&gt; f b) -&gt; t a -&gt; f (t b)
+<span class="hljs-title">honestTraverse</span> f = fmap extract . btraverse f . howBizarre
+</code></pre>
+<p>So, we can traverse by first turning out <code>Traversable</code> into some structure that's kind of like the free monoid, except having to do with <code>Applicative</code>, traverse that, and then pull a result back out. <code>Bazaar</code> retains the information that we're eventually building back the same type of structure, so we don't need any cheating.</p>
+<p>To pull this back around to domains, there's nothing about this code to object to if done in a total language. But, if we think about our free <code>Applicative</code>-ish structure, in Haskell, it will naturally allow infinitary expressions composed of the <code>Applicative</code> operations, just like the free monoid will allow infinitary monoid expressions. And this is okay, because <em>some</em> <code>Applicative</code>s can make sense of those, so throwing them away would make the type not free, in the same way that even finite lists are not the free monoid in Haskell. And this, I think, is compelling enough to say that infinite traversals are right for Haskell, just as they are wrong for Agda.</p>
+<p>For those who wish to see executable code for all this, I've put a files <a href="http://code.haskell.org/~dolio/haskell-share/FMon.hs">here</a> and <a href="http://code.haskell.org/~dolio/haskell-share/Libre.hs">here</a>. The latter also contains some extra goodies at the end that I may talk about in further installments.</p>
+<p>[1] Truth be told, I'm not exactly sure.</p>
+<p>[2] It turns out, you can generalize <code>Bazaar</code> to have a correspondence for every choice of <code>p</code></p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">newtype</span> <span class="hljs-type">Bizarre</span> p a b t =</span>
+  <span class="hljs-type">Bizarre</span> { bizarre :: <span class="hljs-keyword">forall</span> f. p f =&gt; (a -&gt; f b) -&gt; f t }
+</code></pre>
+<p><code>hence</code> and <code>forth</code> above go through with the more general types. This can be seen <a href="http://code.haskell.org/~dolio/haskell-share/Libre.hs">here</a>.</p>
+</article><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: Comonad.Reader.</p><p><a href="../../../source/articles/domains-sets-traversals-and-applicatives.md" download>Article Markdown</a> · <a href="../../../source/articles/domains-sets-traversals-and-applicatives.original.html.txt" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2015/fibonacci-leonardo/">Part 1: Leonardo Random Access Lists →</a><a href="../../../reader/2015/heap-of-successes/">How to Replace Failure by a Heap of Successes →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Dan Doel.<br>Comments attributed to their original authors.</p></footer></main></body></html>

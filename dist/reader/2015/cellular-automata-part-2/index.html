@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Part II: PNGs and Moore · The Comonad.Reader</title>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<main class="reading"><header class="article-header"><div class="article-meta"><span>Haskell</span><span>Edward Kmett · <time datetime="2015-06-10">10 June 2015</time></span></div><h1>Part II: PNGs and Moore</h1></header><details class="contents"><summary>On this page</summary><ol><li><a href="#folds">Folds</a></li><li><a href="#a-scary-digression">A Scary Digression</a></li><li><a href="#folding-via-comonad-transformers">Folding via Comonad Transformers</a></li><li><a href="#moore-machines">Moore Machines</a></li><li><a href="#feeding-machines-and-folds">Feeding Machines and Folds</a></li><li><a href="#what-does-the-comonad-for-fold-mean">What does the Comonad for Fold mean?</a></li><li><a href="#resuming-a-hash-function">Resuming a Hash Function</a></li><li><a href="#uncompressed-pngs">Uncompressed PNGs</a></li><li><a href="#automata-please">Automata, Please</a></li></ol></details><article class="prose"><p><a href="../../../reader/2014/cellular-automata-part-1/">Last time</a> I showed how we can render an automaton in your browser using existing tools.</p>
+<p>This time we're going to roll a few of our own, so we can render fancier things. The SVG
+we generated last time was just too slow for many users and some folks complained that they couldn't see it at all on an iPad, or that it crashed Firefox.</p>
+<p>To rectify those concerns, we'll start off by writing a PNG generator!</p>
+<h2 id="folds">Folds</h2>
+<p>... but I'll take a bit of a circuitous path to get there.</p>
+<p>A couple of weeks back, Gabriel Gonzales posted about his <code>foldl</code> library. In that he used the following type to capture the essence of a left fold:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Fold</span> a b = forall x . <span class="hljs-type">Fold</span> (<span class="hljs-title">x</span> -&gt; <span class="hljs-title">a</span> -&gt; <span class="hljs-title">x</span>) x (<span class="hljs-title">x</span> -&gt; <span class="hljs-title">b</span>)</span>
+</code></pre>
+<p>I want to take a bit of a digression to note a few things about this type, and then show that it is just a presentation of something we already know pretty well in computer science!</p>
+<p>Gabriel proceeded to supply an <code>Applicative</code> for his <code>Fold</code> type that looked something like:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> (<span class="hljs-type">Fold</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  fmap f (<span class="hljs-type">Fold</span> rar r rb) = <span class="hljs-type">Fold</span> rar r (f.rb)
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Pair</span> a b = <span class="hljs-type">Pair</span> !a !b</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Applicative</span> (<span class="hljs-type">Fold</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  pure b = <span class="hljs-type">Fold</span> (\() _ -&gt; ()) () (\() -&gt; b)
+  <span class="hljs-meta">{-# INLINABLE pure #-}</span>
+  <span class="hljs-type">Fold</span> sas s0 s2f &lt;*&gt; <span class="hljs-type">Fold</span> rar r0 r2x = <span class="hljs-type">Fold</span>
+    (\(<span class="hljs-type">Pair</span> s r) a -&gt; <span class="hljs-type">Pair</span> (sas s a) (rar r a))
+    (<span class="hljs-type">Pair</span> s0 r0)
+    (\(<span class="hljs-type">Pair</span> s r) -&gt; s2f s (r2x r))
+  <span class="hljs-meta">{-# INLINABLE (&lt;*&gt;) #-}</span>
+</code></pre>
+<p>But there is actually a fair bit more we can say about this type!</p>
+<p>Being <code>Applicative</code>, we can lift numeric operations directly into it:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Num</span> b =&gt; <span class="hljs-type">Num</span> (<span class="hljs-type">Fold</span> <span class="hljs-title">a</span> <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+  (+) = liftA2 (+)
+  (-) = liftA2 (-)
+  (*) = liftA2 (*)
+  abs = fmap abs
+  signum = fmap signum
+  fromInteger = pure . fromInteger
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Fractional</span> b =&gt; <span class="hljs-type">Fractional</span> (<span class="hljs-type">Fold</span> <span class="hljs-title">a</span> <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+  recip = fmap recip
+  (/) = liftA2 (/)
+  fromRational = pure . fromRational
+</code></pre>
+<p>But we can also note that it is contravariant in its first argument and covariant in its second, and therefore it <a href="http://blog.sigfpe.com/2011/07/profunctors-in-haskell.html">must form</a> a <a href="https://hackage.haskell.org/packages/archive/profunctors/3.3.0.1/doc/html/Data-Profunctor.html"><code>Profunctor</code></a>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Profunctor</span> <span class="hljs-type">Fold</span> <span class="hljs-keyword">where</span></span>
+  dimap f g (<span class="hljs-type">Fold</span> rar r0 rb) = <span class="hljs-type">Fold</span> (\r -&gt; rar r . f) r0 (g . rb)
+</code></pre>
+<p>All this does is let us tweak the inputs and/or outputs to our <code>Fold</code>.</p>
+<p>But what perhaps isn't immediately obvious is that <code>Fold a</code> forms a <code>Comonad</code>!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Comonad</span> (<span class="hljs-type">Fold</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  extract (<span class="hljs-type">Fold</span> _ r rb) = rb r
+  duplicate (<span class="hljs-type">Fold</span> rar r0 rb) = <span class="hljs-type">Fold</span> rar r0 $ \r -&gt; <span class="hljs-type">Fold</span> rar r rb
+</code></pre>
+<p>Notice that the <code>duplicate :: Fold b a -&gt; Fold b (Fold b a)</code> sneaks in and generates a nested fold <em>before</em>  the final tweak at the end that destroys our accumulator is applied! It works a bit like a last second pardon from the governor, a stay of execution if you will.</p>
+<h2 id="a-scary-digression">A Scary Digression</h2>
+<p>(this is skippable)</p>
+<p>It also forms a somewhat scarier sounding (strong) lax semimonoidal comonad, which just is to say that <code>(&lt;*&gt;)</code> is well behaved with regards to extract, so we can say:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">ComonadApply</span> (<span class="hljs-type">Fold</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  (&lt;@&gt;) = (&lt;*&gt;)
+</code></pre>
+<p>This enables our <code>Comonad</code> to work with the <code>codo</code> sugar in Dominic Orchard's <a href="https://hackage.haskell.org/package/codo-notation"><code>codo-notation</code></a> package. I won't be doing that today, but you may want to download and modify one of the later examples to use it, just to get a feel for it. It is pretty neat.</p>
+<h2 id="folding-via-comonad-transformers">Folding via Comonad Transformers</h2>
+<p>(this part of mostly skippable too)</p>
+<p>I'll get back to the actual usecases for this <code>Comonad</code> shortly, but first I want to start with ways I could have come up with the definition.</p>
+<p>It turns out there are a few comonads very closely related to Gabriel's left <code>Fold</code>!</p>
+<p>If we take the definition of Gabriel's <code>Fold</code> and rip off the existential, we get:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">FoldX</span> x a b = <span class="hljs-type">Fold</span> (<span class="hljs-title">x</span> -&gt; <span class="hljs-title">a</span> -&gt; <span class="hljs-title">x</span>) x (<span class="hljs-title">x</span> -&gt; <span class="hljs-title">b</span>)</span>
+</code></pre>
+<p>If we look through the menagerie supplied by the <code>comonad-transformers</code> package, we can pattern match on that with some effort and find:</p>
+<p><code>FoldX x a b</code> is isomorphic to both <code>EnvT (x -&gt; a -&gt; x) (Store x) b</code> and <code>StoreT x (Env (x -&gt; a -&gt; x)) b</code>. That it matches both of these types isn't surprising.</p>
+<p>With <code>Monad</code> transformers, <code>State</code>, <code>Reader</code> and <code>Writer</code> all commute. In the space of <code>Comonad</code> transformers, <code>Store</code>, <code>Env</code>, and <code>Traced</code> all commute similarly.</p>
+<p><code>Store</code> is our old friend from the previous post, but <code>Env</code> and <code>EnvT</code> is something we haven't looked at before.</p>
+<p><code>Env</code> is also pretty much the easiest comonad to derive yourself.</p>
+<p>Give it a shot!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE DeriveFunctor, ScopedTypeVariables #-}</span>
+
+<span class="hljs-keyword">import</span> Control.Comonad
+
+<span class="hljs-keyword">import</span> Control.Exception
+<span class="hljs-keyword">import</span> Control.Monad
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Env</span> e a = <span class="hljs-type">Env</span> e a <span class="hljs-keyword">deriving</span> (<span class="hljs-type">Eq</span>,<span class="hljs-type">Ord</span>,<span class="hljs-type">Show</span>,<span class="hljs-type">Read</span>,<span class="hljs-type">Functor</span>)</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Comonad</span> (<span class="hljs-type">Env</span> <span class="hljs-title">e</span>) <span class="hljs-keyword">where</span></span>
+  <span class="hljs-comment">-- extract :: Env e a -&gt; a</span>
+  extract (<span class="hljs-type">Env</span> e a) = error <span class="hljs-string">"unimplemented exercise"</span>
+
+  <span class="hljs-comment">-- duplicate :: Env e a -&gt; Env e (Env e a)</span>
+  duplicate (<span class="hljs-type">Env</span> e a) = error <span class="hljs-string">"unimplemented exercise"</span>
+
+<span class="hljs-title">main</span> = <span class="hljs-keyword">do</span>
+  test <span class="hljs-string">"extract"</span> $ extract (<span class="hljs-type">Env</span> <span class="hljs-number">1</span> <span class="hljs-number">2</span>) == <span class="hljs-number">2</span>
+  test <span class="hljs-string">"duplicate"</span> $ duplicate (<span class="hljs-type">Env</span> <span class="hljs-number">1</span> <span class="hljs-number">2</span>) == <span class="hljs-type">Env</span> <span class="hljs-number">1</span> (<span class="hljs-type">Env</span> <span class="hljs-number">1</span> <span class="hljs-number">2</span>)
+
+<span class="hljs-title">test</span> :: <span class="hljs-type">String</span> -&gt; <span class="hljs-type">Bool</span> -&gt; <span class="hljs-type">IO</span> ()
+<span class="hljs-title">test</span> s b = try (return $! b) &gt;&gt;= \ ec -&gt; <span class="hljs-keyword">case</span> ec <span class="hljs-keyword">of</span>
+  <span class="hljs-type">Left</span> (e :: <span class="hljs-type">SomeException</span>) -&gt; putStrLn $ s ++ <span class="hljs-string">" failed: "</span> ++ show e
+  <span class="hljs-type">Right</span> <span class="hljs-type">True</span> -&gt; putStrLn $ s ++ <span class="hljs-string">" is correct!"</span>
+  <span class="hljs-type">Right</span> <span class="hljs-type">False</span> -&gt; putStrLn $ s ++ <span class="hljs-string">" is not correct!"</span>
+</code></pre>
+<p>When we bolt an extra bit of environment onto our <code>Store</code> from the first part, we get</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">StoreAndEnv</span> s e a = <span class="hljs-type">StoreAndEnv</span> e (<span class="hljs-title">s</span> -&gt; <span class="hljs-title">a</span>) s</span>
+</code></pre>
+<p>If we fix <code>e = (s -&gt; b -&gt; s)</code>, we get</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">StoreAndStep</span> s b a = <span class="hljs-type">StoreAndStep</span> (<span class="hljs-title">s</span> -&gt; <span class="hljs-title">b</span> -&gt; <span class="hljs-title">s</span>) (<span class="hljs-title">s</span> -&gt; <span class="hljs-title">a</span>) s</span>
+</code></pre>
+<p>then if we existentially tie off the <code>s</code> parameter to keep the end-user from fiddling with it we get back to</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Fold</span> a b = forall s. <span class="hljs-type">Fold</span> (<span class="hljs-title">s</span> -&gt; <span class="hljs-title">b</span> -&gt; <span class="hljs-title">s</span>) (<span class="hljs-title">s</span> -&gt; <span class="hljs-title">a</span>) s</span>
+</code></pre>
+<p>which we could shuffle around into the right place.</p>
+<p>You can view tying off <code>s</code> as taking a coend if you are so categorically inclined.</p>
+<p>It was somewhat unsatisfying that we had to take a coend and make something existential in that type. Can we do without it?</p>
+<p>It turns out we can, as noted by Elliott Hird, we just need to turn to another <code>Comonad</code>!</p>
+<h2 id="moore-machines">Moore Machines</h2>
+<p>A <a href="http://en.wikipedia.org/wiki/Moore_machine">Moore machine</a> is one of the two classic ways to represent a <a href="http://en.wikipedia.org/wiki/Deterministic_finite_automaton">deterministic finite automaton (DFA)</a>. The definition we'll use here is going to allow for deterministic infinite automata for free.</p>
+<p>That sort of thing happens a lot in Haskell.</p>
+<p>A Moore machine gives you a result associated with each state in the automaton rather than each edge. We'll make the Moore machine itself represent the state implicitly.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Moore</span> b a = <span class="hljs-type">Moore</span> a (<span class="hljs-title">b</span> -&gt; <span class="hljs-type">Moore</span> <span class="hljs-title">b</span> <span class="hljs-title">a</span>)</span>
+</code></pre>
+<p>You can play around deriving its <code>extract</code> method below:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE DeriveFunctor, ScopedTypeVariables #-}</span>
+
+<span class="hljs-keyword">import</span> Control.Comonad
+
+<span class="hljs-keyword">import</span> Control.Exception
+<span class="hljs-keyword">import</span> Control.Monad
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Moore</span> b a = <span class="hljs-type">Moore</span> a (<span class="hljs-title">b</span> -&gt; <span class="hljs-type">Moore</span> <span class="hljs-title">b</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">deriving</span> <span class="hljs-type">Functor</span></span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Comonad</span> (<span class="hljs-type">Moore</span> <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+  <span class="hljs-comment">-- extract :: Moore b a -&gt; a</span>
+  extract (<span class="hljs-type">Moore</span> a <span class="hljs-keyword">as</span>) = error <span class="hljs-string">"unimplemented exercise"</span>
+
+  <span class="hljs-comment">-- duplicate :: Moore b a -&gt; Moore b (Moore b a)</span>
+  duplicate w@(<span class="hljs-type">Moore</span> _ <span class="hljs-keyword">as</span>) = <span class="hljs-type">Moore</span> w (duplicate &lt;$&gt; <span class="hljs-keyword">as</span>)
+
+  <span class="hljs-comment">-- extend :: (Moore b a -&gt; c) -&gt; Moore b a -&gt; Moore b c</span>
+  extend f w@(<span class="hljs-type">Moore</span> _ <span class="hljs-keyword">as</span>)  = <span class="hljs-type">Moore</span> (f w) (extend f &lt;$&gt; <span class="hljs-keyword">as</span>)
+
+<span class="hljs-title">main</span> = <span class="hljs-keyword">do</span>
+  test <span class="hljs-string">"extract"</span> $ <span class="hljs-number">1</span> == extract (<span class="hljs-type">Moore</span> <span class="hljs-number">1</span> $ error <span class="hljs-string">"you don't need to look in the tail"</span>)
+
+<span class="hljs-title">test</span> :: <span class="hljs-type">String</span> -&gt; <span class="hljs-type">Bool</span> -&gt; <span class="hljs-type">IO</span> ()
+<span class="hljs-title">test</span> s b = try (return $! b) &gt;&gt;= \ ec -&gt; <span class="hljs-keyword">case</span> ec <span class="hljs-keyword">of</span>
+  <span class="hljs-type">Left</span> (e :: <span class="hljs-type">SomeException</span>) -&gt; putStrLn $ s ++ <span class="hljs-string">" failed: "</span> ++ show e
+  <span class="hljs-type">Right</span> <span class="hljs-type">True</span> -&gt; putStrLn $ s ++ <span class="hljs-string">" is correct!"</span>
+  <span class="hljs-type">Right</span> <span class="hljs-type">False</span> -&gt; putStrLn $ s ++ <span class="hljs-string">" is not correct!"</span>
+</code></pre>
+<p>If you have an eye for this sort of thing, you may have noted that <code>Moore</code> is a <code>Cofree Comonad</code>!</p>
+<p>That is to say, <code>Moore b a ~ Cofree ((-&gt;) b) a</code>.</p>
+<p><code>Moore</code> machines are supplied in my <code>machines</code> package.</p>
+<p>We can also derive an <code>Applicative</code> for <code>Moore</code> and all the machinery from the <code>Fold</code> package, plus our new toys above.</p>
+<p>Here is where I'd love to be able to say that, reformulating things in this simpler way pays off and everything gets faster from using this encoding. Alas, that is not to be.</p>
+<p>The <code>Moore</code> machine formulation is about 50% slower than the <code>Fold</code> representation in part due to the fact that it has hidden information about the environment for our machine from the optimizer. With <code>Fold</code>, the explicit <code>s</code> can be manipulated by the inliner very easily.</p>
+<p>Moreover applying an <code>fmap</code> is clearly done at the end, and so you pay no real cost for it until after the last iteration of the loop.</p>
+<p>However, with the <code>Moore</code> representation, we pay for each <code>fmap</code>, because it winds up entangled in our core loop forever and we have to 'step over it' to get to the actual core of work we want to do. If we apply the co-<code>Yoneda</code> lemma to our Moore machine, we get</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">YonedaMoore</span> a b = forall r. <span class="hljs-type">YonedaMoore</span> (<span class="hljs-title">r</span> -&gt; <span class="hljs-title">a</span>) (<span class="hljs-type">Moore</span> <span class="hljs-title">a</span> <span class="hljs-title">r</span>)</span>
+</code></pre>
+<p>Then you get rid of the overhead for each <code>fmap</code>, but we've brought back the existential and just made the optimizer's job harder.</p>
+<p>What we do gain is flexibility in exchange for a bit of speed and no need for extensions.</p>
+<p>A <code>Moore</code> machine can represent a mixture of strict and lazy left folds without extra boxes. The <code>Fold</code> type we started with can only represent one or the other easily, but otherwise must use a box around the intermediate value type. The choice is made when you go to apply the <code>Fold</code>. Gabriel has chosen (rightly) to focus on strict left folds.</p>
+<p>With <code>Moore</code> we can define the embedding to either be lazy</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">moorel</span> :: (a -&gt; b -&gt; a) -&gt; a -&gt; <span class="hljs-type">Moore</span> b a
+<span class="hljs-title">moorel</span> f = go <span class="hljs-keyword">where</span>
+  go a = <span class="hljs-type">Moore</span> a (go . f a)
+</code></pre>
+<p>or strict</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">moorel'</span> :: (a -&gt; b -&gt; a) -&gt; a -&gt; <span class="hljs-type">Moore</span> b a
+<span class="hljs-title">moorel'</span> f = go <span class="hljs-keyword">where</span>
+  go !a = <span class="hljs-type">Moore</span> a (go . f a)
+</code></pre>
+<p>and because we don't have an explicit 's' parameter, we don't have to put a <code>Box</code> around it if we want the lazy version.</p>
+<p>Then the kinds of combinators supplied by <code>Fold</code> can be implemented as</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">total</span> :: <span class="hljs-type">Num</span> a =&gt; <span class="hljs-type">Moore</span> a a
+<span class="hljs-title">total</span> = moorel' (+) <span class="hljs-number">0</span>
+
+<span class="hljs-title">count</span> :: <span class="hljs-type">Num</span> a =&gt; <span class="hljs-type">Moore</span> b a
+<span class="hljs-title">count</span> = moorel' (\a _ -&gt; a + <span class="hljs-number">1</span>) <span class="hljs-number">0</span>
+</code></pre>
+<p><code>Fold</code> and <code>Moore</code> are equivalent in expressive power, so another way to think about a <code>Fold</code> is as <code>Cofree ((-&gt;) a)</code> represented with an explicit seed in the style of <code>Nu</code> from my <a href="https://hackage.haskell.org/package/recursion-schemes"><code>recursion-schemes</code></a> package!</p>
+<h2 id="feeding-machines-and-folds">Feeding Machines and Folds</h2>
+<p>If we redefine our <code>Moore</code> machine using record syntax:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Moore</span> b a = <span class="hljs-type">Moore</span> { <span class="hljs-title">this</span> :: <span class="hljs-title">a</span>, <span class="hljs-title">less</span> :: <span class="hljs-title">b</span> -&gt; <span class="hljs-type">Moore</span> <span class="hljs-title">b</span> <span class="hljs-title">a</span> }</span>
+</code></pre>
+<p>then we can run one of our <code>Moore</code> machines by continually calling <code>less</code> with new inputs and then extracting the answer for its final result state.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">more</span> :: <span class="hljs-type">Foldable</span> t =&gt; t b -&gt; <span class="hljs-type">Moore</span> b a -&gt; a
+<span class="hljs-title">more</span> xs m = extract (<span class="hljs-type">F</span>.foldl' less m xs)
+</code></pre>
+<p>Note that even though I'm using foldl' here, the thing that is being strictly updated is the Moore machine, not its member, which is only strict if you <em>built</em> the Moore machine using <code>moorel'</code> above.</p>
+<p><code>more xs</code> is now a <code>Cokleisli</code> arrow for our <code>Comonad</code>, just like <code>rule 110</code> was for our <code>Store</code> <code>Comonad</code> in the last post.</p>
+<p>We can construct a similar version of <code>more</code> for <code>Fold</code> using Gabriel's <code>fold</code> combinator.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">more</span> :: <span class="hljs-type">Foldable</span> t =&gt; t b -&gt; <span class="hljs-type">Fold</span> b a -&gt; a
+<span class="hljs-title">more</span> xs m = extract (fold m xs)
+</code></pre>
+<h2 id="what-does-the-comonad-for-fold-mean">What does the Comonad for Fold mean?</h2>
+<p>The <code>Comonad</code> for <code>Fold a</code> or <code>Moore</code> enables us to partially apply a <code>Fold</code> or <code>Moore</code> machine to some input and then resume it later.</p>
+<p>If we <code>extend (more xs)</code> we get the ability to resume it with additional input, having partially driven our <code>Fold</code>!</p>
+<p>If we turn to <code>(=&lt;=)</code> from <code>Control.Comonad</code>.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">(=&lt;=) :: <span class="hljs-type">Comonad</span> w =&gt; (w b -&gt; c) -&gt; (w a -&gt; b) -&gt; w a -&gt; c
+<span class="hljs-title">f</span> =&lt;= g = f . extend g
+</code></pre>
+<p>Then we can express the laws for <code>more</code>:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">extract</span> = more []
+<span class="hljs-title">more</span> <span class="hljs-keyword">as</span> =&lt;= more bs = more (<span class="hljs-keyword">as</span> ++ bs)
+</code></pre>
+<p>So <code>more</code> provides us a monoid homomorphism between Cokleisli composition and concatenation.</p>
+<p>Operationally, it sneaks in before you apply the last step to convert from your intermediate accumulator to the final result and lets you continue to do more work on the accumulator.</p>
+<p>This strikes me as not intuitively obvious, because unless you look at it carefully, it isn't immediately obvious that you can resume something like a hash function because at the end, you usually tweak the result before giving it to the user. Here because we have access to the internals of the Comonad, we can <code>duplicate</code> them into the result before closing it off.</p>
+<p>This is where the explicit seed pays off, because that <code>duplicate</code> incurs no overhead during the actual traversal under Gabriel's representation.</p>
+<p>This same existential construction works for <code>foldMap</code>- and <code>foldr</code>-based folds as well, though most of the "stream fusion" benefits require you to be able to stream and so <code>foldMap</code>-like structures, sadly, get little benefit.</p>
+<h2 id="resuming-a-hash-function">Resuming a Hash Function</h2>
+<p>Let us consider a couple of CRC-like functions, to have something non-trivial to fold.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Adler32</span> = <span class="hljs-type">Adler32</span> <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Word32</span> <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Word32</span></span>
+
+<span class="hljs-title">adler32</span> :: <span class="hljs-type">Moore</span> <span class="hljs-type">Word8</span> <span class="hljs-type">Word32</span>
+<span class="hljs-title">adler32</span> = done &lt;$&gt; moorel' step (<span class="hljs-type">Adler32</span> <span class="hljs-number">1</span> <span class="hljs-number">0</span>) <span class="hljs-keyword">where</span>
+  step (<span class="hljs-type">Adler32</span> s1 s2) x = <span class="hljs-type">Adler32</span> s1' s2' <span class="hljs-keyword">where</span>
+    s1' = mod (s1 + fromIntegral x) <span class="hljs-number">65521</span>
+    s2' = mod (s1' + s2) <span class="hljs-number">65521</span>
+  done (<span class="hljs-type">Adler32</span> s1 s2) = unsafeShiftL s2 <span class="hljs-number">16</span> + s1
+</code></pre>
+<p>In <a href="http://en.wikipedia.org/wiki/Adler-32">Adler32</a>, the final step of hashing destroys the separation of information between <code>s1</code> and <code>s2</code>, but we can sneak in with the comonad before we destroy it and resume!</p>
+<p>Similarly, but less catastrophically, in <a href="http://en.wikipedia.org/wiki/Cyclic_redundancy_check">CRC32</a> the final step is to complement the input.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">crc32</span> :: <span class="hljs-type">Moore</span> <span class="hljs-type">Word8</span> <span class="hljs-type">Word32</span>
+<span class="hljs-title">crc32</span> = complement &lt;$&gt; moorel' step <span class="hljs-number">0xffffffff</span> <span class="hljs-keyword">where</span>
+  step r b = unsafeShiftR r <span class="hljs-number">8</span> `xor` (crcs <span class="hljs-type">Unboxed</span>.! fromIntegral (xor r (fromIntegral b) .&amp;. <span class="hljs-number">0xff</span>))
+
+<span class="hljs-title">crcs</span> :: <span class="hljs-type">Unboxed</span>.<span class="hljs-type">Vector</span> <span class="hljs-type">Word32</span>
+<span class="hljs-title">crcs</span> = <span class="hljs-type">Unboxed</span>.generate <span class="hljs-number">256</span> (go.go.go.go.go.go.go.go.fromIntegral) <span class="hljs-keyword">where</span>
+  go c = unsafeShiftR c <span class="hljs-number">1</span> `xor` <span class="hljs-keyword">if</span> c .&amp;. <span class="hljs-number">1</span> /= <span class="hljs-number">0</span> <span class="hljs-keyword">then</span> <span class="hljs-number">0xedb88320</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span>
+</code></pre>
+<p>We can describe similar <code>Moore</code> machines (or <code>Fold</code>s) for common hashing functions, and then we don't need to make up separate functions for initializing the state, feeding them some incremental additional data and finally cleaning up when we're done.</p>
+<p>The <code>Moore</code> machine provides you with all of that, and the entire API necessary to interact with them comes down to feeding it <code>more</code>, extending after doing so to accept more input!</p>
+<p>This strikes me as an incredibly clean implementation pattern for HMACs such as <a href="http://en.wikipedia.org/wiki/MD5">MD5</a> and <a href="http://en.wikipedia.org/wiki/SHA-1">SHA</a> in Haskell. You don't need to name 3 separate pieces.</p>
+<p>You just name the HMAC itself as the Moore machine that produces it. Then you can feed it <code>more</code> data, extending it as needed until you finally go to look at the last result.</p>
+<h2 id="uncompressed-pngs">Uncompressed PNGs</h2>
+<p>So let's put our code where our mouth is and show that we can use this to do some software engineering by writing some code to produce a <a href="http://en.wikipedia.org/wiki/Portable_Network_Graphics">PNG</a> image from scratch in Haskell.</p>
+<p>A bit over a year ago, Keegan McAllister wrote a nice <a href="http://mainisusuallyafunction.blogspot.com/2012/04/minimal-encoder-for-uncompressed-pngs.html">post</a> on how to generate a minimal uncompressed PNG using python. We'll copy his development here, except we'll switch out to the nicer table-based crc32 above.</p>
+<p>As he noted, you need to implement two hash functions to actually get through writing an uncompressed PNG. Hrmm. We appear to have those.</p>
+<p>We'll use <code>Data.Binary</code> to write out the results, mostly because PNG is an annoyingly introspective format, so we'll have to talk about the lengths of fragments we're generating as we go.</p>
+<p>We can write the ability to put a PNG 'chunk' out, which consists of a 4 byte header followed by some data, but which first encodes the length of just the data, then emits the header, then the data, and finally closes off the chunk with the CRC32 of both.</p>
+<p>Let's generalize more to work over any <code>Fold</code> (in the <code>lens</code> sense this time!) that yields the input type.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">moreOf</span> :: <span class="hljs-type">Getting</span> (<span class="hljs-type">Endo</span> (<span class="hljs-type">Endo</span> (<span class="hljs-type">Moore</span> b a))) s b -&gt; s -&gt; <span class="hljs-type">Moore</span> b a -&gt; a
+<span class="hljs-title">moreOf</span> l xs m = extract (foldlOf' l less m xs)
+</code></pre>
+<p>That somewhat baroque seeming type can be read as a more liberal version of:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">moreOf</span> :: <span class="hljs-type">Fold</span> s b -&gt; s -&gt; <span class="hljs-type">Moore</span> b a -&gt; a
+</code></pre>
+<p>that just happens to get better inference due to the lack of rank-2 types.</p>
+<p>Now we can use it directly on the lazy bytestring fragments we get along the way</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">putChunk</span> :: <span class="hljs-type">Lazy</span>.<span class="hljs-type">ByteString</span> -&gt; <span class="hljs-type">Put</span> -&gt; <span class="hljs-type">Put</span>
+<span class="hljs-title">putChunk</span> h (runPut -&gt; b) = <span class="hljs-keyword">do</span>
+  putWord32be $ fromIntegral (<span class="hljs-type">Lazy</span>.length b)
+  putLazyByteString h
+  putLazyByteString b
+  putWord32be $ moreOf bytes h =&lt;= moreOf bytes b $ crc32
+</code></pre>
+<p>To write out a PNG file, we need to be able to emit the <code>IHDR</code> chunk, 1 or more <code>IDAT</code> chunks of zlib compressed data, and an <code>IEND</code> chunk.</p>
+<p>We can break up our zlib data into uncompressed blocks. However, zlib only allows uncompressed runs of 64k at a time, so we let's define the encoding for a nested uncompressed deflate block.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">deflated</span> :: <span class="hljs-type">Bool</span> -&gt; <span class="hljs-type">Lazy</span>.<span class="hljs-type">ByteString</span> -&gt; <span class="hljs-type">Put</span>
+<span class="hljs-title">deflated</span> final b | l &lt;- fromIntegral (<span class="hljs-type">Lazy</span>.length b) = <span class="hljs-keyword">do</span>
+  putWord8 $ <span class="hljs-keyword">if</span> final <span class="hljs-keyword">then</span> <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span>
+  putWord16le l <span class="hljs-comment">-- yep, now it's little endian!</span>
+  putWord16le (complement l)
+  putLazyByteString b
+</code></pre>
+<p>Then we just rip our input up into 64k blocks, embed each of those blocks in one enormous <code>IDAT</code> block, then finally seal everything up with the <code>Adler32</code> checksum that we so helpfully supplied as an example above!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">zlibbed</span> :: <span class="hljs-type">Lazy</span>.<span class="hljs-type">ByteString</span> -&gt; <span class="hljs-type">Put</span>
+<span class="hljs-title">zlibbed</span> bs = <span class="hljs-keyword">do</span>
+  putWord8 <span class="hljs-number">0x78</span>
+  putWord8 <span class="hljs-number">0x01</span>
+  go bs
+  putWord32be $ moreOf bytes bs adler32
+  <span class="hljs-keyword">where</span>
+    go (<span class="hljs-type">Lazy</span>.splitAt <span class="hljs-number">0xffff</span> -&gt; (xs, ys)) | done &lt;- <span class="hljs-type">Lazy</span>.null ys = <span class="hljs-keyword">do</span>
+      deflated done xs
+      <span class="hljs-type">M</span>.unless done (go ys)
+</code></pre>
+<p>Now we can write out a PNG header, loop through the data, state that we're not applying any transformation for each row:</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">png</span> :: <span class="hljs-type">Int</span> -&gt; [<span class="hljs-type">Int</span> -&gt; (<span class="hljs-type">Word8</span>, <span class="hljs-type">Word8</span>, <span class="hljs-type">Word8</span>)] -&gt; <span class="hljs-type">Lazy</span>.<span class="hljs-type">ByteString</span>
+<span class="hljs-title">png</span> w fs = runPut $ <span class="hljs-keyword">do</span>
+  putLazyByteString <span class="hljs-string">"\x89PNG\r\n\x1a\n"</span>
+  putChunk <span class="hljs-string">"IHDR"</span> $ <span class="hljs-keyword">do</span>
+    putWord32be $ fromIntegral w
+    putWord32be $ fromIntegral (<span class="hljs-type">List</span>.length fs)
+    putWord8 <span class="hljs-number">8</span> <span class="hljs-comment">-- 8 bit color depth</span>
+    putWord8 <span class="hljs-number">2</span> <span class="hljs-comment">-- RGB</span>
+    putWord8 <span class="hljs-number">0</span>
+    putWord8 <span class="hljs-number">0</span>
+    putWord8 <span class="hljs-number">0</span>
+  putChunk <span class="hljs-string">"IDAT"</span> $ zlibbed (runPut rows)
+  putChunk <span class="hljs-string">"IEND"</span> $ return ()
+  <span class="hljs-keyword">where</span>
+    rows = forM_ fs $ \f -&gt; <span class="hljs-keyword">do</span>
+      putWord8 <span class="hljs-number">0</span>
+      forM_ [<span class="hljs-number">0</span>..w-<span class="hljs-number">1</span>] (put . f)
+</code></pre>
+<p>Here I've chosen to tell the PNG the width, but leave height implicit in the length of the list of functions from horizontal position to pixel color. I may revisit that later, but it was the fastest thing I could think of to write.</p>
+<p>This lets <code>png</code> nicely fit into the recursion pattern from the previous post.</p>
+<p>But we've written a lot of code, so it'd be nice to check that we generated a valid PNG.</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">
+<span class="hljs-meta">{-# LANGUAGE BangPatterns #-}</span>
+<span class="hljs-meta">{-# LANGUAGE OverloadedStrings #-}</span>
+<span class="hljs-meta">{-# LANGUAGE ViewPatterns #-}</span>
+<span class="hljs-meta">{-# LANGUAGE TemplateHaskell #-}</span>
+<span class="hljs-meta">{-# LANGUAGE QuasiQuotes #-}</span>
+<span class="hljs-meta">{-# LANGUAGE TypeFamilies #-}</span>
+<span class="hljs-meta">{-# OPTIONS_GHC -Wall #-}</span>
+<span class="hljs-keyword">import</span> Control.Applicative
+<span class="hljs-keyword">import</span> Control.Comonad
+<span class="hljs-keyword">import</span> Control.Lens
+<span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Control.Monad <span class="hljs-keyword">as</span> M
+<span class="hljs-keyword">import</span> Data.Bits
+<span class="hljs-keyword">import</span> Data.Binary
+<span class="hljs-keyword">import</span> Data.Binary.Put
+<span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Data.ByteString.Lazy <span class="hljs-keyword">as</span> Lazy
+<span class="hljs-keyword">import</span> Data.ByteString.Lens
+<span class="hljs-keyword">import</span> Data.Monoid
+<span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Data.Vector.Unboxed <span class="hljs-keyword">as</span> Unboxed
+<span class="hljs-keyword">import</span> Data.Foldable <span class="hljs-keyword">as</span> F
+<span class="hljs-keyword">import</span> Data.List <span class="hljs-keyword">as</span> List
+<span class="hljs-keyword">import</span> Yesod
+
+<span class="hljs-comment">-- * Moore machines</span>
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Moore</span> b a = <span class="hljs-type">Moore</span> { <span class="hljs-title">this</span> :: <span class="hljs-title">a</span>, <span class="hljs-title">less</span> :: <span class="hljs-title">b</span> -&gt; <span class="hljs-type">Moore</span> <span class="hljs-title">b</span> <span class="hljs-title">a</span> }</span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Num</span> a =&gt; <span class="hljs-type">Num</span> (<span class="hljs-type">Moore</span> <span class="hljs-title">b</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  (+) = liftA2 (+)
+  (-) = liftA2 (-)
+  (*) = liftA2 (*)
+  abs = fmap abs
+  signum = fmap signum
+  fromInteger = pure . fromInteger
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Fractional</span> a =&gt; <span class="hljs-type">Fractional</span> (<span class="hljs-type">Moore</span> <span class="hljs-title">b</span> <span class="hljs-title">a</span>) <span class="hljs-keyword">where</span></span>
+  recip = fmap recip
+  (/) = liftA2 (/)
+  fromRational = pure . fromRational
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Functor</span> (<span class="hljs-type">Moore</span> <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+  fmap f = go <span class="hljs-keyword">where</span> go (<span class="hljs-type">Moore</span> a k) = <span class="hljs-type">Moore</span> (f a) (go . k)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Comonad</span> (<span class="hljs-type">Moore</span> <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+  extract = this
+  duplicate w@(<span class="hljs-type">Moore</span> _ <span class="hljs-keyword">as</span>) = <span class="hljs-type">Moore</span> w (duplicate . <span class="hljs-keyword">as</span>)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">ComonadApply</span> (<span class="hljs-type">Moore</span> <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+  (&lt;@&gt;) = (&lt;*&gt;)
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Applicative</span> (<span class="hljs-type">Moore</span> <span class="hljs-title">b</span>) <span class="hljs-keyword">where</span></span>
+  pure a = <span class="hljs-keyword">as</span> <span class="hljs-keyword">where</span> <span class="hljs-keyword">as</span> = <span class="hljs-type">Moore</span> a (const <span class="hljs-keyword">as</span>)
+  <span class="hljs-type">Moore</span> f fs &lt;*&gt; <span class="hljs-type">Moore</span> a <span class="hljs-keyword">as</span> = <span class="hljs-type">Moore</span> (f a) $ \b -&gt; fs b &lt;*&gt; <span class="hljs-keyword">as</span> b
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Profunctor</span> <span class="hljs-type">Moore</span> <span class="hljs-keyword">where</span></span>
+  dimap f g (<span class="hljs-type">Moore</span> a <span class="hljs-keyword">as</span>) = <span class="hljs-type">Moore</span> (g a) (dimap f g . <span class="hljs-keyword">as</span> . f)
+
+<span class="hljs-title">moorel</span> :: (a -&gt; b -&gt; a) -&gt; a -&gt; <span class="hljs-type">Moore</span> b a
+<span class="hljs-title">moorel</span> f = go <span class="hljs-keyword">where</span> go a = <span class="hljs-type">Moore</span> a (go . f a)
+
+<span class="hljs-title">moorel'</span> :: (a -&gt; b -&gt; a) -&gt; a -&gt; <span class="hljs-type">Moore</span> b a
+<span class="hljs-title">moorel'</span> f = go <span class="hljs-keyword">where</span> go !a = <span class="hljs-type">Moore</span> a (go . f a)
+
+<span class="hljs-title">moreOf</span> :: <span class="hljs-type">Getting</span> (<span class="hljs-type">Endo</span> (<span class="hljs-type">Endo</span> (<span class="hljs-type">Moore</span> b a))) s b -&gt; s -&gt; <span class="hljs-type">Moore</span> b a -&gt; a
+<span class="hljs-title">moreOf</span> l xs m = extract (foldlOf' l less m xs)
+
+<span class="hljs-comment">-- * Adler 32</span>
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">Adler32</span> = <span class="hljs-type">Adler32</span> <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Word32</span> <span class="hljs-meta">{-# UNPACK #-}</span> !<span class="hljs-type">Word32</span></span>
+
+<span class="hljs-title">adler32</span> :: <span class="hljs-type">Moore</span> <span class="hljs-type">Word8</span> <span class="hljs-type">Word32</span>
+<span class="hljs-title">adler32</span> = done &lt;$&gt; moorel' step (<span class="hljs-type">Adler32</span> <span class="hljs-number">1</span> <span class="hljs-number">0</span>) <span class="hljs-keyword">where</span>
+  step (<span class="hljs-type">Adler32</span> s1 s2) x = <span class="hljs-type">Adler32</span> s1' s2' <span class="hljs-keyword">where</span>
+    s1' = mod (s1 + fromIntegral x) <span class="hljs-number">65521</span>
+    s2' = mod (s1' + s2) <span class="hljs-number">65521</span>
+  done (<span class="hljs-type">Adler32</span> s1 s2) = unsafeShiftL s2 <span class="hljs-number">16</span> + s1
+
+<span class="hljs-comment">-- * CRC32</span>
+
+<span class="hljs-title">crc32</span> :: <span class="hljs-type">Moore</span> <span class="hljs-type">Word8</span> <span class="hljs-type">Word32</span>
+<span class="hljs-title">crc32</span> = complement &lt;$&gt; moorel' step <span class="hljs-number">0xffffffff</span> <span class="hljs-keyword">where</span>
+  step r b = unsafeShiftR r <span class="hljs-number">8</span> `xor` crcs <span class="hljs-type">Unboxed</span>.! fromIntegral (xor r (fromIntegral b) .&amp;. <span class="hljs-number">0xff</span>)
+
+<span class="hljs-title">crcs</span> :: <span class="hljs-type">Unboxed</span>.<span class="hljs-type">Vector</span> <span class="hljs-type">Word32</span>
+<span class="hljs-title">crcs</span> = <span class="hljs-type">Unboxed</span>.generate <span class="hljs-number">256</span> (go.go.go.go.go.go.go.go.fromIntegral) <span class="hljs-keyword">where</span>
+  go c = unsafeShiftR c <span class="hljs-number">1</span> `xor` <span class="hljs-keyword">if</span> c .&amp;. <span class="hljs-number">1</span> /= <span class="hljs-number">0</span> <span class="hljs-keyword">then</span> <span class="hljs-number">0xedb88320</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span>
+
+<span class="hljs-comment">-- * PNG</span>
+
+<span class="hljs-title">putChunk</span> :: <span class="hljs-type">Lazy</span>.<span class="hljs-type">ByteString</span> -&gt; <span class="hljs-type">Put</span> -&gt; <span class="hljs-type">Put</span>
+<span class="hljs-title">putChunk</span> h (runPut -&gt; b) = <span class="hljs-keyword">do</span>
+  putWord32be $ fromIntegral (<span class="hljs-type">Lazy</span>.length b)
+  putLazyByteString h
+  putLazyByteString b
+  putWord32be $ moreOf bytes h =&lt;= moreOf bytes b $ crc32
+
+<span class="hljs-title">deflated</span> :: <span class="hljs-type">Bool</span> -&gt; <span class="hljs-type">Lazy</span>.<span class="hljs-type">ByteString</span> -&gt; <span class="hljs-type">Put</span>
+<span class="hljs-title">deflated</span> final b | l &lt;- fromIntegral (<span class="hljs-type">Lazy</span>.length b) = <span class="hljs-keyword">do</span>
+  putWord8 $ <span class="hljs-keyword">if</span> final <span class="hljs-keyword">then</span> <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span>
+  putWord16le l <span class="hljs-comment">-- yep, now it's little endian!</span>
+  putWord16le (complement l)
+  putLazyByteString b
+
+<span class="hljs-title">zlibbed</span> :: <span class="hljs-type">Lazy</span>.<span class="hljs-type">ByteString</span> -&gt; <span class="hljs-type">Put</span>
+<span class="hljs-title">zlibbed</span> bs = <span class="hljs-keyword">do</span>
+  putWord8 <span class="hljs-number">0x78</span>
+  putWord8 <span class="hljs-number">0x01</span>
+  go bs
+  putWord32be $ moreOf bytes bs adler32
+  <span class="hljs-keyword">where</span>
+    go (<span class="hljs-type">Lazy</span>.splitAt <span class="hljs-number">0xffff</span> -&gt; (xs, ys)) | done &lt;- <span class="hljs-type">Lazy</span>.null ys = <span class="hljs-keyword">do</span>
+      deflated done xs
+      <span class="hljs-type">M</span>.unless done (go ys)
+
+<span class="hljs-title">png</span> :: <span class="hljs-type">Int</span> -&gt; [<span class="hljs-type">Int</span> -&gt; (<span class="hljs-type">Word8</span>, <span class="hljs-type">Word8</span>, <span class="hljs-type">Word8</span>)] -&gt; <span class="hljs-type">Lazy</span>.<span class="hljs-type">ByteString</span>
+<span class="hljs-title">png</span> w fs = runPut $ <span class="hljs-keyword">do</span>
+  putLazyByteString <span class="hljs-string">"\x89PNG\r\n\x1a\n"</span>
+  putChunk <span class="hljs-string">"IHDR"</span> $ <span class="hljs-keyword">do</span>
+    putWord32be $ fromIntegral w
+    putWord32be $ fromIntegral (<span class="hljs-type">List</span>.length fs)
+    putWord8 <span class="hljs-number">8</span> <span class="hljs-comment">-- 8 bit color depth</span>
+    putWord8 <span class="hljs-number">2</span> <span class="hljs-comment">-- RGB</span>
+    putWord8 <span class="hljs-number">0</span>
+    putWord8 <span class="hljs-number">0</span>
+    putWord8 <span class="hljs-number">0</span>
+  putChunk <span class="hljs-string">"IDAT"</span> $ zlibbed (runPut rows)
+  putChunk <span class="hljs-string">"IEND"</span> $ return ()
+  <span class="hljs-keyword">where</span>
+    rows = forM_ fs $ \f -&gt; <span class="hljs-keyword">do</span>
+      putWord8 <span class="hljs-number">0</span>
+      forM_ [<span class="hljs-number">0</span>..w-<span class="hljs-number">1</span>] (put . f)
+
+<span class="hljs-comment">-- * Yesod</span>
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">App</span> = <span class="hljs-type">App</span></span>
+<span class="hljs-class">
+<span class="hljs-keyword">instance</span> <span class="hljs-type">Yesod</span> <span class="hljs-type">App</span>
+
+mkYesod "<span class="hljs-type">App</span>" [parseRoutes| / <span class="hljs-type">ImageR</span> <span class="hljs-type">GET</span> |]
+
+main :: <span class="hljs-type">IO</span> ()
+main = warpEnv <span class="hljs-type">App</span>
+
+
+getImageR :: <span class="hljs-type">MonadHandler</span> m =&gt; m <span class="hljs-type">TypedContent</span>
+getImageR = sendResponse $ toTypedContent (<span class="hljs-title">typePng</span>, <span class="hljs-title">toContent</span> <span class="hljs-title">img</span>) <span class="hljs-keyword">where</span></span>
+  img = png <span class="hljs-number">500</span> $ take <span class="hljs-number">300</span> $ pixel &lt;$&gt; [<span class="hljs-number">0</span>..]
+  pixel y x = (fromIntegral x,fromInteger y,<span class="hljs-number">0</span>)
+
+</code></pre>
+<p>That image matches up byte for byte with the output of Keegan's sample, so we seem to have an end-to-end test that works.</p>
+<p>A lot of this code is redundant, however.</p>
+<p>For instance all of the <code>Moore</code> code could be taken from the <code>machines</code> package, which provides <code>Data.Machine.Moore</code> along with all of these instances! Then with a bit of tightening of exposition and removing unnecessary detours we could generate the whole thing in a lot less code.</p>
+<h2 id="automata-please">Automata, Please</h2>
+<p>Of course, this is supposed to be a series about cellular automata. So let's draw one.</p>
+<p>1.) I'll be switching to a 4 line minimalist version of Gabriel's <code>foldl</code> library, rather than using the <code>Moore</code> representation, since we don't need any of the instances. I've renamed his <code>Fold</code> to <code>L</code> here to avoid conflicts with the <code>Lens</code> library.</p>
+<p>2.) We don't <em>need</em> to use the <code>Comonad</code> for the fold type we spent all that time above building up. Here we're working with lazy bytestrings, so let's just append them in the one case we need!</p>
+<p>2.) I'll also be using the <code>Context</code> comonad from the <a href="https://hackage.haskell.org/package/lens"><code>lens</code></a> package rather than continuing to roll our own <code>Store</code>. That'll be useful next time when I want to abuse the separate indices.</p>
+<p>3.)
+I've tweaked the memoization rule to use</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">loop</span> f = iterate (tab . extend f) . tab
+</code></pre>
+<p>instead of</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-title">loop</span> f = iterate (extend f . tab)
+</code></pre>
+<p>to get slightly better memoization. I also switched to <code>representable-tries</code>,
+because it'll make it easier to switch to new topologies later.</p>
+<p>4.) Finally, to reduce the footprint of the PNGs we generate we'll let the existing <code>zlib</code> bindings for Haskell do the compression rather than manually deflate. This reduces the footprint of the generated images a great deal.</p>
+<p>Click Run!</p>
+<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell"><span class="hljs-meta">{-# LANGUAGE OverloadedStrings #-}</span>
+<span class="hljs-meta">{-# LANGUAGE ExistentialQuantification #-}</span>
+<span class="hljs-meta">{-# LANGUAGE Rank2Types #-}</span>
+<span class="hljs-meta">{-# LANGUAGE TemplateHaskell #-}</span>
+<span class="hljs-meta">{-# LANGUAGE QuasiQuotes #-}</span>
+<span class="hljs-meta">{-# LANGUAGE TypeFamilies #-}</span>
+<span class="hljs-keyword">import</span> Control.Applicative
+<span class="hljs-keyword">import</span> Control.Comonad
+<span class="hljs-keyword">import</span> Codec.Compression.Zlib
+<span class="hljs-keyword">import</span> Control.Lens.Internal.Context
+<span class="hljs-keyword">import</span> Control.Lens <span class="hljs-keyword">as</span> L
+<span class="hljs-keyword">import</span> Data.Bits
+<span class="hljs-keyword">import</span> Data.Bits.Lens <span class="hljs-keyword">as</span> L
+<span class="hljs-keyword">import</span> Data.Monoid
+<span class="hljs-keyword">import</span> Data.Binary
+<span class="hljs-keyword">import</span> Data.Binary.Put
+<span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Data.ByteString.Lazy <span class="hljs-keyword">as</span> Lazy
+<span class="hljs-keyword">import</span> <span class="hljs-keyword">qualified</span> Data.Vector.Unboxed <span class="hljs-keyword">as</span> Unboxed
+<span class="hljs-keyword">import</span> Data.Foldable <span class="hljs-keyword">as</span> F
+<span class="hljs-keyword">import</span> Data.MemoTrie
+<span class="hljs-keyword">import</span> Yesod
+
+<span class="hljs-title">rule</span> :: <span class="hljs-type">Num</span> s =&gt; <span class="hljs-type">Word8</span> -&gt; <span class="hljs-type">Context</span> s s <span class="hljs-type">Bool</span> -&gt; <span class="hljs-type">Bool</span>
+<span class="hljs-title">rule</span> w (<span class="hljs-type">Context</span> f s) = testBit w $ <span class="hljs-number">0</span> <span class="hljs-type">L</span>.&amp; partsOf <span class="hljs-type">L</span>.bits .~ [f (s+<span class="hljs-number">1</span>), f s, f (s-<span class="hljs-number">1</span>)]
+
+<span class="hljs-title">loop</span> :: <span class="hljs-type">HasTrie</span> s =&gt; (<span class="hljs-type">Context</span> s s a -&gt; a) -&gt; <span class="hljs-type">Context</span> s s a -&gt; [<span class="hljs-type">Context</span> s s a]
+<span class="hljs-title">loop</span> f = iterate (tab . extend f) . tab <span class="hljs-keyword">where</span>
+  tab (<span class="hljs-type">Context</span> k s) = <span class="hljs-type">Context</span> (memo k) s
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">L</span> b a = forall x. <span class="hljs-type">L</span> (<span class="hljs-title">x</span> -&gt; <span class="hljs-title">b</span> -&gt; <span class="hljs-title">x</span>) x (<span class="hljs-title">x</span> -&gt; <span class="hljs-title">a</span>)</span>
+
+<span class="hljs-title">more</span> :: <span class="hljs-type">Lazy</span>.<span class="hljs-type">ByteString</span> -&gt; <span class="hljs-type">L</span> <span class="hljs-type">Word8</span> a -&gt; a
+<span class="hljs-title">more</span> bs (<span class="hljs-type">L</span> xbx x xa) = xa (<span class="hljs-type">Lazy</span>.foldl' xbx x bs)
+
+<span class="hljs-title">crc32</span> :: <span class="hljs-type">L</span> <span class="hljs-type">Word8</span> <span class="hljs-type">Word32</span>
+<span class="hljs-title">crc32</span> = <span class="hljs-type">L</span> step <span class="hljs-number">0xffffffff</span> complement <span class="hljs-keyword">where</span>
+  step r b = unsafeShiftR r <span class="hljs-number">8</span> `xor` crcs <span class="hljs-type">Unboxed</span>.! fromIntegral (xor r (fromIntegral b) .&amp;. <span class="hljs-number">0xff</span>)
+
+<span class="hljs-title">crcs</span> :: <span class="hljs-type">Unboxed</span>.<span class="hljs-type">Vector</span> <span class="hljs-type">Word32</span>
+<span class="hljs-title">crcs</span> = <span class="hljs-type">Unboxed</span>.generate <span class="hljs-number">256</span> (go.go.go.go.go.go.go.go.fromIntegral) <span class="hljs-keyword">where</span>
+  go c = unsafeShiftR c <span class="hljs-number">1</span> `xor` <span class="hljs-keyword">if</span> c .&amp;. <span class="hljs-number">1</span> /= <span class="hljs-number">0</span> <span class="hljs-keyword">then</span> <span class="hljs-number">0xedb88320</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span>
+
+<span class="hljs-title">putChunk</span> :: <span class="hljs-type">Lazy</span>.<span class="hljs-type">ByteString</span> -&gt; <span class="hljs-type">Lazy</span>.<span class="hljs-type">ByteString</span> -&gt; <span class="hljs-type">Put</span>
+<span class="hljs-title">putChunk</span> h b = <span class="hljs-keyword">do</span>
+  putWord32be $ fromIntegral (<span class="hljs-type">Lazy</span>.length b)
+  putLazyByteString h
+  putLazyByteString b
+  putWord32be $ more (h &lt;&gt; b) crc32
+
+<span class="hljs-title">png</span> :: <span class="hljs-type">Int</span> -&gt; <span class="hljs-type">Int</span> -&gt; [<span class="hljs-type">Int</span> -&gt; (<span class="hljs-type">Word8</span>, <span class="hljs-type">Word8</span>, <span class="hljs-type">Word8</span>)] -&gt; <span class="hljs-type">Lazy</span>.<span class="hljs-type">ByteString</span>
+<span class="hljs-title">png</span> w h fs = runPut $ <span class="hljs-keyword">do</span>
+  putLazyByteString <span class="hljs-string">"\x89PNG\r\n\x1a\n"</span>
+  putChunk <span class="hljs-string">"IHDR"</span> $ runPut $ <span class="hljs-keyword">do</span>
+    putWord32be (fromIntegral w)
+    putWord32be (fromIntegral h)
+    putWord8 <span class="hljs-number">8</span> <span class="hljs-comment">-- 8 bit color depth</span>
+    putWord8 <span class="hljs-number">2</span> <span class="hljs-comment">-- RGB</span>
+    putWord8 <span class="hljs-number">0</span>
+    putWord8 <span class="hljs-number">0</span>
+    putWord8 <span class="hljs-number">0</span>
+  putChunk <span class="hljs-string">"IDAT"</span> $
+    compressWith defaultCompressParams { compressLevel = bestSpeed } $
+    runPut $ forM_ (take h fs) $ \f -&gt; <span class="hljs-keyword">do</span>
+      putWord8 <span class="hljs-number">0</span>
+      forM_ [<span class="hljs-number">0</span>..w-<span class="hljs-number">1</span>] (put . f)
+  putChunk <span class="hljs-string">"IEND"</span> mempty
+
+<span class="hljs-class"><span class="hljs-keyword">data</span> <span class="hljs-type">App</span> = <span class="hljs-type">App</span></span>
+<span class="hljs-class"><span class="hljs-keyword">instance</span> <span class="hljs-type">Yesod</span> <span class="hljs-type">App</span>
+mkYesod "<span class="hljs-type">App</span>" [parseRoutes| / <span class="hljs-type">ImageR</span> <span class="hljs-type">GET</span> |]
+main = warpEnv <span class="hljs-type">App</span>
+
+
+getImageR :: <span class="hljs-type">MonadHandler</span> m =&gt; m <span class="hljs-type">TypedContent</span>
+getImageR = sendResponse $ toTypedContent (<span class="hljs-title">typePng</span>, <span class="hljs-title">toContent</span> <span class="hljs-title">img</span>) <span class="hljs-keyword">where</span></span>
+  img = png <span class="hljs-number">150</span> <span class="hljs-number">150</span> $ draw &lt;$&gt; loop (rule <span class="hljs-number">110</span>) (<span class="hljs-type">Context</span> (==<span class="hljs-number">149</span>) <span class="hljs-number">149</span>)
+  draw (<span class="hljs-type">Context</span> p _) x = <span class="hljs-keyword">if</span> p x <span class="hljs-keyword">then</span> (<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>) <span class="hljs-keyword">else</span> (<span class="hljs-number">255</span>,<span class="hljs-number">255</span>,<span class="hljs-number">255</span>)
+
+</code></pre>
+<p>That weighs in somewhere around 75 lines, and includes our compressed PNG generator, all the logic for running Wolfram's 2-color rules as before, and our embedded Yesod server. You can feel free to tweak the output above.</p>
+<p>In the real world you'd probably just use <a href="https://hackage.haskell.org/packages/archive/JuicyPixels/3.1/doc/html/Codec-Picture-Png.html">JuicyPixels</a>.</p>
+<p>Now that we're not shackled by the SVG rendering speed we can generalize this to other topologies and maybe try to improve on our other bottlenecks in future updates.</p>
+<p>-<a href="mailto:ekmett@gmail.com">Edward Kmett</a></p>
+<p>September 1, 2013</p>
+</article><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/profunctors"><code>profunctors</code></a> · <a href="https://hackage.haskell.org/package/recursion-schemes"><code>recursion-schemes</code></a> · <a href="https://hackage.haskell.org/package/lens"><code>lens</code></a> · <a href="https://hackage.haskell.org/package/comonad"><code>comonad</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><aside class="edition-note"><details><summary>About this edition</summary><p>Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.</p><p>First home: School of Haskell. Date displayed by School of Haskell; may reflect a later revision.</p><p><a href="../../../source/articles/cellular-automata-part-2.md" download>Article Markdown</a> · <a href="../../../source/articles/cellular-automata-part-2.original.md" download>Archived original source</a> · <a href="../../../source/articles/provenance.json">Provenance</a> · <a href="../../../source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
+<nav class="related" aria-label="Other articles"><a href="../../../reader/2015/moore-for-less/">Moore for Less →</a><a href="../../../reader/2015/on-the-unsafety-of-interleaved-io/">On the unsafety of interleaved I/O →</a><a href="../../../reader/">All writing</a></nav>
+<footer><span>The Comonad.Reader</span><p>Writing and code © Edward Kmett.<br>Comments attributed to their original authors.</p></footer></main></body></html>
