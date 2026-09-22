@@ -75,7 +75,7 @@ body{background:var(--paper);isolation:isolate}
 button:hover{background:var(--green-wash)}
 ::selection{background:var(--green-wash);color:var(--ink)}
 
-.appearance{position:relative;font:0.75rem/1.5 system-ui,sans-serif}
+.appearance{position:relative;font:inherit}
 .appearance>summary{padding:8px 0;list-style:none;white-space:nowrap}
 .appearance>summary::-webkit-details-marker{display:none}
 .appearance>summary:hover{color:var(--heading)}
@@ -109,8 +109,8 @@ button:hover{background:var(--green-wash)}
 /* Respect the browser's base font size, then apply the reader's saved choice. */
 html{font-size:calc(100% * var(--reader-text-scale,1))}
 .article-meta,.archive-tools label,.archive-tools p,.entry-date,.entry-date time,
-.archive-sidebar,.archive-month-grid,.blogroll a span,.reader-masthead nav{font-size:.875rem}
-.entry-author{font-size:1rem}
+.archive-sidebar,.archive-month-grid,.blogroll a span,.reader-masthead nav{font-size:1rem}
+.entry-author,.blogroll a{font-size:1.125rem}
 .prose{font-size:1.25rem}
 .prose pre,.implementation pre{font-size:.9375rem}
 .reader-masthead{flex-wrap:wrap}
