@@ -2,6 +2,8 @@
 
 Target: `https://comonad.com/reader/`, served by `ekmett/comonad.com`, branch `pages`, root directory. GitHub provides hosting and HTTPS; Namecheap remains the registrar and DNS provider. The repository root forwards to `reader/` with a relative HTML redirect.
 
+Completed 22 September 2026: both authoritative DNS servers and a public resolver return the GitHub addresses, GitHub has issued the certificate for the apex and `www`, and Enforce HTTPS is enabled. The browser follows `/` to `/reader/`. Mail forwarding and the `_atproto` Bluesky verification record were preserved. The `pages` branch remains the deployment source.
+
 ## Order of operations
 
 1. Build and check locally with the canonical `content/site.json` base URL and `dist/CNAME`.
