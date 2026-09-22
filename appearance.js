@@ -8,6 +8,29 @@ const canvas = document.querySelector('.margin-cells');
 const context = canvas.getContext('2d');
 const read = (key, fallback) => { try { return localStorage.getItem(key) || fallback; } catch { return fallback; } };
 const save = (key, value) => { try { localStorage.setItem(key, value); } catch {} };
+const textSizes = [90,100,110,125,150,175,200];
+let textSize = Number(read('reader-text-size', '100'));
+if (!textSizes.includes(textSize)) textSize = 100;
+function applyTextSize() {
+  root.style.setProperty('--reader-text-scale', textSize / 100);
+  controls.querySelector('#reader-text-size').textContent = `${textSize}%`;
+  controls.querySelector('[data-text-size="smaller"]').disabled = textSize === textSizes[0];
+  controls.querySelector('[data-text-size="larger"]').disabled = textSize === textSizes.at(-1);
+}
+applyTextSize();
+controls.addEventListener('click', event => {
+  if (event.target.closest('[data-appearance-close]')) {
+    controls.open = false;
+    controls.querySelector('summary').focus();
+    return;
+  }
+  const action = event.target.closest('[data-text-size]')?.dataset.textSize;
+  if (!action) return;
+  const index = textSizes.indexOf(textSize);
+  textSize = action === 'reset' ? 100 : textSizes[Math.max(0, Math.min(textSizes.length-1, index + (action === 'larger' ? 1 : -1)))];
+  applyTextSize();
+  save('reader-text-size', String(textSize));
+});
 let theme = read('reader-theme', 'system');
 let background = read('reader-background', 'auto');
 if (!['system','light','dark'].includes(theme)) theme = 'system';
