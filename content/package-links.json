@@ -145,6 +145,10 @@
     "trifecta": {
       "url": "https://hackage.haskell.org/package/trifecta",
       "repository": "https://github.com/ekmett/trifecta"
+    },
+    "gl": {
+      "url": "https://hackage.haskell.org/package/gl",
+      "repository": "https://github.com/ekmett/gl"
     }
   },
   "articles": {
@@ -694,6 +698,12 @@
       {
         "package": "recursion-schemes",
         "basis": "Reviewed thematic connection; historical example APIs are not claimed to match the package."
+      }
+    ],
+    "quine-shader-toys": [
+      {
+        "package": "gl",
+        "basis": "Edward Kmett confirms Quine existed primarily to test the then-new gl project."
       }
     ]
   },
