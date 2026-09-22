@@ -108,7 +108,7 @@ function shell({title, base, main, script = '', date}) {
 <title>${esc(title)} · The Comonad.Reader</title>
 <link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="${base}feed.xml"><link rel="stylesheet" href="${base}style.css"><link rel="stylesheet" href="${base}article.css?v=${articleStyleHash}"><link rel="stylesheet" href="${base}vendor/katex/katex.min.css">
 </head><body><header class="masthead reader-masthead"><a class="site-identity" href="${base}reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="${base}reader/">Home</a><a href="${base}reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
-<div class="reader-layout"><main class="reading">${main}</main>${navigation.calendar(base,date)}</div>${script}</body></html>\n`;
+<div class="reader-layout">${navigation.calendar(base,date)}<main class="reading">${main}</main></div><script src="${base}reader-sidebar.js"></script>${script}</body></html>\n`;
 }
 function packageLine(names,root) {
   if(!names.length)return '';

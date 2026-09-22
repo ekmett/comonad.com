@@ -23,10 +23,14 @@ for(const month of months) {
   assert.equal(doc.querySelectorAll('.archive-entry').length,entries.filter(entry=>entry.date.startsWith(month)).length,'Month archive includes both sources and talks');
   for(const a of doc.querySelectorAll('.archive-sidebar a')) {
     const [href,fragment]=a.getAttribute('href').split('#');
-    const target=path.resolve(path.dirname(file),href,'index.html');
+    const target=href ? path.resolve(path.dirname(file),href,'index.html') : path.resolve(file);
     assert.ok(fs.existsSync(target),`Calendar destination exists: ${target}`);
     if(fragment)assert.ok(read(target).getElementById(fragment),'Multi-post days have a destination anchor');
   }
+  const listed=[...doc.querySelectorAll('.calendar-day li a')].map(a=>path.resolve(path.dirname(file),a.getAttribute('href'),'index.html')).sort();
+  assert.deepEqual(listed,entries.filter(entry=>entry.date.startsWith(month)).map(entry=>entry.file).sort(),'Calendar day listings include every article and talk exactly once');
+  for(const a of doc.querySelectorAll('.calendar td a'))assert.ok(doc.querySelector(a.getAttribute('href'))?.querySelector('li a'),'Calendar days lead to their article list');
+  assert.ok(doc.querySelector('.archive-disclosure > summary'),'Archive can be toggled without JavaScript');
   const linkedDays=[...doc.querySelectorAll('.calendar td a')].map(a=>Number(a.textContent));
   const datedDays=[...new Set(entries.filter(entry=>entry.date.startsWith(month)&&entry.date.length===10).map(entry=>Number(entry.date.slice(-2))))].sort((a,b)=>a-b);
   assert.deepEqual(linkedDays,datedDays,'Exactly the known publication days are linked');
