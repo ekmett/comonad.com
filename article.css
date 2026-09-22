@@ -199,20 +199,13 @@ summary{cursor:pointer}.contents ol{columns:2;padding-left:24px;line-height:1.8;
 .calendar-years>nav{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:10px 0}
 @media(max-width:1000px){.archive-month-grid a,.archive-month-grid .empty-month{padding:9px 3px}.archive-month-posts>summary{padding:5px 0}}
 
-/* Talk stills are quiet hover/focus aids; article links remain plain. */
-.talk-title-thumbnail{position:relative;display:block;width:fit-content;max-width:100%}
-.talk-thumbnail{display:none}
-@media(hover:hover) and (pointer:fine) and (min-width:701px){
-  .talk-thumbnail{display:block;position:absolute;left:0;top:100%;width:240px;max-width:calc(100vw - 64px);padding-top:8px;z-index:5;visibility:hidden;opacity:0}
-  .talk-thumbnail img{display:block;width:100%;height:auto;border:1px solid var(--line);background:var(--paper,#fff);box-shadow:0 3px 12px #0002}
-  .talk-title-thumbnail:not([data-preview-dismissed]):is(:hover,:focus-visible) .talk-thumbnail{visibility:visible;opacity:1}
-}
-@media(hover:none),(pointer:coarse),(max-width:700px){
-  .talk-title-thumbnail{display:flex;align-items:center;gap:12px;width:100%}
-  .talk-title-thumbnail>span:first-child{flex:1;min-width:0}
-  .talk-thumbnail{display:block;flex:0 0 88px}
-  .talk-thumbnail img{display:block;width:88px;height:auto;border:1px solid var(--line)}
-}
+/* Recording stills sit beneath their source, alongside the title and byline. */
+.entry-date>span{text-align:right}
+.entry-body{display:flex;align-items:flex-start;justify-content:space-between;gap:24px}
+.entry-copy{min-width:0;flex:1}
+.talk-thumbnail{display:block;flex:0 0 144px;margin-top:9px}
+.talk-thumbnail img{display:block;width:100%;height:auto;border:1px solid var(--line)}
+@media(max-width:700px){.entry-body{gap:14px}.talk-thumbnail{flex-basis:88px}}
 @media print{.talk-thumbnail{display:none!important}}
 
 .wavelet-diagram{margin:30px 0;text-align:center;break-inside:avoid}
