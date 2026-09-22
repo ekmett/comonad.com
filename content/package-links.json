@@ -675,6 +675,10 @@
     ],
     "kmett-2011-lenses-functional-imperative": [
       "lens"
+    ],
+    "monad-transformer-lenses-warsaw-2016": [
+      "lens",
+      "profunctors"
     ]
   }
 }

@@ -17,4 +17,4 @@ I would prioritize feeds, canonical URLs, preview cards, metadata, and accessibi
 
 Borrow backlinks with a short referring passage, wide-screen margin footnotes with ordinary footnotes on phones, and readable full-size diagrams and slides. Backlinks and footnotes are the priorities. The existing archive gutter needs to coexist with margin notes. Keep preserving important external material locally with provenance. These features do not require Hakyll. See [Gwern’s design notes](https://gwern.net/design).
 
-Do not add small hover or pop-up previews: Edward finds them awkward. Links should remain straightforward.
+Do not add article hover or pop-up previews: Edward finds them awkward. Talk thumbnails are the explicit exception: a locally saved still appears on title hover or keyboard focus, with Escape to dismiss; touch screens show a small inline still and retain ordinary one-tap navigation.

@@ -979,11 +979,18 @@
       "articleUrl": "https://web.archive.org/web/20010526225638/http://www.bloodshed.com:80/wavelets/haar.shtml",
       "url": "https://web.archive.org/web/20010526225638/http://www.bloodshed.com:80/wavelets/haar.shtml",
       "date": null,
-      "dateValue": null,
-      "dateBasis": "original publication unknown; archive capture is only an upper bound",
-      "datePrecision": "unknown",
-      "dateConfidence": "high for title/attribution; original date unknown",
+      "dateValue": "1995",
+      "dateBasis": "Circa 1995, author recollection on 2026-09-22",
+      "datePrecision": "year",
+      "dateConfidence": "Approximate author recollection; captured version may contain later revisions",
       "dates": [
+        {
+          "value": "1995",
+          "type": "author_recollection",
+          "precision": "year",
+          "approximate": true,
+          "evidence": "Edward Kmett: “it was written circa 1995” (2026-09-22)."
+        },
         {
           "value": "2001-05-26",
           "type": "archive_capture",
@@ -1008,12 +1015,13 @@
         }
       ],
       "uncertainty": [
-        "Haar-wavelet texture compression and comparison with mipmapping for a3D polygonal game engine. Source cites literature through1997 but gives no author/publication date. Adjacent dsp.zip01/16/99 label dates code package, not this paper. Do not assign1999 to paper or treat2001 capture as original publication. No magazine provenance established."
+        "The author recalls writing it circa 1995. The surviving 2001 snapshot includes bibliography entries dated through 1997; revision dates are unknown. The adjacent dsp.zip date does not date the paper."
       ],
       "inclusion": "recommended",
       "sameWorkAsVideoEntry": null,
       "publishedNoLaterThan": "2001-05-26",
-      "originalUrl": "http://www.bloodshed.com/wavelets/haar.shtml"
+      "originalUrl": "http://www.bloodshed.com/wavelets/haar.shtml",
+      "dateApproximate": true
     },
     {
       "id": "kmett-2019-functional-conf-written-interview",

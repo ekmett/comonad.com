@@ -1285,6 +1285,1149 @@
       "inclusion": "recommended",
       "archiveType": "interview",
       "displayTitle": "Across the Kmettverse"
+    },
+    {
+      "id": "live-coding-26",
+      "videoId": "Pe8LPUK787c",
+      "title": "Live Coding with Edward Kmett, Episode 26",
+      "displayTitle": "Live Coding — Session 26",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=Pe8LPUK787c",
+      "date": "2023-05-13",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2023-05-13",
+      "uploadTimestamp": "2023-05-13T16:55:48-07:00",
+      "description": "Getting back in the saddle after 4 years away. Dusting off my work on hkd-based distributive functors.   -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 5102,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 26.0,
+      "sequence": 26.0,
+      "sequenceLabel": "Session 26",
+      "materials": [],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=Pe8LPUK787c",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-25",
+      "videoId": "ISNYPKiE0YU",
+      "title": "Haskell Live-Coding, Session 25, Guanxi Review",
+      "displayTitle": "Live Coding — Session 25: Guanxi Review",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=ISNYPKiE0YU",
+      "date": "2019-04-03",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2019-04-03",
+      "uploadTimestamp": "2019-04-03T21:28:55-07:00",
+      "description": "This is a review of the last few streams, where we go through what it is that we've managed to build during my obsession with Logic Programming. -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 4837,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 25.0,
+      "sequence": 25.0,
+      "sequenceLabel": "Session 25",
+      "materials": [],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=ISNYPKiE0YU",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-24",
+      "videoId": "DTm_Fe7hdIY",
+      "title": "Live-Coding, Session 24, Dancing with Decision Diagrams",
+      "displayTitle": "Live Coding — Session 24: Dancing with Decision Diagrams",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=DTm_Fe7hdIY",
+      "date": "2018-12-13",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-12-13",
+      "uploadTimestamp": "2018-12-13T14:16:36-08:00",
+      "description": "We manage to implement the \"Dancing with Decision Diagrams\" paper in guanxi. -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 11116,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 24.0,
+      "sequence": 24.0,
+      "sequenceLabel": "Session 24",
+      "materials": [],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=DTm_Fe7hdIY",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-23",
+      "videoId": "IoXDNWhN0aw",
+      "title": "C++ Live Coding, Session 23, Dancing Links, Part 2",
+      "displayTitle": "Live Coding — Session 23: Dancing Links, Part 2",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=IoXDNWhN0aw",
+      "date": "2018-12-13",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-12-13",
+      "uploadTimestamp": "2018-12-13T00:24:14-08:00",
+      "description": "More work on Dancing Links for guanxi. -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 20314,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 23.0,
+      "sequence": 23.0,
+      "sequenceLabel": "Session 23",
+      "materials": [],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=IoXDNWhN0aw",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-22",
+      "videoId": "gxHE3uguDbg",
+      "title": "C++ Live-Coding, Session 22, Dancing Links",
+      "displayTitle": "Live Coding — Session 22: Dancing Links",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=gxHE3uguDbg",
+      "date": "2018-12-06",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-12-06",
+      "uploadTimestamp": "2018-12-06T22:24:11-08:00",
+      "description": "Implementing Knuth's algorithm X with Dancing Links in C++. -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 17911,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 22.0,
+      "sequence": 22.0,
+      "sequenceLabel": "Session 22",
+      "materials": [],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=gxHE3uguDbg",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-21",
+      "videoId": "UAcZUK7x6xw",
+      "title": "Haskell Live-Coding, Session 21, Relational Programming, Part 6",
+      "displayTitle": "Live Coding — Session 21: Relational Programming, Part 6",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=UAcZUK7x6xw",
+      "date": "2018-12-05",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-12-05",
+      "uploadTimestamp": "2018-12-05T18:56:55-08:00",
+      "description": "Reviewing the last couple of days work on delimited continuations, and then implementing explicit sharing in the style of http://www-ps.informatik.uni-kiel.de/~sebf/pub/icfp09.html\n\nCode: http://github.com/ekmett/guanxi -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 10026,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 21.0,
+      "sequence": 21.0,
+      "sequenceLabel": "Session 21",
+      "materials": [
+        {
+          "kind": "code",
+          "url": "http://github.com/ekmett/guanxi",
+          "title": "Code from the stream"
+        }
+      ],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=UAcZUK7x6xw",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-20",
+      "videoId": "YUgZrsDhn4o",
+      "title": "Haskell Live-Coding, Session 20, Relational Programming, Part 5",
+      "displayTitle": "Live Coding — Session 20: Relational Programming, Part 5",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=YUgZrsDhn4o",
+      "date": "2018-12-05",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-12-05",
+      "uploadTimestamp": "2018-12-05T18:46:27-08:00",
+      "description": "Back from Iceland, where I managed to get more done on guanxi. Most of this stream is devoted to describing the changes made thus far and less to actually implementing new stuff.   -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 8224,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 20.0,
+      "sequence": 20.0,
+      "sequenceLabel": "Session 20",
+      "materials": [],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=YUgZrsDhn4o",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-19",
+      "videoId": "P2Ak8sEolkI",
+      "title": "Haskell Live-Coding, Session 19, Relational Programming, Part 4 (Soul of a New Machine)",
+      "displayTitle": "Live Coding — Session 19: Relational Programming, Part 4 (Soul of a New Machine)",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=P2Ak8sEolkI",
+      "date": "2018-11-19",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-11-19",
+      "uploadTimestamp": "2018-11-19T07:35:13-08:00",
+      "description": "More live-coding. New computer, so I'm currently playing with my development environment to see how well it works for the stream. In the meantime, we wander back to  guanxi and play with the Key monad implementation, and tweak a small Overton style finite domain solver to have stronger types and a more propagator-like implementation strategy. -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 6032,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 19.0,
+      "sequence": 19.0,
+      "sequenceLabel": "Session 19",
+      "materials": [],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=P2Ak8sEolkI",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-17",
+      "videoId": "wkHRM_5CV84",
+      "title": "Haskell Live-Coding, Session 17, Relational Programming, Part 3",
+      "displayTitle": "Live Coding — Session 17: Relational Programming, Part 3",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=wkHRM_5CV84",
+      "date": "2018-11-16",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-11-16",
+      "uploadTimestamp": "2018-11-16T20:05:44-08:00",
+      "description": "More relational programming. We finish fleshing out the notion of a \"Log\" to help us steal the power of seminaive evaluation from Datalog for our propagator framework.\n\nProject at http://github.com/ekmett/guanxi -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 6429,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 17.0,
+      "sequence": 17.0,
+      "sequenceLabel": "Session 17",
+      "materials": [
+        {
+          "kind": "code",
+          "url": "http://github.com/ekmett/guanxi",
+          "title": "Code from the stream"
+        }
+      ],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=wkHRM_5CV84",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-18",
+      "videoId": "3Zreblm0Ux0",
+      "title": "Haskell Live-Coding, Session 18, Nominal Sets",
+      "displayTitle": "Live Coding — Session 18: Nominal Sets",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=3Zreblm0Ux0",
+      "date": "2018-11-03",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-11-03",
+      "uploadTimestamp": "2018-11-03T11:41:21-07:00",
+      "description": "Nominal sets are about dealing with name capture in a principled way, based on permutations of 'atoms' or 'names'.\n\nWe spent the night refactoring my `nominal` library to use a new underlying notion of support and to use a more uniform notion of patricia tries. The tries are currently subbed out for a placeholder, but everything else now works.\n\nhttp://github.com/ekmett/nominal -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 36666,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 18.0,
+      "sequence": 18.0,
+      "sequenceLabel": "Session 18",
+      "materials": [
+        {
+          "kind": "code",
+          "url": "http://github.com/ekmett/nominal",
+          "title": "Code from the stream"
+        }
+      ],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=3Zreblm0Ux0",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-16",
+      "videoId": "yTlTtmVX3vA",
+      "title": "Haskell Live-Coding, Session 16, Relational Programming, Part 2",
+      "displayTitle": "Live Coding — Session 16: Relational Programming, Part 2",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=yTlTtmVX3vA",
+      "date": "2018-10-04",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-10-04",
+      "uploadTimestamp": "2018-10-04T17:18:52-07:00",
+      "description": "Picking up from where we left off last stream (\"Back from ICFP\") we continue forging on building a little library for relational programming in the spirit if not the style of minikanren. -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 17397,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 16.0,
+      "sequence": 16.0,
+      "sequenceLabel": "Session 16",
+      "materials": [],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=yTlTtmVX3vA",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-15",
+      "videoId": "JYWSqT1FIug",
+      "title": "Haskell Live-Coding, Session 15, Back from ICFP",
+      "displayTitle": "Live Coding — Session 15: Back from ICFP",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=JYWSqT1FIug",
+      "date": "2018-10-01",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-10-01",
+      "uploadTimestamp": "2018-10-01T17:40:06-07:00",
+      "description": "Working towards a little relational programming library as an excuse to write some code after returning from ICFP.\n\nhttp://github.com/ekmett/guanxi -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 10709,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 15.0,
+      "sequence": 15.0,
+      "sequenceLabel": "Session 15",
+      "materials": [
+        {
+          "kind": "code",
+          "url": "http://github.com/ekmett/guanxi",
+          "title": "Code from the stream"
+        }
+      ],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=JYWSqT1FIug",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-14-3",
+      "videoId": "10Cj33G9G-M",
+      "title": "Haskell Live-Coding, Session 14.3, Succinct Serialization, Part 6",
+      "displayTitle": "Live Coding — Session 14.3: Succinct Serialization, Part 6",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=10Cj33G9G-M",
+      "date": "2018-08-26",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-08-26",
+      "uploadTimestamp": "2018-08-26T12:43:49-07:00",
+      "description": "Undoing a fair bit of the damage we did from the last couple of streams and trying to incorporate the things we did like. -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 3292,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 14.3,
+      "sequence": 14.3,
+      "sequenceLabel": "Session 14.3",
+      "materials": [],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=10Cj33G9G-M",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-14-1",
+      "videoId": "bfooJoXCKpk",
+      "title": "Haskell Live-Coding, Session 14.1, Succinct Serialization, Part 6",
+      "displayTitle": "Live Coding — Session 14.1: Succinct Serialization, Part 6",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=bfooJoXCKpk",
+      "date": "2018-08-26",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-08-26",
+      "uploadTimestamp": "2018-08-26T12:31:50-07:00",
+      "description": "Undoing a fair bit of the damage we did from the last couple of streams and trying to incorporate the things we did like. -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 596,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 14.1,
+      "sequence": 14.1,
+      "sequenceLabel": "Session 14.1",
+      "materials": [],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=bfooJoXCKpk",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-14-2",
+      "videoId": "GCPClbek0Rg",
+      "title": "Haskell Live-Coding, Session 14.2, Succinct Serialization, Part 6",
+      "displayTitle": "Live Coding — Session 14.2: Succinct Serialization, Part 6",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=GCPClbek0Rg",
+      "date": "2018-08-26",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-08-26",
+      "uploadTimestamp": "2018-08-26T12:30:14-07:00",
+      "description": "Undoing a fair bit of the damage we did from the last couple of streams and trying to incorporate the things we did like. -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 296,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 14.2,
+      "sequence": 14.2,
+      "sequenceLabel": "Session 14.2",
+      "materials": [],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=GCPClbek0Rg",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-13",
+      "videoId": "i1y3_72T1l4",
+      "title": "Haskell Live-Coding, Session 13, Succinct Serialization, Part 5",
+      "displayTitle": "Live Coding — Session 13: Succinct Serialization, Part 5",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=i1y3_72T1l4",
+      "date": "2018-08-25",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-08-25",
+      "uploadTimestamp": "2018-08-25T09:17:09-07:00",
+      "description": "The new generic programming approach appears to be a bust.   -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 16275,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 13.0,
+      "sequence": 13.0,
+      "sequenceLabel": "Session 13",
+      "materials": [],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=i1y3_72T1l4",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-12",
+      "videoId": "OrY1U2qLnps",
+      "title": "Haskell Live-Coding, Session 12, Succinct Serialization, Part 4",
+      "displayTitle": "Live Coding — Session 12: Succinct Serialization, Part 4",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=OrY1U2qLnps",
+      "date": "2018-08-25",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-08-25",
+      "uploadTimestamp": "2018-08-25T08:55:06-07:00",
+      "description": "Broadcast in the middle of the week. We mostly spent this time exploring building an alternative form of generic programming, because of a desire for better strictness info.   -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 11495,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 12.0,
+      "sequence": 12.0,
+      "sequenceLabel": "Session 12",
+      "materials": [],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=OrY1U2qLnps",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-11",
+      "videoId": "AfCCNACoDZc",
+      "title": "Haskell Live-Coding, Session 11, Succinct Serialization, Part 3",
+      "displayTitle": "Live Coding — Session 11: Succinct Serialization, Part 3",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=AfCCNACoDZc",
+      "date": "2018-08-20",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-08-20",
+      "uploadTimestamp": "2018-08-20T03:21:44-07:00",
+      "description": "In this stream we went off and found a nicer format for succinct serialization without quite so many parentheses.\n\nThen we spent a lot of time fiddling with generics. -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 21485,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 11.0,
+      "sequence": 11.0,
+      "sequenceLabel": "Session 11",
+      "materials": [],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=AfCCNACoDZc",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-10",
+      "videoId": "pm-4WV67T_Q",
+      "title": "Haskell Live Coding, Session 10, Succinct Serialization, Part 2",
+      "displayTitle": "Live Coding — Session 10: Succinct Serialization, Part 2",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=pm-4WV67T_Q",
+      "date": "2018-08-13",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-08-13",
+      "uploadTimestamp": "2018-08-13T15:02:33-07:00",
+      "description": "In which we (mostly) convert to using a sum-of-product representation for terms to get a more efficient serialized form. -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 11464,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 10.0,
+      "sequence": 10.0,
+      "sequenceLabel": "Session 10",
+      "materials": [],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=pm-4WV67T_Q",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-9",
+      "videoId": "rMCGmQhgv2I",
+      "title": "Haskell Live-Coding, Session 9, Succinct Serialization, Part 1",
+      "displayTitle": "Live Coding — Session 9: Succinct Serialization, Part 1",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=rMCGmQhgv2I",
+      "date": "2018-08-05",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-08-05",
+      "uploadTimestamp": "2018-08-05T22:34:51-07:00",
+      "description": "Continuing on from last time, we build the bulk of a library for lazily (de)serializing data with succinct data structures. -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 28775,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 9.0,
+      "sequence": 9.0,
+      "sequenceLabel": "Session 9",
+      "materials": [],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=rMCGmQhgv2I",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-7",
+      "videoId": "YYSWNXcKOWw",
+      "title": "Haskell Live-Coding, Session 7, More Machines",
+      "displayTitle": "Live Coding — Session 7: More Machines",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=YYSWNXcKOWw",
+      "date": "2018-08-02",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-08-02",
+      "uploadTimestamp": "2018-08-02T01:34:55-07:00",
+      "description": "This is a short stream in which we mostly flailed around trying to understand why the division between\"bound\" and \"free\" variables in a slightly closer to the hardware abstract machine wasn't quite where we thought it was.   -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 4944,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 7.0,
+      "sequence": 7.0,
+      "sequenceLabel": "Session 7",
+      "materials": [],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=YYSWNXcKOWw",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-8",
+      "videoId": "9MKEmNNJgFc",
+      "title": "Haskell Live-Coding, Session 8, Succinct Data Structures and Dynamization",
+      "displayTitle": "Live Coding — Session 8: Succinct Data Structures and Dynamization",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=9MKEmNNJgFc",
+      "date": "2018-07-30",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-07-30",
+      "uploadTimestamp": "2018-07-30T21:10:10-07:00",
+      "description": "A bit of a crash course on succinct data structures and dynamization schemes. -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 9284,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 8.0,
+      "sequence": 8.0,
+      "sequenceLabel": "Session 8",
+      "materials": [],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=9MKEmNNJgFc",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-6",
+      "videoId": "PwD7D7XUzec",
+      "title": "Haskell Live-Coding, Session 6, CEK Machines",
+      "displayTitle": "Live Coding — Session 6: CEK Machines",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=PwD7D7XUzec",
+      "date": "2018-07-22",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-07-22",
+      "uploadTimestamp": "2018-07-22T11:57:21-07:00",
+      "description": "Implementing a CEK machine in Haskell in incrementally more typed fashions. A CEK machine is a sort of standard virtual machine model for implementing interpreters using small step semantics. At the end we touch briefly on Futamura projections and big-step semantics.\n\nUntyped CEK: https://gist.github.com/ekmett/f081b5e36bac3fed1ea6b21eb25327c6\nTyped CEK: https://gist.github.com/ekmett/ac2bef9de19881d6286044a06936dd55\nMatt Might on CEK Machines in Haskell: http://matt.might.net/articles/cek-machines/\nDan Piponi on Futamura Projections: http://blog.sigfpe.com/2009/05/three-projections-of-doctor-futamura.html\nPaul Chiusano on Unison's Runtime: https://www.youtube.com/watch?v=knqlWboqf_U -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 6327,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 6.0,
+      "sequence": 6.0,
+      "sequenceLabel": "Session 6",
+      "materials": [
+        {
+          "kind": "code",
+          "url": "https://gist.github.com/ekmett/f081b5e36bac3fed1ea6b21eb25327c6",
+          "title": "Code from the stream"
+        },
+        {
+          "kind": "code",
+          "url": "https://gist.github.com/ekmett/ac2bef9de19881d6286044a06936dd55",
+          "title": "Code from the stream"
+        }
+      ],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=PwD7D7XUzec",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-5-2",
+      "videoId": "-DBsKQMh6n4",
+      "title": "Haskell Live-Coding, Session 5.2, Propagators",
+      "displayTitle": "Live Coding — Session 5.2: Propagators",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=-DBsKQMh6n4",
+      "date": "2018-07-15",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-07-15",
+      "uploadTimestamp": "2018-07-15T12:43:43-07:00",
+      "description": "The \"Art of the Propagator\", Part 2/2.\n -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 8610,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 5.2,
+      "sequence": 5.2,
+      "sequenceLabel": "Session 5.2",
+      "materials": [],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=-DBsKQMh6n4",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-5-1",
+      "videoId": "rAQoSjnBvtA",
+      "title": "Haskell Live-Coding, Session 5.1, Propagators",
+      "displayTitle": "Live Coding — Session 5.1: Propagators",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=rAQoSjnBvtA",
+      "date": "2018-07-15",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-07-15",
+      "uploadTimestamp": "2018-07-15T11:54:15-07:00",
+      "description": "An introduction to the \"Art of the Propagator.\" -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 999,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 5.1,
+      "sequence": 5.1,
+      "sequenceLabel": "Session 5.1",
+      "materials": [],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=rAQoSjnBvtA",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-4-1",
+      "videoId": "d7JPz3Vq9YI",
+      "title": "Haskell Live-Coding, Session 4.1, Regular and Inverse Semigroups",
+      "displayTitle": "Live Coding — Session 4.1: Regular and Inverse Semigroups",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=d7JPz3Vq9YI",
+      "date": "2018-07-08",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-07-08",
+      "uploadTimestamp": "2018-07-08T13:48:22-07:00",
+      "description": "We build up the notion of regular and inverse semigroups in Haskell and start to explore some of their extra structure, then dive a little into incremental parsing, a particularly pragmatic problem domain where they arise more often than you'd think. -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 9816,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 4.1,
+      "sequence": 4.1,
+      "sequenceLabel": "Session 4.1",
+      "materials": [],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=d7JPz3Vq9YI",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ],
+      "relatedRecordings": [
+        "there-and-back-again-lambda-world-2018"
+      ]
+    },
+    {
+      "id": "live-coding-4-2",
+      "videoId": "ylsNMfWMKYc",
+      "title": "Haskell Live-Coding, Session 4.2, Q&A",
+      "displayTitle": "Live Coding — Session 4.2: Q&A",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=ylsNMfWMKYc",
+      "date": "2018-07-08",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-07-08",
+      "uploadTimestamp": "2018-07-08T12:50:35-07:00",
+      "description": "Q&A session and organizing topics for next time at the end of the stream, highlighted separately from the \"content\" of the stream. -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 1326,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 4.2,
+      "sequence": 4.2,
+      "sequenceLabel": "Session 4.2",
+      "materials": [],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=ylsNMfWMKYc",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-3",
+      "videoId": "StmmK1a1Bm0",
+      "title": "Haskell Live-Coding, Session 3, Authenticated Computation",
+      "displayTitle": "Live Coding — Session 3: Authenticated Computation",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=StmmK1a1Bm0",
+      "date": "2018-07-01",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-07-01",
+      "uploadTimestamp": "2018-07-01T16:26:31-07:00",
+      "description": "Building a little library for authenticated computations in Haskell.\n\nThis should give a sense of different approaches to API design in Haskell, and some of the trade-offs between fundeps, type families, backpack, data families, etc. as I pretty much wander between all of them while trying to come up with a nice API.\n\nOriginal Paper: http://www.cs.umd.edu/~mwh/papers/gpads.pdf\nBob Atkey's Library: https://bentnib.org/posts/2016-04-12-authenticated-data-structures-as-a-library.html\nCode from the stream: https://github.com/ekmett/auth -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 13822,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 3.0,
+      "sequence": 3.0,
+      "sequenceLabel": "Session 3",
+      "materials": [
+        {
+          "kind": "code",
+          "url": "https://github.com/ekmett/auth",
+          "title": "Code from the stream"
+        }
+      ],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=StmmK1a1Bm0",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-2-2",
+      "videoId": "2_R6jvI5WdU",
+      "title": "Haskell Live-Coding, Session 2.2, Q&A",
+      "displayTitle": "Live Coding — Session 2.2: Q&A",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=2_R6jvI5WdU",
+      "date": "2018-05-06",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-05-06",
+      "uploadTimestamp": "2018-05-06T14:28:48-07:00",
+      "description": "A live Q&A session about all things Haskell. -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 9432,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 2.2,
+      "sequence": 2.2,
+      "sequenceLabel": "Session 2.2",
+      "materials": [],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=2_R6jvI5WdU",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-2-1",
+      "videoId": "d1T9JhurjE0",
+      "title": "Haskell Live-Coding, Session 2.1, Q&A",
+      "displayTitle": "Live Coding — Session 2.1: Q&A",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=d1T9JhurjE0",
+      "date": "2018-05-06",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-05-06",
+      "uploadTimestamp": "2018-05-06T14:12:07-07:00",
+      "description": "A live Q&A session about all things Haskell. -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 5103,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 2.1,
+      "sequence": 2.1,
+      "sequenceLabel": "Session 2.1",
+      "materials": [],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=d1T9JhurjE0",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "live-coding-1",
+      "videoId": "Nv5tf8pvgrY",
+      "title": "Haskell Live-Coding, Session 1, Commutativity",
+      "displayTitle": "Live Coding — Session 1: Commutativity",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Twitch live coding",
+      "publisher": "Edward Kmett",
+      "videoUrl": "https://www.youtube.com/watch?v=Nv5tf8pvgrY",
+      "date": "2018-04-29",
+      "dateBasis": "YouTube publication; original Twitch broadcast date not independently established",
+      "dateConfidence": "high for upload; broadcast date unknown",
+      "uploadDate": "2018-04-29",
+      "uploadTimestamp": "2018-04-29T15:10:58-07:00",
+      "description": "Building a library for commutative applicative functors and general chat about the Haskell programming language.\r\n\r\nhttp://github.com/ekmett/abelian\r\n\r\nThis highlight starts right after the wrangling with the streaming environment wrapped up. -- Watch live at https://www.twitch.tv/ekmett",
+      "durationSeconds": 13975,
+      "archiveType": "stream",
+      "seriesId": "edward-kmett-live-coding",
+      "series": "edward-kmett-live-coding",
+      "seriesOrder": 1.0,
+      "sequence": 1.0,
+      "sequenceLabel": "Session 1",
+      "materials": [
+        {
+          "kind": "code",
+          "url": "http://github.com/ekmett/abelian",
+          "title": "Code from the stream"
+        }
+      ],
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=Nv5tf8pvgrY",
+        "https://www.youtube.com/playlist?list=PLeJwWmefGjycvSYaO-l4ExRd1eiO5cGov"
+      ],
+      "uncertainty": [
+        "Archive chronology uses the YouTube release date. Series navigation follows the numbered sessions, including split recordings."
+      ]
+    },
+    {
+      "id": "monad-transformer-lenses-warsaw-2016",
+      "videoId": "Bxcz23GOJqc",
+      "title": "Edward Kmett - Monad Transformer Lenses",
+      "displayTitle": "Monad Transformer Lenses",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Monadic Warsaw",
+      "publisher": "Monadic Warsaw",
+      "videoUrl": "https://www.youtube.com/watch?v=Bxcz23GOJqc",
+      "date": "2016-07-25",
+      "uploadDate": "2016-07-25",
+      "uploadTimestamp": "2016-07-25T02:56:46-07:00",
+      "dateBasis": "YouTube upload; presentation date not independently established",
+      "dateConfidence": "high for upload",
+      "description": "I'll talk a bit about how we can do lenses in much more general settings. Then, given that the venue is \"Monadic Warsaw\" I'll show how we can build a monoidal category of monad transformers and work with lenses on this category with an eye towards how this can let us produce much more efficient code than we can with just the MTL classes as we know them today. \nNo real prior exposure to lenses is required, and all talk of profunctors and the like should be self-contained, but some basic understanding of monad transformers would be helpful.",
+      "durationSeconds": 5060,
+      "archiveType": "talk",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=Bxcz23GOJqc"
+      ],
+      "materials": [],
+      "uncertainty": [
+        "Uploaded 25 July 2016; the exact presentation date is unverified."
+      ]
+    },
+    {
+      "id": "there-and-back-again-lambda-world-2018",
+      "videoId": "HGi5AxmQUwU",
+      "title": "Lambda World 2018 - Opening Keynote by Edward Kmett",
+      "displayTitle": "There and Back Again: Regular and Inverse Semigroups",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "event": "Lambda World Seattle 2018",
+      "publisher": "Lambda World",
+      "videoUrl": "https://www.youtube.com/watch?v=HGi5AxmQUwU",
+      "eventDate": "2018-09-18",
+      "date": "2018-09-18",
+      "dateBasis": "Presentation date explicitly stated by the publisher in the video description",
+      "dateConfidence": "high",
+      "uploadDate": "2018-11-06",
+      "uploadTimestamp": "2018-11-06T09:51:01-08:00",
+      "description": "This keynote by Edward Kmett took place at Lambda World Seattle on September 18th, 2018 at the Living Computers Museum in Washington. \n\nOpening Keynote: There and Back Again\n\nMathematicians usually teach abstract algebra from groups and build up from there. Having inverses allows them to prove many non-trivial results. Functional programmers more often descend to working with monoids, or even semigroups. They give up the power of inverses to gain many more examples. You don't often hear about the shadowy realm between. Perfect inverses don't always exist, nor do we want them to. Going on a journey and returning rarely leaves the protagonist unchanged. If it does, this is usually taken as a poor example of the author's craft. We'll explore the middle-ground of regular and inverse semigroups, inverse monoids, even inverse categories. In this space where inverses may not invert, we'll develop examples and counter-examples. We'll gain some insight into spoken Australian English along the way. Join us.",
+      "durationSeconds": 2869,
+      "archiveType": "talk",
+      "sourceUrls": [
+        "https://www.youtube.com/watch?v=HGi5AxmQUwU",
+        "https://www.reddit.com/r/haskell/comments/9x684a/edward_kmett_there_and_back_again_regular_and/"
+      ],
+      "materials": [
+        {
+          "title": "Discussion and author clarifications",
+          "kind": "discussion",
+          "url": "https://www.reddit.com/r/haskell/comments/9x684a/edward_kmett_there_and_back_again_regular_and/"
+        }
+      ],
+      "relatedRecordings": [
+        "live-coding-4-1"
+      ],
+      "discussion": [
+        {
+          "author": "Edward Kmett",
+          "source": "https://www.reddit.com/r/haskell/comments/9x684a/comment/e9uw5gi/",
+          "selection": "Selected paragraphs from the original reply; wording preserved.",
+          "markdown": "`(+)` on the naturals simply isn't a semilattice. `max` on the natural numbers, on the other hand is.\n\nWhen working with a semilattice, `inv m = m` passes all of the laws for an inverse semigroup, and it is the only such choice that passes the laws. Why?\n\n* `m <> inv m <> m = m`, because `m <> m <> m = m`\n* `inv m <> m <> inv m = inv m` by the same logic.\n\nGiven a semilattice, all elements are of the form `x = x <> inv x` and all idempotents (in this case, all elements) commute.\n\nEvery group is an inverse semigroup. It has exactly one idempotent element `e`, which commutes with every idempotent element (itself), ee = ee. All idempotents are of the form `x <> inv x` for some x, indeed `e = x <> inv x` for all x. The `x <> inv x <> x = x` style laws follow from the unit and inverse laws for the group.\n\nRegular semigroups are saying that every element of your semigroup is 'regular', which is to say that there is some \"pseudo-inverse\" for it.\n\nInverse semigroups add the further constraint that the inverse is unique. From that all the rest of this stuff follows."
+        }
+      ]
     }
   ],
   "unrecordedTalks": [

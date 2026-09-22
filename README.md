@@ -4,11 +4,11 @@ A static home for the original blog and Edward Kmett’s School of Haskell writi
 
 ## Contents
 
-- 85 Comonad.Reader posts, 25 School of Haskell articles, and four Harmless Algorithms columns, plus ten series pages.
-- 56 talk pages: four locally preserved slide decks and 52 recordings. The recordings comprise 33 Boston Haskell recordings and 19 additional recordings, including Learning to Learn, Discrimination Is Wrong, and the four Monadic Party/Guanxi sessions published by Monadic Warsaw.
+- 85 Comonad.Reader posts, 25 School of Haskell articles, four Harmless Algorithms columns, and the recovered Bloodshed wavelet paper (circa 1995), plus ten article series and the live-coding series.
+- 58 talk pages and 31 live-coding stream pages: four locally preserved slide decks and 85 recordings. The recordings include the Boston Haskell channel, Monad Transformer Lenses, There and Back Again, and sessions 1–26 from Edward’s Twitch stream (including split sessions).
 - 187 selected historical comments; all 12,370 original comment records remain in source snapshots.
 - 1,014 linked Haskell archive resources, preserved with checksums. Parent directory links do not expand the crawl.
-- 1,259 article source blocks (including typeset derivations), local KaTeX/fonts, six editable SVG category diagrams, and local article images/attachments.
+- 1,264 article source blocks (including typeset derivations), local KaTeX/fonts, six editable SVG category diagrams, and local article images/attachments.
 - Real GHC/WebAssembly figures for CRCs, cellular automata, capture avoidance, Morton order, reverse-mode AD, and growing-tree LCA. Original historical code remains alongside them. The CRC also has a native HTTP companion.
 
 ## Preview and edit

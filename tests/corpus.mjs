@@ -50,3 +50,24 @@ for(const v of videos){
    assert.deepEqual([...page.querySelectorAll('[aria-label="Talk series"] a')].map(a=>a.textContent),['Part 1','Part 2','Part 3','Part 4']);
  }
 }
+
+for(const record of Object.values(json('content/talk-thumbnails.json')).filter(r=>r.path)){
+ assert.equal(hash('content/'+record.path),record.sha256,'Locally preserved thumbnail');
+ assert.equal(hash('dist/'+record.path),record.sha256,'Published thumbnail');
+}
+assert.ok(doc.querySelector('#archive-count').textContent.includes('1 paper'));
+assert.equal(doc.querySelectorAll('.archive-entry[data-kind="Article"] .talk-thumbnail').length,0);
+
+const streams=videos.filter(v=>v.archiveType==='stream').sort((a,b)=>a.sequence-b.sequence);
+assert.equal(streams.length,31);
+assert.deepEqual([...new Set(streams.map(v=>Math.floor(v.sequence)))],Array.from({length:26},(_,i)=>i+1));
+const streamIndex=parseHTML(fs.readFileSync('dist/reader/series/live-coding/index.html','utf8')).document;
+assert.deepEqual([...streamIndex.querySelectorAll('.prose ol a')].map(a=>a.textContent),streams.map(v=>v.displayTitle));
+const split=parseHTML(fs.readFileSync('dist/reader/talks/live-coding-14-2/index.html','utf8')).document;
+const adjacent=[...split.querySelectorAll('[aria-label="Live coding series"] p a')].map(a=>a.textContent);
+assert.deepEqual(adjacent,['Live Coding','Session 14.1','Session 14.3']);
+const wavelets=articles.find(a=>a.slug==='wavelets-in-3d-graphics');
+assert.equal(wavelets.date,'1995');assert.equal(wavelets.dateApproximate,true);
+const lambdaWorld=videos.find(v=>v.id==='there-and-back-again-lambda-world-2018');
+assert.equal(lambdaWorld.eventDate,'2018-09-18');
+assert.equal(lambdaWorld.uploadDate,'2018-11-06');

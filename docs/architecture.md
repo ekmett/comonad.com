@@ -21,3 +21,9 @@ Local builds render articles and verify preservation and the Wasm artifact. GitH
 The Hello World lifting square has a retained TikZ-cd source at `content/figures/lifting-square.tex`. Its committed SVG was generated with Tectonic 0.17.0 and PyMuPDF 1.28.2. To regenerate, compile the standalone TeX to PDF, use `Page.get_svg_image()` with paths for glyphs, and retain the SVG title describing the arrows. Normal site builds copy the SVG and require neither dependency.
 
 The collapsible archive sidebar shows a whole year, with twelve month links and expandable dated article lists underneath. Phones use a collapsed archive drawer. Month-only and year-only dates are labeled without inventing a day.
+
+## Further recovered material
+
+Wavelets in 3D Graphics is preserved from Bloodshed’s archived HTML and dated circa 1995 from the author’s recollection. The captured revision includes later bibliography entries; its revision date remains unknown. The companion dsp.zip currently returns 404 and has not been recovered. Unambiguous spelling is corrected in the ledger; the inconsistent scaling value is retained for mathematical review.
+
+The channel’s 31 live-coding recordings cover sessions 1–26. Numbered navigation retains split sessions in order even when upload order differs. Broadcast dates are not invented. Talk thumbnails are saved locally with hashes and source URLs; desktop title hover/keyboard focus shows the still, Escape dismisses it, and phones show a small inline still. General article previews are excluded.

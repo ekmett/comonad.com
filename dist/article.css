@@ -198,3 +198,19 @@ summary{cursor:pointer}.contents ol{columns:2;padding-left:24px;line-height:1.8;
 .archive-month-posts .month-page{display:block;font:11px/1.5 system-ui,sans-serif;margin:8px 0 12px}.archive-month-posts .calendar-day{margin-top:12px}
 .calendar-years>nav{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:10px 0}
 @media(max-width:1000px){.archive-month-grid a,.archive-month-grid .empty-month{padding:9px 3px}.archive-month-posts>summary{padding:5px 0}}
+
+/* Talk stills are quiet hover/focus aids; article links remain plain. */
+.talk-title-thumbnail{position:relative;display:block;width:fit-content;max-width:100%}
+.talk-thumbnail{display:none}
+@media(hover:hover) and (pointer:fine) and (min-width:701px){
+  .talk-thumbnail{display:block;position:absolute;left:0;top:100%;width:240px;max-width:calc(100vw - 64px);padding-top:8px;z-index:5;visibility:hidden;opacity:0}
+  .talk-thumbnail img{display:block;width:100%;height:auto;border:1px solid var(--line);background:var(--paper,#fff);box-shadow:0 3px 12px #0002}
+  .talk-title-thumbnail:not([data-preview-dismissed]):is(:hover,:focus-visible) .talk-thumbnail{visibility:visible;opacity:1}
+}
+@media(hover:none),(pointer:coarse),(max-width:700px){
+  .talk-title-thumbnail{display:flex;align-items:center;gap:12px;width:100%}
+  .talk-title-thumbnail>span:first-child{flex:1;min-width:0}
+  .talk-thumbnail{display:block;flex:0 0 88px}
+  .talk-thumbnail img{display:block;width:88px;height:auto;border:1px solid var(--line)}
+}
+@media print{.talk-thumbnail{display:none!important}}

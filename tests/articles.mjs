@@ -23,6 +23,15 @@ for (const post of posts) {
     assert.ok(!/[\u00a0\t]/.test(blocks[i].textContent), 'no blog padding or tabs');
   });
   totalBlocks += allFences.length;
+  if(post.slug==='wavelets-in-3d-graphics') {
+    const original=document(post.rawHTML).querySelector('pre').textContent;
+    let before=original.slice(original.indexOf('Wavelets have become')).trim();
+    for(const change of JSON.parse(read('content/editorial-changes.json')).filter(e=>e.article===post.slug&&e.status==='applied'))before=before.replaceAll(change.before,change.after);
+    const prose=doc.querySelector('.prose').cloneNode(true);
+    prose.querySelectorAll('sup').forEach(n=>n.replaceWith('^'+n.textContent));
+    assert.equal(compact(prose.textContent),compact(before),'Wavelets: complete preserved paper with documented spelling and notation changes');
+    assert.equal(doc.querySelector('.article-meta time').textContent,'Circa 1995');
+  }
   if(post.source==='Flipcode') {
     const original=document(post.rawHTML);
     const tables=[...original.querySelectorAll('table[style]')].filter(t=>t.getAttribute('style').includes('table-layout'));

@@ -727,3 +727,9 @@ The initiating author recollection is [this Comonad.Reader comment](http://comon
 
 Preservation pointers: canonical publisher URLs are in each JSON record, together with the Wayback URL for the recovered paper. Research HTML snapshots exist in `work/flipcode-issue2.html`, `work/flipcode-issue3.html`, `work/flipcode-issue4.html`, and `work/bloodshed-haar.html`. They are not complete preservation packages: images/linked code have not been captured.
 
+
+## Author dating correction and new recordings — 22 September 2026
+
+Edward recalls writing **Wavelets in 3D Graphics circa 1995**. This supersedes the unknown-date assessment above. The archive uses that approximate year, separately retaining the 2001 capture date and the uncertainty about later revisions (bibliography through 1997). The complete paper is now imported; the separately linked dsp.zip returned 404.
+
+Added Monadic Warsaw’s *Monad Transformer Lenses* (uploaded 25 July 2016), Lambda World Seattle’s *There and Back Again* (presented 18 September 2018, uploaded 6 November), and 31 recordings covering live-coding sessions 1–26. Live-coding dates use explicitly labeled YouTube release dates; the numbered series preserves intended order and split sessions.

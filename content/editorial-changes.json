@@ -222,5 +222,110 @@
     "after": "polygons",
     "reason": "Unambiguous prose spelling; historical code unchanged.",
     "status": "applied"
+  },
+  {
+    "article": "wavelets-in-3d-graphics",
+    "before": "mutliresolution",
+    "after": "multiresolution",
+    "status": "applied",
+    "reason": "Unambiguous prose spelling."
+  },
+  {
+    "article": "wavelets-in-3d-graphics",
+    "before": "teture",
+    "after": "texture",
+    "status": "applied",
+    "reason": "Unambiguous prose spelling."
+  },
+  {
+    "article": "wavelets-in-3d-graphics",
+    "before": "coeffients",
+    "after": "coefficients",
+    "status": "applied",
+    "reason": "Unambiguous prose spelling."
+  },
+  {
+    "article": "wavelets-in-3d-graphics",
+    "before": "exract",
+    "after": "extract",
+    "status": "applied",
+    "reason": "Unambiguous prose spelling."
+  },
+  {
+    "article": "wavelets-in-3d-graphics",
+    "before": "occured",
+    "after": "occurred",
+    "status": "applied",
+    "reason": "Unambiguous prose spelling."
+  },
+  {
+    "article": "wavelets-in-3d-graphics",
+    "before": "occurance",
+    "after": "occurrence",
+    "status": "applied",
+    "reason": "Unambiguous prose spelling."
+  },
+  {
+    "article": "wavelets-in-3d-graphics",
+    "before": "conpression",
+    "after": "compression",
+    "status": "applied",
+    "reason": "Unambiguous prose spelling."
+  },
+  {
+    "article": "wavelets-in-3d-graphics",
+    "before": "noticable",
+    "after": "noticeable",
+    "status": "applied",
+    "reason": "Unambiguous prose spelling."
+  },
+  {
+    "article": "wavelets-in-3d-graphics",
+    "before": "futher",
+    "after": "further",
+    "status": "applied",
+    "reason": "Unambiguous prose spelling."
+  },
+  {
+    "article": "wavelets-in-3d-graphics",
+    "before": "tesselation",
+    "after": "tessellation",
+    "status": "applied",
+    "reason": "Unambiguous prose spelling."
+  },
+  {
+    "article": "wavelets-in-3d-graphics",
+    "before": "didnt",
+    "after": "didn’t",
+    "status": "applied",
+    "reason": "Unambiguous prose spelling."
+  },
+  {
+    "article": "wavelets-in-3d-graphics",
+    "before": "isnt",
+    "after": "isn’t",
+    "status": "applied",
+    "reason": "Unambiguous prose spelling."
+  },
+  {
+    "article": "wavelets-in-3d-graphics",
+    "before": "The scaling value                     { 6 }",
+    "after": "The scaling value                     { 5 }",
+    "status": "review",
+    "reason": "The preceding reduction gives 5; possible mathematical typo, retained for review."
+  },
+  {
+    "article": "wavelets-in-3d-graphics",
+    "before": "This is don't to normalize",
+    "after": "This is done to normalize",
+    "status": "review",
+    "reason": "Likely wording error, retained for review."
+  },
+  {
+    "article": "wavelets-in-3d-graphics",
+    "before": "provides the sample number of values",
+    "after": "provides the same number of values",
+    "status": "review",
+    "reason": "Likely wording error, retained for review."
   }
 ]

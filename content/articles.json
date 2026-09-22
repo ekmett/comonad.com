@@ -1740,5 +1740,22 @@
     "rawFormat": "html",
     "dateBasis": "Publisher publication date. The original signed date is retained in the article.",
     "series": "harmless-algorithms"
+  },
+  {
+    "slug": "wavelets-in-3d-graphics",
+    "title": "Wavelets in 3D Graphics",
+    "date": "1995",
+    "dateLabel": "Circa 1995",
+    "datePrecision": "year",
+    "dateApproximate": true,
+    "path": "reader/1995/wavelets-in-3d-graphics/",
+    "categories": "Graphics · Wavelets · Compression",
+    "origin": "https://web.archive.org/web/20010526225638/http://www.bloodshed.com:80/wavelets/haar.shtml",
+    "author": "Edward Kmett",
+    "source": "Bloodshed / Harmless Entertainment",
+    "rawHTML": "content/original/external/bloodshed-haar.html",
+    "rawSource": "content/original/external/bloodshed-haar.html",
+    "rawFormat": "html",
+    "dateBasis": "Circa 1995, recalled by Edward Kmett on 22 September 2026. The preserved 26 May 2001 snapshot contains references dated through 1997; its revision history is unknown. The archive capture is not a publication date."
   }
 ]

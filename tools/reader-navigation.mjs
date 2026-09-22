@@ -17,7 +17,7 @@ export function readerNavigation(timeline) {
     const monthName=month=>monthLabel(month).replace(/ \d{4}$/,'');
     const monthGrid=`<nav class="archive-month-grid" aria-label="Months in ${year}">${monthKeys.map(month=>{
       const count=yearEntries.filter(item=>item.date.startsWith(month)).length;
-      return count?`<a href="#calendar-month-${month}" aria-label="${monthName(month)} ${year}: ${count} entries"${date.startsWith(month)?' aria-current="date"':''}><span>${monthName(month).slice(0,3)}</span><small>${count}</small></a>`:`<span class="empty-month">${monthName(month).slice(0,3)}</span>`;
+      return count?`<a href="#calendar-month-${month}" aria-label="${monthName(month)} ${year}: ${count} ${count===1?'entry':'entries'}"${date.startsWith(month)?' aria-current="date"':''}><span>${monthName(month).slice(0,3)}</span><small>${count}</small></a>`:`<span class="empty-month">${monthName(month).slice(0,3)}</span>`;
     }).join('')}</nav>`;
     const dayList=items=>[...new Set(items.map(item=>item.date))].sort().map(day=>`<section class="calendar-day" id="calendar-day-${day}"><h4>${day.length===10?`<time datetime="${day}">${Number(day.slice(-2))} ${monthName(day.slice(0,7))}</time>`:'Day not recorded'}</h4><ul>${items.filter(item=>item.date===day).reverse().map(item=>`<li><a href="${base+item.path}">${escape(item.title)}</a>${item.kind!=='Article'?`<span class="calendar-kind">${escape(item.kind)}</span>`:''}</li>`).join('')}</ul></section>`).join('');
     const list=monthKeys.filter(month=>yearEntries.some(item=>item.date.startsWith(month))).map(month=>{
