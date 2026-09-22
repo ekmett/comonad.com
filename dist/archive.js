@@ -15,13 +15,3 @@ function filter() {
 }
 search?.addEventListener('input',filter);
 kind?.addEventListener('change',filter);
-
-// Escape dismisses a thumbnail without following the link or moving focus.
-const thumbnailLinks=[...document.querySelectorAll('.talk-title-thumbnail')];
-for(const link of thumbnailLinks){
-  link.addEventListener('mouseleave',()=>link.removeAttribute('data-preview-dismissed'));
-  link.addEventListener('blur',()=>link.removeAttribute('data-preview-dismissed'));
-}
-document.addEventListener('keydown',event=>{
-  if(event.key==='Escape')for(const link of thumbnailLinks)link.setAttribute('data-preview-dismissed','');
-});

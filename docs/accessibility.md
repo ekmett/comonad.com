@@ -8,7 +8,7 @@ Reviewed 22 September 2026. This is a focused review, not a conformance certific
 - Consistent visible focus outlines on links, controls and disclosures.
 - Static article content works without JavaScript; semantic main/navigation landmarks, language metadata and heading structure are present.
 - KaTeX emits MathML. The redrawn wavelet trees have SVG titles/descriptions and equivalent image alternative text, including the numerical operations and relationships.
-- Talk thumbnails also appear on keyboard focus, can be dismissed with Escape, and remain reachable when the pointer moves onto them. Touch layouts use inline thumbnails.
+- Talk thumbnails are visible alongside titles on desktop and touch layouts. The title provides the keyboard-accessible link; its duplicate thumbnail is decorative.
 - Code blocks can be focused and scrolled. Original source files remain downloadable.
 
 ## Highest-value remaining work
