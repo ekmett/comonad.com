@@ -35,7 +35,20 @@ for(const baseUrl of ['https://comonad.com/','https://ekmett.github.io/comonad.c
  assert.equal(new URL(doc.querySelector('[rel=canonical]').getAttribute('href'),configured.url(article.path)).href,configured.url(article.path));
 }
 const feed=new DOMParser().parseFromString(fs.readFileSync('dist/feed.xml','utf8'),'text/xml');
-for(const item of feed.querySelectorAll('item')){
+const items=[...feed.querySelectorAll('item')];
+const expected=[...articles,...pubs,...videos.map(v=>({...v,path:`reader/talks/${v.id}/`,date:v.eventDate||v.eventMonth||v.eventYear||v.date}))];
+assert.equal(items.length,expected.length,'The feed includes the entire dated archive');
+assert.equal(new Set(items.map(i=>i.querySelector('guid').textContent)).size,items.length);
+for(const entry of expected){
+ const item=items.find(i=>i.querySelector('guid').textContent===config.permanentIdentityBaseUrl+entry.path);
+ assert.ok(item,`Missing feed entry: ${entry.path}`);
+ assert.equal(item.querySelector('title').textContent,entry.displayTitle||entry.title);
+ assert.equal(item.querySelector('category').textContent,entry.archiveType==='stream'?'Stream':entry.videoId?'Talk':entry.kind||'Article');
+ const date=item.querySelector('pubDate');
+ if(entry.date.length===10)assert.equal(Date.parse(date.textContent),Date.parse(entry.date+'T12:00:00Z'));
+ else assert.ok(!date,'Partial historical dates must not become invented days');
+}
+for(const item of items){
  assert.ok(item.querySelector('link').textContent.startsWith(site.readerUrl));
  assert.equal(item.querySelector('guid').getAttribute('isPermaLink'),'false');
  const description=parseHTML('<div>'+item.querySelector('description').textContent+'</div>').document;

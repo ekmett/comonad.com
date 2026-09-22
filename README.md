@@ -8,7 +8,7 @@ A static home for the original blog and Edward Kmett’s School of Haskell writi
 - 58 talk pages and 31 live-coding stream pages: four locally preserved slide decks and 85 recordings. The recordings include the Boston Haskell channel, Monad Transformer Lenses, There and Back Again, and sessions 1–26 from Edward’s Twitch stream (including split sessions).
 - 187 selected historical comments; all 12,370 original comment records remain in source snapshots.
 - 1,014 linked Haskell archive resources, preserved with checksums. Parent directory links do not expand the crawl.
-- 1,264 article source blocks (including typeset derivations), local KaTeX/fonts, six editable SVG category diagrams, and local article images/attachments.
+- 1,261 article source blocks (including typeset derivations), local KaTeX/fonts, six editable SVG category diagrams, three SVG wavelet trees, and local article images/attachments.
 - Real GHC/WebAssembly figures for CRCs, cellular automata, capture avoidance, Morton order, reverse-mode AD, and growing-tree LCA. Original historical code remains alongside them. The CRC also has a native HTTP companion.
 
 ## Preview and edit
@@ -72,3 +72,5 @@ Dates distinguish publication, presentation, revision, and upload. School dates 
 Seventeen Haskell targets and four C# attachments were already unavailable from the old server. The old Wiki is empty and its legacy endpoints partly return 404. Local notices record these gaps; no source is invented. External citations to other people’s writing remain external. See `docs/pending-migration-links.json`, `content/haskell-archive.json`, and `content/assets-manifest.json`.
 
 Additional writing outside the two original hosts is researched in `docs/edward-kmett-research.md` and `content/external-articles.json`; the four Harmless Algorithms columns are now preserved as full articles, and ApplicativeDo is preserved as a complete local PDF with all four authors credited. Four additional talks have locally preserved slides; `content/publications.json` records their dates and materials. Remaining research candidates are not automatically included. Video metadata is preserved locally, but recordings themselves remain on YouTube. The Hello World diagram is compiled from the retained TikZ-cd source to a standalone SVG; normal site builds use the committed SVG and need no TeX installation. Arbitrary code editing and live comment submission are not part of this static implementation.
+
+The RSS feed includes the entire dated archive: articles, talks, streams, and papers. Original dates and permanent entry IDs are retained; entries with only a known year or month omit the optional RSS publication day.

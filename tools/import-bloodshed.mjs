@@ -25,6 +25,7 @@ let markdown=text.split(/\n\s*\n/).map(block=>{
  if(lines.some(line=>/ {6,}\S|^ {2,}[\\/\d]/.test(line)))return '```text\n'+lines.join('\n')+'\n```';
  return lines.map(line=>line.trim()).join(' ').replace(/2\^([nm])/g,'2<sup>$1</sup>');
 }).join('\n\n')+'\n';
+for(const figure of json('content/figures/wavelet-diagrams.json').figures)markdown=markdown.replace('```text\n'+figure.originalText+'\n```',figure.markup);
 if(!fs.existsSync(`content/articles/${slug}.md`))fs.writeFileSync(`content/articles/${slug}.md`,markdown);
 for(const [before,after,reason] of [
  ['The scaling value                     { 6 }','The scaling value                     { 5 }','The preceding reduction gives 5; possible mathematical typo, retained for review.'],

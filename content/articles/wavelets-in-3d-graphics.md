@@ -24,23 +24,13 @@ Pair samples and average them giving:         { (11+1)/2, (1+7)/2 } = { 6, 4 }
 Repeat until you have 1 value:                { (6+4)/2 } = { 5 }
 ```
 
-```text
-      5
-    /   \
-   6     4                                      Figure 1
-  / \   / \
-11   1 1   7
-```
+<figure class="wavelet-diagram" id="haar-figure-1"><img src="/figures/haar-averaging.svg" alt="The samples 11, 1, 1, 7 average in pairs to 6 and 4, then to the scaling value 5." width="440" height="235"><figcaption>Figure 1. Pairwise averages and the scaling value.</figcaption></figure>
 
 This value at the top of this tree (Figure 1) is your scaling value.
 
 Now, you recurse down the hierarchy that you paired. At each level you subtract value in the right hand child of the current node from the value in the current node.  Do not recurse into the leaf nodes on the tree.
 
-```text
-      1     (Coefficients of level 0)
-     / \                                        Figure 2
-    5   -3  (Coefficients of level 1)
-```
+<figure class="wavelet-diagram" id="haar-figure-2"><img src="/figures/haar-coefficients.svg" alt="A coefficient tree with 1 at level 0, and 5 and minus 3 at level 1." width="440" height="160"><figcaption>Figure 2. Wavelet coefficients by level.</figcaption></figure>
 
 There are 2<sup>n</sup> values in a given level of the tree.  These values are your wavelet coefficients.   With these values you can reconstruct the original sample set since this operation is invertible.
 
@@ -48,13 +38,7 @@ There are 2<sup>m</sup> coefficients at the mth level of the hierarchy. Adding t
 
 Reconstruction is straightforward. Start with the scaling value and the coefficient for level 0. Add the coefficient to the scaling value to generate the left hand child, subtract it from the scaling value to generate the right hand child. Take those nodes and repeat down the tree:
 
-```text
-           5                             5
-         /   \                         /   \
-   (5+1)       (5-1)       =          6     4    Figure 3
-   /  \        /   \                 / \   / \
-(6+5) (6-5) (4+-3) (4--3)          11   1 1   7
-```
+<figure class="wavelet-diagram" id="haar-figure-3"><div class="wavelet-reconstruction"><img src="/figures/haar-reconstruction.svg" alt="An expression tree starting at 5, then 5 plus 1 and 5 minus 1, then 6 plus 5, 6 minus 5, 4 plus negative 3, and 4 minus negative 3." width="440" height="235"><span class="wavelet-equals" aria-label="equals">=</span><img src="/figures/haar-averaging.svg" alt="The evaluated tree: 5, then 6 and 4, then the recovered samples 11, 1, 1, 7." width="440" height="235"></div><figcaption>Figure 3. Reconstruction: add on the left, subtract on the right.</figcaption></figure>
 
 Next you weight the coefficients by their level in the tree. This is don't to normalize the coefficients.  There are several weighting mechanisms that are popular. Each of them is valid for a different uses. I prefer normalization by multiplying each value by 1/sqrt(2^j) where j is the coefficient's level in the tree.
 

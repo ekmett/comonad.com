@@ -28,6 +28,12 @@ for (const post of posts) {
     let before=original.slice(original.indexOf('Wavelets have become')).trim();
     for(const change of JSON.parse(read('content/editorial-changes.json')).filter(e=>e.article===post.slug&&e.status==='applied'))before=before.replaceAll(change.before,change.after);
     const prose=doc.querySelector('.prose').cloneNode(true);
+    for(const figure of JSON.parse(read('content/figures/wavelet-diagrams.json')).figures){
+      assert.ok(compact(before).includes(compact(figure.originalText)),'Diagram provenance matches the archived original');
+      const rendered=prose.querySelector('#'+figure.id);
+      assert.ok(rendered?.querySelector('img[src$=".svg"]'),'Original diagram has a local SVG replacement');
+      rendered.replaceWith(figure.originalText);
+    }
     prose.querySelectorAll('sup').forEach(n=>n.replaceWith('^'+n.textContent));
     assert.equal(compact(prose.textContent),compact(before),'Wavelets: complete preserved paper with documented spelling and notation changes');
     assert.equal(doc.querySelector('.article-meta time').textContent,'Circa 1995');

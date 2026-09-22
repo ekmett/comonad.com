@@ -1,0 +1,21 @@
+{
+  "article": "wavelets-in-3d-graphics",
+  "description": "SVG redrawings of the three original ASCII tree diagrams. Numerical values and tree topology are unchanged; negative operands in Figure 3 have explicit parentheses.",
+  "figures": [
+    {
+      "id": "haar-figure-1",
+      "originalText": "      5\n    /   \\\n   6     4                                      Figure 1\n  / \\   / \\\n11   1 1   7",
+      "markup": "<figure class=\"wavelet-diagram\" id=\"haar-figure-1\"><img src=\"/figures/haar-averaging.svg\" alt=\"The samples 11, 1, 1, 7 average in pairs to 6 and 4, then to the scaling value 5.\" width=\"440\" height=\"235\"><figcaption>Figure 1. Pairwise averages and the scaling value.</figcaption></figure>"
+    },
+    {
+      "id": "haar-figure-2",
+      "originalText": "      1     (Coefficients of level 0)\n     / \\                                        Figure 2\n    5   -3  (Coefficients of level 1)",
+      "markup": "<figure class=\"wavelet-diagram\" id=\"haar-figure-2\"><img src=\"/figures/haar-coefficients.svg\" alt=\"A coefficient tree with 1 at level 0, and 5 and minus 3 at level 1.\" width=\"440\" height=\"160\"><figcaption>Figure 2. Wavelet coefficients by level.</figcaption></figure>"
+    },
+    {
+      "id": "haar-figure-3",
+      "originalText": "           5                             5\n         /   \\                         /   \\\n   (5+1)       (5-1)       =          6     4    Figure 3\n   /  \\        /   \\                 / \\   / \\\n(6+5) (6-5) (4+-3) (4--3)          11   1 1   7",
+      "markup": "<figure class=\"wavelet-diagram\" id=\"haar-figure-3\"><div class=\"wavelet-reconstruction\"><img src=\"/figures/haar-reconstruction.svg\" alt=\"An expression tree starting at 5, then 5 plus 1 and 5 minus 1, then 6 plus 5, 6 minus 5, 4 plus negative 3, and 4 minus negative 3.\" width=\"440\" height=\"235\"><span class=\"wavelet-equals\" aria-label=\"equals\">=</span><img src=\"/figures/haar-averaging.svg\" alt=\"The evaluated tree: 5, then 6 and 4, then the recovered samples 11, 1, 1, 7.\" width=\"440\" height=\"235\"></div><figcaption>Figure 3. Reconstruction: add on the left, subtract on the right.</figcaption></figure>"
+    }
+  ]
+}
