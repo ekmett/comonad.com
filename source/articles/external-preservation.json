@@ -103,7 +103,7 @@
     "bytes": 66968,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Overview\nThe Lowest Common Ancestor (LCA) Problem\n\nTarjan’s Off-line LCA\n\nOff-line Tree-Like LCA\n\nOff-line Range-Min LCA\n\nNaïve On-line LCA\n\nData Structures from Number Systems\n\nSkew-Binary Random Access Lists\n\nSkew-Binary On-line LCA\n ",
+    "alt": "Overview\nThe Lowest Common Ancestor (LCA) Problem\n\nTarjan\u2019s Off-line LCA\n\nOff-line Tree-Like LCA\n\nOff-line Range-Min LCA\n\nNa\u00efve On-line LCA\n\nData Structures from Number Systems\n\nSkew-Binary Random Access Lists\n\nSkew-Binary On-line LCA\n ",
     "slide": 2,
     "deck": "lca"
   },
@@ -136,7 +136,7 @@
     "bytes": 73380,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "The Lowest Common Ancestor Problem\nGiven a tree and two nodes in the tree, find the lowest\nentry in the tree that is an ancestor to both.\n\nApplications:\n  Computing Dominators in Flow Graphs\n  Three-Way Merge Algorithms in Revision Control\n  Common Word Roots/Suffixes\n  Range-Min Query (RMQ) problems\n  Computing Distance in a Tree\n  …\n ",
+    "alt": "The Lowest Common Ancestor Problem\nGiven a tree and two nodes in the tree, find the lowest\nentry in the tree that is an ancestor to both.\n\nApplications:\n  Computing Dominators in Flow Graphs\n  Three-Way Merge Algorithms in Revision Control\n  Common Word Roots/Suffixes\n  Range-Min Query (RMQ) problems\n  Computing Distance in a Tree\n  \u2026\n ",
     "slide": 5,
     "deck": "lca"
   },
@@ -169,7 +169,7 @@
     "bytes": 86116,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Tarjan’s Off-line LCA\nIn 1979, Robert Tarjan found a way to compute a\npredetermined set of distinct LCA queries at the same\ntime given the complete tree by creatively using disjoint-\nset forests in O(nα(n)). (This is stronger condition than the usual offline problem\nstatement.) TarjanOLCA(u)\n  function\n      MakeSet(u);\n      u.ancestor := u;\n      for each v in u.children do\n           TarjanOLCA(v);\n           Union(u,v);\n           Find(u).ancestor := u;\n      u.colour := black;\n      for each v such that {u,v} in P do\n           if v.colour == black\n               print \"The LCA of “+u+\" and “+v+\" is \" + Find(v).ancestor;\n ",
+    "alt": "Tarjan\u2019s Off-line LCA\nIn 1979, Robert Tarjan found a way to compute a\npredetermined set of distinct LCA queries at the same\ntime given the complete tree by creatively using disjoint-\nset forests in O(n\u03b1(n)). (This is stronger condition than the usual offline problem\nstatement.) TarjanOLCA(u)\n  function\n      MakeSet(u);\n      u.ancestor := u;\n      for each v in u.children do\n           TarjanOLCA(v);\n           Union(u,v);\n           Find(u).ancestor := u;\n      u.colour := black;\n      for each v such that {u,v} in P do\n           if v.colour == black\n               print \"The LCA of \u201c+u+\" and \u201c+v+\" is \" + Find(v).ancestor;\n ",
     "slide": 8,
     "deck": "lca"
   },
@@ -180,7 +180,7 @@
     "bytes": 90776,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Tarjan’s Off-line LCA\nIn 1979, Robert Tarjan found a way to compute a\npredetermined set of distinct LCA queries at the same\ntime given the complete tree by creatively using disjoint-\nset forests in O(nα(n)).\n\nIn 1983, Harold Gabow and Robert Tarjan improved the\nasymptotics of the preceding algorithm to O(n) by noting\nspecial-case opportunities not available in general\npurpose disjoint-set forest problems.\n ",
+    "alt": "Tarjan\u2019s Off-line LCA\nIn 1979, Robert Tarjan found a way to compute a\npredetermined set of distinct LCA queries at the same\ntime given the complete tree by creatively using disjoint-\nset forests in O(n\u03b1(n)).\n\nIn 1983, Harold Gabow and Robert Tarjan improved the\nasymptotics of the preceding algorithm to O(n) by noting\nspecial-case opportunities not available in general\npurpose disjoint-set forest problems.\n ",
     "slide": 9,
     "deck": "lca"
   },
@@ -224,7 +224,7 @@
     "bytes": 62386,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Naïve On-line LCA\nBuild paths as lists of node IDs, using cons as you go.\n\n    x = [5,4,3,2,1] :# 5\n    y = [6,3,2,1] :# 4\n\nTo compute lca x y, first cut both lists to have the same\nlength.\n\n    x’ = [4,3,2,1], y’ = [6,3,2,1], len = 4\n\nThen keep dropping elements from both until the IDs\nmatch.\n\n    lca x y = [3,2,1] :# 3\n ",
+    "alt": "Na\u00efve On-line LCA\nBuild paths as lists of node IDs, using cons as you go.\n\n    x = [5,4,3,2,1] :# 5\n    y = [6,3,2,1] :# 4\n\nTo compute lca x y, first cut both lists to have the same\nlength.\n\n    x\u2019 = [4,3,2,1], y\u2019 = [6,3,2,1], len = 4\n\nThen keep dropping elements from both until the IDs\nmatch.\n\n    lca x y = [3,2,1] :# 3\n ",
     "slide": 13,
     "deck": "lca"
   },
@@ -235,7 +235,7 @@
     "bytes": 72116,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Naïve On-line LCA\nNo preprocessing step.\n\nO(h) LCA query time where h is the length of the path.\n\nO(1) to extend a path.\n\nNo need to store the entire tree, just the paths you are\ncurrently using. This helps with distribution and\nparallelization.\n\nAs an on-line algorithm, the tree can grow without\nrequiring costly recalculations.\n ",
+    "alt": "Na\u00efve On-line LCA\nNo preprocessing step.\n\nO(h) LCA query time where h is the length of the path.\n\nO(1) to extend a path.\n\nNo need to store the entire tree, just the paths you are\ncurrently using. This helps with distribution and\nparallelization.\n\nAs an on-line algorithm, the tree can grow without\nrequiring costly recalculations.\n ",
     "slide": 14,
     "deck": "lca"
   },
@@ -246,7 +246,7 @@
     "bytes": 54328,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Naïve On-line LCA\nTo go faster we’d need to extract a common suffix in\nsublinear time. Very Well…\n ",
+    "alt": "Na\u00efve On-line LCA\nTo go faster we\u2019d need to extract a common suffix in\nsublinear time. Very Well\u2026\n ",
     "slide": 15,
     "deck": "lca"
   },
@@ -268,7 +268,7 @@
     "bytes": 63230,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Binary Random-Access\n           Lists\nWe could construct a data structure from binary numbers\nas well, where you have a linked list of “flags” with 2n\nelements in them.\n\nHowever, adding 1 to a binary number can affect all log n\ndigits in the number, yielding O(log n) cons.\n ",
+    "alt": "Binary Random-Access\n           Lists\nWe could construct a data structure from binary numbers\nas well, where you have a linked list of \u201cflags\u201d with 2n\nelements in them.\n\nHowever, adding 1 to a binary number can affect all log n\ndigits in the number, yielding O(log n) cons.\n ",
     "slide": 17,
     "deck": "lca"
   },
@@ -301,7 +301,7 @@
     "bytes": 47926,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Skew-Binary On-line LCA\nNaïve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go.\n     To compute lca x y, first cut both lists to have the same length.\n     Then keep dropping elements until the IDs match.\n ",
+    "alt": "Skew-Binary On-line LCA\nNa\u00efve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go.\n     To compute lca x y, first cut both lists to have the same length.\n     Then keep dropping elements until the IDs match.\n ",
     "slide": 20,
     "deck": "lca"
   },
@@ -312,7 +312,7 @@
     "bytes": 49706,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Skew-Binary On-line LCA\nNaïve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go.\n     To compute lca x y, first cut both lists to have the same length.\n     Then keep dropping elements until the IDs match.\n ",
+    "alt": "Skew-Binary On-line LCA\nNa\u00efve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go.\n     To compute lca x y, first cut both lists to have the same length.\n     Then keep dropping elements until the IDs match.\n ",
     "slide": 21,
     "deck": "lca"
   },
@@ -323,7 +323,7 @@
     "bytes": 52292,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Skew-Binary On-line LCA\nNaïve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go.\n     To compute lca x y, first cut both lists to have the same length.\n     Then keep dropping elements until the IDs match.\n\n\n\n\n                                      1\n ",
+    "alt": "Skew-Binary On-line LCA\nNa\u00efve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go.\n     To compute lca x y, first cut both lists to have the same length.\n     Then keep dropping elements until the IDs match.\n\n\n\n\n                                      1\n ",
     "slide": 22,
     "deck": "lca"
   },
@@ -334,7 +334,7 @@
     "bytes": 55018,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Skew-Binary On-line LCA\nNaïve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go.\n     To compute lca x y, first cut both lists to have the same length.\n     Then keep dropping elements until the IDs match.\n\n\n\n\n                  2                                       1\n ",
+    "alt": "Skew-Binary On-line LCA\nNa\u00efve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go.\n     To compute lca x y, first cut both lists to have the same length.\n     Then keep dropping elements until the IDs match.\n\n\n\n\n                  2                                       1\n ",
     "slide": 23,
     "deck": "lca"
   },
@@ -345,7 +345,7 @@
     "bytes": 55146,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Skew-Binary On-line LCA\nNaïve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go.\n     To compute lca x y, first cut both lists to have the same length.\n     Then keep dropping elements until the IDs match.\n\n\n\n\n                                      3\n\n                            2                   1\n ",
+    "alt": "Skew-Binary On-line LCA\nNa\u00efve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go.\n     To compute lca x y, first cut both lists to have the same length.\n     Then keep dropping elements until the IDs match.\n\n\n\n\n                                      3\n\n                            2                   1\n ",
     "slide": 24,
     "deck": "lca"
   },
@@ -356,7 +356,7 @@
     "bytes": 56492,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Skew-Binary On-line LCA\nNaïve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go.\n     To compute lca x y, first cut both lists to have the same length.\n     Then keep dropping elements until the IDs match.\n\n\n\n\n                       4                   3\n\n                                 2                   1\n ",
+    "alt": "Skew-Binary On-line LCA\nNa\u00efve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go.\n     To compute lca x y, first cut both lists to have the same length.\n     Then keep dropping elements until the IDs match.\n\n\n\n\n                       4                   3\n\n                                 2                   1\n ",
     "slide": 25,
     "deck": "lca"
   },
@@ -367,7 +367,7 @@
     "bytes": 58536,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Skew-Binary On-line LCA\nNaïve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go.\n     To compute lca x y, first cut both lists to have the same length.\n     Then keep dropping elements until the IDs match.\n\n\n\n\n            5                    4                   3\n\n                                           2                   1\n ",
+    "alt": "Skew-Binary On-line LCA\nNa\u00efve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go.\n     To compute lca x y, first cut both lists to have the same length.\n     Then keep dropping elements until the IDs match.\n\n\n\n\n            5                    4                   3\n\n                                           2                   1\n ",
     "slide": 26,
     "deck": "lca"
   },
@@ -378,7 +378,7 @@
     "bytes": 60410,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Skew-Binary On-line LCA\nNaïve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go.\n     To compute lca x y, first cut both lists to have the same length.\n     Then keep dropping elements until the IDs match.\n\n\n\n\n                   6                                     3\n\n         5                  4                  2                   1\n ",
+    "alt": "Skew-Binary On-line LCA\nNa\u00efve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go.\n     To compute lca x y, first cut both lists to have the same length.\n     Then keep dropping elements until the IDs match.\n\n\n\n\n                   6                                     3\n\n         5                  4                  2                   1\n ",
     "slide": 27,
     "deck": "lca"
   },
@@ -389,7 +389,7 @@
     "bytes": 58852,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Skew-Binary On-line LCA\nNaïve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go.\n     To compute lca x y, first cut both lists to have the same length.\n     Then keep dropping elements until the IDs match.\n\n\n\n\n                                      7\n\n                         6                         3\n\n                   5            4            2           1\n ",
+    "alt": "Skew-Binary On-line LCA\nNa\u00efve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go.\n     To compute lca x y, first cut both lists to have the same length.\n     Then keep dropping elements until the IDs match.\n\n\n\n\n                                      7\n\n                         6                         3\n\n                   5            4            2           1\n ",
     "slide": 28,
     "deck": "lca"
   },
@@ -400,7 +400,7 @@
     "bytes": 60286,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Skew-Binary On-line LCA\nNaïve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go.\n     To compute lca x y, first cut both lists to have the same length.\n     Then keep dropping elements until the IDs match.\n\n\n\n\n                         8            7\n\n                         6                         3\n\n                   5            4            2           1\n ",
+    "alt": "Skew-Binary On-line LCA\nNa\u00efve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go.\n     To compute lca x y, first cut both lists to have the same length.\n     Then keep dropping elements until the IDs match.\n\n\n\n\n                         8            7\n\n                         6                         3\n\n                   5            4            2           1\n ",
     "slide": 29,
     "deck": "lca"
   },
@@ -411,7 +411,7 @@
     "bytes": 68700,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Skew-Binary On-line LCA\nNaïve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go.\n     To compute lca x y, first cut both lists to have the same length.\n     Then keep dropping elements until the IDs match.\n\n\n-- O(1)\ncons :: a -> Path a -> Path a\ncons a (Cons n w t (Cons _ w' t2 ts))\n  | w == w' = Cons (n + 1) (2 * w + 1) (Bin a t t2) ts\ncons a ts = Cons (length ts + 1) 1 (Tip a) ts\n ",
+    "alt": "Skew-Binary On-line LCA\nNa\u00efve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go.\n     To compute lca x y, first cut both lists to have the same length.\n     Then keep dropping elements until the IDs match.\n\n\n-- O(1)\ncons :: a -> Path a -> Path a\ncons a (Cons n w t (Cons _ w' t2 ts))\n  | w == w' = Cons (n + 1) (2 * w + 1) (Bin a t t2) ts\ncons a ts = Cons (length ts + 1) 1 (Tip a) ts\n ",
     "slide": 30,
     "deck": "lca"
   },
@@ -422,7 +422,7 @@
     "bytes": 71696,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Skew-Binary On-line LCA\nNaïve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go.\n     To compute lca x y, first cut both lists to have the same length.\n     Then keep dropping elements until the IDs match.\n\nlca :: Eq   a => Path a -> Path a -> Path a\nlca xs ys   = case compare nxs nys of\n    LT ->   lca' xs (keep nxs ys)\n    EQ ->   lca' xs ys\n    GT ->   lca' (keep nys xs) ys\n  where\n    nxs =   length xs\n    nys =   length ys\n ",
+    "alt": "Skew-Binary On-line LCA\nNa\u00efve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go.\n     To compute lca x y, first cut both lists to have the same length.\n     Then keep dropping elements until the IDs match.\n\nlca :: Eq   a => Path a -> Path a -> Path a\nlca xs ys   = case compare nxs nys of\n    LT ->   lca' xs (keep nxs ys)\n    EQ ->   lca' xs ys\n    GT ->   lca' (keep nys xs) ys\n  where\n    nxs =   length xs\n    nys =   length ys\n ",
     "slide": 31,
     "deck": "lca"
   },
@@ -477,7 +477,7 @@
     "bytes": 71666,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Skew-Binary On-line LCA\nNaïve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go.\n     To compute lca x y, first cut both lists to have the same length.\n     Then keep dropping elements until the IDs match.\n\nlca :: Eq   a => Path a -> Path a -> Path a\nlca xs ys   = case compare nxs nys of\n    LT ->   lca' xs (keep nxs ys)\n    EQ ->   lca' xs ys\n    GT ->   lca' (keep nys xs) ys\n  where\n    nxs =   length xs\n    nys =   length ys\n ",
+    "alt": "Skew-Binary On-line LCA\nNa\u00efve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go.\n     To compute lca x y, first cut both lists to have the same length.\n     Then keep dropping elements until the IDs match.\n\nlca :: Eq   a => Path a -> Path a -> Path a\nlca xs ys   = case compare nxs nys of\n    LT ->   lca' xs (keep nxs ys)\n    EQ ->   lca' xs ys\n    GT ->   lca' (keep nys xs) ys\n  where\n    nxs =   length xs\n    nys =   length ys\n ",
     "slide": 36,
     "deck": "lca"
   },
@@ -510,7 +510,7 @@
     "bytes": 79338,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Finding the Match\n   lca’ requires the invariant that both paths have the same\n   length. This is provided by the fact that lca, shown earlier,\n   trims the lists first.\n\nlca' :: Eq a => Path a -> Path a -> Path a\nlca' h@(Cons _ w x xs) (Cons _ _ y ys)\n  | sameT x y = h\n  | xs ~= ys = lcaT w x y xs\n  | otherwise = lca' xs ys\nlca' _ _ = Nil\n\nlcaT :: Eq a => Int -> Tree a -> Tree a -> Path a -> Path a\nlcaT w (Bin _ la ra) (Bin _ lb rb) ts\n  | sameT la lb = consT w2 la (consT w2 ra ts)\n  | sameT ra rb = lcaT w2 la lb (consT w ra ts)\n  | otherwise   = lcaT w2 ra rb ts\n  where w2 = div w 2\nlcaT _ _ _ ts = ts\n ",
+    "alt": "Finding the Match\n   lca\u2019 requires the invariant that both paths have the same\n   length. This is provided by the fact that lca, shown earlier,\n   trims the lists first.\n\nlca' :: Eq a => Path a -> Path a -> Path a\nlca' h@(Cons _ w x xs) (Cons _ _ y ys)\n  | sameT x y = h\n  | xs ~= ys = lcaT w x y xs\n  | otherwise = lca' xs ys\nlca' _ _ = Nil\n\nlcaT :: Eq a => Int -> Tree a -> Tree a -> Path a -> Path a\nlcaT w (Bin _ la ra) (Bin _ lb rb) ts\n  | sameT la lb = consT w2 la (consT w2 ra ts)\n  | sameT ra rb = lcaT w2 la lb (consT w ra ts)\n  | otherwise   = lcaT w2 ra rb ts\n  where w2 = div w 2\nlcaT _ _ _ ts = ts\n ",
     "slide": 39,
     "deck": "lca"
   },
@@ -521,7 +521,7 @@
     "bytes": 83882,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Skew-Binary On-line LCA\nNaïve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go. O(1)\n     To compute lca x y, first cut both lists to have the same length. O(h)\n     Then keep dropping elements until the IDs match. O(h)\n\n\n\nSkew-Binary On-line LCA:\n     Build paths as lists of node IDs, using cons as you go. O(1)\n     To compute lca x y, first cut both lists to have the same length. O(log\n     h)\n     Then keep dropping elements until the IDs match. O(log h)\n ",
+    "alt": "Skew-Binary On-line LCA\nNa\u00efve On-line LCA:\n     Build paths as lists of node IDs, using cons as you go. O(1)\n     To compute lca x y, first cut both lists to have the same length. O(h)\n     Then keep dropping elements until the IDs match. O(h)\n\n\n\nSkew-Binary On-line LCA:\n     Build paths as lists of node IDs, using cons as you go. O(1)\n     To compute lca x y, first cut both lists to have the same length. O(log\n     h)\n     Then keep dropping elements until the IDs match. O(log h)\n ",
     "slide": 40,
     "deck": "lca"
   },
@@ -532,7 +532,7 @@
     "bytes": 92768,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Skew-Binary On-line LCA\nNo preprocessing step.\n\nO(log h) LCA query time where h is the length of the path.\n\nO(1) to extend a path.\n\nNo need to store the entire tree, just the paths you are currently\nusing. This helps with distribution and parallelization when\nworking on large trees.\n\nAs an on-line algorithm, the tree can grow without requiring\ncostly recalculations.\n\nPreserves all of the benefits of the naïve algorithm, while\ndrastically reducing the costs.\n ",
+    "alt": "Skew-Binary On-line LCA\nNo preprocessing step.\n\nO(log h) LCA query time where h is the length of the path.\n\nO(1) to extend a path.\n\nNo need to store the entire tree, just the paths you are currently\nusing. This helps with distribution and parallelization when\nworking on large trees.\n\nAs an on-line algorithm, the tree can grow without requiring\ncostly recalculations.\n\nPreserves all of the benefits of the na\u00efve algorithm, while\ndrastically reducing the costs.\n ",
     "slide": 41,
     "deck": "lca"
   },
@@ -543,7 +543,7 @@
     "bytes": 97620,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Now What?\nWe found that skew-binary random access lists can be used to\naccelerate the naïve online LCA algorithm while retaining the\ndesirable properties.\n\nYou can install a working version of this algorithm from hackage\n\n                     cabal install lca\n\nNext time I’ll talk about the applications of this algorithm to a\n“revision control” monad which can be used for parallel and\nincremental computation in Haskell.\n\nI am working with Daniel Peebles on a proof of correctness and\nasymptotic performance in Agda.\n ",
+    "alt": "Now What?\nWe found that skew-binary random access lists can be used to\naccelerate the na\u00efve online LCA algorithm while retaining the\ndesirable properties.\n\nYou can install a working version of this algorithm from hackage\n\n                     cabal install lca\n\nNext time I\u2019ll talk about the applications of this algorithm to a\n\u201crevision control\u201d monad which can be used for parallel and\nincremental computation in Haskell.\n\nI am working with Daniel Peebles on a proof of correctness and\nasymptotic performance in Agda.\n ",
     "slide": 42,
     "deck": "lca"
   },
@@ -576,7 +576,7 @@
     "bytes": 56244,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "   We use names in lots of contexts, but any\n    program that deals with names has to deal\n    with a number of issues such as\n\n     capture avoidance\n     deciding alpha equivalence\n\n\n    … and others that will come up as we go.\n ",
+    "alt": "\uf0a1   We use names in lots of contexts, but any\n    program that deals with names has to deal\n    with a number of issues such as\n\n    \uf0a7 capture avoidance\n    \uf0a7 deciding alpha equivalence\n\n\n    \u2026 and others that will come up as we go.\n ",
     "slide": 2,
     "deck": "bound"
   },
@@ -587,7 +587,7 @@
     "bytes": 52366,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "The dumbest thing that could possibly work:\ntype Name = String\ndata Exp\n     = Var Name\n     | Exp :@ Exp\n     | Lam Name Exp\nVar “x”\nLam “x” (Var “x”)\nLam “x” (Lam “y” (Var “x”))\n ",
+    "alt": "The dumbest thing that could possibly work:\ntype Name = String\ndata Exp\n     = Var Name\n     | Exp :@ Exp\n     | Lam Name Exp\nVar \u201cx\u201d\nLam \u201cx\u201d (Var \u201cx\u201d)\nLam \u201cx\u201d (Lam \u201cy\u201d (Var \u201cx\u201d))\n ",
     "slide": 3,
     "deck": "bound"
   },
@@ -598,7 +598,7 @@
     "bytes": 55734,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Blindly Substituting Lam “x” (Var “y”) into\n\nLam “y”( Var “z”)\n\nfor “z” would yield\n\nLam “y” (Lam “x” (Var “y”))\n\nwhich now causes the free variable to reference\nthe “y” bound by the outer lambda.\n ",
+    "alt": "Blindly Substituting Lam \u201cx\u201d (Var \u201cy\u201d) into\n\nLam \u201cy\u201d( Var \u201cz\u201d)\n\nfor \u201cz\u201d would yield\n\nLam \u201cy\u201d (Lam \u201cx\u201d (Var \u201cy\u201d))\n\nwhich now causes the free variable to reference\nthe \u201cy\u201d bound by the outer lambda.\n ",
     "slide": 4,
     "deck": "bound"
   },
@@ -609,7 +609,7 @@
     "bytes": 47010,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Lam “x” (Var “x”)\n\nand\n\n      Lam “y” (Var “y”)\n\nboth mean the same thing and it’d be nice to be\nable to check this easily, make them hash the\nsame way for CSE, etc.\n ",
+    "alt": "Lam \u201cx\u201d (Var \u201cx\u201d)\n\nand\n\n      Lam \u201cy\u201d (Var \u201cy\u201d)\n\nboth mean the same thing and it\u2019d be nice to be\nable to check this easily, make them hash the\nsame way for CSE, etc.\n ",
     "slide": 5,
     "deck": "bound"
   },
@@ -620,7 +620,7 @@
     "bytes": 73336,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "There is a cottage industry of solutions ot the naming\nproblem.\n   Naïve substitution\n   Barendregt Convention\n   HOAS\n   Weak HOAS / PHOAS\n   “I am not a Number: I am a Free Variable!”\n   Locally Nameless Syntax with de Bruijn Indices\n   Unbound, mixing Barendregt and Locally Nameless.\n   etc.\nI will not be addressing all of these here, just a few.\n ",
+    "alt": "There is a cottage industry of solutions ot the naming\nproblem.\n\uf0a1   Na\u00efve substitution\n\uf0a1   Barendregt Convention\n\uf0a1   HOAS\n\uf0a1   Weak HOAS / PHOAS\n\uf0a1   \u201cI am not a Number: I am a Free Variable!\u201d\n\uf0a1   Locally Nameless Syntax with de Bruijn Indices\n\uf0a1   Unbound, mixing Barendregt and Locally Nameless.\n\uf0a1   etc.\nI will not be addressing all of these here, just a few.\n ",
     "slide": 6,
     "deck": "bound"
   },
@@ -642,7 +642,7 @@
     "bytes": 68354,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "subst :: Name -> Exp -> Exp -> Exp\nsubst x s = sub where\n sub e@(Var v)\n          | v == x = s\n          | otherwise = e\n sub e@(Lam v e')\n          | v == x = e\n          | v `elem` fvs = Lam v' (sub e'’)\n          | otherwise = Lam v (sub e’)\n          where v' = newId vs\n                      e'' = subst v (Var v') e’\n sub (f :@ a) = sub f :@ sub a\n fvs = freeVars s\n vs = fvs `union` allVars b\nnewId :: [Name] -> Name\nnewId vs = head (someEnormousPoolOfNames  vs)\n– go find a name that isn’t taken!\n(based on code by Lennart Augustsson)\n ",
+    "alt": "subst :: Name -> Exp -> Exp -> Exp\nsubst x s = sub where\n sub e@(Var v)\n          | v == x = s\n          | otherwise = e\n sub e@(Lam v e')\n          | v == x = e\n          | v `elem` fvs = Lam v' (sub e'\u2019)\n          | otherwise = Lam v (sub e\u2019)\n          where v' = newId vs\n                      e'' = subst v (Var v') e\u2019\n sub (f :@ a) = sub f :@ sub a\n fvs = freeVars s\n vs = fvs `union` allVars b\nnewId :: [Name] -> Name\nnewId vs = head (someEnormousPoolOfNames  vs)\n\u2013 go find a name that isn\u2019t taken!\n(based on code by Lennart Augustsson)\n ",
     "slide": 8,
     "deck": "bound"
   },
@@ -653,7 +653,7 @@
     "bytes": 75036,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Make sure that every binder binds a globally unique name.\n\nPros:\n “Secrets of the GHC Inliner” describes ‘the Rapier’ which can make\n this Fast.\n\nCons:\n Easy even for experts to screw up\n Alpha Equivalence is tedious\n Need a globally unique variable supply (e.g. my concurrent-supply)\n The obvious implementation technique chews through a\n     scarily large number of variable IDs.\n ",
+    "alt": "Make sure that every binder binds a globally unique name.\n\nPros:\n \u201cSecrets of the GHC Inliner\u201d describes \u2018the Rapier\u2019 which can make\n this Fast.\n\nCons:\n Easy even for experts to screw up\n Alpha Equivalence is tedious\n Need a globally unique variable supply (e.g. my concurrent-supply)\n The obvious implementation technique chews through a\n     scarily large number of variable IDs.\n ",
     "slide": 9,
     "deck": "bound"
   },
@@ -675,7 +675,7 @@
     "bytes": 72256,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Pros:\n    Provides _really_ fast substitution\n\nCons:\n   Doesn’t work in theorem provers\n           (Exp occurs in negative position)\n   Hard to work under Binders!\n   Exotic terms\n   Alpha equivalence checking is tedious\n\nVariants such as Weak HOAS/PHOAS exist to address some\nof these issues at the expense of other problems.\n ",
+    "alt": "Pros:\n    Provides _really_ fast substitution\n\nCons:\n   Doesn\u2019t work in theorem provers\n           (Exp occurs in negative position)\n   Hard to work under Binders!\n   Exotic terms\n   Alpha equivalence checking is tedious\n\nVariants such as Weak HOAS/PHOAS exist to address some\nof these issues at the expense of other problems.\n ",
     "slide": 11,
     "deck": "bound"
   },
@@ -686,7 +686,7 @@
     "bytes": 92326,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "M’colleague Bob Atkey once memorably described the\ncapacity to put up with de Bruijn indices as a Cylon\ndetector, the kind of reverse Turing Test that the humans in\nBattlestar Galactica invent, the better to recognize one\nanother by their common inadequacies. He had a point.\n\n\n                             —Conor McBride\n       “I am not a number, I am a classy hack”\n ",
+    "alt": "M\u2019colleague Bob Atkey once memorably described the\ncapacity to put up with de Bruijn indices as a Cylon\ndetector, the kind of reverse Turing Test that the humans in\nBattlestar Galactica invent, the better to recognize one\nanother by their common inadequacies. He had a point.\n\n\n                             \u2014Conor McBride\n       \u201cI am not a number, I am a classy hack\u201d\n ",
     "slide": 12,
     "deck": "bound"
   },
@@ -719,7 +719,7 @@
     "bytes": 86200,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "abstract :: Eq a => a -> Exp a -> Scope Exp a\nabstract me expr = Scope (letmeB 0 expr) where\n letmeB this (F you)\n     | you == me = B this\n     | otherwise = F you\n letmeB this (B that) = B that\n letmeB this (fun :@ arg) =\n     letmeB this fun :@ letmeB this arg\n letmeB this (Lam (Scope body)) =\n     Lam (Scope (letmeB (succ this) body))\n\n(Based on code by Conor McBride from “I am not a number: I am a free variable”)\n ",
+    "alt": "abstract :: Eq a => a -> Exp a -> Scope Exp a\nabstract me expr = Scope (letmeB 0 expr) where\n letmeB this (F you)\n     | you == me = B this\n     | otherwise = F you\n letmeB this (B that) = B that\n letmeB this (fun :@ arg) =\n     letmeB this fun :@ letmeB this arg\n letmeB this (Lam (Scope body)) =\n     Lam (Scope (letmeB (succ this) body))\n\n(Based on code by Conor McBride from \u201cI am not a number: I am a free variable\u201d)\n ",
     "slide": 15,
     "deck": "bound"
   },
@@ -730,7 +730,7 @@
     "bytes": 92030,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "instantiate :: Exp a -> Scope Exp a -> Exp a\ninstantiate what (Scope body) = what'sB 0 body\nwhere\n what'sB this (B that)\n     | this==that = what\n     | otherwise = B that\n what'sB this (F you) = F you\n what'sB this (fun :@ arg) =\n     what'sB this fun :@ what'sB this arg\n what'sB this (Lam (Scope body)) =\n     Lam (Scope (what'sB (succ this) body))\n\n(Based on code by Conor McBride from “I am not a number: I am a free variable”)\n ",
+    "alt": "instantiate :: Exp a -> Scope Exp a -> Exp a\ninstantiate what (Scope body) = what'sB 0 body\nwhere\n what'sB this (B that)\n     | this==that = what\n     | otherwise = B that\n what'sB this (F you) = F you\n what'sB this (fun :@ arg) =\n     what'sB this fun :@ what'sB this arg\n what'sB this (Lam (Scope body)) =\n     Lam (Scope (what'sB (succ this) body))\n\n(Based on code by Conor McBride from \u201cI am not a number: I am a free variable\u201d)\n ",
     "slide": 16,
     "deck": "bound"
   },
@@ -752,7 +752,7 @@
     "bytes": 90572,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Pros:\n     Scope, abstract, and instantiate make it harder\nto screw up walking under binders.\n      Alpha equivalence is just (==)\n      We can make a Monad for Exp.\n      We can use Traversable to find free variables,\nclose terms, etc.\nCons:\n      This succ’s a lot. (Slow)\n      Illegal terms such as Lam (Scope (Bound 2))\n      Have to define abstract/instantiate for each\ntype.\n      The Monad for Exp is a one-off deal.\n ",
+    "alt": "Pros:\n     Scope, abstract, and instantiate make it harder\nto screw up walking under binders.\n      Alpha equivalence is just (==)\n      We can make a Monad for Exp.\n      We can use Traversable to find free variables,\nclose terms, etc.\nCons:\n      This succ\u2019s a lot. (Slow)\n      Illegal terms such as Lam (Scope (Bound 2))\n      Have to define abstract/instantiate for each\ntype.\n      The Monad for Exp is a one-off deal.\n ",
     "slide": 18,
     "deck": "bound"
   },
@@ -818,7 +818,7 @@
     "bytes": 98330,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "If we could succ an entire expression instead of on each\nindividual variable we would succ less.\nInstantiation wouldn’t have to walk into that expression\nat all, and we could lift an Exp into Scope in O(1) instead\nof O(n).\nThis requires polymorphic recursion, but we support\nthat. Go Haskell!\nThis is the ‘generalized de Bruijn’ as described by Bird\nand Paterson without the rank-2 types mucking up the\ndescription and abstracted into a monad transformer.\n ",
+    "alt": "If we could succ an entire expression instead of on each\nindividual variable we would succ less.\nInstantiation wouldn\u2019t have to walk into that expression\nat all, and we could lift an Exp into Scope in O(1) instead\nof O(n).\nThis requires polymorphic recursion, but we support\nthat. Go Haskell!\nThis is the \u2018generalized de Bruijn\u2019 as described by Bird\nand Paterson without the rank-2 types mucking up the\ndescription and abstracted into a monad transformer.\n ",
     "slide": 24,
     "deck": "bound"
   },
@@ -840,7 +840,7 @@
     "bytes": 62610,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Pros:\n     The Monad is easy to define\n     Foldable/Traversable for Free Variables\n     Capture avoiding substitution for free\nCons:\n     Alpha equivalence is slightly harder,\nbecause you have to quotient out the position\nof the ‘Succ’s.\n ",
+    "alt": "Pros:\n     The Monad is easy to define\n     Foldable/Traversable for Free Variables\n     Capture avoiding substitution for free\nCons:\n     Alpha equivalence is slightly harder,\nbecause you have to quotient out the position\nof the \u2018Succ\u2019s.\n ",
     "slide": 26,
     "deck": "bound"
   },
@@ -950,7 +950,7 @@
     "bytes": 24988,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "ghci> nf cooked == (“F” ! “T” ! “T”)\n> True\n ",
+    "alt": "ghci> nf cooked == (\u201cF\u201d ! \u201cT\u201d ! \u201cT\u201d)\n> True\n ",
     "slide": 36,
     "deck": "bound"
   },
@@ -983,7 +983,7 @@
     "bytes": 64280,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "data P a = P { pattern :: [a] -> Pat Exp a, bindings :: [a] }\nvarp :: a -> P a\nvarp a = P (const VarP) [a]\nwildp :: P a\nwildp = P (const WildP) []\nconp :: String -> [P a] -> P a\nconp g ps = P (ConP g . go ps) (ps >>= bindings)\n where\n  go (P p as:ps) bs = p bs : go ps (bs ++ as)\n  go [] _ = []\nlam :: Eq a => P a -> Exp a -> Exp a\nlam (P p as) t = Lam (length as) (p []) (abstract (`elemIndex` as) t)\nghci> lam (varp \"x\") (V \"x”)\nLam 1 VarP (Scope (V (B 0)))\nghci> lam (conp \"Hello\" [varp \"x\", wildp]) (V \"y”)\nLam 1 (ConP \"Hello\" [VarP,WildP]) (Scope (V (F (V \"y\"))))\n ",
+    "alt": "data P a = P { pattern :: [a] -> Pat Exp a, bindings :: [a] }\nvarp :: a -> P a\nvarp a = P (const VarP) [a]\nwildp :: P a\nwildp = P (const WildP) []\nconp :: String -> [P a] -> P a\nconp g ps = P (ConP g . go ps) (ps >>= bindings)\n where\n  go (P p as:ps) bs = p bs : go ps (bs ++ as)\n  go [] _ = []\nlam :: Eq a => P a -> Exp a -> Exp a\nlam (P p as) t = Lam (length as) (p []) (abstract (`elemIndex` as) t)\nghci> lam (varp \"x\") (V \"x\u201d)\nLam 1 VarP (Scope (V (B 0)))\nghci> lam (conp \"Hello\" [varp \"x\", wildp]) (V \"y\u201d)\nLam 1 (ConP \"Hello\" [VarP,WildP]) (Scope (V (F (V \"y\"))))\n ",
     "slide": 39,
     "deck": "bound"
   },
@@ -1049,7 +1049,7 @@
     "bytes": 46846,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": "Dependently typed languages build up a lot of\ncrap in memory. It’d be nice to share memory\nfor it, since most of it is very repetitive.\n ",
+    "alt": "Dependently typed languages build up a lot of\ncrap in memory. It\u2019d be nice to share memory\nfor it, since most of it is very repetitive.\n ",
     "slide": 45,
     "deck": "bound"
   },
@@ -1060,7 +1060,7 @@
     "bytes": 112934,
     "mime": "image/webp",
     "retrieved": "2026-09-22",
-    "alt": " Bound provides a small API for dealing with\n  abstraction/instantiation for complex binders\n  that combines the nice parts of “I am not a\n  number: I am a free variable” with the “de Bruijn\n  notation as a nested data type” while avoiding\n  the complexities of either.\n You just supply it a Monad and Traversable\n No variable supply is needed, no pool of names\n Substitution is very efficient\n Introduces no exotic or illegal terms\n Simultaneous substitution for complex binders\n Your code never sees a de Bruijn index\n ",
+    "alt": "\uf0a1 Bound provides a small API for dealing with\n  abstraction/instantiation for complex binders\n  that combines the nice parts of \u201cI am not a\n  number: I am a free variable\u201d with the \u201cde Bruijn\n  notation as a nested data type\u201d while avoiding\n  the complexities of either.\n\uf0a1 You just supply it a Monad and Traversable\n\uf0a1 No variable supply is needed, no pool of names\n\uf0a1 Substitution is very efficient\n\uf0a1 Introduces no exotic or illegal terms\n\uf0a1 Simultaneous substitution for complex binders\n\uf0a1 Your code never sees a de Bruijn index\n ",
     "slide": 46,
     "deck": "bound"
   },
@@ -1107,5 +1107,36 @@
     "alt": "lam_ :: EqF f => f a -> Remote f b -> Remote f (a -> b)\nlam_ v f = Lam (abstract (v ==?) f)\n\n-- let_ actually winds up becoming much trickier to define\n-- requiring a MonadFix and a helper monad.\n\ntwo12121212 = let_ $ mdo\n x <- def (cons 1 z)\n z <- def (cons 2 x)\n return z\n ",
     "slide": 50,
     "deck": "bound"
+  },
+  {
+    "url": "https://web.archive.org/web/20010526225638/http://www.bloodshed.com:80/wavelets/haar.shtml",
+    "path": "content/original/external/bloodshed-haar.html",
+    "sha256": "1c4bf60ec31ef5d921e12f15fdcf5839b10e55491a1dc5cf9c344981206b161a",
+    "bytes": 17624,
+    "mime": "text/html",
+    "retrieved": "2026-09-22"
+  },
+  {
+    "url": "https://web.archive.org/web/20011121083059/http://www.bloodshed.com:80/wavelets/start.shtml",
+    "path": "content/original/external/bloodshed-wavelets-introduction.html",
+    "sha256": "332f533ac7011e22181bce670ac79bf62797a73d504ae732b2d9461ef357ca9f",
+    "bytes": 2017,
+    "mime": "text/html",
+    "retrieved": "2026-09-22"
+  },
+  {
+    "path": "content/original/external/edward-kmett-live-coding-metadata.json",
+    "url": "https://www.youtube.com/@ekmett/videos",
+    "sha256": "79aab783d24c6aa580471a714f39a79b9a411bfb3f9e87b501f7daa65e2ed9fc",
+    "bytes": 19427,
+    "mime": "application/json",
+    "retrieved": "2026-09-22",
+    "note": "Selected public metadata, not raw personalized page responses."
+  },
+  {
+    "url": "https://web.archive.org/web/20010519155306id_/http://www.bloodshed.com:80/wavelets/dsp.zip",
+    "attemptedPath": "content/assets/documents/bloodshed-dsp.zip",
+    "error": "HTTP 404; companion code not recovered",
+    "retrieved": "2026-09-22"
   }
 ]
