@@ -43,7 +43,7 @@ pages_commit=$(git subtree split --prefix=dist HEAD)
 git push origin "${pages_commit}:refs/heads/pages"
 ```
 
-In repository Settings → Pages, use **Deploy from a branch**, **pages**, **/ (root)**. GitHub handles the final static deployment. The preview address is <https://ekmett.github.io/comonad.com/>; custom-domain configuration and DNS changes remain separate.
+In repository Settings → Pages, use **Deploy from a branch**, **pages**, **/ (root)**. GitHub handles the final static deployment. The canonical address is <https://comonad.com/reader/>; `dist/CNAME` retains the custom domain across subtree publications. `content/site.json` controls absolute metadata, sitemap, and feed URLs. Relative navigation works under either hosting root, and the root page forwards to `reader/`. See [domain cutover](docs/domain-cutover.md) for DNS settings and deployment checks.
 
 The local checks verify the checked-in WebAssembly artifact against its source/hash manifest. Rebuild it locally when Haskell changes:
 

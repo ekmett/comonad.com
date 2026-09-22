@@ -54,5 +54,9 @@ for(const item of items){
  const description=parseHTML('<div>'+item.querySelector('description').textContent+'</div>').document;
  for(const a of description.querySelectorAll('[href],[src]'))for(const attr of ['href','src'])if(a.hasAttribute(attr))assert.match(a.getAttribute(attr),/^[a-z][a-z\d+.-]*:/i,'Feed references are absolute');
 }
-assert.ok(!fs.readFileSync('dist/sitemap.xml','utf8').includes('<loc>https://comonad.com/'),'Sitemap uses the currently deployed origin');
+const sitemap=new DOMParser().parseFromString(fs.readFileSync('dist/sitemap.xml','utf8'),'text/xml');
+const sitemapUrls=[...sitemap.querySelectorAll('loc')].map(node=>node.textContent);
+assert.ok(sitemapUrls.length>0);
+for(const url of sitemapUrls)assert.ok(url.startsWith(config.baseUrl),'Sitemap uses the configured hosting root');
+assert.equal(fs.readFileSync('dist/CNAME','utf8').trim(),new URL(config.baseUrl).hostname,'Pages custom domain matches the canonical origin');
 console.log('Metadata passed: author credits, structured types, relative canonicals/redirects at both hosting roots, feed and sitemap URLs.');
