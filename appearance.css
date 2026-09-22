@@ -41,8 +41,8 @@ body{background:var(--paper);isolation:isolate}
 .reader-masthead nav a:hover{color:var(--heading)}
 .prose a,.comment a{color:var(--blue);text-decoration-color:color-mix(in srgb,var(--blue) 40%,transparent)}
 .prose code,.comment code{background:var(--inline-code)}
-.prose pre,.implementation pre{background:var(--code);border-color:var(--line)}
-.prose pre code,.implementation pre code{color:var(--code-ink);background:none}
+.prose pre,.comment pre,.implementation pre{background:var(--code);border-color:var(--line)}
+.prose pre code,.comment pre code,.implementation pre code{color:var(--code-ink);background:none}
 .hljs-keyword{color:var(--syntax-keyword)}.hljs-type,.hljs-built_in{color:var(--syntax-type)}
 .hljs-title,.hljs-function .hljs-title{color:var(--syntax-title)}
 .hljs-number,.hljs-literal{color:var(--syntax-number)}.hljs-string,.hljs-char{color:var(--syntax-string)}
@@ -112,7 +112,7 @@ html{font-size:calc(100% * var(--reader-text-scale,1))}
 .archive-sidebar,.archive-month-grid,.blogroll a span,.reader-masthead nav{font-size:1rem}
 .entry-author,.blogroll a{font-size:1.125rem}
 .prose{font-size:1.25rem}
-.prose pre,.implementation pre{font-size:.9375rem}
+.prose pre,.comment pre,.implementation pre{font-size:.9375rem}
 .reader-masthead{flex-wrap:wrap}
 .reader-masthead nav{flex-wrap:wrap;justify-content:flex-end}
 .masthead-links{max-width:100%}
