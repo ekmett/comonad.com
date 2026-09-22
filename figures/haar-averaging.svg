@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 235" role="img" aria-labelledby="title desc">
+  <title id="title">Haar averaging tree</title>
+  <desc id="desc">The samples 11 and 1 average to 6; the samples 1 and 7 average to 4. The averages 6 and 4 average to the scaling value 5.</desc>
+  <style>
+    text { font-family: Georgia, "Times New Roman", serif; font-size: 27px; fill: #263129; text-anchor: middle; dominant-baseline: central; }
+    .branches { fill: none; stroke: #81906f; stroke-width: 1.6; stroke-linecap: round; }
+    .root { fill: #51683d; }
+    .level { font-family: system-ui, sans-serif; font-size: 15px; fill: #626b60; text-anchor: start; }
+    .expression { font-size: 22px; }
+  </style>
+  <path class="branches" d="M202 48 L128 90 M238 48 L312 90 M99 130 L67 179 M121 130 L153 179 M319 130 L287 179 M341 130 L373 179"/>
+  <text x="220" y="32" class="root">5</text>
+  <text x="110" y="112" class="">6</text>
+  <text x="330" y="112" class="">4</text>
+  <text x="55" y="202" class="">11</text>
+  <text x="165" y="202" class="">1</text>
+  <text x="275" y="202" class="">1</text>
+  <text x="385" y="202" class="">7</text>
+</svg>

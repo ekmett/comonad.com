@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 160" role="img" aria-labelledby="title desc">
+  <title id="title">Haar coefficient tree</title>
+  <desc id="desc">The coefficient at level 0 is 1. Its children at level 1 are 5 and minus 3.</desc>
+  <style>
+    text { font-family: Georgia, "Times New Roman", serif; font-size: 27px; fill: #263129; text-anchor: middle; dominant-baseline: central; }
+    .branches { fill: none; stroke: #81906f; stroke-width: 1.6; stroke-linecap: round; }
+    .root { fill: #51683d; }
+    .level { font-family: system-ui, sans-serif; font-size: 15px; fill: #626b60; text-anchor: start; }
+    .expression { font-size: 22px; }
+  </style>
+  <path class="branches" d="M170 47 L116 100 M194 47 L248 100"/>
+  <text x="182" y="30" class="root">1</text>
+  <text x="104" y="121">5</text>
+  <text x="260" y="121">−3</text>
+  <text x="308" y="30" class="level">Level 0</text>
+  <text x="308" y="121" class="level">Level 1</text>
+</svg>
