@@ -40,7 +40,7 @@ git add .
 git commit -m "Update the Reader"
 git push origin master
 pages_commit=$(git subtree split --prefix=dist HEAD)
-git push origin "$pages_commit:refs/heads/pages"
+git push origin "${pages_commit}:refs/heads/pages"
 ```
 
 In repository Settings → Pages, use **Deploy from a branch**, **pages**, **/ (root)**. GitHub handles the final static deployment. The preview address is <https://ekmett.github.io/comonad.com/>; custom-domain configuration and DNS changes remain separate.
