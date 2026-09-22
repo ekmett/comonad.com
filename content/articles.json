@@ -1836,5 +1836,24 @@
     "rawSource": "content/original/external/bloodshed-haar.html",
     "rawFormat": "html",
     "dateBasis": "Circa 1995, recalled by Edward Kmett on 22 September 2026. The preserved 26 May 2001 snapshot contains references dated through 1997; its revision history is unknown. The archive capture is not a publication date."
+  },
+  {
+    "slug": "quine-shader-toys",
+    "title": "Quine: Shader Toys",
+    "date": "2014-10-28",
+    "dateLabel": "28 October 2014 · repository",
+    "path": "reader/2014/quine-shader-toys/",
+    "categories": "Graphics · GLSL · Haskell",
+    "origin": "https://github.com/ekmett/quine",
+    "author": "Edward Kmett",
+    "source": "Quine",
+    "rawSource": "content/assets/quine/original/README.markdown",
+    "rawFormat": "md",
+    "dateBasis": "Archive date is the first dodecahedron shader commit, 28 October 2014. Generators followed on 8 November 2014. The browser companion was created on 22 September 2026.",
+    "editionNote": "A new browser companion to the preserved Quine repository, not a recovered historical blog post. Shader algorithms are retained, with the mechanical GLSL ES changes described above. Original third-party credits and licenses remain with their sources.",
+    "rightsNote": "Quine © Edward Kmett. Shader credits and licenses are listed above and retained in the source.",
+    "datePublished": "2026-09-22",
+    "retrieved": "2026-09-22",
+    "kind": "Demo"
   }
 ]

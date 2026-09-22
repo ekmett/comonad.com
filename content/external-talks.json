@@ -2428,6 +2428,36 @@
           "markdown": "`(+)` on the naturals simply isn't a semilattice. `max` on the natural numbers, on the other hand is.\n\nWhen working with a semilattice, `inv m = m` passes all of the laws for an inverse semigroup, and it is the only such choice that passes the laws. Why?\n\n* `m <> inv m <> m = m`, because `m <> m <> m = m`\n* `inv m <> m <> inv m = inv m` by the same logic.\n\nGiven a semilattice, all elements are of the form `x = x <> inv x` and all idempotents (in this case, all elements) commute.\n\nEvery group is an inverse semigroup. It has exactly one idempotent element `e`, which commutes with every idempotent element (itself), ee = ee. All idempotents are of the form `x <> inv x` for some x, indeed `e = x <> inv x` for all x. The `x <> inv x <> x = x` style laws follow from the unit and inverse laws for the group.\n\nRegular semigroups are saying that every element of your semigroup is 'regular', which is to say that there is some \"pseudo-inverse\" for it.\n\nInverse semigroups add the further constraint that the inverse is unique. From that all the rest of this stuff follows."
         }
       ]
+    },
+    {
+      "id": "vr-test-framework-2016",
+      "videoId": "pBjzyi3YVVA",
+      "title": "VR Test Framework Status 9/14/2016",
+      "displayTitle": "VR: Test Framework",
+      "speakers": [
+        "Edward Kmett"
+      ],
+      "publisher": "Edward Kmett’s YouTube channel",
+      "videoUrl": "https://www.youtube.com/watch?v=pBjzyi3YVVA",
+      "date": "2016-09-14",
+      "uploadDate": "2016-09-14",
+      "dateBasis": "publication",
+      "dateConfidence": "high",
+      "durationSeconds": 64,
+      "archiveType": "demo",
+      "description": "Just a work in progress shot of my current VR engine",
+      "editorialNote": "A development snapshot of the VR engine. The source project is linked below.",
+      "materials": [],
+      "dateEvidence": [
+        {
+          "value": "2016-09-14",
+          "type": "video_publication",
+          "precision": "day",
+          "evidence": "YouTube player microformat publishDate and uploadDate both read 2016-09-14T04:48:53-07:00; the title also says 9/14/2016.",
+          "source": "https://www.youtube.com/watch?v=pBjzyi3YVVA"
+        }
+      ],
+      "preservedMetadata": "content/original/youtube/pBjzyi3YVVA.json"
     }
   ],
   "unrecordedTalks": [

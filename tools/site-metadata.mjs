@@ -18,7 +18,7 @@ export function createSite(config) {
       if(people.length)data.author=people;
       if(['BlogPosting','ScholarlyArticle'].includes(type))data.headline=title;
       // Never manufacture publication days or promote ambiguous revision dates.
-      const published=entry.videoId?entry.uploadDate:entry.source==='School of Haskell'?entry.authoredDate:entry.date;
+      const published=entry.datePublished||(entry.videoId?entry.uploadDate:entry.source==='School of Haskell'?entry.authoredDate:entry.date);
       if(/^\d{4}-\d{2}-\d{2}$/.test(published||''))data[entry.videoId?'uploadDate':'datePublished']=published;
       if(entry.dateModified)data.dateModified=entry.dateModified;
       if(entry.categories)data.keywords=entry.categories.split(' · ');

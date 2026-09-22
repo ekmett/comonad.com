@@ -80,6 +80,9 @@ assert.ok(!seriesPage.querySelector('.series-results').hasAttribute('hidden'));
 for(const card of seriesPage.querySelectorAll('.series-entry')){
  const href=card.querySelector('h3 a').getAttribute('href');
  assert.ok(fs.existsSync(new URL(href+'index.html','file://'+process.cwd()+'/dist/reader/series/')),'Every series card opens a local page');
+ const members=[...card.querySelectorAll('.series-members li a')];
+ assert.equal(members.length,Number(card.querySelector('.entry-date span:last-child').textContent.split(' ')[0]),'Every series part is individually linked');
+ for(const part of members)assert.ok(fs.existsSync(new URL(part.getAttribute('href')+'index.html','file://'+process.cwd()+'/dist/reader/series/')),'Series part opens a local page');
 }
 const nominalDoc=parseHTML(fs.readFileSync('dist/reader/talks/live-coding-18/index.html','utf8')).document;
 assert.ok(nominalDoc.querySelector('.prose a[href="https://github.com/ekmett/name"]'),'Recording URL is clickable');
@@ -104,3 +107,12 @@ for(const slug of ['cellular-automata-part-2','cellular-automata-part-3','snippe
  const data=JSON.parse(page.querySelector('script[type="application/ld+json"]').textContent);
  assert.equal(data.datePublished,entry.authoredDate);assert.equal(data.dateModified,entry.dateModified);
 }
+
+const vrDemo=videos.find(v=>v.videoId==='pBjzyi3YVVA');
+assert.equal(vrDemo.date,'2016-09-14');
+assert.equal(vrDemo.archiveType,'demo');
+const vrPage=parseHTML(fs.readFileSync('dist/reader/talks/vr-test-framework-2016/index.html','utf8')).document;
+assert.ok(vrPage.querySelector('a[href="https://github.com/ekmett/vr"]'));
+assert.ok(vrPage.querySelector('.talk-video figcaption').textContent.includes('1 minute'));
+assert.ok(!vrPage.querySelector('.talk-video figcaption').textContent.includes('1 minutes'));
+assert.equal(doc.querySelectorAll('.archive-entry[data-kind="Demo"]').length,2);

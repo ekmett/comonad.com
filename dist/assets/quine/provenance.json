@@ -1,0 +1,48 @@
+{
+  "repository": "https://github.com/ekmett/quine",
+  "commit": "8e5ed1a91b0ca52b442ccf4da7f7acc878e4468b",
+  "retrieved": "2026-09-22",
+  "files": [
+    {
+      "path": "shaders/examples/dodecahedron.frag",
+      "archive": "content/assets/quine/original/dodecahedron.frag",
+      "sha256": "c149016f2f78536fc28fdc6e159d84a8cc9575ffa4e29be713e9456e00f3fed3"
+    },
+    {
+      "path": "shaders/examples/generators.frag",
+      "archive": "content/assets/quine/original/generators.frag",
+      "sha256": "da01fea88c18d1bd068eee0f1db8dfab1ea87e2df847d69dc3147c915253018e"
+    },
+    {
+      "path": "LICENSE",
+      "archive": "content/assets/quine/original/LICENSE",
+      "sha256": "3d65c196626d19dadc19ea1c3c58af62bc4799b41e48294390206fec3af5179b"
+    },
+    {
+      "path": "README.markdown",
+      "archive": "content/assets/quine/original/README.markdown",
+      "sha256": "417891398e5fc406867b82eaca48ce4a59e1d2bca954166efcbaa66f438d6805"
+    },
+    {
+      "path": "Toy.hs",
+      "archive": "content/assets/quine/original/Toy.hs",
+      "sha256": "02868c5da10eaeef62ce4d91025d9791c2e99582e7cce04f33c93afba04b0630"
+    },
+    {
+      "path": "shaders/screen.vert",
+      "archive": "content/assets/quine/original/screen.vert",
+      "sha256": "4720a79bd083a66a17ce5b606705f138f9952e9a5607296a2cd32f57caa00b7a"
+    }
+  ],
+  "archiveSHA256": "ce332bfddb25e0682bc039e3055b97bc63ea5e6204f5f38edd2f7e3a718e1551",
+  "firstShaderCommits": {
+    "dodecahedron": {
+      "commit": "33eb8bc64a01103b1c0ff17448848fc254ed5371",
+      "date": "2014-10-28"
+    },
+    "generators": {
+      "commit": "2134254d4a6c8915b3eab772a23b9d58512cbc4a",
+      "date": "2014-11-08"
+    }
+  }
+}

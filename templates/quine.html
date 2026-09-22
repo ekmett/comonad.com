@@ -1,0 +1,14 @@
+<figure class="interactive-figure quine-demo" id="quine-figure">
+  <div class="figure-controls">
+    <label>Shader <select data-shader><option value="dodecahedron">Dodecahedron</option><option value="generators">Generators Redux</option></select></label>
+    <button type="button" data-play disabled>Pause</button>
+    <button type="button" data-reset disabled>Restart</button>
+    <label>Detail <select data-quality><option value="360">Low</option><option value="640" selected>Medium</option><option value="960">High</option></select></label>
+  </div>
+  <canvas width="640" height="400" tabindex="0" aria-label="Rotating compound of triangular frames from Quine’s dodecahedron shader" aria-describedby="quine-caption quine-camera-help">This example needs WebGL 2. The complete shader sources are linked below.</canvas>
+  <div class="quine-time"><label for="quine-time">Time</label><input id="quine-time" data-time type="range" min="0" max="120" step="0.1" value="0" aria-label="Shader time in seconds"><output data-time-label for="quine-time">0.0 s</output></div>
+  <p class="figure-label" id="quine-camera-help">Generators: drag to look around, or focus the image and use the arrow keys. Home resets the view.</p>
+  <p class="figure-label" data-status role="status">Loading the shader…</p>
+  <figcaption id="quine-caption"><span data-description>Quine’s dodecahedron example: twenty triangular frames, ray-marched with shadows and ambient occlusion.</span> <a data-source href="{{root}}assets/quine/dodecahedron.frag" download>Browser shader</a> · <a data-original href="{{root}}assets/quine/original/dodecahedron.frag" download>Original shader</a></figcaption>
+  <noscript><p>Enable JavaScript to run the shaders. Their sources and the original Quine project remain available below.</p></noscript>
+</figure>

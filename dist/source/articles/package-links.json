@@ -801,6 +801,14 @@
     "succinct-binary": {
       "url": "https://github.com/ekmett/succinct-binary",
       "verification": "Edward Kmett confirmed sessions 9–14 refer to this repository on 22 September 2026."
+    },
+    "quine": {
+      "url": "https://github.com/ekmett/quine",
+      "description": "Haskell and OpenGL graphics playground; Dodecahedron and Generators Redux shader toys."
+    },
+    "vr": {
+      "url": "https://github.com/ekmett/vr",
+      "description": "VR engine and test framework, with a September 2016 development recording."
     }
   },
   "streamLinkEvidence": {
@@ -885,6 +893,12 @@
     ],
     "live-coding-14-3": [
       "succinct-binary"
+    ],
+    "quine-shader-toys": [
+      "quine"
+    ],
+    "vr-test-framework-2016": [
+      "vr"
     ]
   },
   "repositoryReview": {
