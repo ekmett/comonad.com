@@ -76,3 +76,5 @@ Additional writing outside the two original hosts is researched in `docs/edward-
 The RSS feed includes the entire dated archive: articles, talks, streams, and papers. Original dates and permanent entry IDs are retained; entries with only a known year or month omit the optional RSS publication day.
 
 Cellular Automata II/III and Mandelbrot have inline Haskell/Wasm PNG companions, including downloadable PNGs, verified checksums, integer-line/modulo movement, and Adam7 interlacing. Their archive dates use the signed authorship dates; later School of Haskell revision dates and established URLs remain recorded. Series browsing is available in the main archive filter and at `reader/series/`.
+
+The Appearance menu offers light, dark, and system themes, with locally remembered preferences. A faint Voronoi tessellation moves in desktop margins; readers can freeze or hide it. Reduced motion freezes it automatically, and hidden tabs and narrow screens do not animate. Code highlighting and category diagrams follow the theme; print stays light.
