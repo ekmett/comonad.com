@@ -819,6 +819,9 @@
     "vr": {
       "url": "https://github.com/ekmett/vr",
       "description": "VR engine and test framework, with a September 2016 development recording."
+    },
+    "cadenza": {
+      "url": "https://github.com/ekmett/cadenza"
     }
   },
   "streamLinkEvidence": {
@@ -909,6 +912,9 @@
     ],
     "vr-test-framework-2016": [
       "vr"
+    ],
+    "cadenza-yow-2020": [
+      "cadenza"
     ]
   },
   "repositoryReview": {
