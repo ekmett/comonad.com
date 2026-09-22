@@ -223,7 +223,7 @@ summary{cursor:pointer}.contents ol{columns:2;padding-left:24px;line-height:1.8;
 
 .series-entry{padding:22px 0;border-bottom:1px solid var(--line)}
 .series-entry h3{font:25px/1.3 var(--serif);margin:8px 0}.series-entry h3 a{text-decoration:none}.series-entry h3 a:hover{text-decoration:underline}
-.series-members{font:15px/1.6 var(--serif);color:var(--muted);margin:12px 0 0}
+.series-members{font:15px/1.6 var(--serif);margin:12px 0 0;padding-left:24px;columns:2;column-gap:28px}.series-members li{break-inside:avoid;padding:4px 0}.series-members a{text-decoration:none}.series-members a:hover{text-decoration:underline}@media(max-width:700px){.series-members{columns:1}}
 
 .png-demo>img{display:block;width:100%;max-width:560px;height:auto;margin:16px auto;image-rendering:pixelated}.png-demo details{font-size:14px;margin-top:12px}.png-demo details pre{white-space:pre;overflow-x:auto}.automaton-controls button{align-self:end;padding:8px 12px;background:#f5f7f2;border:1px solid #b9c2b8;border-radius:3px;color:inherit}
 
@@ -234,3 +234,8 @@ summary{cursor:pointer}.contents ol{columns:2;padding-left:24px;line-height:1.8;
 .blogroll a{display:block;padding:3px 0;font:15px/1.5 var(--serif);text-decoration:none;color:#34462d}
 .blogroll a:hover{text-decoration:underline}
 .blogroll a span{display:block;font:11px/1.6 system-ui,sans-serif;color:#66705f}
+
+.quine-demo canvas{display:block;width:100%;height:auto;aspect-ratio:8/5;background:#000;border-radius:3px}
+.quine-time{display:flex;align-items:center;gap:12px;margin:12px 0;font:12px/1.5 system-ui,sans-serif}
+.quine-time input[type=range]{flex:1;min-width:0;margin:0}
+.quine-time output{font:12px/1.5 var(--mono);min-width:54px;letter-spacing:0}

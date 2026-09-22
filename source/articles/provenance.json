@@ -363,6 +363,27 @@
     "archive": "source/articles/revisiting-matrix-multiplication-part-5.original.md"
   },
   {
+    "slug": "quine-shader-toys",
+    "title": "Quine: Shader Toys",
+    "date": "2014-10-28",
+    "dateLabel": "28 October 2014 · repository",
+    "path": "reader/2014/quine-shader-toys/",
+    "categories": "Graphics · GLSL · Haskell",
+    "origin": "https://github.com/ekmett/quine",
+    "author": "Edward Kmett",
+    "source": "Quine",
+    "rawSource": "content/assets/quine/original/README.markdown",
+    "rawFormat": "md",
+    "dateBasis": "Archive date is the first dodecahedron shader commit, 28 October 2014. Generators followed on 8 November 2014. The browser companion was created on 22 September 2026.",
+    "editionNote": "A new browser companion to the preserved Quine repository, not a recovered historical blog post. Shader algorithms are retained, with the mechanical GLSL ES changes described above. Original third-party credits and licenses remain with their sources.",
+    "rightsNote": "Quine © Edward Kmett. Shader credits and licenses are listed above and retained in the source.",
+    "datePublished": "2026-09-22",
+    "retrieved": "2026-09-22",
+    "kind": "Demo",
+    "sha256": "417891398e5fc406867b82eaca48ce4a59e1d2bca954166efcbaa66f438d6805",
+    "archive": "source/articles/quine-shader-toys.original.md"
+  },
+  {
     "slug": "letter-to-a-young-haskell-enthusiast",
     "title": "Letter to a Young Haskell Enthusiast",
     "date": "2014-08-01",
