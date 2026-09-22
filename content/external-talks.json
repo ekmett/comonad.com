@@ -737,14 +737,14 @@
     },
     {
       "id": "combinators-yow-2018",
-      "videoId": "zhj_tUMwTe0",
+      "videoId": "GirDSC6BnCo",
       "title": "Combinators Revisited",
       "speakers": [
         "Edward Kmett"
       ],
       "event": "YOW! Lambda Jam 2018, Sydney",
       "publisher": "YOW! Lambda Jam 2018, Sydney",
-      "videoUrl": "https://www.youtube.com/watch?v=zhj_tUMwTe0",
+      "videoUrl": "https://www.youtube.com/watch?v=GirDSC6BnCo",
       "date": "2018-05-22",
       "dateBasis": "presentation",
       "dateConfidence": "high",
@@ -776,13 +776,14 @@
         },
         {
           "kind": "video",
-          "url": "https://www.youtube.com/watch?v=zhj_tUMwTe0",
-          "verification": "linked_by_primary_source"
+          "url": "https://www.youtube.com/watch?v=GirDSC6BnCo",
+          "verification": "GOTO Conferences re-upload verified through YouTube oEmbed on 2026-09-22"
         }
       ],
       "uncertainty": [],
       "sourceUrls": [
-        "https://confengine.com/conferences/yow-lambda-jam-2018/proposal/5919/combinators-revisited"
+        "https://confengine.com/conferences/yow-lambda-jam-2018/proposal/5919/combinators-revisited",
+        "https://www.youtube.com/watch?v=GirDSC6BnCo"
       ],
       "contributors": [
         {
@@ -792,7 +793,13 @@
       ],
       "workFamily": "combinators-revisited",
       "inclusion": "recommended",
-      "archiveType": "talk"
+      "archiveType": "talk",
+      "previousVideoUrls": [
+        {
+          "url": "https://www.youtube.com/watch?v=zhj_tUMwTe0",
+          "status": "YouTube metadata and thumbnail returned HTTP 404 on 2026-09-22"
+        }
+      ]
     },
     {
       "id": "combinators-zurihac-2018",
