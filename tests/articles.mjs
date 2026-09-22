@@ -42,7 +42,7 @@ for (const post of posts) {
   for (const asset of doc.querySelectorAll('img[src], script[src], link[rel="stylesheet"]')) {
     const url = asset.getAttribute('src') || asset.getAttribute('href');
     assert.ok(!/^(https?:)?\/\//.test(url), `no remote rendering dependency: ${url}`);
-    assert.ok(fs.existsSync(path.resolve(path.dirname(file), url)), `missing local asset: ${url}`);
+    assert.ok(fs.existsSync(path.resolve(path.dirname(file), url.split(/[?#]/)[0])), `missing local asset: ${url}`);
   }
   for (const link of doc.querySelectorAll('a[href]')) {
     const href = link.getAttribute('href');

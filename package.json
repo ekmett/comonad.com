@@ -10,7 +10,7 @@
     "test:articles": "node tests/articles.mjs",
     "import:haskell": "node tools/import-haskell.mjs",
     "test:archive": "node tests/haskell-archive.mjs",
-    "check": "node tools/check-wasm.mjs && npm test && npm run test:articles && npm run test:archive && node tests/corpus.mjs"
+    "check": "node tools/check-wasm.mjs && npm test && npm run test:articles && npm run test:archive && node tests/corpus.mjs && node tests/navigation.mjs"
   },
   "dependencies": {
     "@bjorn3/browser_wasi_shim": "0.4.2"

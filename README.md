@@ -28,9 +28,24 @@ Normal article builds are offline after dependencies are installed. Acquisition 
 
 ## GitHub Pages
 
-The workflow in `.github/workflows/pages.yml` builds and checks pull requests. A manual workflow dispatch publishes `dist/` after checks pass. The repository is `ekmett/comonad.com`. Configure Pages to use GitHub Actions before dispatching. A normal push does not deploy the site; production deployment, custom-domain configuration, and DNS changes are separate steps.
+GitHub Pages serves the root of the `pages` branch. That branch contains only the prebuilt `dist/` tree, including `.nojekyll`; publication does not run our own Actions workflow or install a compiler. Source and the full archive stay on `master`.
 
-The workflow uses the checked-in WebAssembly artifact and verifies its source/hash manifest. Rebuild it locally when Haskell changes:
+To publish changes, build and check locally, commit the resulting files on `master`, then publish its `dist/` subtree:
+
+```sh
+npm ci
+npm run build:articles
+npm run check
+git add .
+git commit -m "Update the Reader"
+git push origin master
+pages_commit=$(git subtree split --prefix=dist HEAD)
+git push origin "$pages_commit:refs/heads/pages"
+```
+
+In repository Settings → Pages, use **Deploy from a branch**, **pages**, **/ (root)**. GitHub handles the final static deployment. The preview address is <https://ekmett.github.io/comonad.com/>; custom-domain configuration and DNS changes remain separate.
+
+The local checks verify the checked-in WebAssembly artifact against its source/hash manifest. Rebuild it locally when Haskell changes:
 
 ```sh
 python3 tools/setup-wasm.py
@@ -38,7 +53,7 @@ npm run build
 npm run check
 ```
 
-The pinned bootstrap currently targets Apple Silicon macOS; it installs only into ignored `.toolchain/`. GHC is 9.14.1.20260731 targeting wasm32-wasi. Linux Pages builds do not download that toolchain. All article pages work without JavaScript; interactive figures and search use JavaScript. Videos load YouTube only after a reader selects Play.
+The pinned bootstrap currently targets Apple Silicon macOS; it installs only into ignored `.toolchain/`. GHC is 9.14.1.20260731 targeting wasm32-wasi. Publishing the prebuilt branch does not download that toolchain. All article pages work without JavaScript; interactive figures and search use JavaScript. Videos load YouTube only after a reader selects Play.
 
 ## Package cross-links
 

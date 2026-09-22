@@ -1,4 +1,4 @@
-# Verification — 21 September 2026
+# Verification — 22 September 2026
 
 `npm run check` verifies:
 
@@ -10,6 +10,10 @@
 - All 110 article pages: 1,202 source blocks survive highlighting, no unwanted tabs/NBSP padding, one page title, local rendering assets, and resolving local links/anchors. Every original blog code block is compared token-for-token modulo documented whitespace and lambda-escape restoration. All 187 published comments preserve original wording. The original three pilot articles also retain their stronger prose comparisons.
 - 1,014 raw archive checksums, binary/source byte equality, and 15,341 local archive references. Seventeen unavailable historical targets are explicitly accounted for. Old Haddock links into local `/usr` trees are labeled as such; absent historical symbol anchors link to the surviving source page and are recorded in `archive-link-repairs.json`.
 
-In-session browser checks exercise archive search and talk navigation, the inline automaton controls and rendered output, and article/header layout. The four new figures were exercised in the browser, including capture/binder controls, both Morton traversal orders, both AD input sliders and sweep controls, and LCA growth, earlier versions, and equal-node queries. A 390-pixel viewport check confirmed no document overflow and readable graph labels. Earlier CRC checks covered empty strings, Unicode and both association orders. GitHub-hosted workflow execution and production DNS are not tested because nothing has been deployed.
+- Previous/next links across all 162 dated entries; 79 month calendars with correctly aligned weekdays, known-day links, multiple-entry anchors, and complete month archives.
+
+A clean export of the Git index successfully built every article and passed the full check suite. All 1,014 raw archive files and their published copies are tracked; root-only `/build/` exclusion prevents historical nested build directories from being omitted.
+
+In-session browser checks exercise archive search and talk navigation, the inline automaton controls and rendered output, and article/header layout. The four new figures were exercised in the browser, including capture/binder controls, both Morton traversal orders, both AD input sliders and sweep controls, and LCA growth, earlier versions, and equal-node queries. A 390-pixel viewport check confirmed no document overflow and readable graph labels. Earlier CRC checks covered empty strings, Unicode and both association orders. Calendar multi-entry links were exercised in the browser and a 390-pixel layout check found no horizontal overflow. Publication now uses the prebuilt `pages` branch; production DNS has not been changed.
 
 Acquisition inventories and unchanged source snapshots provide the audit trail. Full semantic recompilation of historical examples against modern libraries is not claimed.

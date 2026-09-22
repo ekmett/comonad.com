@@ -8,4 +8,4 @@
 
 `haskell/CRC.hs` is shared by the native server and Wasm adapter. `haskell/Automaton.hs` implements the cellular automaton kernel. JavaScript handles controls, drawing and CRC tree caching; numerical operations execute in GHC-generated Wasm. The source/hash manifest prevents deploying stale Wasm after Haskell changes.
 
-The Pages workflow renders articles, verifies preservation and the Wasm artifact, and publishes only on manual dispatch. Changing the generator to Hakyll/Pandoc remains an independent future choice; content preservation and reader-facing design do not depend on that choice.
+Local builds render articles and verify preservation and the Wasm artifact. GitHub Pages serves the prebuilt `pages` branch (the `dist/` subtree of `master`) with `.nojekyll`; no custom Actions workflow runs. Changing the generator to Hakyll/Pandoc remains an independent future choice; content preservation and reader-facing design do not depend on that choice.

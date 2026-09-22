@@ -11,6 +11,7 @@ import ocaml from 'highlight.js/lib/languages/ocaml';
 import scheme from 'highlight.js/lib/languages/scheme';
 import katex from 'katex';
 import { parseHTML } from 'linkedom';
+import { readerNavigation } from './reader-navigation.mjs';
 import { crcMath } from './article-math.mjs';
 import { packageNames, linkPackageMentions } from './package-links.mjs';
 const packageCatalog = JSON.parse(fs.readFileSync('content/package-links.json','utf8'));
@@ -32,6 +33,8 @@ const videos=[...new Map(videoSources.map(v=>[v.videoId || v.id,v])).values()].m
   const dateNote=v.eventDate||v.eventMonth||v.eventYear?'':v.dateBasis==='publication'?' · published':' · uploaded';
   return {...v,date,dateNote,path:`reader/talks/${v.id}/`,author:(v.speakers||[]).join(', '),source:v.publisher||v.event||'Talk',dateLabel:dateLabel(date),kind:'Talk'};
 });
+const timeline=[...articles.map(a=>({...a,kind:'Article'})),...videos].sort((a,b)=>b.date.localeCompare(a.date)||a.title.localeCompare(b.title));
+const navigation=readerNavigation(timeline);
 const importedAssets = fs.existsSync('content/assets-manifest.json') ? JSON.parse(fs.readFileSync('content/assets-manifest.json','utf8')) : [];
 function sourceKey(href, base='http://comonad.com/') {
   try {
@@ -49,6 +52,7 @@ buildArchive(haskellArchive);
 const esc = s => String(s).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
 const read = p => fs.readFileSync(p, 'utf8');
 const write = (p, s) => { fs.mkdirSync(path.dirname(p), {recursive:true}); fs.writeFileSync(p, s); };
+const articleStyleHash=crypto.createHash('sha256').update(read('dist/article.css')).digest('hex').slice(0,12);
 const highlight = code => hljs.highlight(code, {language:'haskell'}).value;
 const slugify = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const md = new MarkdownIt({html:true, highlight:(code, lang) => lang === 'haskell' ? highlight(code) : esc(code)});
@@ -98,13 +102,13 @@ const figureCaptions = {
 function relative(route, target) {
   return path.posix.relative(route || '.', target) || './';
 }
-function shell({title, base, main, script = ''}) {
+function shell({title, base, main, script = '', date}) {
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)} · The Comonad.Reader</title>
-<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="${base}feed.xml"><link rel="stylesheet" href="${base}style.css"><link rel="stylesheet" href="${base}article.css"><link rel="stylesheet" href="${base}vendor/katex/katex.min.css">
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="${base}feed.xml"><link rel="stylesheet" href="${base}style.css"><link rel="stylesheet" href="${base}article.css?v=${articleStyleHash}"><link rel="stylesheet" href="${base}vendor/katex/katex.min.css">
 </head><body><header class="masthead reader-masthead"><a class="site-identity" href="${base}reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="${base}reader/">Home</a><a href="${base}reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
-<main class="reading">${main}</main>${script}</body></html>\n`;
+<div class="reader-layout"><main class="reading">${main}</main>${navigation.calendar(base,date)}</div>${script}</body></html>\n`;
 }
 function packageLine(names,root) {
   if(!names.length)return '';
@@ -188,13 +192,12 @@ function renderArticle(article, route = article.path) {
     companions = read('templates/crc-source.html').replace('<!-- sources -->', ['CRC.hs','Browser.hs','Server.hs'].map(file => `<details><summary>${file === 'CRC.hs' ? 'Shared core' : file === 'Browser.hs' ? 'WebAssembly adapter' : 'HTTP server'}</summary><a href="${root}source/${file}" download>Download Haskell</a>${file==='Browser.hs'?` · <a href="${root}source/browser-sources.zip">All modules used by the shared browser adapter</a>`:''}<pre tabindex="0" aria-label="Haskell code"><code class="language-haskell">${highlight(read('haskell/' + file))}</code></pre></details>`).join(''));
   }
   const historical = (hasInlineDemo ? 'The interactive figure is a new companion to the article. ' : '') + (article.slug === 'parallel-crc' ? 'The original article is reproduced in full. The two interactive figures and companion implementations are new. Historical code is preserved; it has not been updated to current library APIs.' : 'Original article and historical code, with restored code formatting and locally typeset mathematics. Historical library APIs remain as published. Obvious prose typos may be corrected; changes are recorded with the archived source.');
-  const position=articles.indexOf(article), neighbors=[articles[position+1],articles[position-1]].filter(Boolean);
   const footer = `<aside class="edition-note"><details><summary>About this edition</summary><p>${historical}</p><p>First home: ${esc(article.source || 'Comonad.Reader')}.${article.dateBasis?' '+esc(article.dateBasis):''}</p><p><a href="${root}source/articles/${article.slug}.md" download>Article Markdown</a> · <a href="${root}source/articles/${article.slug}.original.${article.rawFormat === 'md' ? 'md' : 'html.txt'}" download>Archived original source</a> · <a href="${root}source/articles/provenance.json">Provenance</a> · <a href="${root}source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
-<nav class="related" aria-label="Other articles">${neighbors.map(p => `<a href="${root + p.path}">${esc(p.title)} →</a>`).join('')}<a href="${root}reader/">All writing</a></nav>
+${navigation.neighbors(article,root)}
 <footer><span>The Comonad.Reader</span><p>Writing and code © ${esc(article.author || 'Edward Kmett')}.<br>Comments attributed to their original authors.</p></footer>`;
   const main = `<header class="article-header"><div class="article-meta"><span>${esc(article.categories)}</span><span>${esc(article.author || 'Edward Kmett')} · <time datetime="${article.date}">${article.dateLabel}</time></span></div><h1>${esc(article.title)}</h1></header>${headings.length?toc:''}${body}${packageLine(packageNames(packageCatalog,article.slug),root)}${companions}${comments}${footer}`;
   const script = hasInlineDemo ? `<script type="module" src="${root}article-demos.js"></script>` : article.slug === 'parallel-crc' ? `<script type="module" src="${root}app.js"></script>` : article.slug==='cellular-automata-part-1' ? `<script type="module" src="${root}automaton.js"></script>` : '';
-  write('dist/' + route + 'index.html', shell({title:article.title, base:root, main, script}));
+  write('dist/' + route + 'index.html', shell({title:article.title, base:root, main, script, date:article.date}));
 }
 
 const provenance = [];
@@ -230,18 +233,21 @@ for(const collection of collections) {
 }
 for(const video of videos) {
   const root=(path.posix.relative(video.path,'.')||'.')+'/';
-  const main=`<header class="article-header"><div class="article-meta"><span>${esc(video.source)} · Talk</span><span><time datetime="${video.date}">${esc(video.dateLabel)}</time>${video.dateNote}</span></div><h1>${esc(video.title)}</h1><p class="talk-speakers">${esc(video.author)}</p></header><div class="prose"><figure class="talk-video" data-video-id="${esc(video.videoId)}"><button type="button" class="load-video" aria-label="Play ${esc(video.title)}"><span aria-hidden="true">▶</span> Play recording</button><figcaption><a href="${esc(video.videoUrl)}">Watch on YouTube</a>${video.durationSeconds?' · '+Math.floor(video.durationSeconds/60)+' minutes':''}</figcaption></figure>${video.seriesId?'<nav aria-label="Talk series">'+videos.filter(v=>v.seriesId===video.seriesId).sort((a,b)=>a.sequence-b.sequence).map(v=>`<a href="${root+v.path}">Part ${v.sequence}</a>`).join(' · ')+'</nav>':''}${video.editorialNote?'<p class="editorial">'+esc(video.editorialNote)+'</p>':''}${(video.description||video.context||'').split(/\n\s*\n/).filter(Boolean).map(p=>'<p>'+esc(p).replaceAll('\n','<br>')+'</p>').join('')}${video.materials?.length?'<h2>Materials</h2><ul>'+video.materials.map(m=>`<li><a href="${esc(typeof m==='string'?m:m.url)}">${esc(typeof m==='string'?m:m.title||m.label||m.kind?.replaceAll('_',' ')||'Related material')}</a></li>`).join('')+'</ul>':''}</div>${packageLine(packageCatalog.talks[video.id]||[],root)}<aside class="edition-note"><details><summary>Recording details</summary><p>${video.eventDate?'Talk date: '+esc(video.eventDate)+'. ':''}${video.eventYear&&!video.eventDate?'Presentation year: '+esc(video.eventYear)+'. ':''}Uploaded: ${esc(video.uploadDate||'not established')}. ${esc(video.dateBasis||'')}</p>${(video.uncertainty||[]).map(s=>'<p>'+esc(s)+'</p>').join('')}<p>The recording is hosted on YouTube. Its description, credits, and dating evidence are preserved here.</p></details></aside><nav class="related"><a href="${root}reader/">All writing and talks</a></nav>`;
-  write('dist/'+video.path+'index.html',shell({title:video.title,base:root,main,script:`<script type="module" src="${root}video.js"></script>`}));
+  const main=`<header class="article-header"><div class="article-meta"><span>${esc(video.source)} · Talk</span><span><time datetime="${video.date}">${esc(video.dateLabel)}</time>${video.dateNote}</span></div><h1>${esc(video.title)}</h1><p class="talk-speakers">${esc(video.author)}</p></header><div class="prose"><figure class="talk-video" data-video-id="${esc(video.videoId)}"><button type="button" class="load-video" aria-label="Play ${esc(video.title)}"><span aria-hidden="true">▶</span> Play recording</button><figcaption><a href="${esc(video.videoUrl)}">Watch on YouTube</a>${video.durationSeconds?' · '+Math.floor(video.durationSeconds/60)+' minutes':''}</figcaption></figure>${video.seriesId?'<nav aria-label="Talk series">'+videos.filter(v=>v.seriesId===video.seriesId).sort((a,b)=>a.sequence-b.sequence).map(v=>`<a href="${root+v.path}">Part ${v.sequence}</a>`).join(' · ')+'</nav>':''}${video.editorialNote?'<p class="editorial">'+esc(video.editorialNote)+'</p>':''}${(video.description||video.context||'').split(/\n\s*\n/).filter(Boolean).map(p=>'<p>'+esc(p).replaceAll('\n','<br>')+'</p>').join('')}${video.materials?.length?'<h2>Materials</h2><ul>'+video.materials.map(m=>`<li><a href="${esc(typeof m==='string'?m:m.url)}">${esc(typeof m==='string'?m:m.title||m.label||m.kind?.replaceAll('_',' ')||'Related material')}</a></li>`).join('')+'</ul>':''}</div>${packageLine(packageCatalog.talks[video.id]||[],root)}<aside class="edition-note"><details><summary>Recording details</summary><p>${video.eventDate?'Talk date: '+esc(video.eventDate)+'. ':''}${video.eventYear&&!video.eventDate?'Presentation year: '+esc(video.eventYear)+'. ':''}Uploaded: ${esc(video.uploadDate||'not established')}. ${esc(video.dateBasis||'')}</p>${(video.uncertainty||[]).map(s=>'<p>'+esc(s)+'</p>').join('')}<p>The recording is hosted on YouTube. Its description, credits, and dating evidence are preserved here.</p></details></aside>${navigation.neighbors(video,root)}`;
+  write('dist/'+video.path+'index.html',shell({title:video.title,base:root,main,date:video.date,script:`<script type="module" src="${root}video.js"></script>`}));
 }
-function archivePage(route) {
+function archivePage(route, period) {
   const base=(path.posix.relative(route||'.','.')||'.')+'/';
   let year='';
-  const timeline=[...articles.map(a=>({...a,kind:'Article'})),...videos].sort((a,b)=>b.date.localeCompare(a.date)||a.title.localeCompare(b.title));
-  const entries=timeline.map(a=>{
+  const selected=timeline.filter(item=>!period || item.date.startsWith(period));
+  const seenDates=new Set();
+  const title=period ? period.length===7 ? navigation.monthLabel(period) : period : 'Writing & talks';
+  const entries=selected.map(a=>{
     const nextYear=a.date.slice(0,4),heading=year!==nextYear?`<h2 class="archive-year" id="year-${nextYear}">${nextYear}</h2>`:'';year=nextYear;
-    return heading+`<article class="archive-entry" data-kind="${a.kind}" data-search="${esc([a.title,a.slug,a.author,a.categories,a.date,a.source,a.kind].join(' ').toLowerCase())}"><div class="entry-date"><time datetime="${a.date}">${esc(a.dateLabel)}${a.dateNote||''}</time><span>${a.kind==='Talk'?'Talk · ':''}${esc(a.source)}</span></div><h3><a href="${base+a.path}">${esc(a.title)}</a></h3>${a.author!=='Edward Kmett'?`<p class="entry-author">${esc(a.author)}</p>`:''}</article>`;
+    const dayId=seenDates.has(a.date)?'':` id="day-${a.date}"`;seenDates.add(a.date);
+    return heading+`<article${dayId} class="archive-entry" data-kind="${a.kind}" data-search="${esc([a.title,a.slug,a.author,a.categories,a.date,a.source,a.kind].join(' ').toLowerCase())}"><div class="entry-date"><time datetime="${a.date}">${esc(a.dateLabel)}${a.dateNote||''}</time><span>${a.kind==='Talk'?'Talk · ':''}${esc(a.source)}</span></div><h3><a href="${base+a.path}">${esc(a.title)}</a></h3>${a.author!=='Edward Kmett'?`<p class="entry-author">${esc(a.author)}</p>`:''}</article>`;
   }).join('');
-  return shell({title:'Writing & talks',base,main:`<header class="archive-header"><p class="article-meta">Edward Kmett &amp; guests</p><h1>Writing &amp; talks</h1><p>Types, programs, and the structures between them.</p></header><div class="archive-tools"><label for="archive-search">Explore the archive</label><div class="archive-search-row"><input id="archive-search" type="search" placeholder="Title, topic, speaker, or year…"><select id="archive-kind" aria-label="Content type"><option value="">Everything</option><option>Article</option><option>Talk</option></select></div><p id="archive-count" aria-live="polite">${articles.length} articles · ${videos.length} talks</p></div><div class="article-list chronological">${entries}</div><p id="archive-empty" hidden>No matching entries.</p><details class="series-list"><summary>Browse series</summary><ul>${collections.filter(c=>c.links.length).map(c=>`<li><a href="${base+c.path}">${esc(c.title)}</a></li>`).join('')}</ul></details><footer><span>The Comonad.Reader</span><p>Writing and recordings together in date order.<br>Articles and talks credited to their authors and speakers.</p></footer>`,script:`<script type="module" src="${base}archive.js"></script>`});
+  return shell({title,base,date:period,main:`<header class="archive-header"><p class="article-meta">Edward Kmett &amp; guests</p><h1>${esc(title)}</h1><p>${period?`<a href="${base}reader/">All writing &amp; talks</a>`:"Types, programs, and the structures between them."}</p></header><div class="archive-tools"><label for="archive-search">Explore the archive</label><div class="archive-search-row"><input id="archive-search" type="search" placeholder="Title, topic, speaker, or year…"><select id="archive-kind" aria-label="Content type"><option value="">Everything</option><option>Article</option><option>Talk</option></select></div><p id="archive-count" aria-live="polite">${selected.filter(a=>a.kind==='Article').length} articles · ${selected.filter(a=>a.kind==='Talk').length} talks</p></div><div class="article-list chronological">${entries}</div><p id="archive-empty" hidden>No matching entries.</p><details class="series-list"><summary>Browse series</summary><ul>${collections.filter(c=>c.links.length).map(c=>`<li><a href="${base+c.path}">${esc(c.title)}</a></li>`).join('')}</ul></details><footer><span>The Comonad.Reader</span><p>Writing and recordings together in date order.<br>Articles and talks credited to their authors and speakers.</p></footer>`,script:`<script type="module" src="${base}archive.js"></script>`});
 }
 const packageSections=Object.entries(packageCatalog.packages).map(([name,pkg])=>{
   const writing=articles.filter(a=>packageNames(packageCatalog,a.slug).includes(name));
@@ -255,7 +261,8 @@ write('dist/index.html',archivePage(''));
 write('dist/reader/wiki/index.html',shell({title:'Historical Wiki',base:'../../',main:'<h1>Historical Wiki</h1><p>The original Wiki page was empty when this archive was preserved. Its older item and source endpoints either returned that empty page or HTTP 404.</p><p><a href="../../source/articles/wiki.original.html.txt">Archived page source</a> · <a href="../../source/articles/legacy-link-status.json">Retrieval details</a></p>'}));
 write('dist/source/articles/wiki.original.html.txt',read('content/original/wiki.html'));
 for(const name of ['editorial-changes','math-migration','code-formatting','legacy-link-status','external-talks','boston-haskell-videos'])write(`dist/source/articles/${name}.json`,read(`content/${name}.json`));
-for(const year of new Set(articles.map(a=>a.date.slice(0,4))))write(`dist/reader/${year}/index.html`,shell({title:year,base:'../../',main:`<h1>${year}</h1><ul>${articles.filter(a=>a.date.startsWith(year)).map(a=>`<li><a href="../../${a.path}">${esc(a.title)}</a></li>`).join('')}</ul>`}));
+for(const year of new Set(timeline.map(a=>a.date.slice(0,4))))write(`dist/reader/${year}/index.html`,archivePage(`reader/${year}/`,year));
+for(const month of navigation.months)write('dist/'+navigation.monthPath(month)+'index.html',archivePage(navigation.monthPath(month),month));
 const site='https://comonad.com/';
 const feed=`<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>The Comonad.Reader</title><link>${site}reader/</link><description>Types, (co)monads, substructural logic</description>${articles.slice(0,30).map(a=>`<item><title>${esc(a.title)}</title><link>${site+a.path}</link><guid>${site+a.path}</guid><pubDate>${new Date(a.date+'T12:00:00Z').toUTCString()}</pubDate><description>${esc(md.render(read('content/articles/'+a.slug+'.md')).replace(/<!--.*?-->/gs,''))}</description></item>`).join('')}</channel></rss>`;
 write('dist/reader/feed/index.xml',feed);
