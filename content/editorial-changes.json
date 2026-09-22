@@ -327,5 +327,12 @@
     "after": "provides the same number of values",
     "status": "review",
     "reason": "Likely wording error, retained for review."
+  },
+  {
+    "article": "cufp-cfp",
+    "before": "[CUFP 2014](http://cufp.org/conference)",
+    "after": "CUFP 2014",
+    "reason": "Restore the explicit Markdown link that was published as literal text; keep its original destination.",
+    "status": "applied"
   }
 ]

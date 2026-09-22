@@ -1,7 +1,7 @@
 **Workshop for  
 Commercial Users of Functional Programming 2014  
 Sponsored by SIGPLAN  
-\[CUFP 2014\](http://cufp.org/conference)  
+[CUFP 2014](http://cufp.org/conference)\
 Co-located with [ICFP 2014](http://icfpconference.org/icfp2014)  
 Gothenburg, Sweden  
 Sep 4-6  

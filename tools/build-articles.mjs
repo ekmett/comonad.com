@@ -43,6 +43,13 @@ const publications=JSON.parse(fs.readFileSync('content/publications.json','utf8'
 const talkThumbnails=JSON.parse(fs.readFileSync('content/talk-thumbnails.json','utf8'));
 const externalPreservation=JSON.parse(fs.readFileSync('content/external-preservation.json','utf8'));
 const timeline=[...articles.map(a=>({...a,kind:'Article'})),...videos,...publications].sort(newestFirst);
+const seriesCatalog=collections.map(c=>({...c,members:c.links.map(l=>articles.find(a=>a.origin===l.origin)).filter(Boolean)}));
+for(const id of new Set(videos.map(v=>v.seriesId).filter(Boolean))){
+ const members=videos.filter(v=>v.seriesId===id).sort((a,b)=>a.sequence-b.sequence);
+ const live=members[0].archiveType==='stream';
+ seriesCatalog.push({slug:id,title:live?'Live Coding':'Guanxi: Logic Programming in Haskell',path:live?'reader/series/live-coding/':`reader/series/${id}/`,description:live?'Sessions 1–26, including split recordings.':'Four sessions on relational programming in Haskell.',members});
+}
+seriesCatalog.sort((a,b)=>a.title.localeCompare(b.title));
 const navigation=readerNavigation(timeline);
 const importedAssets = fs.existsSync('content/assets-manifest.json') ? JSON.parse(fs.readFileSync('content/assets-manifest.json','utf8')) : [];
 function sourceKey(href, base='http://comonad.com/') {
@@ -65,7 +72,11 @@ const archiveScriptHash=crypto.createHash('sha256').update(read('dist/archive.js
 const articleStyleHash=crypto.createHash('sha256').update(read('dist/article.css')).digest('hex').slice(0,12);
 const highlight = code => hljs.highlight(code, {language:'haskell'}).value;
 const slugify = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-const md = new MarkdownIt({html:true, highlight:(code, lang) => lang === 'haskell' ? highlight(code) : esc(code)});
+const md = new MarkdownIt({html:true, linkify:true, highlight:(code, lang) => lang === 'haskell' ? highlight(code) : esc(code)});
+md.linkify.set({fuzzyLink:false,fuzzyEmail:false});
+// Recording descriptions contain Markdown and explicit URLs, but no trusted HTML.
+const recordingMd=new MarkdownIt({html:false,linkify:true,breaks:true});
+recordingMd.linkify.set({fuzzyLink:false,fuzzyEmail:false});
 md.inline.ruler.before('escape', 'math', (state, silent) => {
   if (state.src[state.pos] !== '$') return false;
   const display = state.src[state.pos+1] === '$';
@@ -129,6 +140,11 @@ ${head}
 function packageLine(names,root) {
   if(!names.length)return '';
   return `<aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> ${names.map(name=>`<a href="${packageCatalog.packages[name].url}"><code>${esc(name)}</code></a>`).join(' · ')} <a class="package-index-link" href="${root}reader/packages/">Browse by package →</a></aside>`;
+}
+function projectLine(video,root){
+ const names=packageCatalog.streamProjects?.[video.id]||[];
+ if(!names.length)return '';
+ return `<aside class="package-links" aria-label="Stream projects"><span>Project code</span> ${names.map(name=>`<a href="${packageCatalog.projects[name].url}"><code>${esc(name)}</code></a>${packageCatalog.projects[name].note?' <span>(original repository; currently unavailable)</span>':''}`).join(' · ')} · <a href="${root}reader/packages/#${names[0]}">Related writing &amp; recordings</a></aside>`;
 }
 function renderArticle(article, route = article.path) {
   const root = (path.posix.relative(route || '.', '.') || '.') + '/';
@@ -252,7 +268,7 @@ for(const collection of collections) {
 }
 for(const video of videos) {
   const root=(path.posix.relative(video.path,'.')||'.')+'/';
-  const main=`<header class="article-header"><div class="article-meta"><span>${esc(video.source)} · ${video.kind}</span><span><time datetime="${video.date}">${esc(video.dateLabel)}</time>${video.dateNote}</span></div><h1>${esc(video.title)}</h1><p class="talk-speakers">${esc(video.author)}</p></header><div class="prose"><figure class="talk-video" data-video-id="${esc(video.videoId)}"><iframe src="https://www.youtube-nocookie.com/embed/${esc(video.videoId)}?playsinline=1" title="${esc(video.title)}" loading="eager" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><figcaption><a href="${esc(video.videoUrl)}">Watch on YouTube</a>${video.durationSeconds?' · '+Math.floor(video.durationSeconds/60)+' minutes':''}</figcaption></figure>${video.seriesId?videoSeriesNavigation(video,root):''}${video.editorialNote?'<p class="editorial">'+esc(video.editorialNote)+'</p>':''}${(video.description||video.context||'').split(/\n\s*\n/).filter(Boolean).map(p=>'<p>'+esc(p).replaceAll('\n','<br>')+'</p>').join('')}${video.materials?.length?'<h2>Materials</h2><ul>'+video.materials.map(m=>`<li><a href="${esc(typeof m==='string'?m:m.url)}">${esc(typeof m==='string'?m:m.title||m.label||m.kind?.replaceAll('_',' ')||'Related material')}</a></li>`).join('')+'</ul>':''}</div>${(video.relatedRecordings||[]).map(id=>videos.find(v=>v.id===id)).filter(Boolean).map(v=>`<p class="related-recording">Related recording: <a href="${root+v.path}">${esc(v.title)}</a></p>`).join('')}${video.discussion?.length?'<section class="comments"><h2>From the original discussion</h2>'+video.discussion.map(c=>`<article class="comment"><header><strong>${esc(c.author)}</strong> · <a href="${esc(c.source)}">Original reply</a></header><p class="editorial">${esc(c.selection)}</p>${commentMd.render(c.markdown)}</article>`).join('')+'</section>':''}${packageLine(packageCatalog.talks[video.id]||[],root)}<aside class="edition-note"><details><summary>Recording details</summary><p>${video.eventDate?'Talk date: '+esc(video.eventDate)+'. ':''}${video.eventYear&&!video.eventDate?'Presentation year: '+esc(video.eventYear)+'. ':''}Uploaded: ${esc(video.uploadDate||'not established')}. ${esc(video.dateBasis||'')}</p>${(video.uncertainty||[]).map(s=>'<p>'+esc(s)+'</p>').join('')}<p>The recording is hosted on YouTube. Its description, credits, and dating evidence are preserved here.</p></details></aside>${navigation.neighbors(video,root)}`;
+  const main=`<header class="article-header"><div class="article-meta"><span>${esc(video.source)} · ${video.kind}</span><span><time datetime="${video.date}">${esc(video.dateLabel)}</time>${video.dateNote}</span></div><h1>${esc(video.title)}</h1><p class="talk-speakers">${esc(video.author)}</p></header><div class="prose"><figure class="talk-video" data-video-id="${esc(video.videoId)}"><iframe src="https://www.youtube-nocookie.com/embed/${esc(video.videoId)}?playsinline=1" title="${esc(video.title)}" loading="eager" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><figcaption><a href="${esc(video.videoUrl)}">Watch on YouTube</a>${video.durationSeconds?' · '+Math.floor(video.durationSeconds/60)+' minutes':''}</figcaption></figure>${video.seriesId?videoSeriesNavigation(video,root):''}${video.editorialNote?'<p class="editorial">'+esc(video.editorialNote)+'</p>':''}${recordingMd.render(video.description||video.context||'')}${video.materials?.length?'<h2>Materials</h2><ul>'+video.materials.map(m=>`<li><a href="${esc(typeof m==='string'?m:m.url)}">${esc(typeof m==='string'?m:m.title||m.label||m.kind?.replaceAll('_',' ')||'Related material')}</a></li>`).join('')+'</ul>':''}</div>${(video.relatedRecordings||[]).map(id=>videos.find(v=>v.id===id)).filter(Boolean).map(v=>`<p class="related-recording">Related recording: <a href="${root+v.path}">${esc(v.title)}</a></p>`).join('')}${video.discussion?.length?'<section class="comments"><h2>From the original discussion</h2>'+video.discussion.map(c=>`<article class="comment"><header><strong>${esc(c.author)}</strong> · <a href="${esc(c.source)}">Original reply</a></header><p class="editorial">${esc(c.selection)}</p>${commentMd.render(c.markdown)}</article>`).join('')+'</section>':''}${projectLine(video,root)}${packageLine(video.packages||packageCatalog.talks[video.id]||[],root)}<aside class="edition-note"><details><summary>Recording details</summary><p>${video.eventDate?'Talk date: '+esc(video.eventDate)+'. ':''}${video.eventYear&&!video.eventDate?'Presentation year: '+esc(video.eventYear)+'. ':''}Uploaded: ${esc(video.uploadDate||'not established')}. ${esc(video.dateBasis||'')}</p>${(video.uncertainty||[]).map(s=>'<p>'+esc(s)+'</p>').join('')}<p>The recording is hosted on YouTube. Its description, credits, and dating evidence are preserved here.</p></details></aside>${navigation.neighbors(video,root)}`;
   write('dist/'+video.path+'index.html',shell({title:video.title,base:root,main,date:video.date,route:video.path,entry:video}));
 }
 for(const publication of publications) {
@@ -271,12 +287,21 @@ function videoSeriesNavigation(video,root){
   const adjacent=[members[index-1],members[index+1]].filter(Boolean).map(v=>`<a href="${root+v.path}">${esc(v.sequenceLabel)}</a>`).join(' · ');
   return `<nav class="series-navigation" aria-label="Live coding series"><p><a href="${root}reader/series/live-coding/">Live Coding</a> · ${esc(video.sequenceLabel)}${adjacent?' · '+adjacent:''}</p><details><summary>All sessions</summary><ol>${members.map(v=>`<li><a href="${root+v.path}"${v.id===video.id?' aria-current="page"':''}>${esc(v.title)}</a></li>`).join('')}</ol></details></nav>`;
 }
-function archivePage(route, period) {
+function seriesCards(base,period){
+ return seriesCatalog.filter(c=>!period||c.members.some(a=>a.date.startsWith(period))).map(c=>{
+  const authors=[...new Set(c.members.map(a=>a.author))].join(', ');
+  const dates=c.members.map(a=>a.date.slice(0,4)).sort();
+  const years=dates[0]===dates.at(-1)?dates[0]:dates[0]+'–'+dates.at(-1);
+  const search=[c.title,authors,...c.members.map(a=>[a.title,a.categories,a.date].join(' '))].join(' ').toLowerCase();
+  return `<article class="series-entry" data-search="${esc(search)}"><div class="entry-date"><span>${esc(years)}</span><span>${countLabel(c.members.length,'part')}</span></div><h3><a href="${base+c.path}">${esc(c.title)}</a></h3><p class="entry-author">${esc(authors)}</p><p class="series-members">${c.members.slice(0,3).map(a=>esc(a.seriesTitle||a.originalTitle||a.title)).join(' · ')}${c.members.length>3?' · …':''}</p></article>`;
+ }).join('');
+}
+function archivePage(route, period, seriesOnly=false) {
   const base=(path.posix.relative(route||'.','.')||'.')+'/';
   let year='';
   const selected=timeline.filter(item=>!period || item.date.startsWith(period));
   const seenDates=new Set();
-  const title=period ? period.length===7 ? navigation.monthLabel(period) : period : 'Writing & talks';
+  const title=seriesOnly?'Series':period ? period.length===7 ? navigation.monthLabel(period) : period : 'Writing & talks';
   const entries=selected.map(a=>{
     const nextYear=a.date.slice(0,4),heading=year!==nextYear?`<h2 class="archive-year" id="year-${nextYear}">${nextYear}</h2>`:'';year=nextYear;
     const dayId=seenDates.has(a.date)?'':` id="day-${a.date}"`;seenDates.add(a.date);
@@ -284,19 +309,28 @@ function archivePage(route, period) {
     const image=thumbnail?`<a class="talk-thumbnail" href="${base+a.path}" tabindex="-1" aria-hidden="true"><img src="${base+thumbnail.path}" alt="" width="320" height="180" loading="lazy" decoding="async"></a>`:'';
     return heading+`<article${dayId} class="archive-entry" data-kind="${a.kind}" data-search="${esc([a.title,a.slug,a.author,a.categories,a.date,a.source,a.kind].join(' ').toLowerCase())}"><div class="entry-date"><time datetime="${a.date}">${esc(a.dateLabel)}${a.dateNote||''}</time><span>${a.kind!=='Article'?a.kind+' · ':''}${esc(a.source)}</span></div><div class="entry-body"><div class="entry-copy"><h3><a href="${base+a.path}">${esc(a.title)}</a></h3><p class="entry-author">${esc(a.author||'Edward Kmett')}</p></div>${image}</div></article>`;
   }).join('');
-  return shell({title,base,date:period,route,main:`<header class="archive-header"><p class="article-meta">Edward Kmett &amp; guests</p><h1>${esc(title)}</h1><p>${period?`<a href="${base}reader/">All writing &amp; talks</a>`:"Types, programs, and the structures between them."}</p></header><div class="archive-tools"><label for="archive-search">Explore the archive</label><div class="archive-search-row"><input id="archive-search" type="search" placeholder="Title, topic, speaker, or year…"><select id="archive-kind" aria-label="Content type"><option value="">Everything</option><option>Article</option><option>Talk</option><option>Stream</option><option>Paper</option></select></div><p id="archive-count" aria-live="polite">${countLabel(selected.filter(a=>a.kind==='Article').length,'article')} · ${countLabel(selected.filter(a=>a.kind==='Talk').length,'talk')} · ${countLabel(selected.filter(a=>a.kind==='Paper').length,'paper')}${selected.some(a=>a.kind==='Stream')?' · '+countLabel(selected.filter(a=>a.kind==='Stream').length,'stream'):''}</p></div><div class="article-list chronological">${entries}</div><p id="archive-empty" hidden>No matching entries.</p><details class="series-list"><summary>Browse series</summary><ul><li><a href="${base}reader/series/live-coding/">Live Coding</a></li>${collections.filter(c=>c.links.length).map(c=>`<li><a href="${base+c.path}">${esc(c.title)}</a></li>`).join('')}</ul></details><footer><span>The Comonad.Reader</span><p>Writing and recordings together in date order.<br>Articles and talks credited to their authors and speakers.</p></footer>`,script:`<script type="module" src="${base}archive.js?v=${archiveScriptHash}"></script>`});
+  return shell({title,base,date:period,route,main:`<header class="archive-header"><p class="article-meta">Edward Kmett &amp; guests</p><h1>${esc(title)}</h1><p>${period?`<a href="${base}reader/">All writing &amp; talks</a>`:"Types, programs, and the structures between them."}</p></header><div class="archive-tools"><label for="archive-search">Explore the archive</label><div class="archive-search-row"><input id="archive-search" type="search" placeholder="Title, topic, speaker, or year…"><select id="archive-kind" aria-label="Content type"><option value="">Everything</option><option>Article</option><option>Talk</option><option>Stream</option><option>Paper</option><option${seriesOnly?' selected':''}>Series</option></select></div><p id="archive-count" aria-live="polite">${seriesOnly?countLabel(seriesCatalog.length,'series','series'):countLabel(selected.filter(a=>a.kind==='Article').length,'article')}${seriesOnly?'':' · '+countLabel(selected.filter(a=>a.kind==='Talk').length,'talk')+' · '+countLabel(selected.filter(a=>a.kind==='Paper').length,'paper')+(selected.some(a=>a.kind==='Stream')?' · '+countLabel(selected.filter(a=>a.kind==='Stream').length,'stream'):'')}</p></div><div class="article-list chronological"${seriesOnly?' hidden':''}>${entries}</div><div class="series-results"${seriesOnly?'':' hidden'}>${seriesCards(base,period)}</div><p id="archive-empty" hidden>No matching entries.</p><details class="series-list"><summary>Browse series</summary><p><a href="${base}reader/series/">Explore all series →</a></p><ul><li><a href="${base}reader/series/live-coding/">Live Coding</a></li>${collections.filter(c=>c.links.length).map(c=>`<li><a href="${base+c.path}">${esc(c.title)}</a></li>`).join('')}</ul></details><footer><span>The Comonad.Reader</span><p>Writing and recordings together in date order.<br>Articles and talks credited to their authors and speakers.</p></footer>`,script:`<script type="module" src="${base}archive.js?v=${archiveScriptHash}"></script>`});
 }
 const packageSections=Object.entries(packageCatalog.packages).map(([name,pkg])=>{
   const writing=articles.filter(a=>packageNames(packageCatalog,a.slug).includes(name));
   const talks=[...videos,...publications].filter(v=>(v.packages||packageCatalog.talks[v.id]||[]).includes(name));
   return `<section class="package-section" id="${name}"><h2><a href="${pkg.url}">${esc(name)}</a></h2><ul>${[...writing,...talks].sort((a,b)=>b.date.localeCompare(a.date)).map(a=>`<li><a href="../../${a.path}">${esc(a.title)}</a> <span class="package-date">${a.date.slice(0,4)}</span></li>`).join('')}</ul></section>`;
 }).join('');
-write('dist/reader/packages/index.html',shell({title:'Packages & writing',base:'../../',route:'reader/packages/',main:`<header class="article-header"><h1>Packages &amp; writing</h1><p>Follow an idea from the article to its Haskell library.</p></header><p class="editorial">These links connect the writing to relevant packages on Hackage. Historical examples may use different APIs; their original version-specific documentation links are preserved.</p><nav class="package-jump" aria-label="Package index">${Object.keys(packageCatalog.packages).map(n=>`<a href="#${n}">${esc(n)}</a>`).join(' · ')}</nav>${packageSections}`}));
+const projectSections=Object.entries(packageCatalog.projects||{}).map(([name,project])=>{
+ const recordings=videos.filter(v=>(packageCatalog.streamProjects[v.id]||[]).includes(name)).sort(newestFirst);
+ return `<section class="package-section" id="${name}"><h2><a href="${project.url}">${esc(name)}</a> <small>GitHub project</small></h2>${project.note?`<p>${esc(project.note)}</p>`:''}<ul>${recordings.map(v=>`<li><a href="../../${v.path}">${esc(v.title)}</a> <span class="package-date">${v.date.slice(0,4)}</span></li>`).join('')}</ul></section>`;
+}).join('');
+write('dist/reader/packages/index.html',shell({title:'Packages & projects',base:'../../',route:'reader/packages/',main:`<header class="article-header"><h1>Packages &amp; projects</h1><p>Follow an idea between articles, recordings, and code.</p></header><p class="editorial">These links connect the writing to relevant packages on Hackage. Historical examples may use different APIs; their original version-specific documentation links are preserved.</p><nav class="package-jump" aria-label="Package index">${[...Object.keys(packageCatalog.packages),...Object.keys(packageCatalog.projects||{})].map(n=>`<a href="#${n}">${esc(n)}</a>`).join(' · ')}</nav>${packageSections}<h2 id="stream-projects">Projects from the streams</h2>${projectSections}`}));
 write('dist/source/articles/talk-thumbnails.json',JSON.stringify(talkThumbnails,null,2)+'\n');
 write('dist/source/articles/package-links.json',JSON.stringify(packageCatalog,null,2)+'\n');
 const streamSeries=videos.filter(v=>v.archiveType==='stream').sort((a,b)=>a.sequence-b.sequence);
 write('dist/reader/series/live-coding/index.html',shell({title:'Live Coding',base:'../../../',route:'reader/series/live-coding/',main:`<header class="article-header"><h1>Live Coding</h1><p>Edward Kmett · Twitch recordings</p></header><div class="prose"><p>Sessions 1–26, including split recordings. Follow the session numbers here; the dated archive uses the known YouTube release dates where original broadcast dates are unavailable.</p><ol>${streamSeries.map(v=>`<li><a href="../../../${v.path}">${esc(v.title)}</a></li>`).join('')}</ol></div>`}));
 write('dist/reader/index.html',archivePage('reader/'));
+write('dist/reader/series/index.html',archivePage('reader/series/',undefined,true));
+for(const series of seriesCatalog.filter(c=>c.members[0]?.videoId&&c.slug!=='edward-kmett-live-coding')){
+ const base=(path.posix.relative(series.path,'.')||'.')+'/';
+ write('dist/'+series.path+'index.html',shell({title:series.title,base,route:series.path,main:`<header class="article-header"><h1>${esc(series.title)}</h1><p>${esc(series.members[0].author)}</p></header><div class="prose"><p>${esc(series.description)}</p><ol>${series.members.map(v=>`<li><a href="${base+v.path}">${esc(v.title)}</a></li>`).join('')}</ol></div><p><a href="${base}reader/series/">All series</a></p>`}));
+}
 write('dist/index.html',`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>The Comonad.Reader</title><link rel="canonical" href="${siteConfig.readerPath}"><meta http-equiv="refresh" content="0;url=${siteConfig.readerPath}"></head><body><p><a href="${siteConfig.readerPath}">Continue to The Comonad.Reader</a></p></body></html>\n`);
 write('dist/reader/wiki/index.html',shell({title:'Historical Wiki',base:'../../',main:'<h1>Historical Wiki</h1><p>The original Wiki page was empty when this archive was preserved. Its older item and source endpoints either returned that empty page or HTTP 404.</p><p><a href="../../source/articles/wiki.original.html.txt">Archived page source</a> · <a href="../../source/articles/legacy-link-status.json">Retrieval details</a></p>'}));
 write('dist/source/articles/wiki.original.html.txt',read('content/original/wiki.html'));
@@ -319,5 +353,5 @@ const feed=`<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><t
 write('dist/reader/feed/index.xml',feed);
 write('dist/reader/feed/index.html',feed);
 write('dist/feed.xml',feed);
-write('dist/sitemap.xml',`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${['reader/','reader/packages/','reader/series/live-coding/',...articles.map(a=>a.path),...collections.map(a=>a.path),...videos.map(v=>v.path),...publications.map(p=>p.path)].map(p=>`<url><loc>${site+p}</loc></url>`).join('')}</urlset>`);
+write('dist/sitemap.xml',`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${['reader/','reader/packages/','reader/series/',...seriesCatalog.filter(c=>c.members[0]?.videoId).map(c=>c.path),...articles.map(a=>a.path),...collections.map(a=>a.path),...videos.map(v=>v.path),...publications.map(p=>p.path)].map(p=>`<url><loc>${site+p}</loc></url>`).join('')}</urlset>`);
 console.log(`Built ${articles.length} complete articles, local math and diagrams, curated comments, and ${videos.length} recording pages, and ${publications.length} preserved publications.`);

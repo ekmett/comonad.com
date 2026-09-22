@@ -71,3 +71,26 @@ assert.equal(wavelets.date,'1995');assert.equal(wavelets.dateApproximate,true);
 const lambdaWorld=videos.find(v=>v.id==='there-and-back-again-lambda-world-2018');
 assert.equal(lambdaWorld.eventDate,'2018-09-18');
 assert.equal(lambdaWorld.uploadDate,'2018-11-06');
+
+const seriesPage=parseHTML(fs.readFileSync('dist/reader/series/index.html','utf8')).document;
+assert.ok([...doc.querySelectorAll('#archive-kind option')].some(n=>n.textContent==='Series'));
+assert.equal(seriesPage.querySelector('#archive-kind [selected]').textContent,'Series');
+assert.ok(seriesPage.querySelector('.chronological').hasAttribute('hidden'));
+assert.ok(!seriesPage.querySelector('.series-results').hasAttribute('hidden'));
+for(const card of seriesPage.querySelectorAll('.series-entry')){
+ const href=card.querySelector('h3 a').getAttribute('href');
+ assert.ok(fs.existsSync(new URL(href+'index.html','file://'+process.cwd()+'/dist/reader/series/')),'Every series card opens a local page');
+}
+const nominalDoc=parseHTML(fs.readFileSync('dist/reader/talks/live-coding-18/index.html','utf8')).document;
+assert.ok(nominalDoc.querySelector('.prose a[href="http://github.com/ekmett/nominal"]'),'Recording URL is clickable');
+assert.ok([...nominalDoc.querySelectorAll('.prose code')].some(n=>n.textContent==='nominal'),'Recording Markdown is formatted');
+assert.ok(!nominalDoc.querySelector('a[href="https://hackage.haskell.org/package/nominal"]'),'Do not link an unrelated namesake package');
+const packages=json('content/package-links.json');
+const packageDoc=parseHTML(fs.readFileSync('dist/reader/packages/index.html','utf8')).document;
+for(const [id,names] of Object.entries(packages.talks).filter(([id])=>id.startsWith('live-coding-'))){
+ const page=parseHTML(fs.readFileSync(`dist/reader/talks/${id}/index.html`,'utf8')).document;
+ for(const name of names){
+  assert.ok(page.querySelector(`a[href="${packages.packages[name].url}"]`));
+  assert.ok(packageDoc.querySelector(`#${name} a[href="../../reader/talks/${id}/"]`),'Package index links back to stream');
+ }
+}
