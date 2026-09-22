@@ -192,6 +192,8 @@ Putting all of that together a greyscale version of the PNG writer from my Mande
 
 Click Run!
 
+<!-- demo:topology-automaton -->
+
 ```haskell
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE TypeFamilies #-}

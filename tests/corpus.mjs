@@ -82,7 +82,7 @@ for(const card of seriesPage.querySelectorAll('.series-entry')){
  assert.ok(fs.existsSync(new URL(href+'index.html','file://'+process.cwd()+'/dist/reader/series/')),'Every series card opens a local page');
 }
 const nominalDoc=parseHTML(fs.readFileSync('dist/reader/talks/live-coding-18/index.html','utf8')).document;
-assert.ok(nominalDoc.querySelector('.prose a[href="http://github.com/ekmett/nominal"]'),'Recording URL is clickable');
+assert.ok(nominalDoc.querySelector('.prose a[href="https://github.com/ekmett/name"]'),'Recording URL is clickable');
 assert.ok([...nominalDoc.querySelectorAll('.prose code')].some(n=>n.textContent==='nominal'),'Recording Markdown is formatted');
 assert.ok(!nominalDoc.querySelector('a[href="https://hackage.haskell.org/package/nominal"]'),'Do not link an unrelated namesake package');
 const packages=json('content/package-links.json');
@@ -93,4 +93,14 @@ for(const [id,names] of Object.entries(packages.talks).filter(([id])=>id.startsW
   assert.ok(page.querySelector(`a[href="${packages.packages[name].url}"]`));
   assert.ok(packageDoc.querySelector(`#${name} a[href="../../reader/talks/${id}/"]`),'Package index links back to stream');
  }
+}
+
+const optics=parseHTML(fs.readFileSync('dist/reader/talks/linear-optics-bx-2021/index.html','utf8')).document;
+assert.ok(optics.querySelector('a[href="https://github.com/ekmett/linear-logic"]'));
+for(const slug of ['cellular-automata-part-2','cellular-automata-part-3','snippets-mandelbrot']){
+ const entry=articles.find(a=>a.slug===slug);const page=parseHTML(fs.readFileSync('dist/'+entry.path+'index.html','utf8')).document;
+ assert.equal(page.querySelectorAll('[data-image-demo]').length,1);
+ assert.ok(page.querySelector('script[src$="png-demos.js"]'));
+ const data=JSON.parse(page.querySelector('script[type="application/ld+json"]').textContent);
+ assert.equal(data.datePublished,entry.authoredDate);assert.equal(data.dateModified,entry.dateModified);
 }

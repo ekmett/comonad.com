@@ -155,8 +155,8 @@
   {
     "slug": "cellular-automata-part-2",
     "title": "Cellular Automata — Part II: PNGs and Moore",
-    "date": "2015-06-10",
-    "dateLabel": "10 June 2015",
+    "date": "2013-09-01",
+    "dateLabel": "1 September 2013",
     "path": "reader/2015/cellular-automata-part-2/",
     "categories": "Haskell",
     "origin": "https://www.schoolofhaskell.com/user/edwardk/cellular-automata/part-2",
@@ -166,10 +166,12 @@
     "rawSource": "content/original/corpus/6f6f69b9cc40609b9a22cafe.md",
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/604212fe84a3e9f477c2f975737b8e05d70a941f",
-    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
+    "dateBasis": "Authorship date from the signed article footer. School of Haskell later displayed 2015-06-10 as the revision date. The existing URL is retained.",
     "series": "cellular-automata",
     "originalTitle": "Part II: PNGs and Moore",
-    "seriesOrder": 2
+    "seriesOrder": 2,
+    "dateModified": "2015-06-10",
+    "authoredDate": "2013-09-01"
   },
   {
     "slug": "moore-for-less",
@@ -308,8 +310,8 @@
   {
     "slug": "cellular-automata-part-1",
     "title": "Cellular Automata — Part I: From Theory to Pretty Pictures",
-    "date": "2014-11-29",
-    "dateLabel": "29 November 2014",
+    "date": "2013-08-15",
+    "dateLabel": "15 August 2013",
     "path": "reader/2014/cellular-automata-part-1/",
     "categories": "Haskell",
     "origin": "https://www.schoolofhaskell.com/user/edwardk/cellular-automata/part-1",
@@ -319,10 +321,12 @@
     "rawSource": "content/original/corpus/bc357760cd1fe01afd085626.md",
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/2a6140398ce46eceac790037f4afbd66c3b9c7c5",
-    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
+    "dateBasis": "Authorship date from the signed article footer. School of Haskell later displayed 2014-11-29 as the revision date. The existing URL is retained.",
     "series": "cellular-automata",
     "originalTitle": "Part I: From Theory to Pretty Pictures",
-    "seriesOrder": 1
+    "seriesOrder": 1,
+    "dateModified": "2014-11-29",
+    "authoredDate": "2013-08-15"
   },
   {
     "slug": "revisiting-matrix-multiplication-part-5",
@@ -409,8 +413,8 @@
   {
     "slug": "cellular-automata-part-3",
     "title": "Cellular Automata — Part III: A World in a Bottle",
-    "date": "2013-11-16",
-    "dateLabel": "16 November 2013",
+    "date": "2013-09-15",
+    "dateLabel": "15 September 2013",
     "path": "reader/2013/cellular-automata-part-3/",
     "categories": "Haskell",
     "origin": "https://www.schoolofhaskell.com/user/edwardk/cellular-automata/part-3",
@@ -420,10 +424,12 @@
     "rawSource": "content/original/corpus/4883ae2c2d44cc80469bb460.md",
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/adea78b22dcf260126adedf58d7500caf297b583",
-    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
+    "dateBasis": "Authorship date from the signed article footer. School of Haskell later displayed 2013-11-16 as the revision date. The existing URL is retained.",
     "series": "cellular-automata",
     "originalTitle": "Part III: A World in a Bottle",
-    "seriesOrder": 3
+    "seriesOrder": 3,
+    "dateModified": "2013-11-16",
+    "authoredDate": "2013-09-15"
   },
   {
     "slug": "oblivious-deamortized-st",
@@ -497,8 +503,8 @@
   {
     "slug": "snippets-mandelbrot",
     "title": "Mandelbrot",
-    "date": "2013-09-03",
-    "dateLabel": "3 September 2013",
+    "date": "2013-09-02",
+    "dateLabel": "2 September 2013",
     "path": "reader/2013/snippets-mandelbrot/",
     "categories": "Haskell",
     "origin": "https://www.schoolofhaskell.com/user/edwardk/snippets/mandelbrot",
@@ -508,9 +514,11 @@
     "rawSource": "content/original/corpus/adfa97de2be831c784d42b96.md",
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/5075dba7d5304c8f12a24c282c3d243564ea9e0a",
-    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
+    "dateBasis": "Authorship date from the signed article footer. School of Haskell later displayed 2013-09-03 as the revision date. The existing URL is retained.",
     "series": "snippets",
-    "seriesOrder": 3
+    "seriesOrder": 3,
+    "dateModified": "2013-09-03",
+    "authoredDate": "2013-09-02"
   },
   {
     "slug": "snippets-once",

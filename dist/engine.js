@@ -7,7 +7,9 @@ export async function createEngine() {
     ConsoleStdout.lineBuffered(text => console.info(text)),
     ConsoleStdout.lineBuffered(text => errors.push(text)),
   ]);
-  const response = await fetch(new URL('./crc.wasm', import.meta.url));
+  const wasmURL=new URL('./crc.wasm',import.meta.url);
+  wasmURL.search=new URL(import.meta.url).search;
+  const response = await fetch(wasmURL);
   if (!response.ok) throw new Error(`Cannot load Haskell module (${response.status})`);
   const { instance } = await WebAssembly.instantiate(await response.arrayBuffer(), {
     wasi_snapshot_preview1: wasi.wasiImport,
@@ -33,6 +35,7 @@ export async function createEngine() {
     } finally { e.free(pointer); }
   };
   return {
+    image: (kind, parameter, width, height, option, cx=-0.5, cy=0, span=3) => jsonResult(e.image_demo(kind, parameter, width, height, option, cx, cy, span)),
     binding: (preset, spelling) => jsonResult(e.binding_demo(preset, spelling)),
     morton: (x, y, block) => jsonResult(e.morton_demo(x, y, block)),
     ad: (x, y) => jsonResult(e.ad_demo(x, y)),

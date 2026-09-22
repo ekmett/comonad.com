@@ -623,6 +623,8 @@ Automata, Please
 
 Of course, this is supposed to be a series about cellular automata. So let's draw one.
 
+<!-- demo:png-automaton -->
+
 1.) I'll be switching to a 4 line minimalist version of Gabriel's `foldl` library, rather than using the `Moore` representation, since we don't need any of the instances. I've renamed his `Fold` to `L` here to avoid conflicts with the `Lens` library.
 
 2.) We don't _need_ to use the `Comonad` for the fold type we spent all that time above building up. Here we're working with lazy bytestrings, so let's just append them in the one case we need!

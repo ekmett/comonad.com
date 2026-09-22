@@ -1,0 +1,7 @@
+<figure class="automaton png-demo" id="mandelbrot-figure" data-image-demo="mandelbrot">
+  <div class="automaton-controls"><label>View <select data-control="view"><option value="whole">Whole set</option><option value="seahorse">Seahorse valley</option><option value="bulb">Left bulb</option></select></label><label>Iterations <select data-control="iterations"><option selected>32</option><option>64</option><option>128</option><option>256</option></select></label><label>PNG order <select data-control="interlace"><option value="1">Adam7 interlaced</option><option value="0">Scanlines</option></select></label><button data-control="render" type="button">Draw PNG</button></div>
+  <img data-view="image" width="300" height="200" alt="Mandelbrot set with escape times in greyscale." hidden>
+  <figcaption><span data-view="status" role="status">Loading the Haskell example…</span> <a data-view="download" hidden download="mandelbrot.png">Download PNG</a> · <a href="{{root}}source/PNGDemo.hs">Haskell source</a>.</figcaption>
+  <details><summary>PNG chunks and image data</summary><div data-view="chunks"></div><p>Black marks points that have not escaped within the selected iteration limit; lighter pixels escape later.</p><pre tabindex="0" data-view="rows"></pre></details>
+  <noscript>The original code remains readable below. This figure needs JavaScript and WebAssembly.</noscript>
+</figure>

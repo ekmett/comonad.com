@@ -4,7 +4,7 @@ A static home for the original blog and Edward Kmett’s School of Haskell writi
 
 ## Contents
 
-- 85 Comonad.Reader posts, 25 School of Haskell articles, four Harmless Algorithms columns, and the recovered Bloodshed wavelet paper (circa 1995), plus nineteen article series and collections and the live-coding series.
+- 85 Comonad.Reader posts, 25 School of Haskell articles, four Harmless Algorithms columns, and the recovered Bloodshed wavelet paper (circa 1995), plus nineteen article series and collections, the live-coding series, and the Guanxi workshop series.
 - 58 talk pages and 31 live-coding stream pages: four locally preserved slide decks and 85 recordings. The recordings include the Boston Haskell channel, Monad Transformer Lenses, There and Back Again, and sessions 1–26 from Edward’s Twitch stream (including split sessions).
 - 187 selected historical comments; all 12,370 original comment records remain in source snapshots.
 - 1,014 linked Haskell archive resources, preserved with checksums. Parent directory links do not expand the crawl.
@@ -74,3 +74,5 @@ Seventeen Haskell targets and four C# attachments were already unavailable from 
 Additional writing outside the two original hosts is researched in `docs/edward-kmett-research.md` and `content/external-articles.json`; the four Harmless Algorithms columns are now preserved as full articles, and ApplicativeDo is preserved as a complete local PDF with all four authors credited. Four additional talks have locally preserved slides; `content/publications.json` records their dates and materials. Remaining research candidates are not automatically included. Video metadata is preserved locally, but recordings themselves remain on YouTube. The Hello World diagram is compiled from the retained TikZ-cd source to a standalone SVG; normal site builds use the committed SVG and need no TeX installation. Arbitrary code editing and live comment submission are not part of this static implementation.
 
 The RSS feed includes the entire dated archive: articles, talks, streams, and papers. Original dates and permanent entry IDs are retained; entries with only a known year or month omit the optional RSS publication day.
+
+Cellular Automata II/III and Mandelbrot have inline Haskell/Wasm PNG companions, including downloadable PNGs, verified checksums, integer-line/modulo movement, and Adam7 interlacing. Their archive dates use the signed authorship dates; later School of Haskell revision dates and established URLs remain recorded. Series browsing is available in the main archive filter and at `reader/series/`.

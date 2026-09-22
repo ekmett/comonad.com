@@ -27,6 +27,7 @@ for(const year of years){
  const file=`dist/reader/${year}/index.html`,doc=read(file);
  assert.equal(doc.querySelectorAll('.archive-month-grid > *').length,12,'Year overview shows twelve months');
  for(const a of doc.querySelectorAll('.archive-sidebar a')){
+   if (/^https?:/.test(a.getAttribute('href'))) continue;
    const [href,fragment]=a.getAttribute('href').split('#');
    const target=href?path.resolve(path.dirname(file),href,'index.html'):path.resolve(file);
    assert.ok(fs.existsSync(target),`Archive destination exists: ${target}`);
@@ -66,3 +67,7 @@ for(const collection of collections){
  for(const author of new Set(members.map(a=>a.author)))assert.ok(doc.querySelector('.article-meta').textContent.includes(author),'Credit actual series authors');
 }
 assert.deepEqual(collections.find(c=>c.slug==='kan-extensions').links.map(l=>articles.find(a=>a.origin===l.origin).slug),['kan-extensions','kan-extensions-ii','kan-extension-iii']);
+
+const cellular=['cellular-automata-part-1','cellular-automata-part-2','cellular-automata-part-3'];
+assert.deepEqual([...entries].reverse().filter(e=>cellular.some(s=>e.file.endsWith('/'+s+'/index.html'))).map(e=>e.file.split('/').at(-2)),cellular,'Cellular Automata follows authored dates');
+assert.deepEqual(cellular.map(s=>articles.find(a=>a.slug===s).date),['2013-08-15','2013-09-01','2013-09-15']);

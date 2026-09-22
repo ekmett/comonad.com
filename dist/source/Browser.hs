@@ -3,6 +3,7 @@
 module Browser where
 
 import CRC
+import qualified PNGDemo
 import qualified Automaton
 import qualified BindingDemo
 import qualified MortonDemo
@@ -21,6 +22,7 @@ foreign export ccall crc_factor :: Int -> Word32
 foreign export ccall crc_multiply :: Word32 -> Word32 -> Word32
 foreign export ccall crc_combine :: Word32 -> Word32 -> Word32 -> Word32
 foreign export ccall crc_finish :: Word32 -> Word32 -> Word32
+foreign export ccall image_demo :: Int -> Int -> Int -> Int -> Int -> Double -> Double -> Double -> IO CString
 foreign export ccall automaton_step :: Word8 -> Ptr Word8 -> Int -> IO ()
 foreign export ccall binding_demo :: Int -> Int -> IO CString
 foreign export ccall morton_demo :: Int -> Int -> Int -> IO CString
@@ -40,6 +42,9 @@ lca_demo ptr len a b
   | otherwise = do
       parents <- map fromIntegral <$> peekArray len ptr
       newCString (encode (LCADemo.demo parents a b))
+
+image_demo :: Int -> Int -> Int -> Int -> Int -> Double -> Double -> Double -> IO CString
+image_demo kind parameter w h option cx cy spanX = newCString (encode (PNGDemo.demo kind parameter w h option cx cy spanX))
 
 automaton_step :: Word8 -> Ptr Word8 -> Int -> IO ()
 automaton_step rule ptr len = peekArray len ptr >>= pokeArray ptr . Automaton.step rule

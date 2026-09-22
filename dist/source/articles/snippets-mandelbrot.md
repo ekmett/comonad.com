@@ -1,5 +1,7 @@
 This short little snippet combines a Mandelbrot set generator using lens based on one by [N. Haas](https://github.com/nandykins) with the fold-based PNG generator from the [second part of my cellular automata series](https://www.fpcomplete.com/user/edwardk/cellular-automata/part-2). His version of the Mandelbrot function was tighter than mine, but I mixed it with the formatting logic.
 
+<!-- demo:mandelbrot -->
+
 ```haskell
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ExistentialQuantification #-}
