@@ -20,7 +20,7 @@ npm run check
 npm run serve
 ```
 
-Open <http://127.0.0.1:4173/>. Both `/` and `/reader/` show the combined archive. Original blog article paths and retained comment anchors are preserved. Search works locally without a service.
+Open <http://127.0.0.1:4173/>. Both `/` and `/reader/` show the combined archive. Original blog article paths and retained comment anchors are preserved. Search works locally without a service. Public GitHub repositories appear as compact links beneath their creation year; names, descriptions, languages, and topics are searchable. Hover a repository link for its GitHub description. `content/github-repositories.json` preserves the public API snapshot; GitHub forks are excluded from the display, with explicit `alwaysInclude` exceptions for Edward’s own projects (`starkify`, `nightfall`, and `bitcoin-verifier-wasm`). Repositories stay separate from the article chronology and RSS feed.
 
 Edit `content/articles/*.md` and `content/articles.json` to publish writing. `templates/` contains figures; `tools/build-articles.mjs` renders the site. CSS and browser JavaScript in `dist/` are maintained source files, so do not delete that directory as a build-clean step. Generated article HTML is overwritten during builds.
 

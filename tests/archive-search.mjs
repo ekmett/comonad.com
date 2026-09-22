@@ -1,0 +1,53 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import {parseHTML} from 'linkedom';
+const {document}=parseHTML(fs.readFileSync('dist/reader/index.html','utf8'));
+const search=document.querySelector('#archive-search');
+const kind=document.querySelector('#archive-kind');
+// linkedom's select.value is read-only; the browser exposes a writable value.
+Object.defineProperty(kind,'value',{value:'',writable:true});
+const context=vm.createContext({document});
+vm.runInContext(fs.readFileSync('dist/archive.js','utf8'),context);
+const catalog=JSON.parse(fs.readFileSync('content/github-repositories.json'));
+const repos=catalog.repositories.filter(repo=>!repo.fork || catalog.alwaysInclude.includes(repo.name));
+const links=[...document.querySelectorAll('.archive-repositories a')];
+assert.equal(links.length,repos.length);
+assert.ok(!links.some(a=>a.textContent==='narya'),'Exclude clones of other people’s repositories');
+for(const name of ['starkify','nightfall','bitcoin-verifier-wasm'])assert.ok(links.some(a=>a.textContent===name),'Keep Edward’s projects: '+name);
+for(const repo of repos){
+  const link=links.find(a=>a.getAttribute('href')===repo.html_url);
+  assert.equal(link.textContent,repo.name);
+  assert.equal(link.getAttribute('title'),repo.description||null,'GitHub description is the hover text');
+  assert.equal(link.closest('ul').previousElementSibling.textContent,repo.created_at.slice(0,4),'Group by creation year');
+}
+function filter(query,type='') {search.value=query;kind.value=type;vm.runInContext('filter()',context);}
+const visibleRepos=()=>links.filter(a=>!a.parentElement.hidden&&!a.closest('ul').hidden).map(a=>a.textContent);
+const visibleYears=()=>[...document.querySelectorAll('.archive-year')].filter(h=>!h.hidden).map(h=>h.textContent);
+filter('nominal sets');
+assert.ok(visibleRepos().includes('name'),'Search matches description, not just name');
+filter('nominal sets','Repository');
+assert.deepEqual(visibleRepos(),['name']);
+assert.deepEqual(visibleYears(),['2018']);
+assert.equal(document.querySelector('#archive-count').textContent,'1 repository');
+assert.equal(document.querySelector('#archive-empty').hidden,true);
+assert.equal(document.querySelectorAll('.archive-entry:not([hidden])').length,0);
+filter('haskell','Repository');
+assert.ok(visibleRepos().includes('lens'),'Languages are searchable');
+filter('2026','Repository');
+assert.deepEqual(visibleYears(),['2026'],'Repository-only years are retained');
+assert.equal(visibleRepos().length,repos.filter(r=>r.created_at.startsWith('2026')).length);
+filter('lens','Article');
+assert.equal(visibleRepos().length,0,'Content type filters remain independent');
+assert.ok(document.querySelectorAll('.archive-entry:not([hidden])').length>0);
+filter('kan extensions','Series');
+assert.equal(document.querySelector('.chronological').hidden,true);
+assert.ok([...document.querySelectorAll('.series-entry:not([hidden]) h3')].some(h=>h.textContent==='Kan Extensions'),'Series search still finds the collection');
+assert.equal(visibleRepos().length,0);
+filter('zz-no-such-repo');
+assert.equal(document.querySelector('#archive-empty').hidden,false);
+assert.deepEqual(visibleYears(),[]);
+filter('');
+assert.equal(visibleRepos().length,repos.length,'Clearing the search restores all repositories');
+assert.equal(document.querySelectorAll('.archive-entry:not([hidden])').length,207);
+console.log(`Archive search passed: ${repos.length} repository descriptions, creation years, type filters, and no-match handling.`);

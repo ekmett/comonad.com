@@ -1,0 +1,3167 @@
+{
+  "owner": "ekmett",
+  "source": "https://api.github.com/users/ekmett/repos",
+  "retrievedAt": "2026-09-22",
+  "alwaysInclude": [
+    "starkify",
+    "nightfall",
+    "bitcoin-verifier-wasm"
+  ],
+  "repositories": [
+    {
+      "archived": false,
+      "created_at": "2018-04-28T07:26:12Z",
+      "description": "Commutative Applicatives and Semigroups",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/abelian",
+      "language": "Haskell",
+      "name": "abelian",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-06-14T09:19:18Z",
+      "description": "Automatic Differentiation",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/ad",
+      "language": "Haskell",
+      "name": "ad",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-01-21T21:58:44Z",
+      "description": "Simple adjunctions",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/adjunctions",
+      "language": "Haskell",
+      "name": "adjunctions",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2019-06-28T01:13:53Z",
+      "description": "A fast Haskell JSON library",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/aeson",
+      "language": "Haskell",
+      "name": "aeson",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2012-11-08T19:47:02Z",
+      "description": "Lens of Aeson",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/aeson-lens",
+      "language": "Haskell",
+      "name": "aeson-lens",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2019-12-08T06:32:39Z",
+      "description": null,
+      "fork": true,
+      "html_url": "https://github.com/ekmett/AIDungeon",
+      "language": "Python",
+      "name": "AIDungeon",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2019-05-30T17:40:16Z",
+      "description": "A cross-platform, GPU-accelerated terminal emulator",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/alacritty",
+      "language": "Rust",
+      "name": "alacritty",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-07-08T01:30:56Z",
+      "description": "constructive abstract algebra",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/algebra",
+      "language": "Haskell",
+      "name": "algebra",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-01-17T18:18:45Z",
+      "description": "Simple Haskell ANSI terminal support, with Windows compatibility",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/ansi-terminal",
+      "language": "Haskell",
+      "name": "ansi-terminal",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-01-17T18:32:42Z",
+      "description": "The Wadler/Leijen Pretty Printer for colored ANSI terminal output",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/ansi-wl-pprint",
+      "language": "Haskell",
+      "name": "ansi-wl-pprint",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-04-25T18:48:53Z",
+      "description": "Approximate discrete values and numbers",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/approximate",
+      "language": "Haskell",
+      "name": "approximate",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2014-03-23T19:53:17Z",
+      "description": "A physics playground",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/arcade",
+      "language": "JavaScript",
+      "name": "arcade",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2019-06-16T02:12:38Z",
+      "description": "A fast Haskell library for parsing ByteStrings",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/attoparsec",
+      "language": "Haskell",
+      "name": "attoparsec",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2018-07-01T16:53:59Z",
+      "description": null,
+      "fork": false,
+      "html_url": "https://github.com/ekmett/auth",
+      "language": "Haskell",
+      "name": "auth",
+      "topics": [
+        "authenticated",
+        "data-structures",
+        "haskell",
+        "library"
+      ]
+    },
+    {
+      "archived": false,
+      "created_at": "2022-08-04T00:59:11Z",
+      "description": "authenticated data structures in rust",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/auth-rs",
+      "language": "Rust",
+      "name": "auth-rs",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2021-01-16T13:40:46Z",
+      "description": "a playground for working with fully static tensors and automatic differentiation",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/bad",
+      "language": "C++",
+      "name": "bad",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-01-29T14:13:48Z",
+      "description": "Haskell 98 bifunctors, bifoldables and bitraversables",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/bifunctors",
+      "language": "Haskell",
+      "name": "bifunctors",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2023-11-06T20:45:24Z",
+      "description": null,
+      "fork": false,
+      "html_url": "https://github.com/ekmett/bitcoin-verifier-wasm",
+      "language": null,
+      "name": "bitcoin-verifier-wasm",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-03-28T04:06:28Z",
+      "description": "Bit twiddling and bitwise serialization primitives",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/bits",
+      "language": "Haskell",
+      "name": "bits",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2022-08-06T13:36:04Z",
+      "description": "Bitvector implementation with Packed SIMD 2",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/bitvector_simd",
+      "language": null,
+      "name": "bitvector_simd",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-02-06T07:10:18Z",
+      "description": "Clone of https://gitorious.org/bitwise",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/bitwise",
+      "language": "Haskell",
+      "name": "bitwise",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-06-26T02:01:57Z",
+      "description": "Robust, efficient, Haskell BLAS bindings (work in progress)",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/blase",
+      "language": "Haskell",
+      "name": "blase",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2012-06-16T00:36:20Z",
+      "description": "Combinators for manipulating locally-nameless generalized de Bruijn terms",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/bound",
+      "language": "Haskell",
+      "name": "bound",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-03-28T03:30:56Z",
+      "description": "Serialization primitives that work with both cereal and binary.",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/bytes",
+      "language": "Haskell",
+      "name": "bytes",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2019-06-05T20:15:21Z",
+      "description": "An efficient compact, immutable byte string type (both strict and lazy) suitable for binary or 8-bit character data.",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/bytestring",
+      "language": "Haskell",
+      "name": "bytestring",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2015-10-29T07:45:52Z",
+      "description": "A benchmark comparing different ways of building a bytestring in Haskell",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/bytestring-builders-benchmark",
+      "language": "Haskell",
+      "name": "bytestring-builders-benchmark",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2019-04-25T03:44:41Z",
+      "description": "CI assistant",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/cabal-cache",
+      "language": "Haskell",
+      "name": "cabal-cache",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2019-06-16T14:02:22Z",
+      "description": "A Setup.hs helper for doctest running",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/cabal-doctest",
+      "language": "Haskell",
+      "name": "cabal-doctest",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2019-10-01T09:54:53Z",
+      "description": "every day i'm truffling",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/cadenza",
+      "language": "Kotlin",
+      "name": "cadenza",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2020-02-19T22:10:57Z",
+      "description": "fire-and-forget data broadcast with Reed Solomon codes",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/carousel",
+      "language": "Haskell",
+      "name": "carousel",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-06-26T06:51:44Z",
+      "description": "categories from category-extras",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/categories",
+      "language": "Haskell",
+      "name": "categories",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-06-23T02:39:23Z",
+      "description": "category-theoretic goodness for Haskell",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/category-extras",
+      "language": "Haskell",
+      "name": "category-extras",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2014-08-13T06:12:59Z",
+      "description": "A formalization of category theory in Coq for personal study",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/category-theory",
+      "language": null,
+      "name": "category-theory",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2018-08-05T21:01:37Z",
+      "description": null,
+      "fork": true,
+      "html_url": "https://github.com/ekmett/cereal",
+      "language": "Haskell",
+      "name": "cereal",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-07-03T20:29:21Z",
+      "description": "fast utf-8 character sets",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/charset",
+      "language": "Haskell",
+      "name": "charset",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2017-01-08T14:10:32Z",
+      "description": "Common CMake modules",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/CMake",
+      "language": "CMake",
+      "name": "CMake",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2017-08-20T09:20:14Z",
+      "description": "A language experiment -- irc.freenode.net ##coda",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/coda",
+      "language": "Haskell",
+      "name": "coda",
+      "topics": [
+        "coda",
+        "haskell",
+        "node",
+        "programming-language",
+        "visual-studio",
+        "vscode-extension"
+      ]
+    },
+    {
+      "archived": false,
+      "created_at": "2019-11-16T16:37:17Z",
+      "description": "experiments with pext/pdep and codebruijn syntax",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/codebruijn",
+      "language": "Haskell",
+      "name": "codebruijn",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2019-05-17T12:33:19Z",
+      "description": "UI experiments for coda",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/codex",
+      "language": "Haskell",
+      "name": "codex",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-02-23T02:44:49Z",
+      "description": "A bunch of random colorimetry data I've harvested from various sources.",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/colorimetry",
+      "language": "Haskell",
+      "name": "colorimetry",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-01-05T08:29:28Z",
+      "description": "Haskell 98 comonads",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/comonad",
+      "language": "Haskell",
+      "name": "comonad",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-02-02T09:23:54Z",
+      "description": "Comonad transformers that require Haskell extensions",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/comonad-extras",
+      "language": "Haskell",
+      "name": "comonad-extras",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-01-05T09:00:41Z",
+      "description": "Haskell 98 comonad transformers - as of 4.0 these have merged into the comonad package.",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/comonad-transformers",
+      "language": "Coq",
+      "name": "comonad-transformers",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2022-12-14T18:53:41Z",
+      "description": "new comonad.com website",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/comonad.com",
+      "language": "HTML",
+      "name": "comonad.com",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-01-05T19:52:42Z",
+      "description": "comonad transformers based on functional-dependencies",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/comonads-fd",
+      "language": "Haskell",
+      "name": "comonads-fd",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-03-19T05:54:53Z",
+      "description": "Compensated floating-point arithmetic",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/compensated",
+      "language": "Haskell",
+      "name": "compensated",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2017-03-19T07:33:31Z",
+      "description": "some compiler tech",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/compiler",
+      "language": "Haskell",
+      "name": "compiler",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-08-05T23:01:50Z",
+      "description": "Compressed generators for monoidal reducers",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/compressed",
+      "language": "Haskell",
+      "name": "compressed",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2015-10-28T03:01:29Z",
+      "description": "Yet another concurrent playground",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/concurrent",
+      "language": "Haskell",
+      "name": "concurrent",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-11-08T21:19:33Z",
+      "description": "A fast globally unique variable supply with a pure API",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/concurrent-supply",
+      "language": "Haskell",
+      "name": "concurrent-supply",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-11-03T07:09:49Z",
+      "description": "Tools for programming with ConstraintKinds in GHC",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/constraints",
+      "language": "Haskell",
+      "name": "constraints",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2012-11-22T10:23:56Z",
+      "description": null,
+      "fork": true,
+      "html_url": "https://github.com/ekmett/containers",
+      "language": "Haskell",
+      "name": "containers",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-01-14T21:53:27Z",
+      "description": "Haskell 98 contravariant functors",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/contravariant",
+      "language": "Haskell",
+      "name": "contravariant",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2018-11-09T07:06:24Z",
+      "description": "A mirror of the CRLibm project from INRIA Forge",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/crlibm",
+      "language": "Objective-C",
+      "name": "crlibm",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2012-10-13T00:29:59Z",
+      "description": "Haskell generic interface (type classes) for cryptographic algorithms",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/crypto-api",
+      "language": "Haskell",
+      "name": "crypto-api",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-06-28T13:56:58Z",
+      "description": "Haskell 98 Lenses",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/data-lens",
+      "language": "Haskell",
+      "name": "data-lens",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-06-28T14:34:32Z",
+      "description": "Lenses with Functional Dependencies",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/data-lens-fd",
+      "language": "Haskell",
+      "name": "data-lens-fd",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-06-28T13:53:49Z",
+      "description": "Template Haskell utilities for Data.Lens -- Russell O'Connor now maintains this package, this is not the official repository any more",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/data-lens-template",
+      "language": "Haskell",
+      "name": "data-lens-template",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2012-12-28T00:08:20Z",
+      "description": "Multi-key multi-value store for Haskell native data types with type safe interface.",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/data-store",
+      "language": "Haskell",
+      "name": "data-store",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2018-04-01T18:42:18Z",
+      "description": null,
+      "fork": false,
+      "html_url": "https://github.com/ekmett/dd",
+      "language": "Haskell",
+      "name": "dd",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2019-06-09T00:29:53Z",
+      "description": "A rendering sample that demonstrates bindless deferred texturing using D3D12",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/DeferredTexturing",
+      "language": "C++",
+      "name": "DeferredTexturing",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2018-03-18T00:22:27Z",
+      "description": "can we backpack small dense matrices? this is mostly just to get a sense of blockers",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/dense",
+      "language": "Haskell",
+      "name": "dense",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2015-03-18T23:33:53Z",
+      "description": "Type-aligned Deques in Haskell",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/deque",
+      "language": "Haskell",
+      "name": "deque",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2020-02-24T02:58:28Z",
+      "description": "Discontinuous Hamiltonian Monte Carlo in JAX",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/dhmc-jax",
+      "language": null,
+      "name": "dhmc-jax",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2019-12-20T00:11:16Z",
+      "description": "An elegant implementation of discrete diffgeo in haskell",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/discrete-differential-geometry",
+      "language": "Haskell",
+      "name": "discrete-differential-geometry",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2014-12-17T07:31:01Z",
+      "description": "Fast linear time sorting and discrimination for a large class of data types",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/discrimination",
+      "language": "Haskell",
+      "name": "discrimination",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-01-22T22:27:59Z",
+      "description": "Dual Traversable",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/distributive",
+      "language": "Haskell",
+      "name": "distributive",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2020-02-08T06:20:39Z",
+      "description": "a succinct rust playground, just goofing off",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/distrust",
+      "language": "Rust",
+      "name": "distrust",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2015-07-11T23:18:30Z",
+      "description": "Haskell on Docker",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/docker-haskell",
+      "language": "Awk",
+      "name": "docker-haskell",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2015-07-10T05:39:38Z",
+      "description": "An implementation of Python's doctest for Haskell",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/doctest",
+      "language": "Haskell",
+      "name": "doctest",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-06-14T13:13:29Z",
+      "description": "McMaster DSL Workshop 2011",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/dsl2011",
+      "language": "Haskell",
+      "name": "dsl2011",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2012-06-02T03:31:38Z",
+      "description": "april fools?",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/dysfunctional",
+      "language": "Scala",
+      "name": "dysfunctional",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-05-09T16:08:48Z",
+      "description": "the EitherT monad transformer",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/either",
+      "language": "Haskell",
+      "name": "either",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2014-01-29T08:40:33Z",
+      "description": "Remote monitoring of running processes over HTTP",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/ekg",
+      "language": "JavaScript",
+      "name": "ekg",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-08-14T05:47:50Z",
+      "description": "haddocks",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/ekmett.github.com",
+      "language": "Haskell",
+      "name": "ekmett.github.com",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-01-12T13:07:40Z",
+      "description": "Leibnizian type equality",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/eq",
+      "language": "Haskell",
+      "name": "eq",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-07-15T17:12:26Z",
+      "description": "Ermine",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/ermine",
+      "language": "Haskell",
+      "name": "ermine",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-06-14T09:32:06Z",
+      "description": "A monad for interfacing with external SAT solvers",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/ersatz",
+      "language": "Haskell",
+      "name": "ersatz",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2026-09-15T09:12:26Z",
+      "description": "Everett: compact persistent storage with snapshots and branching",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/everett",
+      "language": "C++",
+      "name": "everett",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-04-30T06:21:33Z",
+      "description": "mtl friendly exceptions",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/exceptions",
+      "language": "Haskell",
+      "name": "exceptions",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2017-08-29T15:59:34Z",
+      "description": "Incremental vi tags for haskell.",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/fast-tags",
+      "language": "Haskell",
+      "name": "fast-tags",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2017-01-08T02:29:52Z",
+      "description": "Work in progress",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/fib",
+      "language": "CMake",
+      "name": "fib",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2022-07-19T14:17:00Z",
+      "description": "stupid test project",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/fish",
+      "language": "Makefile",
+      "name": "fish",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2014-11-02T19:58:20Z",
+      "description": "S15.16 fixed-precision arithmetic",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/fixed",
+      "language": "Haskell",
+      "name": "fixed",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-06-14T09:03:42Z",
+      "description": "Fixed Precision Arithmetic",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/fixed-precision",
+      "language": "Haskell",
+      "name": "fixed-precision",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2017-04-16T23:51:42Z",
+      "description": "Haskell Research Compiler",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/flrc",
+      "language": "Standard ML",
+      "name": "flrc",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2017-04-16T23:52:01Z",
+      "description": "Benchmarks for use with IntelLabs/flrc.",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/flrc-benchmarks",
+      "language": "Haskell",
+      "name": "flrc-benchmarks",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2017-04-16T23:51:28Z",
+      "description": "Pillar compiler, Pillar runtime, garbage collector.",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/flrc-lib",
+      "language": "C++",
+      "name": "flrc-lib",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-09-03T05:21:25Z",
+      "description": "Folds and sequence algebras",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/folds",
+      "language": "Haskell",
+      "name": "folds",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2012-04-01T05:32:15Z",
+      "description": "A more robust foreign function interface for dynamic functions",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/foreign",
+      "language": "Haskell",
+      "name": "foreign",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2015-03-07T21:40:32Z",
+      "description": "Foreign variables, deprecated in favor of `StateVar`",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/foreign-var",
+      "language": "Haskell",
+      "name": "foreign-var",
+      "topics": [
+        "deprecated"
+      ]
+    },
+    {
+      "archived": false,
+      "created_at": "2015-04-08T03:41:10Z",
+      "description": "lazy continued fractions",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/fractions",
+      "language": "Haskell",
+      "name": "fractions",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-02-17T19:18:14Z",
+      "description": "free monads",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/free",
+      "language": "Haskell",
+      "name": "free",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2026-09-17T16:13:48Z",
+      "description": "bit-reproducible high performance cross-platform floating point math with flush-to-zero semantics on denormals",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/ftz",
+      "language": "C++",
+      "name": "ftz",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-12-24T04:43:31Z",
+      "description": "variance-aware functional-programming in scala",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/functorial",
+      "language": "Scala",
+      "name": "functorial",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2015-09-16T01:04:57Z",
+      "description": "Poor Richard's Memory Manager",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/gc",
+      "language": "Haskell",
+      "name": "gc",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2012-12-07T05:47:15Z",
+      "description": null,
+      "fork": true,
+      "html_url": "https://github.com/ekmett/generic-deriving",
+      "language": "Haskell",
+      "name": "generic-deriving",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-09-27T18:24:48Z",
+      "description": "Mirror of ghc repository. DO NOT SUBMIT PULL REQUESTS HERE. Patches are best submitted to GHC's Trac (http://hackage.haskell.org/trac/ghc) or sent to the mailing list (ghc-devs@haskell.org)",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/ghc",
+      "language": "Haskell",
+      "name": "ghc",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2018-03-08T20:50:52Z",
+      "description": "Proposed compiler and language changes for GHC and GHC/Haskell",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/ghc-proposals",
+      "language": null,
+      "name": "ghc-proposals",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2012-08-19T15:16:04Z",
+      "description": "Google Summer of Code 2012 project, GHCi for the web",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/ghclive",
+      "language": "JavaScript",
+      "name": "ghclive",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2014-11-01T16:32:27Z",
+      "description": "Complete raw OpenGL bindings for Haskell",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/gl",
+      "language": "Haskell",
+      "name": "gl",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-01-20T10:27:23Z",
+      "description": "a monadic graph library",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/graphs",
+      "language": "Haskell",
+      "name": "graphs",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-11-05T07:50:07Z",
+      "description": "distributed heterogeneous computation",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/grid",
+      "language": "Haskell",
+      "name": "grid",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-07-25T23:42:43Z",
+      "description": "Haskell 98 Groupoids",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/groupoids",
+      "language": "Haskell",
+      "name": "groupoids",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2018-10-01T18:09:56Z",
+      "description": "Relational programming in Haskell. Mostly developed on twitch.",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/guanxi",
+      "language": "Haskell",
+      "name": "guanxi",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2019-06-16T03:25:03Z",
+      "description": "Hackage security framework based on TUF (The Update Framework)",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/hackage-security",
+      "language": "Haskell",
+      "name": "hackage-security",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2014-09-30T04:23:58Z",
+      "description": "A little Doom-like 2.5 game engine",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/hadoom",
+      "language": "Haskell",
+      "name": "hadoom",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2014-11-02T00:15:44Z",
+      "description": "half-precision floating-point",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/half",
+      "language": "Haskell",
+      "name": "half",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2019-05-29T20:44:44Z",
+      "description": "HarfBuzz text shaping engine",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/harfbuzz",
+      "language": "C++",
+      "name": "harfbuzz",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-03-21T23:08:31Z",
+      "description": "Double hashing, rolling hashes, CRCs, etc.",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/hash",
+      "language": "Haskell",
+      "name": "hash",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2015-09-23T20:24:08Z",
+      "description": "A class for types that can be converted to a hash value",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/hashable",
+      "language": "Haskell",
+      "name": "hashable",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-03-22T00:24:17Z",
+      "description": "Higher-rank hashable",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/hashable-extras",
+      "language": "Haskell",
+      "name": "hashable-extras",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2014-06-23T13:54:30Z",
+      "description": "Category theory for Haskell with a lens flavor (you need GHC 7.8.3, not 7.8.2 to build this!)",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/hask",
+      "language": "Haskell",
+      "name": "hask",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2020-07-26T03:52:15Z",
+      "description": "An unimaginatively named monorepo for misc. side-projects that are annoying to maintain separately.",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/haskell",
+      "language": "Haskell",
+      "name": "haskell",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2017-11-21T01:26:35Z",
+      "description": "Hedgehog will eat all your bugs.",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/haskell-hedgehog",
+      "language": "Haskell",
+      "name": "haskell-hedgehog",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2018-12-17T07:42:25Z",
+      "description": "Custom Haskell Vimscripts",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/haskell-vim",
+      "language": "Vim script",
+      "name": "haskell-vim",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2019-06-27T16:18:57Z",
+      "description": null,
+      "fork": true,
+      "html_url": "https://github.com/ekmett/haskellcosm",
+      "language": null,
+      "name": "haskellcosm",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-06-14T10:09:48Z",
+      "description": "Asymptotically optimal Brodal/Okasaki heaps",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/heaps",
+      "language": "Haskell",
+      "name": "heaps",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2015-09-22T20:36:15Z",
+      "description": "GHC plugin that improves Haskell code's numerical stability",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/HerbiePlugin",
+      "language": "Haskell",
+      "name": "HerbiePlugin",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-05-27T22:08:24Z",
+      "description": "Functional absurdity in C#",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/highc",
+      "language": "C#",
+      "name": "highc",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2021-04-09T20:50:28Z",
+      "description": "higher-kinded data",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/hkd",
+      "language": "Haskell",
+      "name": "hkd",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-06-26T06:34:14Z",
+      "description": "Clone of Ales Bizjak's hmpfr repository for use in tracking down errors caused by GHC munging GMP's memory allocation, and MPFR using GMP",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/hmpfr",
+      "language": "Haskell",
+      "name": "hmpfr",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2014-11-29T04:24:41Z",
+      "description": "The missing package manager for OS X.",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/homebrew",
+      "language": "Ruby",
+      "name": "homebrew",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2014-08-14T18:44:53Z",
+      "description": null,
+      "fork": false,
+      "html_url": "https://github.com/ekmett/homotopy",
+      "language": "Coq",
+      "name": "homotopy",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2024-11-21T23:13:56Z",
+      "description": "A native Rust library for advanced Linear Algebra routines",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/householder",
+      "language": null,
+      "name": "householder",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2019-06-16T01:38:20Z",
+      "description": "Pre-processor for .hsc files",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/hsc2hs",
+      "language": "Haskell",
+      "name": "hsc2hs",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2017-08-30T14:35:35Z",
+      "description": null,
+      "fork": true,
+      "html_url": "https://github.com/ekmett/hw-json-lens",
+      "language": "Haskell",
+      "name": "hw-json-lens",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2018-08-05T23:35:37Z",
+      "description": null,
+      "fork": true,
+      "html_url": "https://github.com/ekmett/hw-rankselect",
+      "language": "Haskell",
+      "name": "hw-rankselect",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2019-06-16T10:34:16Z",
+      "description": "Haskell XML Toolbox",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/hxt",
+      "language": "Haskell",
+      "name": "hxt",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-08-10T01:02:44Z",
+      "description": "Hybrid vectors e.g. mixed boxed/unboxed vectors that are suitable for use with vector-algorithms",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/hybrid-vectors",
+      "language": "Haskell",
+      "name": "hybrid-vectors",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2015-06-12T16:52:05Z",
+      "description": "playing with hyperfunctions",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/hyperfunctions",
+      "language": "Haskell",
+      "name": "hyperfunctions",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-04-30T05:17:40Z",
+      "description": "A constant-memory approximation of set membership",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/hyperloglog",
+      "language": "Haskell",
+      "name": "hyperloglog",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2012-02-11T00:47:18Z",
+      "description": "Knuth-Liang Hyphenation for Haskell based on TeX hyphenation files",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/hyphenation",
+      "language": "Haskell",
+      "name": "hyphenation",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2020-09-13T20:44:37Z",
+      "description": "No description yet",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/implicit-fun-elaboration",
+      "language": null,
+      "name": "implicit-fun-elaboration",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2012-08-30T20:54:18Z",
+      "description": "Indexed Functors for GHC 7.6",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/indexed",
+      "language": "Haskell",
+      "name": "indexed",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2019-06-16T03:01:12Z",
+      "description": null,
+      "fork": true,
+      "html_url": "https://github.com/ekmett/inline-c",
+      "language": "Haskell",
+      "name": "inline-c",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2012-03-26T05:10:46Z",
+      "description": "Fast quadrature techniques",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/integration",
+      "language": "Haskell",
+      "name": "integration",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-07-31T17:22:23Z",
+      "description": "Hash consing for arbitrary Haskell data types",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/intern",
+      "language": "Haskell",
+      "name": "intern",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-06-14T08:47:01Z",
+      "description": "Interval Arithmetic",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/intervals",
+      "language": "Haskell",
+      "name": "intervals",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2021-03-19T07:04:48Z",
+      "description": "a small stub for compiling and linking ispc code with haskell",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/ispc",
+      "language": "Haskell",
+      "name": "ispc",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-06-14T10:07:33Z",
+      "description": "multiply indexed sets (ported from happstack)",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/ixset",
+      "language": "Haskell",
+      "name": "ixset",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-06-26T01:40:36Z",
+      "description": "a tracing jit for c++ based on tracing and compiling from x86-64 assembly to x86-64 assembly",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/jitplusplus",
+      "language": "C",
+      "name": "jitplusplus",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2014-01-10T18:27:21Z",
+      "description": "Parsing combinators for javascript",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/js-parsers",
+      "language": "JavaScript",
+      "name": "js-parsers",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2019-06-16T02:49:35Z",
+      "description": "Haskell library to load & save pictures",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/Juicy.Pixels",
+      "language": "Haskell",
+      "name": "Juicy.Pixels",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-02-05T05:20:12Z",
+      "description": "Kan extensions, Kan lifts, the Yoneda lemma, and (co)monads generated by a functor",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/kan-extensions",
+      "language": "Haskell",
+      "name": "kan-extensions",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2022-07-22T20:01:04Z",
+      "description": "just a place to throw some coding experiements while i re-re-re-learn rust",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/kanso",
+      "language": "Rust",
+      "name": "kanso",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-12-20T10:37:41Z",
+      "description": "parts of a kata compiler",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/kata",
+      "language": "Haskell",
+      "name": "kata",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2019-11-04T02:58:43Z",
+      "description": "playing with resumable computations",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/keep",
+      "language": "Haskell",
+      "name": "keep",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-01-22T05:15:33Z",
+      "description": "Fast RFC-compliant multi-user IRC <-> deviantART chat proxy. Also, example of non-trivial Haskell program dealing with IO and concurrency 8)",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/kevin",
+      "language": "Haskell",
+      "name": "kevin",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-02-05T05:09:23Z",
+      "description": "keyed functors",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/keys",
+      "language": "Haskell",
+      "name": "keys",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-03-15T19:31:16Z",
+      "description": "Solve lagrangian multiplier problems",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/lagrangian",
+      "language": "Haskell",
+      "name": "lagrangian",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-12-20T19:33:18Z",
+      "description": "packrat parser combinators in scala for dealing with Haskell-style layout in linear time for visibly pushdown languages",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/layout",
+      "language": "Scala",
+      "name": "layout",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2012-05-17T21:52:23Z",
+      "description": "Improves the known complexity of online lowest common ancestor search to O(log h) persistently, and without preprocessing",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/lca",
+      "language": "Haskell",
+      "name": "lca",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2012-07-25T22:00:42Z",
+      "description": "Lenses, Folds, and Traversals - Join us on web.libera.chat #haskell-lens",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/lens",
+      "language": "Haskell",
+      "name": "lens",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2014-11-18T01:09:49Z",
+      "description": "Control.Lens.Action",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/lens-action",
+      "language": "Haskell",
+      "name": "lens-action",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2016-05-03T05:21:04Z",
+      "description": null,
+      "fork": false,
+      "html_url": "https://github.com/ekmett/lens-constraints",
+      "language": "Haskell",
+      "name": "lens-constraints",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2020-09-24T03:50:45Z",
+      "description": "Either a proper lens core library once ghc 8.4 is sufficiently far in the rearview mirror or a tool to avoid `lens-core` confusing users in case we use `lens:core` and cabal 3.4",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/lens-core",
+      "language": "Haskell",
+      "name": "lens-core",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2024-05-11T17:16:21Z",
+      "description": "A bleeding-edge, lock-free, wait-free, continuation-stealing tasking library built on C++20's coroutines",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/libfork",
+      "language": null,
+      "name": "libfork",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2020-02-18T19:47:18Z",
+      "description": "Lighthouse 2 framework for real-time ray tracing",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/lighthouse2",
+      "language": null,
+      "name": "lighthouse2",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-06-02T06:04:58Z",
+      "description": "Low-dimensional linear algebra primitives for Haskell.",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/linear",
+      "language": "Haskell",
+      "name": "linear",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2014-03-15T00:58:06Z",
+      "description": "Instances to mix linear with accelerate",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/linear-accelerate",
+      "language": "Haskell",
+      "name": "linear-accelerate",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2021-02-17T07:03:03Z",
+      "description": "Standard library for linear types in Haskell.",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/linear-base",
+      "language": null,
+      "name": "linear-base",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2021-02-17T06:16:26Z",
+      "description": "linear haskell playground",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/linear-haskell",
+      "language": "Haskell",
+      "name": "linear-haskell",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2021-03-28T07:51:56Z",
+      "description": "They see me rollin'. They're Heyting. -- Chamillionaire, 2005",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/linear-logic",
+      "language": "Haskell",
+      "name": "linear-logic",
+      "topics": [
+        "category-theory",
+        "chu-spaces",
+        "haskell",
+        "linear-logic",
+        "math",
+        "proof"
+      ]
+    },
+    {
+      "archived": false,
+      "created_at": "2018-04-22T19:34:32Z",
+      "description": "Pretty printer for LLVM AST to Textual IR",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/llvm-hs-pretty",
+      "language": "LLVM",
+      "name": "llvm-hs-pretty",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-03-16T22:34:46Z",
+      "description": "This package provides log-domain floats, doubles and complex numbers for Haskell.",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/log-domain",
+      "language": "Haskell",
+      "name": "log-domain",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-07-14T16:21:29Z",
+      "description": "A backtracking logic-programming monad.",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/logict",
+      "language": "Haskell",
+      "name": "logict",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-07-06T08:32:48Z",
+      "description": "fast unicode-enabled quasiquoted lexers for Haskell (work in progress)",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/luthor",
+      "language": "Haskell",
+      "name": "luthor",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2012-08-16T22:31:42Z",
+      "description": "Networks of composable stream transducers",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/machines",
+      "language": "Haskell",
+      "name": "machines",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-12-04T04:26:23Z",
+      "description": "an exploration of subtyping-based category theory in scala",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/magpie",
+      "language": "Scala",
+      "name": "magpie",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2021-04-09T20:19:11Z",
+      "description": null,
+      "fork": false,
+      "html_url": "https://github.com/ekmett/make",
+      "language": "Haskell",
+      "name": "make",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2023-01-25T04:31:15Z",
+      "description": "Manifold Markets: A market for every question",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/manifold",
+      "language": "TypeScript",
+      "name": "manifold",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2014-01-15T17:18:37Z",
+      "description": "Generic memo combinators",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/memo",
+      "language": "Haskell",
+      "name": "memo",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2022-11-14T16:28:24Z",
+      "description": "STARK-based virtual machine",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/miden",
+      "language": null,
+      "name": "miden",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2015-10-15T07:10:54Z",
+      "description": null,
+      "fork": false,
+      "html_url": "https://github.com/ekmett/models",
+      "language": "Haskell",
+      "name": "models",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-05-08T14:59:42Z",
+      "description": "monad products (for use until the transformers monad instances on products show up)",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/monad-products",
+      "language": "Haskell",
+      "name": "monad-products",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-06-26T06:18:02Z",
+      "description": "Right Kan extension transformers covering the entire MTL, IO, ST s, and STM in Haskell in a generalization of continuation passing style",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/monad-ran",
+      "language": "Haskell",
+      "name": "monad-ran",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-01-20T07:46:47Z",
+      "description": "A basic monad for lifting ST actions",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/monad-st",
+      "language": "Haskell",
+      "name": "monad-st",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-02-12T05:56:47Z",
+      "description": "A Random Monad that allows the generator to fail cleanly",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/monadcryptorandom",
+      "language": "Haskell",
+      "name": "monadcryptorandom",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-01-23T01:57:22Z",
+      "description": "MArray instances for monad transformers",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/monadic-arrays",
+      "language": "Haskell",
+      "name": "monadic-arrays",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2015-09-07T05:55:48Z",
+      "description": "Relativistic programming in GHC Haskell",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/MonadicRP",
+      "language": "Haskell",
+      "name": "MonadicRP",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-08-04T15:39:58Z",
+      "description": "Monoids, specialized containers and a general map/reduce framework",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/monoids",
+      "language": "Haskell",
+      "name": "monoids",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2015-05-12T20:10:27Z",
+      "description": "Playing around with multicategories and operads",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/multicategories",
+      "language": "Haskell",
+      "name": "multicategories",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2012-04-24T23:48:36Z",
+      "description": "multipass calculations",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/multipass",
+      "language": "Haskell",
+      "name": "multipass",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2018-10-27T04:55:25Z",
+      "description": "nominal sets in haskell",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/name",
+      "language": "Haskell",
+      "name": "name",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2016-07-29T13:58:39Z",
+      "description": "A small, reference GI renderer",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/nanogi",
+      "language": "C++",
+      "name": "nanogi",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2024-04-18T20:17:25Z",
+      "description": "A proof assistant for higher-dimensional type theory",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/narya",
+      "language": null,
+      "name": "narya",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2024-10-21T04:25:38Z",
+      "description": "simd toy",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/native",
+      "language": "C++",
+      "name": "native",
+      "topics": [
+        "builtin-functions",
+        "clang",
+        "cmake",
+        "cplusplus",
+        "cpp23",
+        "intrinsics",
+        "modules",
+        "simd"
+      ]
+    },
+    {
+      "archived": false,
+      "created_at": "2013-01-06T18:43:37Z",
+      "description": "Haskell 98 Natural Numbers",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/nats",
+      "language": "Haskell",
+      "name": "nats",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-08-20T20:43:58Z",
+      "description": "A GMP natural number library for GHC, modeled on integer-gmp",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/natural-gmp",
+      "language": "Haskell",
+      "name": "natural-gmp",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2022-07-20T13:32:58Z",
+      "description": "a throwaway implementation of normalization by evaluation",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/nbe-in-java-19",
+      "language": "Java",
+      "name": "nbe-in-java-19",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2023-05-16T09:28:37Z",
+      "description": null,
+      "fork": false,
+      "html_url": "https://github.com/ekmett/nightfall",
+      "language": "Haskell",
+      "name": "nightfall",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-06-14T09:16:23Z",
+      "description": "Missing Numerical Operations",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/numeric-extras",
+      "language": "Haskell",
+      "name": "numeric-extras",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2021-04-09T20:49:40Z",
+      "description": null,
+      "fork": false,
+      "html_url": "https://github.com/ekmett/numeric-fin",
+      "language": "Haskell",
+      "name": "numeric-fin",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2012-03-29T05:42:40Z",
+      "description": "Toy objective c bindings",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/objective-c",
+      "language": "Haskell",
+      "name": "objective-c",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2012-07-23T19:19:11Z",
+      "description": "nothing to see here, move along",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/old-arcade",
+      "language": "Haskell",
+      "name": "old-arcade",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2014-10-22T05:05:00Z",
+      "description": "Low-level Haskell Bindings to Industrial Light & Magic's OpenEXR Library",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/openexr",
+      "language": "Haskell",
+      "name": "openexr",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2015-12-09T17:11:27Z",
+      "description": "OpenEXR is a high dynamic-range (HDR) image file format developed by Industrial Light & Magic for use in computer imaging applications",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/openexr-1",
+      "language": "C++",
+      "name": "openexr-1",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2012-02-22T19:15:19Z",
+      "description": "L-estimators and order statistics",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/order-statistics",
+      "language": "Haskell",
+      "name": "order-statistics",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-09-28T18:54:55Z",
+      "description": "Mirror of packages-base repository. DO NOT SUBMIT PULL REQUESTS HERE",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/packages-base",
+      "language": "Haskell",
+      "name": "packages-base",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2014-04-26T20:01:14Z",
+      "description": "Tool for detecting redundant Cabal package dependencies",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/packunused",
+      "language": "Haskell",
+      "name": "packunused",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-01-15T20:15:12Z",
+      "description": "Orphan instances so you can use `parsers` with `parsec`.",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/parsec-parsers",
+      "language": "Haskell",
+      "name": "parsec-parsers",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2012-06-23T07:57:33Z",
+      "description": "Generic parser combinators",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/parsers",
+      "language": "Haskell",
+      "name": "parsers",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2021-03-24T12:22:58Z",
+      "description": null,
+      "fork": false,
+      "html_url": "https://github.com/ekmett/parsnip",
+      "language": "Haskell",
+      "name": "parsnip",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2018-04-24T02:43:43Z",
+      "description": "A monad, perhaps.",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/perhaps",
+      "language": "Haskell",
+      "name": "perhaps",
+      "topics": [
+        "data",
+        "error-handling",
+        "haskell",
+        "monad",
+        "monad-transformers"
+      ]
+    },
+    {
+      "archived": false,
+      "created_at": "2012-07-23T05:07:35Z",
+      "description": "playing around with heavily polymorphic rigid body physics",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/physics",
+      "language": "Haskell",
+      "name": "physics",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2024-03-25T21:28:18Z",
+      "description": "todo and unimplemented, robustly implemented",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/placeholder",
+      "language": "Haskell",
+      "name": "placeholder",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-02-16T20:49:10Z",
+      "description": "pointed and copointed data",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/pointed",
+      "language": "Haskell",
+      "name": "pointed",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-11-16T19:26:28Z",
+      "description": "A playground for fiddling with probability",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/predictors",
+      "language": "Haskell",
+      "name": "predictors",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-01-12T09:50:17Z",
+      "description": "Haskell 98 higher order versions of Haskell Prelude classes to facilitate polymorphic recursion and reduce UndecidableInstances",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/prelude-extras",
+      "language": "Haskell",
+      "name": "prelude-extras",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2015-07-01T22:46:12Z",
+      "description": "This package provides various primitive memory-related operations.",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/primitive",
+      "language": "Haskell",
+      "name": "primitive",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-07-25T19:16:08Z",
+      "description": "Profunctor composition",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/profunctor-extras",
+      "language": "Shell",
+      "name": "profunctor-extras",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-07-25T19:04:09Z",
+      "description": "Haskell 98 Profunctors",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/profunctors",
+      "language": "Haskell",
+      "name": "profunctors",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2015-06-21T04:59:59Z",
+      "description": "lazy promises",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/promises",
+      "language": "Haskell",
+      "name": "promises",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2015-09-20T02:08:45Z",
+      "description": "The Art of the Propagator. See also:",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/propagators",
+      "language": "Haskell",
+      "name": "propagators",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2026-02-27T14:37:02Z",
+      "description": "A Robust EPUB Text To Speech Experience (Mac only) ",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/quietus",
+      "language": "Python",
+      "name": "quietus",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2014-10-13T07:47:26Z",
+      "description": "haskell, opengl, toy project",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/quine",
+      "language": "Haskell",
+      "name": "quine",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-06-14T09:24:11Z",
+      "description": "Reverse-Mode Automatic Differentiation (subsumed by 'ad')",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/rad",
+      "language": "Haskell",
+      "name": "rad",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2020-02-21T11:32:44Z",
+      "description": "Rust implementation of RaptorQ (RFC6330)",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/raptorq",
+      "language": "Rust",
+      "name": "raptorq",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2015-09-07T01:25:02Z",
+      "description": "experimenting with STM-backed read-copy-update in Haskell",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/rcu",
+      "language": "Haskell",
+      "name": "rcu",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-02-20T17:26:00Z",
+      "description": "a development fork of conal's reactive library, to convert from category-extras to the new smaller packages",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/reactive",
+      "language": "Haskell",
+      "name": "reactive",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-01-09T11:24:20Z",
+      "description": "task parallel reactive programming in haskell",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/reactor",
+      "language": "Haskell",
+      "name": "reactor",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-08-04T16:15:51Z",
+      "description": "Semigroups, specialized containers and a general map/reduce framework",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/reducers",
+      "language": "Haskell",
+      "name": "reducers",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-06-26T04:55:55Z",
+      "description": "Reifies arbitrary Haskell terms into types that can be reflected back into terms",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/reflection",
+      "language": "Haskell",
+      "name": "reflection",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-02-05T05:10:00Z",
+      "description": "representable functors",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/representable-functors",
+      "language": "Haskell",
+      "name": "representable-functors",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-07-25T19:38:58Z",
+      "description": "Representable profunctors",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/representable-profunctors",
+      "language": "Haskell",
+      "name": "representable-profunctors",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-02-05T05:14:18Z",
+      "description": "representable tries",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/representable-tries",
+      "language": "Haskell",
+      "name": "representable-tries",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2019-06-16T03:18:50Z",
+      "description": null,
+      "fork": true,
+      "html_url": "https://github.com/ekmett/resolv",
+      "language": "Haskell",
+      "name": "resolv",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-11-08T21:49:49Z",
+      "description": "A monad for spark-based deterministic concurrent revision control",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/revisions",
+      "language": "Haskell",
+      "name": "revisions",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2020-02-21T11:39:23Z",
+      "description": "a buggy raptorq data carousel in rust",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/robin",
+      "language": "Rust",
+      "name": "robin",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2014-03-15T19:12:50Z",
+      "description": "An alternative, composable model of RoleAnnotations via type classes",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/roles",
+      "language": "Haskell",
+      "name": "roles",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-06-14T09:39:44Z",
+      "description": "Fingertrees of Bytestrings",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/rope",
+      "language": "Haskell",
+      "name": "rope",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-08-19T21:48:03Z",
+      "description": "MPFR bindings for Haskell",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/rounded",
+      "language": "Haskell",
+      "name": "rounded",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-06-14T09:21:22Z",
+      "description": "Explicit Floating Point Rounding-Mode Wrappers (requires working rounding mode support from libc, which isn't present in glibc) -- use 'rounded' instead or link this against crlibm somehow.",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/rounding",
+      "language": "Haskell",
+      "name": "rounding",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2017-04-06T10:51:20Z",
+      "description": "spmd-on-simd stuff",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/rts",
+      "language": "C++",
+      "name": "rts",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2014-09-16T20:44:47Z",
+      "description": "possibly playing with equality saturation",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/rules",
+      "language": "Haskell",
+      "name": "rules",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2022-07-31T08:24:45Z",
+      "description": null,
+      "fork": false,
+      "html_url": "https://github.com/ekmett/rust",
+      "language": "Rust",
+      "name": "rust",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2022-11-30T18:37:51Z",
+      "description": "this is not a working lens library",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/rust-lens",
+      "language": "Rust",
+      "name": "rust-lens",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2016-06-22T20:26:41Z",
+      "description": "Safe, consistent, and easy exception handling",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/safe-exceptions",
+      "language": "Haskell",
+      "name": "safe-exceptions",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-04-29T23:23:01Z",
+      "description": "Forward- and Reverse-Mode Automatic Differentiation for Scala",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/scala-ad",
+      "language": "Scala",
+      "name": "scala-ad",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-12-20T07:23:36Z",
+      "description": "A port of Bryan O'Sullivan's attoparsec from Haskell to Scala",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/scala-attoparsec",
+      "language": "Scala",
+      "name": "scala-attoparsec",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-12-08T07:19:22Z",
+      "description": "a scala numerical tower",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/scala-numerics",
+      "language": "Scala",
+      "name": "scala-numerics",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2012-08-01T20:04:37Z",
+      "description": "An extension to the core scala library.",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/scalaz",
+      "language": "Scala",
+      "name": "scalaz",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2018-11-23T16:12:47Z",
+      "description": "A formalisation of the theory of SCEV (Scalar evolution / Chains of recurrences) in the Coq theorem prover",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/SCEV-coq",
+      "language": "Makefile",
+      "name": "SCEV-coq",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-06-26T01:51:17Z",
+      "description": "minimalist polymorphic scheme-(co)monads, written to avoid use of any advanced language features except hygienic macros",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/scheme-monads",
+      "language": "Scheme",
+      "name": "scheme-monads",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2014-10-17T05:16:43Z",
+      "description": "Haskell bindings to the SDL2 library",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/sdl2",
+      "language": "Haskell",
+      "name": "sdl2",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2014-03-25T00:21:59Z",
+      "description": "infinite search in finite time with Hilbert's epsilon",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/search",
+      "language": "Haskell",
+      "name": "search",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-01-31T16:53:51Z",
+      "description": "semigroupoid products and coproducts",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/semigroupoid-extras",
+      "language": "Haskell",
+      "name": "semigroupoid-extras",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-01-30T12:27:00Z",
+      "description": null,
+      "fork": false,
+      "html_url": "https://github.com/ekmett/semigroupoids",
+      "language": "Haskell",
+      "name": "semigroupoids",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-01-07T23:49:55Z",
+      "description": "Haskell 98 semigroups",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/semigroups",
+      "language": "Haskell",
+      "name": "semigroups",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2018-04-05T23:57:28Z",
+      "description": " Benchmarks for set data structures: hash sets, dawg's, bloom filters, etc.",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/sets",
+      "language": "Haskell",
+      "name": "sets",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2015-07-08T20:56:26Z",
+      "description": "Tool for signing, verifying and installing signed packages from sig-archive",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/sig-tool",
+      "language": "Haskell",
+      "name": "sig-tool",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2021-11-05T12:44:41Z",
+      "description": "SmartThings open-source DeviceTypeHandlers and SmartApps code",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/SmartThingsPublic",
+      "language": null,
+      "name": "SmartThingsPublic",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2018-05-09T05:04:59Z",
+      "description": "a logic-based trust-management system",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/soutei",
+      "language": "Haskell",
+      "name": "soutei",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-08-11T06:20:22Z",
+      "description": "sparse matrices in Morton order",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/sparse",
+      "language": "Haskell",
+      "name": "sparse",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-06-27T07:16:51Z",
+      "description": "Safe, programmable, speculative evaluation for Haskell",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/speculation",
+      "language": "Haskell",
+      "name": "speculation",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-01-15T00:34:56Z",
+      "description": "ContT versions of the speculation combinators",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/speculation-transformers",
+      "language": "Haskell",
+      "name": "speculation-transformers",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2017-03-07T13:37:38Z",
+      "description": "exploring spmd-on-simd as a small c++ library",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/spmd",
+      "language": "C++",
+      "name": "spmd",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-06-16T08:39:52Z",
+      "description": "Heterogeneous collections indexed by StableNames",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/stable-maps",
+      "language": "Haskell",
+      "name": "stable-maps",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2012-12-04T09:04:42Z",
+      "description": "\"Stable Hackage,\" tools for creating a vetted set of packages from Hackage.",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/stackage",
+      "language": "Haskell",
+      "name": "stackage",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2023-11-06T20:44:34Z",
+      "description": null,
+      "fork": false,
+      "html_url": "https://github.com/ekmett/starkify",
+      "language": null,
+      "name": "starkify",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-06-14T10:00:44Z",
+      "description": "STM based sorted linear hash tables",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/stm-hash",
+      "language": "Haskell",
+      "name": "stm-hash",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-01-10T16:50:10Z",
+      "description": "Haskell 2010 stream comonads",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/streams",
+      "language": "Haskell",
+      "name": "streams",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2015-08-21T20:26:40Z",
+      "description": "Exploring how to make a strict imperative universe in the GHC runtime system.",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/structs",
+      "language": "Haskell",
+      "name": "structs",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-08-29T19:00:58Z",
+      "description": "A playground for working on advanced data structures in Haskell",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/structures",
+      "language": "Haskell",
+      "name": "structures",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-11-09T03:11:57Z",
+      "description": "playground for working with succinct data structures",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/succinct",
+      "language": "Haskell",
+      "name": "succinct",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2018-08-05T20:59:59Z",
+      "description": "Succinct binary serialization",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/succinct-binary",
+      "language": "Haskell",
+      "name": "succinct-binary",
+      "topics": [
+        "haskell",
+        "serialization",
+        "succinct"
+      ]
+    },
+    {
+      "archived": false,
+      "created_at": "2017-05-24T05:58:06Z",
+      "description": null,
+      "fork": false,
+      "html_url": "https://github.com/ekmett/suspension",
+      "language": "Haskell",
+      "name": "suspension",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-01-12T10:37:52Z",
+      "description": "higher order versions of the \"Scrap Your Boilerplate\" combinators to ease the implementation of polymorphic recursion and reduce UndecidableInstances",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/syb-extras",
+      "language": "Haskell",
+      "name": "syb-extras",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2012-12-19T00:14:49Z",
+      "description": "Deprecated because of",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/tables",
+      "language": "Haskell",
+      "name": "tables",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-07-25T17:56:43Z",
+      "description": "Provides access to GHC's dynamic pointer tag bits",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/tag-bits",
+      "language": "Haskell",
+      "name": "tag-bits",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-06-16T17:26:20Z",
+      "description": "phantom types",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/tagged",
+      "language": "Haskell",
+      "name": "tagged",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-01-21T19:52:28Z",
+      "description": "Haskell 98 monad transformer adding a phantom type argument",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/tagged-transformer",
+      "language": "Haskell",
+      "name": "tagged-transformer",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2019-06-16T03:12:54Z",
+      "description": "Reading, writing and manipulating \".tar\" archive files.",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/tar",
+      "language": "Haskell",
+      "name": "tar",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-04-30T06:05:22Z",
+      "description": "A work-stealing task scheduler",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/tasks",
+      "language": "Haskell",
+      "name": "tasks",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2014-04-03T16:35:48Z",
+      "description": "An efficient packed, immutable Unicode text type for Haskell, with a powerful loop fusion optimization framework. ",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/text",
+      "language": "Haskell",
+      "name": "text",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2015-09-11T08:04:43Z",
+      "description": "An experimental \"Turbo\" Haskell Runtime - Nothing really to see here yet",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/thc",
+      "language": "C++",
+      "name": "thc",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2014-06-29T22:42:07Z",
+      "description": "Now located in the 'categories' branch of free",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/thrists",
+      "language": "Haskell",
+      "name": "thrists",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-01-29T03:52:22Z",
+      "description": null,
+      "fork": true,
+      "html_url": "https://github.com/ekmett/thyme",
+      "language": "Haskell",
+      "name": "thyme",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-06-18T20:14:22Z",
+      "description": "Playing with time series",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/time-series",
+      "language": "Haskell",
+      "name": "time-series",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2024-10-30T23:13:18Z",
+      "description": "Single-header BVH construction and traversal library.",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/tinybvh",
+      "language": null,
+      "name": "tinybvh",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2014-11-16T21:05:28Z",
+      "description": "Maintenance for Lennart Augustsson's 'traced' package.",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/traced",
+      "language": "Haskell",
+      "name": "traced",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2012-01-25T02:18:25Z",
+      "description": "A branch of transformers for work on mtl",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/transformers",
+      "language": "Haskell",
+      "name": "transformers",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2012-12-23T15:29:27Z",
+      "description": "transformers compatibility shim",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/transformers-compat",
+      "language": "Haskell",
+      "name": "transformers-compat",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2015-08-01T19:27:53Z",
+      "description": "Clojure-style transients for Haskell",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/transients",
+      "language": "Haskell",
+      "name": "transients",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-08-04T23:59:03Z",
+      "description": "Parser combinators with highlighting, slicing, layout, literate comments, Clang-style diagnostics and the kitchen sink",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/trifecta",
+      "language": "Haskell",
+      "name": "trifecta",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-06-14T09:46:03Z",
+      "description": "Type level 2's and 16's complement arithmetic (old)",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/type-int",
+      "language": "Haskell",
+      "name": "type-int",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2021-04-09T20:46:53Z",
+      "description": null,
+      "fork": false,
+      "html_url": "https://github.com/ekmett/typed-keys",
+      "language": "Haskell",
+      "name": "typed-keys",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-07-25T19:35:23Z",
+      "description": "Faster Data.Unamb using tag-bits",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/unamb",
+      "language": "Haskell",
+      "name": "unamb",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2021-02-19T08:53:15Z",
+      "description": "experimenting with unlifted classes via backpack",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/unboxed",
+      "language": "Haskell",
+      "name": "unboxed",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-06-14T09:42:15Z",
+      "description": "Unboxed containers using view patterns (unfinished)",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/unboxed-containers",
+      "language": "Haskell",
+      "name": "unboxed-containers",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-09-03T05:22:59Z",
+      "description": "Haskell 98 Unification",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/unification",
+      "language": "Haskell",
+      "name": "unification",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-07-28T20:16:29Z",
+      "description": "Simple generic unification algorithms",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/unification-fd",
+      "language": "Haskell",
+      "name": "unification-fd",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2015-09-27T23:31:55Z",
+      "description": "fast unique variables",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/unique",
+      "language": "Haskell",
+      "name": "unique",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2018-04-05T18:07:53Z",
+      "description": "Unpacked containers using backpack",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/unpacked-containers",
+      "language": "Haskell",
+      "name": "unpacked-containers",
+      "topics": [
+        "containers",
+        "data-structures",
+        "haskell",
+        "unpacked"
+      ]
+    },
+    {
+      "archived": false,
+      "created_at": "2015-03-13T18:48:11Z",
+      "description": "(Co)update (co)monads and right monoid actions",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/update",
+      "language": "Haskell",
+      "name": "update",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2010-06-14T09:08:28Z",
+      "description": "Additional Instances for Data.Vector",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/vector-instances",
+      "language": "Haskell",
+      "name": "vector-instances",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2019-06-22T13:05:29Z",
+      "description": "Deriver for unboxed vectors using Template Haskell",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/vector-th-unbox",
+      "language": "Haskell",
+      "name": "vector-th-unbox",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-01-20T21:31:56Z",
+      "description": "Provides Data.Void, which is in base since ghc 7.8 or so",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/void",
+      "language": "Haskell",
+      "name": "void",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2016-08-03T10:40:59Z",
+      "description": "nothing to see here",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/vr",
+      "language": "C++",
+      "name": "vr",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2018-04-03T04:16:45Z",
+      "description": "Haskell bindings for Vulkan",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/vulkan",
+      "language": "Haskell",
+      "name": "vulkan",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2020-12-01T04:32:07Z",
+      "description": "Safe and rich Rust wrapper around the Vulkan API",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/vulkano",
+      "language": null,
+      "name": "vulkano",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-08-03T05:17:51Z",
+      "description": "A free monad based on the Wadler/Leijen pretty printer",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/wl-pprint-extras",
+      "language": "Haskell",
+      "name": "wl-pprint-extras",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2011-08-03T09:01:57Z",
+      "description": "A color pretty printer with terminfo support",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/wl-pprint-terminfo",
+      "language": "Haskell",
+      "name": "wl-pprint-terminfo",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2014-11-29T05:37:46Z",
+      "description": "wxWidgets wrapper for Haskell",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/wxHaskell",
+      "language": "Haskell",
+      "name": "wxHaskell",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2020-03-11T11:04:37Z",
+      "description": "Emulator for the Commander X16 8-bit computer",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/x16-emulator",
+      "language": null,
+      "name": "x16-emulator",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2020-03-07T15:25:42Z",
+      "description": "x16 scratch pad",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/yaw",
+      "language": "Assembly",
+      "name": "yaw",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2013-04-18T17:30:02Z",
+      "description": "Zippers based on lenses and traversals",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/zippers",
+      "language": "Haskell",
+      "name": "zippers",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2012-09-18T18:59:44Z",
+      "description": "A simple lens-based, generic, heterogenous, type-checked haskell zipper library",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/zippo",
+      "language": "Haskell",
+      "name": "zippo",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2019-06-16T01:50:27Z",
+      "description": "Compression and decompression in the gzip and zlib formats",
+      "fork": true,
+      "html_url": "https://github.com/ekmett/zlib",
+      "language": "C",
+      "name": "zlib",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2014-10-06T15:51:25Z",
+      "description": "zlib support for lens",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/zlib-lens",
+      "language": "Haskell",
+      "name": "zlib-lens",
+      "topics": []
+    }
+  ]
+}
