@@ -24,7 +24,7 @@ Apparently, $\LaTeX$ works.
 
 
 
-<figure class="category-diagram"><img src="/figures/lifting-square.svg" alt="A, B, C, D; e, f, g, m"></figure>
+<figure class="category-diagram"><img src="/figures/lifting-square.svg" alt="Commutative square: e from A to B is epic; m from C to D is monic; f maps A to C and g maps B to D. A dashed lift h maps B to C."></figure>
 
 
 

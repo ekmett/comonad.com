@@ -4,7 +4,10 @@ He uses it to power his incredibly useful [hdiff](http://hdiff.luite.com/) websi
 
 During a Hackage outage, you can set up your local cabal configuration to point to it instead by (temporarily) replacing the remote-repo in your `~/.cabal/config` file with:
 
-`    remote-repo:   hdiff.luite.com:http://hdiff.luite.com/packages/archive    `
+```text
+remote-repo:
+  hdiff.luite.com:http://hdiff.luite.com/packages/archive
+```
 
 and then running `cabal update`.
 

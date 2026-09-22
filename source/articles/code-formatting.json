@@ -22,5 +22,49 @@
       298
     ],
     "change": "Restore explicit Haskell fence on originally indented code."
+  },
+  {
+    "article": "unnatural-transformations-and-quantifiers",
+    "change": "Restore 1 flattened code blocks from original HTML line breaks; preserve tokens and relative indentation.",
+    "language": "haskell",
+    "blocks": 1
+  },
+  {
+    "article": "hackage-mirror",
+    "change": "Restore 1 flattened code blocks from original HTML line breaks; preserve tokens and relative indentation.",
+    "language": "text",
+    "blocks": 1
+  },
+  {
+    "article": "introducing-speculation",
+    "change": "Restore 1 flattened code blocks from original HTML line breaks; preserve tokens and relative indentation.",
+    "language": "haskell",
+    "blocks": 1
+  },
+  {
+    "article": "parameterized-monads-in-haskell",
+    "change": "Restore 10 flattened code blocks from original HTML line breaks; preserve tokens and relative indentation.",
+    "language": "haskell",
+    "blocks": 10
+  },
+  {
+    "article": "generalizing-dot",
+    "change": "Restore 7 flattened code blocks from original HTML line breaks; preserve tokens and relative indentation.",
+    "language": "haskell",
+    "blocks": 7
+  },
+  {
+    "article": "snippets-fmap",
+    "change": "Label 4 unambiguous Haskell examples for highlighting; content unchanged."
+  },
+  {
+    "article": "snippets-mandelbrot",
+    "change": "Label 1 unambiguous Haskell examples for highlighting; content unchanged."
+  },
+  {
+    "article": "parameterized-monads-in-haskell",
+    "change": "Restore 10 flattened code blocks from original HTML line breaks; preserve tokens and relative indentation.",
+    "language": "haskell",
+    "blocks": 10
   }
 ]

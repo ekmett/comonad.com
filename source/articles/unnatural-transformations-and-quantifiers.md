@@ -42,7 +42,10 @@ This also works for any functor into $\mathbf{Hask}$ and looks like:
 
 for $F : \mathbf{Hask} \rightarrow \mathbf{Hask}$. But we also have our functor $U : \mathbf{Hask}_M \rightarrow \mathbf{Hask}$, which should look more like:
 
-`U a ~= forall r. (a -> M r) -> U r   M a ~= forall r. (a -> M r) -> M r`
+```haskell
+ U a ~= forall r. (a -> M r) -> U r
+M a ~= forall r. (a -> M r) -> M r
+```
 
 So, we fill in `M = (e ->)` and get that reader is isomorphic to state, right? What's going on?
 

@@ -4,17 +4,29 @@ There is another interesting monad variation - a parameterized monad - where the
 
 This prompts the question of if parameterized monads can be implemented directly in Haskell. Indeed they can, but a simple version fails with the signature:
 
-`    class BadHaskell m p p' p'' | p p' -> p'' where   return :: a -> m p a   fail :: a -> m p a   (>>=) :: m p a -> (a -> m p' a) -> m p'' a    `
+```haskell
+class BadHaskell m p p' p'' | p p' -> p'' where
+    return :: a -> m p a
+    fail :: a -> m p a
+    (>>=) :: m p a -> (a -> m p' a) -> m p'' a
+```
 
 This of course runs afoul of the fact that all of the parameters are not mentioned in return, so we have to break it apart into two or three classes.
 
-`   class Return m p where   return :: a -> m p a`
+```haskell
+class Return m p where
+    return :: a -> m p a
+```
 
-class Fail m p where  
-fail :: String -> m p a
+```haskell
+class Fail m p where
+    fail :: String -> m p a
+```
 
-class Bind m p p' p'' | p p' -> p'' where  
-(>>=) :: m p a -> (a -> m p' a) -> m p'' a  
+```haskell
+class Bind m p p' p'' | p p' -> p'' where
+    (>>=) :: m p a -> (a -> m p' a) -> m p'' a
+```
 
 By splitting off fail, we can make it so that it is illegal to use an incomplete pattern on certain monads, a small win, but it may be useful in a later post.
 
@@ -22,7 +34,14 @@ However, there turns out to be quite some awkwardness from the perspective of ty
 
 Ignoring the problems with existing monads, and correcting the type inference problem directly by adding fundeps doesn't help as
 
-`    class Bind m p p' p''   | p -> p' p''   , p' -> p p''   , p'' -> p p'   where   (>>=) :: m p a -> (a -> m p' a) -> m p'' a    `
+```haskell
+class Bind m p p' p''
+  | p -> p' p''
+  , p' -> p p''
+  , p'' -> p p'
+  where
+    (>>=) :: m p a -> (a -> m p' a) -> m p'' a
+```
 
 is too restrictive and could be shown that under a strict interpretation of the laws, would never be able to be made to satisfy the monad laws except in the base case, because of the inability to construct an associative operation combining the parameters that isn't trivial.
 
@@ -30,26 +49,43 @@ As an aside, speaking of failing monad laws, it is interesting to note that the 
 
 Turning back to the issue of being unable to pass traditional monads into this type, we realize that having a separate m and p parameters to the type class is redundant as you can generate an equivalent notion by letting m vary.
 
-`   class Return m where   return :: a -> m a`
+```haskell
+class Return m where
+    return :: a -> m a
+```
 
-class Fail m where  
-fail :: String -> m a
+```haskell
+class Fail m where
+    fail :: String -> m a
+```
 
-class Bind m m' m'' | m m' -> m'' where  
-(>>=) :: m a -> (a -> m' a) -> m'' a  
+```haskell
+class Bind m m' m'' | m m' -> m'' where
+    (>>=) :: m a -> (a -> m' a) -> m'' a
+```
 
 This still has the problem that the type of return is not inferable, but now at least we can derive instances of these classes for instances of Monad. Of course, if we create a generic instance for
 
-`    import qualified Control.Monad as Old   instance Old.Monad m => Bind m m m where (>>=) = (Old.>>=)   ...    `
+```haskell
+import qualified Control.Monad as Old
+instance Old.Monad m => Bind m m m where (>>=) = (Old.>>=)
+...
+```
 
 we then run afoul of the fact that we can't define any other interesting instances because the compiler won't know which way to go with type class inference.
 
 However, even without that we can import each monad in turn, and define some interesting interfaces between them:
 
-`   instance Bind Maybe [] [] where   Just a >>= f = f a   Nothing >>= _ = []`
+```haskell
+instance Bind Maybe [] [] where
+    Just a >>= f = f a
+    Nothing >>= _ = []
+```
 
-\-- testMaybeList :: \[Int\] = \[2,4\]  
-testMaybeList = Just 2 >>= \\x -> \[x\*1,x\*2\]  
+```haskell
+-- testMaybeList :: [Int] = [2,4]
+testMaybeList = Just 2 >>= \x -> [x*1,x*2]
+```
 
 Admittedly there is an $n^2$ combinatorial explosion of combinations and not all of them have clear semantics, but we can choose to implement only the ones that have an unambiguous interpretation and leave off the rest and pay as we go, implementing them as needed. A more mature version of this might provide an interesting alternative/supplement to the MTL approach and can be viewed as a limited fragment of [Lüth and Ghani's monad composition through coproducts](http://citeseer.ist.psu.edu/619712.html).
 
@@ -57,37 +93,64 @@ However, we still haven't solved the return problem, but it turns out that monad
 
 If we start to implement a number of these we notice a pattern when it comes to the Identity monad. In general we can define instances of Bind for the Identity monad for any monad presuming we can liftM, to handle the case on the right, but since liftM requires a sort of circular dependency loop, we choose to make Bind enforce the availability of fmap, allow overlapping instances, and then define:
 
-`   class (Functor m, Functor m', Functor m'') => Bind m m' m''   | m m' -> m''   where   (>>=) :: m a -> (a -> m' b) -> (m'' b)   (>>) :: m a -> m' b -> m'' b   m >> k = m >>= const k`
+```haskell
+class (Functor m, Functor m', Functor m'') => Bind m m' m''
+ | m m' -> m''
+  where
+    (>>=) :: m a -> (a -> m' b) -> (m'' b)
+    (>>)  :: m a -> m' b -> m'' b
+    m >> k = m >>= const k
+```
 
-instance Functor a => Bind Identity a a where  
-m >>= f = f (runIdentity m)
+```haskell
+instance Functor a => Bind Identity a a where
+    m >>= f = f (runIdentity m)
+```
 
-instance Functor a => Bind a Identity a where  
-m >>= f = fmap (runIdentity . f) m
+```haskell
+instance Functor a => Bind a Identity a where
+    m >>= f = fmap (runIdentity . f) m
+```
 
-\-- and to disambiguate between the above instances...  
-instance Bind Identity Identity Identity where  
-m >>= f = f (runIdentity m)  
+```haskell
+-- and to disambiguate between the above instances...
+instance Bind Identity Identity Identity where
+    m >>= f = f (runIdentity m)
+```
 
 The correctness of this is in fact enforced by the monad laws as these instances can be read as the familiar laws once you remove the noise of the Identity monad:
 
-`    return m >>= f = f m   m >>= return . f = fmap f m   return m >>= f = f m    `
+```haskell
+return m >>= f = f m
+m >>= return . f = fmap f m
+return m >>= f = f m
+```
 
 This gives us a single natural notion of return for all monads that we can use and still glue together via >>=:
 
-`   class Return m where   returnM :: a -> m a`
+```haskell
+class Return m where
+    returnM :: a -> m a
+```
 
-return :: a -> Identity a  
-return = Old.return  
+```haskell
+return :: a -> Identity a
+return = Old.return
+```
 
 Now the problem is if you write a statement like `return 2 >>= \x -> return (x+1)`, you can have the Identity type percolate out of your monad expression, even when you were expecting a ListT or State monad or something more interesting, so we need a way to transform values from the Identity monad to an arbitrary monad for use when you want its type to conform to an external signature.
 
-`   class Go n m where   go :: n a -> m a`
+```haskell
+class Go n m where
+        go :: n a -> m a
+```
 
-instance Return a => Go Identity a where  
-go = returnM . runIdentity  
-instance Go a a where  
-go = id  
+```haskell
+instance Return a => Go Identity a where
+    go = returnM . runIdentity
+instance Go a a where
+    go = id
+```
 
 So, now we can tell our code to `go (do something)` and it will transform any lingering Identities to whatever monadic type is inferred for the go statement in its current context.
 

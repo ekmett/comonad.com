@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Making de Bruijn Succ Less · The Comonad.Reader</title>
+<link rel="canonical" href="./"><meta name="description" content="A presentation on variable binding, de Bruijn indices, and the approach used by the bound library."><meta property="og:title" content="Making de Bruijn Succ Less"><meta property="og:description" content="A presentation on variable binding, de Bruijn indices, and the approach used by the bound library."><meta property="og:url" content="https://ekmett.github.io/comonad.com/reader/talks/bound-slides-2012/"><meta property="og:type" content="website"><meta property="og:site_name" content="The Comonad.Reader"><script type="application/ld+json">{"@context":"https://schema.org","@type":"PresentationDigitalDocument","@id":"https://ekmett.github.io/comonad.com/reader/talks/bound-slides-2012/#content","url":"https://ekmett.github.io/comonad.com/reader/talks/bound-slides-2012/","name":"Making de Bruijn Succ Less","inLanguage":"en","description":"A presentation on variable binding, de Bruijn indices, and the approach used by the bound library.","isPartOf":{"@type":"WebSite","@id":"https://ekmett.github.io/comonad.com/reader/#website","name":"The Comonad.Reader","url":"https://ekmett.github.io/comonad.com/reader/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://ekmett.github.io/comonad.com/reader/talks/bound-slides-2012/"},"author":[{"@type":"Person","name":"Edward Kmett"}],"datePublished":"2012-07-26"}</script>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css?v=57d19e7f58b2"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="../../../feed.xml">RSS</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<div class="reader-layout"><aside class="archive-sidebar" aria-label="Yearly archive"><details class="archive-disclosure"><summary class="archive-toggle"><span>Archive</span><span class="archive-toggle-icon" aria-hidden="true">‹</span></summary><div class="archive-panel"><nav class="calendar-month calendar-year" aria-label="Archive years"><a href="../../../reader/2011/" aria-label="Earlier year: 2011">←</a><a href="../../../reader/2012/">2012</a><a href="../../../reader/2013/" aria-label="Later year: 2013">→</a></nav><nav class="archive-month-grid" aria-label="Months in 2012"><span class="empty-month">Jan</span><span class="empty-month">Feb</span><span class="empty-month">Mar</span><a href="#calendar-month-2012-04" aria-label="April 2012: 1 entries"><span>Apr</span><small>1</small></a><a href="#calendar-month-2012-05" aria-label="May 2012: 2 entries"><span>May</span><small>2</small></a><a href="#calendar-month-2012-06" aria-label="June 2012: 2 entries"><span>Jun</span><small>2</small></a><a href="#calendar-month-2012-07" aria-label="July 2012: 1 entries" aria-current="date"><span>Jul</span><small>1</small></a><a href="#calendar-month-2012-08" aria-label="August 2012: 1 entries"><span>Aug</span><small>1</small></a><a href="#calendar-month-2012-09" aria-label="September 2012: 1 entries"><span>Sep</span><small>1</small></a><span class="empty-month">Oct</span><span class="empty-month">Nov</span><a href="#calendar-month-2012-12" aria-label="December 2012: 3 entries"><span>Dec</span><small>3</small></a></nav><div class="calendar-posts"><h3>In 2012</h3><details class="archive-month-posts" id="calendar-month-2012-04"><summary>April <span>1</span></summary><a class="month-page" href="../../../reader/2012/04/">April archive →</a><section class="calendar-day" id="calendar-day-2012-04-02"><h4><time datetime="2012-04-02">2 April</time></h4><ul><li><a href="../../../reader/2012/wadlers-law-revisited/">Wadler’s Law Revisited</a></li></ul></section></details><details class="archive-month-posts" id="calendar-month-2012-05"><summary>May <span>2</span></summary><a class="month-page" href="../../../reader/2012/05/">May archive →</a><section class="calendar-day" id="calendar-day-2012-05-27"><h4><time datetime="2012-05-27">27 May</time></h4><ul><li><a href="../../../reader/2012/catamorphism-knol/">Catamorphism Knol</a></li></ul></section><section class="calendar-day" id="calendar-day-2012-05-31"><h4><time datetime="2012-05-31">31 May</time></h4><ul><li><a href="../../../reader/talks/kmett-2012-online-lca/">Purely Functional Data Structures for On-Line LCA</a><span class="calendar-kind">Talk</span></li></ul></section></details><details class="archive-month-posts" id="calendar-month-2012-06"><summary>June <span>2</span></summary><a class="month-page" href="../../../reader/2012/06/">June archive →</a><section class="calendar-day" id="calendar-day-2012-06-10"><h4><time datetime="2012-06-10">10 June</time></h4><ul><li><a href="../../../reader/2012/wheres-waldo/">Where’s Waldo?</a></li></ul></section><section class="calendar-day" id="calendar-day-2012-06-24"><h4><time datetime="2012-06-24">24 June</time></h4><ul><li><a href="../../../reader/2012/mirrored-lenses/">Mirrored Lenses</a></li></ul></section></details><details class="archive-month-posts" id="calendar-month-2012-07" open><summary>July <span>1</span></summary><a class="month-page" href="../../../reader/2012/07/">July archive →</a><section class="calendar-day" id="calendar-day-2012-07-26"><h4><time datetime="2012-07-26">26 July</time></h4><ul><li><a href="../../../reader/talks/bound-slides-2012/">Making de Bruijn Succ Less</a><span class="calendar-kind">Talk</span></li></ul></section></details><details class="archive-month-posts" id="calendar-month-2012-08"><summary>August <span>1</span></summary><a class="month-page" href="../../../reader/2012/08/">August archive →</a><section class="calendar-day" id="calendar-day-2012-08-29"><h4><time datetime="2012-08-29">29 August</time></h4><ul><li><a href="../../../reader/2012/hackage-mirror/">Working around Hackage Outages</a></li></ul></section></details><details class="archive-month-posts" id="calendar-month-2012-09"><summary>September <span>1</span></summary><a class="month-page" href="../../../reader/2012/09/">September archive →</a><section class="calendar-day" id="calendar-day-2012-09-22"><h4><time datetime="2012-09-22">22 September</time></h4><ul><li><a href="../../../reader/2012/unnatural-transformations-and-quantifiers/">Unnatural Transformations and Quantifiers</a></li></ul></section></details><details class="archive-month-posts" id="calendar-month-2012-12"><summary>December <span>3</span></summary><a class="month-page" href="../../../reader/2012/12/">December archive →</a><section class="calendar-day" id="calendar-day-2012-12-07"><h4><time datetime="2012-12-07">7 December</time></h4><ul><li><a href="../../../reader/2012/natural-deduction-sequent-calculus-and-type-classes/">Natural Deduction, Sequent Calculus and Type Classes</a></li></ul></section><section class="calendar-day" id="calendar-day-2012-12-12"><h4><time datetime="2012-12-12">12 December</time></h4><ul><li><a href="../../../reader/talks/kmett-2012-lenses-nyc/">Lenses, Folds and Traversals</a><span class="calendar-kind">Talk</span></li></ul></section><section class="calendar-day" id="calendar-day-2012-12-26"><h4><time datetime="2012-12-26">26 December</time></h4><ul><li><a href="../../../reader/2012/abstracting-with-applicatives/">Abstracting with Applicatives</a></li></ul></section></details></div><details class="calendar-years"><summary>All years</summary><nav aria-label="All archive years"><a href="../../../reader/2022/">2022</a><a href="../../../reader/2021/">2021</a><a href="../../../reader/2020/">2020</a><a href="../../../reader/2019/">2019</a><a href="../../../reader/2018/">2018</a><a href="../../../reader/2017/">2017</a><a href="../../../reader/2016/">2016</a><a href="../../../reader/2015/">2015</a><a href="../../../reader/2014/">2014</a><a href="../../../reader/2013/">2013</a><a href="../../../reader/2012/" aria-current="date">2012</a><a href="../../../reader/2011/">2011</a><a href="../../../reader/2010/">2010</a><a href="../../../reader/2009/">2009</a><a href="../../../reader/2008/">2008</a><a href="../../../reader/2007/">2007</a><a href="../../../reader/2006/">2006</a><a href="../../../reader/2001/">2001</a><a href="../../../reader/2000/">2000</a><a href="../../../reader/1999/">1999</a></nav></details></div></details></aside><main class="reading"><header class="article-header"><div class="article-meta"><span>Slides · Talk</span><span><time datetime="2012-07-26">26 July 2012</time> · slides published</span></div><h1>Making de Bruijn Succ Less</h1><p class="talk-speakers">Edward Kmett</p></header><div class="prose"><p>A presentation on variable binding, de Bruijn indices, and the approach used by the bound library.</p><p>Related article: <a href="../../../reader/2015/bound/">Bound</a>.</p><section class="slide-deck" aria-label="Presentation slides"><p>50 slides · <a href="#slide-1">Start reading</a></p><figure id="slide-1"><img src="../../../assets/slides/bound/01.webp" alt="Making de Bruijn Succ Less
+
+
+
+
+                             Edward Kmett" loading="lazy" width="2048" height="1536"><figcaption>Slide 1 of 50 · <a href="#slide-2" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-2"><img src="../../../assets/slides/bound/02.webp" alt="   We use names in lots of contexts, but any
+    program that deals with names has to deal
+    with a number of issues such as
+
+     capture avoidance
+     deciding alpha equivalence
+
+
+    … and others that will come up as we go." loading="lazy" width="2048" height="1536"><figcaption>Slide 2 of 50 · <a href="#slide-1" aria-label="Previous slide">←</a> · <a href="#slide-3" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-3"><img src="../../../assets/slides/bound/03.webp" alt="The dumbest thing that could possibly work:
+type Name = String
+data Exp
+     = Var Name
+     | Exp :@ Exp
+     | Lam Name Exp
+Var “x”
+Lam “x” (Var “x”)
+Lam “x” (Lam “y” (Var “x”))" loading="lazy" width="2048" height="1536"><figcaption>Slide 3 of 50 · <a href="#slide-2" aria-label="Previous slide">←</a> · <a href="#slide-4" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-4"><img src="../../../assets/slides/bound/04.webp" alt="Blindly Substituting Lam “x” (Var “y”) into
+
+Lam “y”( Var “z”)
+
+for “z” would yield
+
+Lam “y” (Lam “x” (Var “y”))
+
+which now causes the free variable to reference
+the “y” bound by the outer lambda." loading="lazy" width="2048" height="1536"><figcaption>Slide 4 of 50 · <a href="#slide-3" aria-label="Previous slide">←</a> · <a href="#slide-5" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-5"><img src="../../../assets/slides/bound/05.webp" alt="Lam “x” (Var “x”)
+
+and
+
+      Lam “y” (Var “y”)
+
+both mean the same thing and it’d be nice to be
+able to check this easily, make them hash the
+same way for CSE, etc." loading="lazy" width="2048" height="1536"><figcaption>Slide 5 of 50 · <a href="#slide-4" aria-label="Previous slide">←</a> · <a href="#slide-6" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-6"><img src="../../../assets/slides/bound/06.webp" alt="There is a cottage industry of solutions ot the naming
+problem.
+   Naïve substitution
+   Barendregt Convention
+   HOAS
+   Weak HOAS / PHOAS
+   “I am not a Number: I am a Free Variable!”
+   Locally Nameless Syntax with de Bruijn Indices
+   Unbound, mixing Barendregt and Locally Nameless.
+   etc.
+I will not be addressing all of these here, just a few." loading="lazy" width="2048" height="1536"><figcaption>Slide 6 of 50 · <a href="#slide-5" aria-label="Previous slide">←</a> · <a href="#slide-7" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-7"><img src="../../../assets/slides/bound/07.webp" alt="Just go look for names that avoid capture.
+
+Pros:
+        Pretty syntax trees
+        Easy to get started with
+
+Cons:
+     Easy even for experts to make mistakes!
+     Alpha Equivalence checking is tedious.
+     REALLY SLOW" loading="lazy" width="2048" height="1536"><figcaption>Slide 7 of 50 · <a href="#slide-6" aria-label="Previous slide">←</a> · <a href="#slide-8" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-8"><img src="../../../assets/slides/bound/08.webp" alt="subst :: Name -&gt; Exp -&gt; Exp -&gt; Exp
+subst x s = sub where
+ sub e@(Var v)
+          | v == x = s
+          | otherwise = e
+ sub e@(Lam v e')
+          | v == x = e
+          | v `elem` fvs = Lam v' (sub e'’)
+          | otherwise = Lam v (sub e’)
+          where v' = newId vs
+                      e'' = subst v (Var v') e’
+ sub (f :@ a) = sub f :@ sub a
+ fvs = freeVars s
+ vs = fvs `union` allVars b
+newId :: [Name] -&gt; Name
+newId vs = head (someEnormousPoolOfNames  vs)
+– go find a name that isn’t taken!
+(based on code by Lennart Augustsson)" loading="lazy" width="2048" height="1536"><figcaption>Slide 8 of 50 · <a href="#slide-7" aria-label="Previous slide">←</a> · <a href="#slide-9" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-9"><img src="../../../assets/slides/bound/09.webp" alt="Make sure that every binder binds a globally unique name.
+
+Pros:
+ “Secrets of the GHC Inliner” describes ‘the Rapier’ which can make
+ this Fast.
+
+Cons:
+ Easy even for experts to screw up
+ Alpha Equivalence is tedious
+ Need a globally unique variable supply (e.g. my concurrent-supply)
+ The obvious implementation technique chews through a
+     scarily large number of variable IDs." loading="lazy" width="2048" height="1536"><figcaption>Slide 9 of 50 · <a href="#slide-8" aria-label="Previous slide">←</a> · <a href="#slide-10" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-10"><img src="../../../assets/slides/bound/10.webp" alt="Borrow substitution from the host language!
+
+data Exp a
+    = Var a
+     | Lam (Exp a -&gt; Exp a)
+     | Exp a :@ Exp a" loading="lazy" width="2048" height="1536"><figcaption>Slide 10 of 50 · <a href="#slide-9" aria-label="Previous slide">←</a> · <a href="#slide-11" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-11"><img src="../../../assets/slides/bound/11.webp" alt="Pros:
+    Provides _really_ fast substitution
+
+Cons:
+   Doesn’t work in theorem provers
+           (Exp occurs in negative position)
+   Hard to work under Binders!
+   Exotic terms
+   Alpha equivalence checking is tedious
+
+Variants such as Weak HOAS/PHOAS exist to address some
+of these issues at the expense of other problems." loading="lazy" width="2048" height="1536"><figcaption>Slide 11 of 50 · <a href="#slide-10" aria-label="Previous slide">←</a> · <a href="#slide-12" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-12"><img src="../../../assets/slides/bound/12.webp" alt="M’colleague Bob Atkey once memorably described the
+capacity to put up with de Bruijn indices as a Cylon
+detector, the kind of reverse Turing Test that the humans in
+Battlestar Galactica invent, the better to recognize one
+another by their common inadequacies. He had a point.
+
+
+                             —Conor McBride
+       “I am not a number, I am a classy hack”" loading="lazy" width="2048" height="1536"><figcaption>Slide 12 of 50 · <a href="#slide-11" aria-label="Previous slide">←</a> · <a href="#slide-13" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-13"><img src="../../../assets/slides/bound/13.webp" alt="Split variables into Bound and Free.
+data Exp a
+      = Free a
+      | Bound !Int
+      | Exp a :@ Exp a
+      | Lam (Exp a)
+Bound variables reference the variable being bound by the
+lambda n lambdas out. Substitution has to renumber all the
+variables.
+abstract :: Eq a =&gt; a -&gt; Exp a -&gt; Exp a
+instantiate :: Exp a -&gt; Exp a -&gt; Exp a" loading="lazy" width="2048" height="1536"><figcaption>Slide 13 of 50 · <a href="#slide-12" aria-label="Previous slide">←</a> · <a href="#slide-14" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-14"><img src="../../../assets/slides/bound/14.webp" alt="Split variables into Bound and Free.
+newtype Scope f a = Scope (f a)
+data Exp a
+      = Free a
+      | Bound !Int
+      | Exp a :@ Exp a
+      | Lam (Scope Exp a)
+Bound variables reference the variable being bound by the
+lambda n lambdas out. Substitution has to renumber all the
+variables.
+abstract :: Eq a =&gt; a -&gt; Exp a -&gt; Scope Exp a
+instantiate :: Exp a -&gt; Scope Exp a -&gt; Exp a" loading="lazy" width="2048" height="1536"><figcaption>Slide 14 of 50 · <a href="#slide-13" aria-label="Previous slide">←</a> · <a href="#slide-15" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-15"><img src="../../../assets/slides/bound/15.webp" alt="abstract :: Eq a =&gt; a -&gt; Exp a -&gt; Scope Exp a
+abstract me expr = Scope (letmeB 0 expr) where
+ letmeB this (F you)
+     | you == me = B this
+     | otherwise = F you
+ letmeB this (B that) = B that
+ letmeB this (fun :@ arg) =
+     letmeB this fun :@ letmeB this arg
+ letmeB this (Lam (Scope body)) =
+     Lam (Scope (letmeB (succ this) body))
+
+(Based on code by Conor McBride from “I am not a number: I am a free variable”)" loading="lazy" width="2048" height="1536"><figcaption>Slide 15 of 50 · <a href="#slide-14" aria-label="Previous slide">←</a> · <a href="#slide-16" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-16"><img src="../../../assets/slides/bound/16.webp" alt="instantiate :: Exp a -&gt; Scope Exp a -&gt; Exp a
+instantiate what (Scope body) = what'sB 0 body
+where
+ what'sB this (B that)
+     | this==that = what
+     | otherwise = B that
+ what'sB this (F you) = F you
+ what'sB this (fun :@ arg) =
+     what'sB this fun :@ what'sB this arg
+ what'sB this (Lam (Scope body)) =
+     Lam (Scope (what'sB (succ this) body))
+
+(Based on code by Conor McBride from “I am not a number: I am a free variable”)" loading="lazy" width="2048" height="1536"><figcaption>Slide 16 of 50 · <a href="#slide-15" aria-label="Previous slide">←</a> · <a href="#slide-17" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-17"><img src="../../../assets/slides/bound/17.webp" alt="newtype Scope f a = Scope (f a)
+data Exp a
+     = Free a
+     | Bound !Int
+     | Exp a :@ Exp a
+     | Lam (Scope a)
+     deriving (Functor, Foldable,Traversable)
+
+We can make an instance of Monad for Exp, but it is an
+awkward one-off experience." loading="lazy" width="2048" height="1536"><figcaption>Slide 17 of 50 · <a href="#slide-16" aria-label="Previous slide">←</a> · <a href="#slide-18" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-18"><img src="../../../assets/slides/bound/18.webp" alt="Pros:
+     Scope, abstract, and instantiate make it harder
+to screw up walking under binders.
+      Alpha equivalence is just (==)
+      We can make a Monad for Exp.
+      We can use Traversable to find free variables,
+close terms, etc.
+Cons:
+      This succ’s a lot. (Slow)
+      Illegal terms such as Lam (Scope (Bound 2))
+      Have to define abstract/instantiate for each
+type.
+      The Monad for Exp is a one-off deal." loading="lazy" width="2048" height="1536"><figcaption>Slide 18 of 50 · <a href="#slide-17" aria-label="Previous slide">←</a> · <a href="#slide-19" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-19"><img src="../../../assets/slides/bound/19.webp" alt="data Exp a
+    = Var a
+    | Exp a :@ Exp a
+    | Lam (Exp (Maybe a))
+
+
+
+
+(based on Bird and Paterson)" loading="lazy" width="2048" height="1536"><figcaption>Slide 19 of 50 · <a href="#slide-18" aria-label="Previous slide">←</a> · <a href="#slide-20" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-20"><img src="../../../assets/slides/bound/20.webp" alt="data Incr a = Z | S a
+
+data Exp a
+    = Var a
+    | Exp a :@ Exp a
+    | Lam (Exp (Incr a))
+
+
+(based on Bird and Paterson)" loading="lazy" width="2048" height="1536"><figcaption>Slide 20 of 50 · <a href="#slide-19" aria-label="Previous slide">←</a> · <a href="#slide-21" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-21"><img src="../../../assets/slides/bound/21.webp" alt="data Incr a = Z | S a
+newtype Scope f a = Scope (f (Incr a))
+data Exp a
+     = Var a
+     | Exp a :@ Exp a
+     | Lam (Scope Exp a)
+instance MonadTrans Scope where
+ lift = Scope . fmap Just
+-- Scope is just MaybeT a Monad transformer in its own
+right, but lift is slow." loading="lazy" width="2048" height="1536"><figcaption>Slide 21 of 50 · <a href="#slide-20" aria-label="Previous slide">←</a> · <a href="#slide-22" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-22"><img src="../../../assets/slides/bound/22.webp" alt="instance Monad Exp where
+     Var a &gt;&gt;= f = f a
+     x :@ y &gt;&gt;= f = (x &gt;&gt;= f) :@ (y &gt;&gt;= f)
+     Lam b &gt;&gt;= f = Lam (b &gt;&gt;= lift . f)
+
+You can derive Foldable and Traversable.
+
+Then Data.Foldable.toList can obtain the free
+variables in a term, and (&gt;&gt;=) does capture
+avoiding substitution!" loading="lazy" width="2048" height="1536"><figcaption>Slide 22 of 50 · <a href="#slide-21" aria-label="Previous slide">←</a> · <a href="#slide-23" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-23"><img src="../../../assets/slides/bound/23.webp" alt="Pros:
+    The Monad is easy to define
+    Foldable/Traversable for free variables
+    Capture avoiding substitution for free
+
+Cons:
+    It still succs a lot. lift is O(n)." loading="lazy" width="2048" height="1536"><figcaption>Slide 23 of 50 · <a href="#slide-22" aria-label="Previous slide">←</a> · <a href="#slide-24" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-24"><img src="../../../assets/slides/bound/24.webp" alt="If we could succ an entire expression instead of on each
+individual variable we would succ less.
+Instantiation wouldn’t have to walk into that expression
+at all, and we could lift an Exp into Scope in O(1) instead
+of O(n).
+This requires polymorphic recursion, but we support
+that. Go Haskell!
+This is the ‘generalized de Bruijn’ as described by Bird
+and Paterson without the rank-2 types mucking up the
+description and abstracted into a monad transformer." loading="lazy" width="2048" height="1536"><figcaption>Slide 24 of 50 · <a href="#slide-23" aria-label="Previous slide">←</a> · <a href="#slide-25" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-25"><img src="../../../assets/slides/bound/25.webp" alt="data Incr a = Z | S a
+newtype Scope f a = Scope { unscope :: f (Incr (f a) }
+instance Monad f =&gt; Monad (Scope f) where
+ return = Scope . return . S . return
+ Scope e &gt;&gt;= f = Scope $ e &gt;&gt;= v -&gt; case v of
+  Z -&gt; return Z
+  S ea -&gt; ea &gt;&gt;= unscope . f
+instance MonadTrans Scope where
+ lift = Scope . return . S" loading="lazy" width="2048" height="1536"><figcaption>Slide 25 of 50 · <a href="#slide-24" aria-label="Previous slide">←</a> · <a href="#slide-26" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-26"><img src="../../../assets/slides/bound/26.webp" alt="Pros:
+     The Monad is easy to define
+     Foldable/Traversable for Free Variables
+     Capture avoiding substitution for free
+Cons:
+     Alpha equivalence is slightly harder,
+because you have to quotient out the position
+of the ‘Succ’s." loading="lazy" width="2048" height="1536"><figcaption>Slide 26 of 50 · <a href="#slide-25" aria-label="Previous slide">←</a> · <a href="#slide-27" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-27"><img src="../../../assets/slides/bound/27.webp" alt="abstract :: (Monad f, Eq a) =&gt; a -&gt; f a -&gt; Scope f a
+abstract x e = Scope (liftM k e) where
+      ky       | x == y       =Z
+               | otherwise = S (return y)
+
+instantiate :: Monad f =&gt; f a -&gt; Scope f a -&gt; f a
+instantiate r (Scope e) = e &gt;&gt;= v -&gt; case v of
+      Z        -&gt; r
+      Sa       -&gt; a
+
+We can define these operations once and for all, independent
+of our expression type!" loading="lazy" width="2048" height="1536"><figcaption>Slide 27 of 50 · <a href="#slide-26" aria-label="Previous slide">←</a> · <a href="#slide-28" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-28"><img src="../../../assets/slides/bound/28.webp" alt="Not every language is the untyped lambda
+calculus. Sometimes you want to bind multiple
+variables at the same time, say for a pattern or
+recursive let binding, or to represent all the
+variables boundby a single quantifier in a single
+pass.
+
+So lets go back and enrich our binders so they
+an bind multiple variables by generalizing
+generalized de Bruijn." loading="lazy" width="2048" height="1536"><figcaption>Slide 28 of 50 · <a href="#slide-27" aria-label="Previous slide">←</a> · <a href="#slide-29" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-29"><img src="../../../assets/slides/bound/29.webp" alt="data Var b a = B b | F a
+data Scope b f a = Scope { unscope :: f (Var b (f a) }
+instance Monad f =&gt; Monad (Scope b f)
+instance MonadTrans (Scope b)
+abstract :: Monad f =&gt; (a -&gt; Maybe b) -&gt; f a -&gt; Scope b f a
+instantiate :: Monad f =&gt; (b -&gt; f a) -&gt; Scope b f a -&gt; f a
+fromScope :: Monad f =&gt; Scope b f a -&gt; f (Var b a)
+toScope :: Monad f =&gt; f (Var b a) -&gt; Scope b f a
+substitute :: (Monad f, Eq a) =&gt; a -&gt; f a -&gt; f a -&gt; f a
+class Bound t where
+ (&gt;&gt;&gt;=) :: Monad m =&gt; t m a -&gt; (a -&gt; m b) -&gt; a -&gt; t m b
+instance Bound (Scope b)" loading="lazy" width="2048" height="1536"><figcaption>Slide 29 of 50 · <a href="#slide-28" aria-label="Previous slide">←</a> · <a href="#slide-30" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-30"><img src="../../../assets/slides/bound/30.webp" alt="data Exp a
+ =V a
+ | Exp a :@ Exp a
+ | Lam (Scope () Exp a)
+ | Let [Scope Int Exp a] (Scope Int Exp a)
+ deriving (Eq,Ord,Show,Read,Functor,Foldable,Traversable)
+
+Instance Monad Exp where
+  Va        &gt;&gt;= f = f a
+ (x :@ y)   &gt;&gt;= f = (x &gt;&gt;= f) :@ (y &gt;&gt;= f)
+ Lam e      &gt;&gt;= f = Lam (e &gt;&gt;&gt;= f)
+ Let bs b   &gt;&gt;= f = Let (map (&gt;&gt;&gt;= f) bs) (b &gt;&gt;&gt;= f)" loading="lazy" width="2048" height="1536"><figcaption>Slide 30 of 50 · <a href="#slide-29" aria-label="Previous slide">←</a> · <a href="#slide-31" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-31"><img src="../../../assets/slides/bound/31.webp" alt="abstract1 :: (Monad f, Eq a) =&gt; a -&gt; f a -&gt; Scope () f a
+abstract :: Monad f =&gt; (a -&gt; Maybe b) -&gt; f a -&gt; Scope b f a
+
+lam :: Eq a =&gt; a -&gt; Exp a -&gt; Exp a
+lam v b = Lam (abstract1 v b)
+
+let_ :: Eq a =&gt; [(a,Exp a)] -&gt; Exp a -&gt; Exp a
+let_ bs b = Let (map (abstr . snd) bs) (abstr b)
+ where abstr = abstract (`elemIndex` map fst bs)
+
+infixr 0 !
+(!) :: Eq a =&gt; a -&gt; Exp a -&gt; Exp a
+(!) = lam" loading="lazy" width="2048" height="1536"><figcaption>Slide 31 of 50 · <a href="#slide-30" aria-label="Previous slide">←</a> · <a href="#slide-32" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-32"><img src="../../../assets/slides/bound/32.webp" alt="instantiate :: Monad f =&gt; (b -&gt; f a) -&gt; Scope b f a -&gt; f a
+instantiate1 :: Monad f =&gt; f a -&gt; Scope () f a -&gt; f a
+
+whnf :: Exp a -&gt; Exp a
+whnf e@V{} = e
+whnf e@Lam{} = e
+whnf (f :@ a) = case whnf f of
+ Lam b -&gt; whnf (instantiate1 a b)
+ f' -&gt; f' :@ a
+whnf (Let bs b) = whnf (inst b)
+ where es = map inst bs
+    inst = instantiate (es !!)" loading="lazy" width="2048" height="1536"><figcaption>Slide 32 of 50 · <a href="#slide-31" aria-label="Previous slide">←</a> · <a href="#slide-33" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-33"><img src="../../../assets/slides/bound/33.webp" alt="fromScope :: Monad f =&gt; Scope b f a -&gt; f (Var b a)
+toScope :: Monad f =&gt; f (Var b a) -&gt; Scope b f a
+
+nf :: Exp a -&gt; Exp a
+nf e@V{} = e
+nf (Lam b) = Lam $ toScope $ nf $ fromScope b
+nf (f :@ a) = case whnf f of
+ Lam b -&gt; nf (instantiate1 a b)
+ f' -&gt; nf f' :@ nf a
+nf (Let bs b) = nf (inst b)
+ where es = map inst bs
+     inst = instantiate (es !!)" loading="lazy" width="2048" height="1536"><figcaption>Slide 33 of 50 · <a href="#slide-32" aria-label="Previous slide">←</a> · <a href="#slide-34" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-34"><img src="../../../assets/slides/bound/34.webp" alt="closed :: Traversable f =&gt; f a -&gt; Maybe (f b)
+closed = traverse (const Nothing)
+
+A closed term has no free variables, so you can
+Treat the free variable type as anything you
+want." loading="lazy" width="2048" height="1536"><figcaption>Slide 34 of 50 · <a href="#slide-33" aria-label="Previous slide">←</a> · <a href="#slide-35" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-35"><img src="../../../assets/slides/bound/35.webp" alt="cooked :: Exp a
+cooked = fromJust $ closed $ let_
+ [ (&quot;False&quot;, &quot;f&quot; ! &quot;t&quot; ! V&quot;f&quot;)
+ , (&quot;True&quot;, &quot;f&quot; ! &quot;t&quot; ! V&quot;t&quot;)
+ , (&quot;if&quot;, &quot;b&quot; ! &quot;t&quot; ! &quot;f&quot; ! V&quot;b&quot; :@ V&quot;f&quot; :@ V&quot;t&quot;)
+ , (&quot;Zero&quot;, &quot;z&quot; ! &quot;s&quot; ! V&quot;z&quot;)
+ , (&quot;Succ&quot;, &quot;n&quot; ! &quot;z&quot; ! &quot;s&quot; ! V&quot;s&quot; :@ V&quot;n&quot;)
+ , (&quot;one&quot;, V&quot;Succ&quot; :@ V&quot;Zero&quot;)
+ , (&quot;two&quot;, V&quot;Succ&quot; :@ V&quot;one&quot;)
+ , (&quot;three&quot;, V&quot;Succ&quot; :@ V&quot;two&quot;)
+ , (&quot;isZero&quot;, &quot;n&quot; ! V&quot;n&quot; :@ V&quot;True&quot; :@ (&quot;m&quot; ! V&quot;False&quot;))
+ , (&quot;const&quot;, &quot;x&quot; ! &quot;y&quot; ! V&quot;x&quot;)
+ , (&quot;Pair&quot;, &quot;a&quot; ! &quot;b&quot; ! &quot;p&quot; ! V&quot;p&quot; :@ V&quot;a&quot; :@ V&quot;b&quot;)
+ , (&quot;fst&quot;, &quot;ab&quot; ! V&quot;ab&quot; :@ (&quot;a&quot; ! &quot;b&quot; ! V&quot;a&quot;))
+ , (&quot;snd&quot;, &quot;ab&quot; ! V&quot;ab&quot; :@ (&quot;a&quot; ! &quot;b&quot; ! V&quot;b&quot;))
+ , (&quot;add&quot;, &quot;x&quot; ! &quot;y&quot; ! V&quot;x&quot; :@ V&quot;y&quot; :@ (&quot;n&quot; ! V&quot;Succ&quot; :@ (V&quot;add&quot; :@ V&quot;n&quot; :@ V&quot;y&quot;)))
+ , (&quot;mul&quot;, &quot;x&quot; ! &quot;y&quot; ! V&quot;x&quot; :@ V&quot;Zero&quot; :@ (&quot;n&quot; ! V&quot;add&quot; :@ V&quot;y&quot; :@ (V&quot;mul&quot; :@ V&quot;n&quot; :@ V&quot;y&quot;)))
+ , (&quot;fac&quot;, &quot;x&quot; ! V&quot;x&quot; :@ V&quot;one&quot; :@ (&quot;n&quot; ! V&quot;mul&quot; :@ V&quot;x&quot; :@ (V&quot;fac&quot; :@ V&quot;n&quot;)))
+ , (&quot;eqnat&quot;, &quot;x&quot; ! &quot;y&quot; ! V&quot;x&quot; :@ (V&quot;y&quot; :@ V&quot;True&quot; :@ (V&quot;const&quot; :@ V&quot;False&quot;)) :@ (&quot;x1&quot; ! V&quot;y&quot; :@ V&quot;False&quot; :@ (&quot;y1&quot; ! V&quot;eqnat&quot; :@ V&quot;x1&quot; :@
+V&quot;y1&quot;)))
+ , (&quot;sumto&quot;, &quot;x&quot; ! V&quot;x&quot; :@ V&quot;Zero&quot; :@ (&quot;n&quot; ! V&quot;add&quot; :@ V&quot;x&quot; :@ (V&quot;sumto&quot; :@ V&quot;n&quot;)))
+ , (&quot;n5&quot;, V&quot;add&quot; :@ V&quot;two&quot; :@ V&quot;three&quot;)
+ , (&quot;n6&quot;, V&quot;add&quot; :@ V&quot;three&quot; :@ V&quot;three&quot;)
+ , (&quot;n17&quot;, V&quot;add&quot; :@ V&quot;n6&quot; :@ (V&quot;add&quot; :@ V&quot;n6&quot; :@ V&quot;n5&quot;))
+ , (&quot;n37&quot;, V&quot;Succ&quot; :@ (V&quot;mul&quot; :@ V&quot;n6&quot; :@ V&quot;n6&quot;))
+ , (&quot;n703&quot;, V&quot;sumto&quot; :@ V&quot;n37&quot;)
+ , (&quot;n720&quot;, V&quot;fac&quot; :@ V&quot;n6&quot;)
+ ] (V&quot;eqnat&quot; :@ V&quot;n720&quot; :@ (V&quot;add&quot; :@ V&quot;n703&quot; :@ V&quot;n17&quot;))" loading="lazy" width="2048" height="1536"><figcaption>Slide 35 of 50 · <a href="#slide-34" aria-label="Previous slide">←</a> · <a href="#slide-36" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-36"><img src="../../../assets/slides/bound/36.webp" alt="ghci&gt; nf cooked == (“F” ! “T” ! “T”)
+&gt; True" loading="lazy" width="2048" height="1536"><figcaption>Slide 36 of 50 · <a href="#slide-35" aria-label="Previous slide">←</a> · <a href="#slide-37" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-37"><img src="../../../assets/slides/bound/37.webp" alt="data Exp a
+ =V a
+ | Exp a :@ Exp a
+ | Lam !Int (Pat Exp a) (Scope Int Exp a)
+ | Let !Int [Scope Int Exp a] (Scope Int Exp a)
+ | Case (Exp a) [Alt Exp a]
+ deriving (Eq,Ord,Show,Read,Functor,Foldable,Traversable)
+data Pat f a
+ = VarP
+ | WildP
+ | AsP (Pat f a)
+ | ConP String [Pat f a]
+ | ViewP (Scope Int f a) (Pat f a)
+ deriving (Eq,Ord,Show,Read,Functor,Foldable,Traversable)
+data Alt f a = Alt !Int (Pat f a) (Scope Int f a)
+deriving (Eq,Ord,Show,Read,Functor,Foldable,Traversable)" loading="lazy" width="2048" height="1536"><figcaption>Slide 37 of 50 · <a href="#slide-36" aria-label="Previous slide">←</a> · <a href="#slide-38" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-38"><img src="../../../assets/slides/bound/38.webp" alt="instance Monad Exp where
+ return = V
+ Va     &gt;&gt;= f = f a
+ (x :@ y) &gt;&gt;= f = (x &gt;&gt;= f) :@ (y &gt;&gt;= f)
+ Lam n p e &gt;&gt;= f = Lam n (p &gt;&gt;&gt;= f) (e &gt;&gt;&gt;= f)
+ Let n bs e &gt;&gt;= f = Let n (map (&gt;&gt;&gt;= f) bs) (e &gt;&gt;&gt;= f)
+ Case e as &gt;&gt;= f = Case (e &gt;&gt;= f) (map (&gt;&gt;&gt;= f) as)
+instance Bound Pat where
+ VarP &gt;&gt;&gt;= _ = VarP
+ WildP &gt;&gt;&gt;= _ = WildP
+ AsP p &gt;&gt;&gt;= f = AsP (p &gt;&gt;&gt;= f)
+ ConP g ps &gt;&gt;&gt;= f = ConP g (map (&gt;&gt;&gt;= f) ps)
+ ViewP e p &gt;&gt;&gt;= f = ViewP (e &gt;&gt;&gt;= f) (p &gt;&gt;&gt;= f)
+instance Bound Alt where
+ Alt n p b &gt;&gt;&gt;= f = Alt n (p &gt;&gt;&gt;= f) (b &gt;&gt;&gt;= f)" loading="lazy" width="2048" height="1536"><figcaption>Slide 38 of 50 · <a href="#slide-37" aria-label="Previous slide">←</a> · <a href="#slide-39" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-39"><img src="../../../assets/slides/bound/39.webp" alt="data P a = P { pattern :: [a] -&gt; Pat Exp a, bindings :: [a] }
+varp :: a -&gt; P a
+varp a = P (const VarP) [a]
+wildp :: P a
+wildp = P (const WildP) []
+conp :: String -&gt; [P a] -&gt; P a
+conp g ps = P (ConP g . go ps) (ps &gt;&gt;= bindings)
+ where
+  go (P p as:ps) bs = p bs : go ps (bs ++ as)
+  go [] _ = []
+lam :: Eq a =&gt; P a -&gt; Exp a -&gt; Exp a
+lam (P p as) t = Lam (length as) (p []) (abstract (`elemIndex` as) t)
+ghci&gt; lam (varp &quot;x&quot;) (V &quot;x”)
+Lam 1 VarP (Scope (V (B 0)))
+ghci&gt; lam (conp &quot;Hello&quot; [varp &quot;x&quot;, wildp]) (V &quot;y”)
+Lam 1 (ConP &quot;Hello&quot; [VarP,WildP]) (Scope (V (F (V &quot;y&quot;))))" loading="lazy" width="2048" height="1536"><figcaption>Slide 39 of 50 · <a href="#slide-38" aria-label="Previous slide">←</a> · <a href="#slide-40" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-40"><img src="../../../assets/slides/bound/40.webp" alt="Deriving Eq, Ord, Show and Read requires some tomfoolery. The issue is
+that Scope uses polymorphic recursion.
+So the most direct way of implementing Eq (Scope b f a) would require
+Instance (Eq (f (Var b (f a)), Eq (Var b (f a), Eq (f a), Eq a) =&gt; Eq (Scope b f a)
+And then Exp would require:
+instance (Eq a, Eq (Pat Exp a), Eq (Scope Int Exp a), Eq (Alt
+Exp a)) =&gt; Eq (Exp a)
+Plus all the things required by Alt, Pat, and Scope!
+Moreover, these would require flexible contexts, taking us out of Haskell
+98/2010.
+Blech!" loading="lazy" width="2048" height="1536"><figcaption>Slide 40 of 50 · <a href="#slide-39" aria-label="Previous slide">←</a> · <a href="#slide-41" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-41"><img src="../../../assets/slides/bound/41.webp" alt="My prelude-extras package defines a number of boring typeclasses like:
+
+class Eq1 f where
+        (==#) :: Eq a =&gt; f a -&gt; f a -&gt; Bool
+        (/=#) :: Eq a =&gt; f a -&gt; f a -&gt; Bool
+
+class Eq1 f =&gt; Ord1 f where
+ compare1 :: Ord a =&gt; f a -&gt; f a -&gt; Ordering
+
+class Show1 f where
+ showsPrec1 :: Show a =&gt; Int -&gt; f a -&gt; ShowS
+
+class Read1 f where
+ readsPrec1 :: Read a =&gt; Int -&gt; ReadS (f a)
+ readList1 :: Read a =&gt; ReadS [f a]" loading="lazy" width="2048" height="1536"><figcaption>Slide 41 of 50 · <a href="#slide-40" aria-label="Previous slide">←</a> · <a href="#slide-42" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-42"><img src="../../../assets/slides/bound/42.webp" alt="Bound defines:
+
+instance (Functor f, Show b, Show1 f, Show a) =&gt; Show (Scope b f a)
+instance (Functor f, Read b, Read1 f, Read a) =&gt; Read (Scope b f a)
+instance (Monad f, Ord b, Ord1 f, Ord a) =&gt; Ord (Scope b f a)
+instance (Monad f, Eq b, Eq1 f, Eq a) =&gt; Eq (Scope b f a)
+
+So you just need to define
+
+instance Eq1 Exp where (==#) = (==)
+instance Ord1 Exp where compare1 = compare
+instance Show1 Exp where showsPrec1 = showsPrec
+instance Read1 Exp where readsPrec1 = readsPrec
+
+Why do some use Monad? Ord and Eq perform a non-structural equality
+comparison so that (==) is alpha-equality!" loading="lazy" width="2048" height="1536"><figcaption>Slide 42 of 50 · <a href="#slide-41" aria-label="Previous slide">←</a> · <a href="#slide-43" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-43"><img src="../../../assets/slides/bound/43.webp" alt="We can define languages that have strongly typed variabes by
+moving to much scarier types. =)
+type Nat f g = forall x. f x -&gt; g x
+class HFunctor t where
+ hmap :: Nat f g -&gt; Nat (t f) (t g)
+class HFunctor t =&gt; HTraversable t where
+ htraverse :: Applicative m =&gt; (forall x. f x -&gt; m (g x)) -&gt; t f a -&gt; m (t g
+a)
+class HFunctor t =&gt; HMonad t where
+ hreturn :: Nat f (t f)
+ (&gt;&gt;-) :: t f a -&gt; Nat f (t g) -&gt; t g a" loading="lazy" width="2048" height="1536"><figcaption>Slide 43 of 50 · <a href="#slide-42" aria-label="Previous slide">←</a> · <a href="#slide-44" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-44"><img src="../../../assets/slides/bound/44.webp" alt="data Equal a b where
+ Refl :: Equal a a
+class EqF f where
+ (==?) :: f a -&gt; f b -&gt; Maybe (Equal a b)
+data Var b f a where
+ B :: b a -&gt; Var b f a
+ F :: f a -&gt; Var b f a
+newtype Scope b t f a = Scope { unscope :: t (Var b (t f)) a }
+abstract :: HMonad t =&gt;
+ (forall x. f x -&gt; Maybe (b x)) -&gt; Nat (t f) (Scope b t f)
+instantiate :: HMonad t =&gt; Nat b (t f) -&gt; Nat (Scope b t f) (t f)
+class HBound s where
+ (&gt;&gt;&gt;-) :: HMonad t =&gt; s t f a -&gt; Nat f (t g) -&gt; s t g a" loading="lazy" width="2048" height="1536"><figcaption>Slide 44 of 50 · <a href="#slide-43" aria-label="Previous slide">←</a> · <a href="#slide-45" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-45"><img src="../../../assets/slides/bound/45.webp" alt="Dependently typed languages build up a lot of
+crap in memory. It’d be nice to share memory
+for it, since most of it is very repetitive." loading="lazy" width="2048" height="1536"><figcaption>Slide 45 of 50 · <a href="#slide-44" aria-label="Previous slide">←</a> · <a href="#slide-46" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-46"><img src="../../../assets/slides/bound/46.webp" alt=" Bound provides a small API for dealing with
+  abstraction/instantiation for complex binders
+  that combines the nice parts of “I am not a
+  number: I am a free variable” with the “de Bruijn
+  notation as a nested data type” while avoiding
+  the complexities of either.
+ You just supply it a Monad and Traversable
+ No variable supply is needed, no pool of names
+ Substitution is very efficient
+ Introduces no exotic or illegal terms
+ Simultaneous substitution for complex binders
+ Your code never sees a de Bruijn index" loading="lazy" width="2048" height="1536"><figcaption>Slide 46 of 50 · <a href="#slide-45" aria-label="Previous slide">←</a> · <a href="#slide-47" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-47"><img src="../../../assets/slides/bound/47.webp" alt="" loading="lazy" width="2048" height="1536"><figcaption>Slide 47 of 50 · <a href="#slide-46" aria-label="Previous slide">←</a> · <a href="#slide-48" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-48"><img src="../../../assets/slides/bound/48.webp" alt="" loading="lazy" width="2048" height="1536"><figcaption>Slide 48 of 50 · <a href="#slide-47" aria-label="Previous slide">←</a> · <a href="#slide-49" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-49"><img src="../../../assets/slides/bound/49.webp" alt="data Ix :: [*] -&gt; * -&gt; * where
+ Z :: Ix (a ': as) a
+ S :: Ix as b -&gt; Ix (a ': as) b
+
+data Vec :: (* -&gt; *) -&gt; [*] -&gt; * where
+ HNil :: Vec f '[]
+ (:::) :: f b -&gt; Vec f bs -&gt; Vec f (b ': bs)
+
+data Lit t where
+ Integer :: Integer -&gt; Lit Integer
+ Double :: Double -&gt; Lit Double
+ String :: String -&gt; Lit String
+
+data Remote :: (* -&gt; *) -&gt; * -&gt; * where
+ Var :: f a -&gt; Remote f a
+ Lit :: Lit a -&gt; Remote f a
+ Lam :: Scope (Equal b) Remote f a -&gt; Remote f (b -&gt; a)
+ Let :: Vec (Scope (Ix bs) Remote f) bs -&gt; Scope (Ix bs) Remote f a -&gt; Remote f a
+ Ap :: Remote f (a -&gt; b) -&gt; Remote f a -&gt; Remote f b" loading="lazy" width="2048" height="1536"><figcaption>Slide 49 of 50 · <a href="#slide-48" aria-label="Previous slide">←</a> · <a href="#slide-50" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-50"><img src="../../../assets/slides/bound/50.webp" alt="lam_ :: EqF f =&gt; f a -&gt; Remote f b -&gt; Remote f (a -&gt; b)
+lam_ v f = Lam (abstract (v ==?) f)
+
+-- let_ actually winds up becoming much trickier to define
+-- requiring a MonadFix and a helper monad.
+
+two12121212 = let_ $ mdo
+ x &lt;- def (cons 1 z)
+ z &lt;- def (cons 2 x)
+ return z" loading="lazy" width="2048" height="1536"><figcaption>Slide 50 of 50 · <a href="#slide-49" aria-label="Previous slide">←</a></figcaption></figure></section></div><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/bound"><code>bound</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><aside class="edition-note"><details><summary>About this edition</summary><p>Ordered by slide publication date, 26 July 2012, from SlideShare metadata. The presentation date and event have not been established.</p><p>All publicly displayed slide images and their supplied text are preserved locally.</p><p><a href="https://www.slideshare.net/slideshow/bound-making-de-bruijn-succ-less/13768903">Source record</a> · <a href="../../../source/articles/external-preservation.json">Preservation manifest</a></p></details></aside><nav class="post-navigation" aria-label="Chronological navigation"><a rel="prev" href="../../../reader/2012/mirrored-lenses/"><span>← Previous · older</span>Mirrored Lenses</a><a class="all-entries" href="../../../reader/">Archive</a><a rel="next" href="../../../reader/2012/hackage-mirror/"><span>Next · newer →</span>Working around Hackage Outages</a></nav></main></div><script src="../../../reader-sidebar.js"></script></body></html>

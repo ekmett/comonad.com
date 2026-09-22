@@ -59,7 +59,8 @@
         "checkedOn": "2026-09-21",
         "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
         "channelMatches": true
-      }
+      },
+      "displayTitle": "A Quick Introduction To Haskell"
     },
     {
       "id": "youtube-Q0m8baqBrk4",
@@ -105,7 +106,8 @@
           "name": "David Spivak",
           "role": "joint research; not identified as presenter"
         }
-      ]
+      ],
+      "displayTitle": "A Functorial Query Language"
     },
     {
       "id": "youtube-8n5ubDe9FAA",
@@ -145,7 +147,8 @@
         "checkedOn": "2026-09-21",
         "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
         "channelMatches": true
-      }
+      },
+      "displayTitle": "Ur/Web"
     },
     {
       "id": "youtube-8r1lji4Pzsg",
@@ -193,7 +196,8 @@
         "checkedOn": "2026-09-21",
         "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
         "channelMatches": true
-      }
+      },
+      "displayTitle": "Getting a Quick Fix of Comonads"
     },
     {
       "id": "youtube-vYh27zz9530",
@@ -233,7 +237,8 @@
         "checkedOn": "2026-09-21",
         "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
         "channelMatches": true
-      }
+      },
+      "displayTitle": "Liquid Haskell"
     },
     {
       "id": "youtube-yFXzuCFeRGM",
@@ -328,7 +333,8 @@
           "url": "https://www.youtube.com/watch?v=yFXzuCFeRGM&t=5695s"
         }
       ],
-      "attributionNote": "Uploader uses Kenny Foner for the lightning segment; normalized to Kenneth Foner, retaining source description."
+      "attributionNote": "Uploader uses Kenny Foner for the lightning segment; normalized to Kenneth Foner, retaining source description.",
+      "displayTitle": "Lightning talks - Dec. 2014"
     },
     {
       "id": "youtube-hIZxTQP1ifo",
@@ -368,7 +374,8 @@
         "checkedOn": "2026-09-21",
         "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
         "channelMatches": true
-      }
+      },
+      "displayTitle": "Type Classes vs. the World"
     },
     {
       "id": "youtube-9-u2n4GgcVw",
@@ -416,7 +423,8 @@
         "checkedOn": "2026-09-21",
         "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
         "channelMatches": true
-      }
+      },
+      "displayTitle": "Enigmatic Haskell, Haskellish Enigma"
     },
     {
       "id": "youtube-ZGqKsalJi4s",
@@ -464,7 +472,8 @@
         "checkedOn": "2026-09-21",
         "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
         "channelMatches": true
-      }
+      },
+      "displayTitle": "Pure Type Systems"
     },
     {
       "id": "youtube-_KioQRICpmo",
@@ -517,7 +526,8 @@
         "checkedOn": "2026-09-21",
         "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
         "channelMatches": true
-      }
+      },
+      "displayTitle": "Framing the Discussion with EDSLs"
     },
     {
       "id": "youtube-_2jrmgO_Gq0",
@@ -567,7 +577,8 @@
         "checkedOn": "2026-09-21",
         "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
         "channelMatches": true
-      }
+      },
+      "displayTitle": "Making Dependent Types Practical"
     },
     {
       "id": "youtube-dOy7zIk3IUI",
@@ -617,7 +628,8 @@
         "checkedOn": "2026-09-21",
         "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
         "channelMatches": true
-      }
+      },
+      "displayTitle": "Reflex: Practical Functional Reactive Programming"
     },
     {
       "id": "youtube-gZwMp8YXIXg",
@@ -660,7 +672,8 @@
         "checkedOn": "2026-09-21",
         "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
         "channelMatches": true
-      }
+      },
+      "displayTitle": "Skete: Exploring Distributed Package Management"
     },
     {
       "id": "youtube-O0oBXcwGZQY",
@@ -703,7 +716,8 @@
         "checkedOn": "2026-09-21",
         "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
         "channelMatches": true
-      }
+      },
+      "displayTitle": "csound-expression"
     },
     {
       "id": "youtube-rsv96JK4Vx4",
@@ -747,7 +761,8 @@
         "checkedOn": "2026-09-21",
         "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
         "channelMatches": true
-      }
+      },
+      "displayTitle": "Servant"
     },
     {
       "id": "youtube-DyPzPeOPgUE",
@@ -792,7 +807,8 @@
         "checkedOn": "2026-09-21",
         "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
         "channelMatches": true
-      }
+      },
+      "displayTitle": "Propagators"
     },
     {
       "id": "youtube--Kz7SYZNoUU",
@@ -832,7 +848,8 @@
         "checkedOn": "2026-09-21",
         "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
         "channelMatches": true
-      }
+      },
+      "displayTitle": "Dimensional"
     },
     {
       "id": "youtube-MfXxuy_CJSk",
@@ -880,7 +897,8 @@
         "checkedOn": "2026-09-21",
         "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
         "channelMatches": true
-      }
+      },
+      "displayTitle": "On Reflex"
     },
     {
       "id": "youtube-ZL9ehIJhk98",
@@ -920,7 +938,8 @@
         "checkedOn": "2026-09-21",
         "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
         "channelMatches": true
-      }
+      },
+      "displayTitle": "Undecidable Superclasses"
     },
     {
       "id": "youtube-0fyrf83pjMg",
@@ -962,7 +981,8 @@
         "checkedOn": "2026-09-21",
         "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
         "channelMatches": true
-      }
+      },
+      "displayTitle": "Haskell Code Review!"
     },
     {
       "id": "youtube-R4nLSxCKkNw",
@@ -1044,7 +1064,8 @@
         "checkedOn": "2026-09-21",
         "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
         "channelMatches": true
-      }
+      },
+      "displayTitle": "Composing (Music) in Haskell"
     },
     {
       "id": "youtube-8YUUuZMawdY",
@@ -1084,7 +1105,8 @@
         "checkedOn": "2026-09-21",
         "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
         "channelMatches": true
-      }
+      },
+      "displayTitle": "Probabilistic Programming Live-code"
     },
     {
       "id": "youtube-Mj2cXQXgyWE",
@@ -1124,7 +1146,8 @@
         "checkedOn": "2026-09-21",
         "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
         "channelMatches": true
-      }
+      },
+      "displayTitle": "binary-serialize-cbor"
     },
     {
       "id": "youtube-heU8NyX5Hus",
@@ -1176,7 +1199,8 @@
         "François-René Rideau": [
           "Faré Rideau"
         ]
-      }
+      },
+      "displayTitle": "First-class implementations"
     },
     {
       "id": "youtube-2rhrxkNtrM4",
@@ -1218,7 +1242,8 @@
         "checkedOn": "2026-09-21",
         "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
         "channelMatches": true
-      }
+      },
+      "displayTitle": "SMT for DSLs: a Tutorial"
     },
     {
       "id": "youtube-SmBpQ3V9Yqo",
@@ -1267,7 +1292,8 @@
         "James Koppel": [
           "Jimmy Koppel"
         ]
-      }
+      },
+      "displayTitle": "Cracking Multi-Language Transformations"
     },
     {
       "id": "youtube-wjyiOXRuUdo",
@@ -1309,7 +1335,8 @@
         "checkedOn": "2026-09-21",
         "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
         "channelMatches": true
-      }
+      },
+      "displayTitle": "Introduction to Cryptocurrencies in Haskell"
     },
     {
       "id": "youtube-JzShJfikr4g",
@@ -1356,7 +1383,8 @@
         "checkedOn": "2026-09-21",
         "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
         "channelMatches": true
-      }
+      },
+      "displayTitle": "Algebraic Databases"
     },
     {
       "id": "youtube-090hIEiUoE0",
@@ -1409,7 +1437,8 @@
         "checkedOn": "2026-09-21",
         "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
         "channelMatches": true
-      }
+      },
+      "displayTitle": "Monoidal Parsing"
     },
     {
       "id": "youtube-4BmvEInzoY0",
@@ -1456,7 +1485,8 @@
         "checkedOn": "2026-09-21",
         "method": "Public YouTube channel/watch-page embedded metadata; no media download.",
         "channelMatches": true
-      }
+      },
+      "displayTitle": "A Walk-through of Computational Reflection in Coq"
     },
     {
       "id": "youtube-BiH_A36zKwI",

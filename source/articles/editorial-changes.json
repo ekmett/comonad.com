@@ -98,5 +98,129 @@
     "after": "lcaT w2 la lb (consT w2 ra ts)",
     "reason": "Technical correction for review: ra is a subtree of width w2. The new interactive companion uses w2 and checks both the resulting path and cached size against ancestor lists. Both occurrences in the historical article remain unchanged.",
     "status": "review"
+  },
+  {
+    "article": "harmless-algorithms-1",
+    "before": "psuedo-code",
+    "after": "pseudo-code",
+    "reason": "Unambiguous prose spelling; historical code unchanged.",
+    "status": "applied"
+  },
+  {
+    "article": "harmless-algorithms-1",
+    "before": "fustrum",
+    "after": "frustum",
+    "reason": "Unambiguous prose spelling; historical code unchanged.",
+    "status": "applied"
+  },
+  {
+    "article": "fibonacci-leonardo",
+    "before": "Part 1: Leonardo Random Access Lists",
+    "after": "Fibonacci — Part 1: Leonardo Random Access Lists",
+    "reason": "Restore the series context supplied by the original School of Haskell page.",
+    "status": "applied",
+    "field": "title"
+  },
+  {
+    "article": "fibonacci-search",
+    "before": "Part 2: Open-Ended Fibonacci Search",
+    "after": "Fibonacci — Part 2: Open-Ended Fibonacci Search",
+    "reason": "Restore the series context supplied by the original School of Haskell page.",
+    "status": "applied",
+    "field": "title"
+  },
+  {
+    "article": "oblivious-deamortized-st",
+    "before": "Part I: Deamortized ST",
+    "after": "Cache-Oblivious Data Structures — Part I: Deamortized ST",
+    "reason": "Restore the series context supplied by the original School of Haskell page.",
+    "status": "applied",
+    "field": "title"
+  },
+  {
+    "article": "cellular-automata-part-1",
+    "before": "Part I: From Theory to Pretty Pictures",
+    "after": "Cellular Automata — Part I: From Theory to Pretty Pictures",
+    "reason": "Restore the series context supplied by the original School of Haskell page.",
+    "status": "applied",
+    "field": "title"
+  },
+  {
+    "article": "cellular-automata-part-2",
+    "before": "Part II: PNGs and Moore",
+    "after": "Cellular Automata — Part II: PNGs and Moore",
+    "reason": "Restore the series context supplied by the original School of Haskell page.",
+    "status": "applied",
+    "field": "title"
+  },
+  {
+    "article": "cellular-automata-part-3",
+    "before": "Part III: A World in a Bottle",
+    "after": "Cellular Automata — Part III: A World in a Bottle",
+    "reason": "Restore the series context supplied by the original School of Haskell page.",
+    "status": "applied",
+    "field": "title"
+  },
+  {
+    "article": "revisiting-matrix-multiplication-part-1",
+    "before": "Part I: Bit Shuffling with Lenses and Isomorphisms",
+    "after": "Revisiting Matrix Multiplication — Part I: Bit Shuffling with Lenses and Isomorphisms",
+    "reason": "Restore the series context supplied by the original School of Haskell page.",
+    "status": "applied",
+    "field": "title"
+  },
+  {
+    "article": "revisiting-matrix-multiplication-part-2",
+    "before": "Part II: The Zen of Z-Ordering",
+    "after": "Revisiting Matrix Multiplication — Part II: The Zen of Z-Ordering",
+    "reason": "Restore the series context supplied by the original School of Haskell page.",
+    "status": "applied",
+    "field": "title"
+  },
+  {
+    "article": "revisiting-matrix-multiplication-part-3",
+    "before": "Part III: Extending Vector",
+    "after": "Revisiting Matrix Multiplication — Part III: Extending Vector",
+    "reason": "Restore the series context supplied by the original School of Haskell page.",
+    "status": "applied",
+    "field": "title"
+  },
+  {
+    "article": "revisiting-matrix-multiplication-part-4",
+    "before": "Part IV: IntMap!?",
+    "after": "Revisiting Matrix Multiplication — Part IV: IntMap!?",
+    "reason": "Restore the series context supplied by the original School of Haskell page.",
+    "status": "applied",
+    "field": "title"
+  },
+  {
+    "article": "revisiting-matrix-multiplication-part-5",
+    "before": "Part V: Heaps of Performance",
+    "after": "Revisiting Matrix Multiplication — Part V: Heaps of Performance",
+    "reason": "Restore the series context supplied by the original School of Haskell page.",
+    "status": "applied",
+    "field": "title"
+  },
+  {
+    "article": "revisiting-matrix-multiplication-part-6",
+    "before": "Part VI: A Most Significant Comparison",
+    "after": "Revisiting Matrix Multiplication — Part VI: A Most Significant Comparison",
+    "reason": "Restore the series context supplied by the original School of Haskell page.",
+    "status": "applied",
+    "field": "title"
+  },
+  {
+    "article": "harmless-algorithms-3",
+    "before": "ubiqitous",
+    "after": "ubiquitous",
+    "reason": "Unambiguous prose spelling; historical code unchanged.",
+    "status": "applied"
+  },
+  {
+    "article": "harmless-algorithms-4",
+    "before": "polgyons",
+    "after": "polygons",
+    "reason": "Unambiguous prose spelling; historical code unchanged.",
+    "status": "applied"
   }
 ]
