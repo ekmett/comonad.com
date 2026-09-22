@@ -1,4 +1,4 @@
-Quine was a Haskell and OpenGL playground. Its README puts it simply:
+Quine existed primarily to test the then-new [`gl` package](https://hackage.haskell.org/package/gl), the raw OpenGL bindings for Haskell ([source on GitHub](https://github.com/ekmett/gl)). It doubled as a graphics playground. Its README puts it simply:
 
 > This is just me waxing nostalgic and throwing together some code for playing with graphics.
 
