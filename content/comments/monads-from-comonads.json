@@ -12,19 +12,19 @@
       "id": "comment-61868",
       "author": "Josef Svenningsson",
       "date": "June 28th, 2011 at 10:54 am",
-      "markdown": "Thank you for an awesome blog post! Though I wonder where the ‘Co’ data type comes from. You just pull it out of a hat. Is there a story behind it?"
+      "markdown": "Thank you for an awesome blog post! Though I wonder where the ‘`Co`’ data type comes from. You just pull it out of a hat. Is there a story behind it?"
     },
     {
       "id": "comment-61869",
       "author": "Edward Kmett",
       "date": "June 28th, 2011 at 11:26 am",
-      "markdown": "Acutally, it \\_was\\_ pretty much pulled out of a hat. ;)\n\nIt came out as a happy accident in an email discussion with Russell O’Connor and Jacques Carette about exactly in what sense Store and State were dual."
+      "markdown": "Acutally, it \\_was\\_ pretty much pulled out of a hat. ;)\n\nIt came out as a happy accident in an email discussion with Russell O’Connor and Jacques Carette about exactly in what sense `Store` and `State` were dual."
     },
     {
       "id": "comment-130731",
       "author": "Zemyla",
       "date": "November 4th, 2015 at 3:30 pm",
-      "markdown": "It occurs to me that the form of Co w:\n\nCo w a = forall r. w (a -> r) -> r\n\nis to the Cokleisli arrow as the Yoneda encoding of m:\n\nYoneda m a = forall r. (a -> r) -> m r\n\nis to the Kleisli arrow. Is there a way to generalize this to any ArrowApply?"
+      "markdown": "It occurs to me that the form of `Co w`:\n\n```haskell\nCo w a = forall r. w (a -> r) -> r\n```\n\nis to the Cokleisli arrow as the Yoneda encoding of m:\n\n```haskell\nYoneda m a = forall r. (a -> r) -> m r\n```\n\nis to the Kleisli arrow. Is there a way to generalize this to any `ArrowApply`?"
     }
   ],
   "decisions": [

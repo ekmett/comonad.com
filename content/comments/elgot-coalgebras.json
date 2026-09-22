@@ -6,13 +6,13 @@
       "id": "comment-106277",
       "author": "Jan Bessai",
       "date": "October 12th, 2012 at 4:41 am",
-      "markdown": "This is rather old, but apo and g\\_apo need a small fix:  \n\\> apo psi = h .Right where h = InF . fmap h . (fmap Left . outF ||| psi)  \n\\> g\\_apo g f = h .Right where h = InF . fmap h . (fmap Left . g ||| f)  \notherwise they will not typecheck."
+      "markdown": "This is rather old, but `apo` and `g_apo` need a small fix:  \n\n```haskell\n> apo psi = h .Right where h = InF . fmap h . (fmap Left . outF ||| psi)\n> g_apo g f = h .Right where h = InF . fmap h . (fmap Left . g ||| f)\n```\n\notherwise they will not typecheck."
     },
     {
       "id": "comment-106278",
       "author": "JanBessai",
       "date": "October 12th, 2012 at 4:54 am",
-      "markdown": "The type signature of strength’ needs to be flipped  \n\\> strength’ :: Functor f => f a -> t -> f (t, a)"
+      "markdown": "The type signature of `strength’` needs to be flipped  \n\n```haskell\n> strength' :: Functor f => f a -> t -> f (t, a)\n```"
     }
   ],
   "decisions": [

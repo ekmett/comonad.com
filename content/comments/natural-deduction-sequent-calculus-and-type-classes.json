@@ -6,7 +6,7 @@
       "id": "comment-106932",
       "author": "danr",
       "date": "December 9th, 2012 at 5:41 am",
-      "markdown": "Programming with type classes in Haskell is remniscent of programming in Prolog, which indeed does a proof seach.\n\nCompare the Prolog membership predicate:\n\nmember(X,\\[X|Xs\\]).  \nmember(X,\\[Y|Xs\\]) :- member(X,Xs)\n\nwith this rough Haskell type class implementation (using tuples instead of lists):\n\nclass Member x xs\n\ninstance Member x (x,xs)  \ninstance Member x xs => Member x (y,xs)\n\nCheers!"
+      "markdown": "Programming with type classes in Haskell is remniscent of programming in Prolog, which indeed does a proof seach.\n\nCompare the Prolog membership predicate:\n\n```prolog\nmember(X,[X|Xs]).\nmember(X,[Y|Xs]) :- member(X,Xs)\n```\n\nwith this rough Haskell type class implementation (using tuples instead of lists):\n\n```haskell\nclass Member x xs\n\ninstance Member x (x,xs)\ninstance Member x xs => Member x (y,xs)\n```\n\nCheers!"
     },
     {
       "id": "comment-106949",
@@ -18,7 +18,7 @@
       "id": "comment-107068",
       "author": "Riccardo",
       "date": "December 20th, 2012 at 8:53 pm",
-      "markdown": "Not sure if this respects the implicit assumptions that you have in mind, but if you’re willing to change the syntax of your term language, you should be able to get more immediate correspondences between terms and the sequent calculus rules.\n\nFor instance, a term ‘let (y,z)=x in A’ corresponding to the AND-L rule, without requiring explicit substitution. This matches your intuitions about the pattern language, of course, but without relying on heavy pattern-based machinery.\n\nIMP-L corresponds to the term ‘let r = (f A) in B’ where r and f are variables of the right type (f a function t(A) -> t(B), and r of type t(B)), etc.\n\nYou can define standard application as an abbreviation if you have local binding (which you should be able to get as term syntax for the CUT rule):\n\n(A B) == let f = A in let r = (f B) in r\n\nDetails to be checked, of course, but back of the envelope, this might work."
+      "markdown": "Not sure if this respects the implicit assumptions that you have in mind, but if you’re willing to change the syntax of your term language, you should be able to get more immediate correspondences between terms and the sequent calculus rules.\n\nFor instance, a term ‘`let (y,z)=x in A`’ corresponding to the AND-L rule, without requiring explicit substitution. This matches your intuitions about the pattern language, of course, but without relying on heavy pattern-based machinery.\n\nIMP-L corresponds to the term ‘`let r = (f A) in B`’ where r and f are variables of the right type (f a function `t(A) -> t(B)`, and r of type `t(B)`), etc.\n\nYou can define standard application as an abbreviation if you have local binding (which you should be able to get as term syntax for the CUT rule):\n\n```haskell\n(A B) == let f = A in let r = (f B) in r\n```\n\nDetails to be checked, of course, but back of the envelope, this might work."
     }
   ],
   "decisions": [

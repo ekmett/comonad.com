@@ -6,7 +6,7 @@
       "id": "comment-16531",
       "author": "Edward Kmett",
       "date": "April 29th, 2010 at 11:06 am",
-      "markdown": "@Dougal:\n\nYou’ll still need to use mappend to define them, but a <> b — is so much easier on the eyes than a \\`mappend\\` b when it comes to using them."
+      "markdown": "@Dougal:\n\nYou’ll still need to use `mappend` to define them, but `a <> b` — is so much easier on the eyes than ``a `mappend` b`` when it comes to using them."
     }
   ],
   "decisions": [

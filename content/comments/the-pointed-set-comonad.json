@@ -6,7 +6,7 @@
       "id": "comment-5484",
       "author": "Edward Kmett",
       "date": "January 12th, 2009 at 10:04 am",
-      "markdown": "Do you mean that have no return, just bind? Monads without mzero are er.. just monads. ;)"
+      "markdown": "Do you mean that have no `return`, just `bind`? Monads without `mzero` are er.. just monads. ;)"
     }
   ],
   "decisions": [

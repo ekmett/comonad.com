@@ -6,7 +6,7 @@
       "id": "comment-1083",
       "author": "Edward Kmett",
       "date": "April 27th, 2008 at 3:09 am",
-      "markdown": "Another notion of g\\_dyna could be to allow the composition of a generalized anamorphism with a histomorphism rather than the one above which has a generalized histomorphism with an anamorphism.\n\nAllowing for them both together yields the near trivial declaration:\n\ng\\_dyna k = g\\_hylo (distCofree k)\n\nbut at that point its not clear that its a whole lot more specific than g\\_hylo."
+      "markdown": "Another notion of `g_dyna` could be to allow the composition of a generalized anamorphism with a histomorphism rather than the one above which has a generalized histomorphism with an anamorphism.\n\nAllowing for them both together yields the near trivial declaration:\n\n```haskell\ng_dyna k = g_hylo (distCofree k)\n```\n\nbut at that point its not clear that its a whole lot more specific than `g_hylo`."
     }
   ],
   "decisions": [

@@ -24,6 +24,8 @@ Open <http://127.0.0.1:4173/>. Both `/` and `/reader/` show the combined archive
 
 Edit `content/articles/*.md` and `content/articles.json` to publish writing. `templates/` contains figures; `tools/build-articles.mjs` renders the site. CSS and browser JavaScript in `dist/` are maintained source files, so do not delete that directory as a build-clean step. Generated article HTML is overwritten during builds.
 
+Public prose should discuss the subject of the page. Keep migration, preservation, research, and editorial bookkeeping in source records and project documentation. Never render raw research fields such as `uncertainty`, `dateBasis`, or `editionNote` as page copy. Demo captions explain the example and its controls; retain meaningful technical caveats, credits, and licenses.
+
 Normal article builds are offline after dependencies are installed. Acquisition scripts are separate, resumable operations; they preserve source bytes and do not overwrite edited Markdown. `content/corpus.json`, the asset manifests, and downloadable `source/articles/provenance.json` document origins and hashes.
 
 ## GitHub Pages
@@ -65,7 +67,7 @@ The pinned bootstrap currently targets Apple Silicon macOS; it installs only int
 
 ## Preservation and editorial policy
 
-Original bytes are retained. Unambiguous prose typos are corrected and logged in `content/editorial-changes.json`; suspected code or mathematical mistakes stay for review. Comments preserve wording and attribution. Their explicit inclusion decisions live in `content/comment-selections.json`; unselected records are not all claimed to have received individual manual spam review.
+Original bytes are retained. Unambiguous prose typos are corrected and logged in `content/editorial-changes.json`; suspected code or mathematical mistakes stay for review. Comments preserve wording and attribution. Reviewed code blocks, inline identifiers, and typographic code-quote repairs live in `content/comment-formatting.json`; the comment importer reapplies them and checks source hashes so changed originals require a fresh review. Their explicit inclusion decisions live in `content/comment-selections.json`; unselected records are not all claimed to have received individual manual spam review.
 
 Dates distinguish publication, presentation, revision, and upload. School dates may be revision dates. Talks use the known event day, month, or year; unknown days are visibly marked. Upload dates are fallbacks, never silently presented as event dates. Learning to Learn sits in 2014, with its 2017 mirror upload disclosed. The four Warsaw-published sessions have their own series navigation and verified June 2019 dates.
 

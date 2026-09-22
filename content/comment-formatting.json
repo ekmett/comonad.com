@@ -1,0 +1,892 @@
+{
+  "a-parsec-full-of-rats": {
+    "comment-75969": {
+      "sourceMarkdownSha256": "04547daff0cd212cd9b559033cccf93b74f3755ffb584e109f3642aeeae9f2f9",
+      "markdown": "@Victor:\n\nNot yet.\n\nHaskell is one of my use cases though, which is why the Literate and Layout parser transformers exist in the first place. My current focus has been on getting a usable C preprocessing parser transformer and rudimentary packrat support (because otherwise layout parsing is particularly expensive re-playing the ‘`whiteSpace`/virtual semicolon/virtual right brace’ parser at the same location over and over.\n\nThis is what led to this pair of articles.\n\nI do have a small prototype implementation of Daan Leijen’s HMF which uses trifecta to parse. Once I’m happier with it and obtain final permission to release it, that may serve as such a tutorial.",
+      "textEdits": []
+    }
+  },
+  "abstracting-with-applicatives": {
+    "comment-107120": {
+      "sourceMarkdownSha256": "a1ad734cf114f9bf242af990211985c9ba7ccb3d526da2f887d17684183287e2",
+      "markdown": "`Const c >>= f` doesn’t work\n\n`return a >>= f = f a` is a Monad law.\n\nConsider:\n\n```haskell\nreturn a >>= \\ _ -> Const \"hello\"\n```\n\nBut from that definition\n\n```haskell\nreturn a >>= \\ _ -> Const \"hello\" = Const \"\"\n```\n\nbut\n\n```haskell\n(\\ _ -> Const \"hello\") a = Const \"hello\"\n```\n\nYour proposal only works when `mempty` is the only value of your monoid. It works for `Const ()`, but nothing else really.",
+      "textEdits": [
+        {
+          "start": 75,
+          "before": "“",
+          "after": "\""
+        },
+        {
+          "start": 81,
+          "before": "”",
+          "after": "\""
+        },
+        {
+          "start": 122,
+          "before": "“",
+          "after": "\""
+        },
+        {
+          "start": 128,
+          "before": "”",
+          "after": "\""
+        },
+        {
+          "start": 135,
+          "before": "“”",
+          "after": "\"\""
+        },
+        {
+          "start": 150,
+          "before": "“",
+          "after": "\""
+        },
+        {
+          "start": 156,
+          "before": "”",
+          "after": "\""
+        },
+        {
+          "start": 165,
+          "before": "“",
+          "after": "\""
+        },
+        {
+          "start": 171,
+          "before": "”",
+          "after": "\""
+        }
+      ]
+    },
+    "comment-107123": {
+      "sourceMarkdownSha256": "32004562d6c1596e17efdcc27789eb73b54840ce1d7bcf7e0c22c9efad38c048",
+      "markdown": "Great article!\n\nI came across the `Sum` applicative for the first time just two days ago in this comment on Stack Overflow by Conor McBride \\[1\\]. There he notes `Identity` is the initial `Applicative` functor, so you can replace that last `Natural` instance with:\n\n```haskell\ninstance Applicative g => Natural Identity g where\n  eta (Identity x) = pure x\n```\n\n\\[1\\] [http://stackoverflow.com/questions/14022791/what-is-control-applicative-lift-useful-for/14022871#comment19369023\\_14022871](http://stackoverflow.com/questions/14022791/what-is-control-applicative-lift-useful-for/14022871#comment19369023_14022871)",
+      "textEdits": []
+    }
+  },
+  "clearer-reflection": {
+    "comment-11056": {
+      "sourceMarkdownSha256": "da17a81a0b4f27a33c6b023bd538860ace5d0303b4b80b77d776a66527bdb262",
+      "markdown": "@Sebastian:\n\nActually, I went through and tried to minimize the number of language extensions the package required. Two of the ones I eliminated were `EmptyDataDecls` and `KindSignatures`, since you can define a ‘bottom only’ datatype with a `newtype` wrapper, and you can perform some shenanigans to avoid the kind signatures once it is a `newtype`.\n\nHowever, when you don’t use the `newtype`’s constructor anywhere, `-Wall` gives you a warning. Rather than have the module spit out 8-9 warnings, I wrote the `Unused` typeclass to give a single reference to each constructor and to silence the compiler.",
+      "textEdits": []
+    },
+    "comment-11224": {
+      "sourceMarkdownSha256": "d8531685e4f366f62bdaba998883107c9770b90105eecbcfaf54aacc7504e3e2",
+      "markdown": "@Sjoerd:\n\nThe problem with that is that `Monoid` isn’t the only kind of thing we might want to reify into a type so we can reflect it as a dictionary.\n\nIf any other type had the same dictionary shape, and you took that approach then you could very easily conflate instances.\n\nIf the reflection library wanted to concern itself with every type class in Haskell, that would work fine, but otherwise, you would be stuck with orphan instances. ;)",
+      "textEdits": []
+    }
+  },
+  "cozipping": {
+    "comment-1168": {
+      "sourceMarkdownSha256": "0e40bf260a6858a1ac95e58c365bbd48017be259f2186abd24bc3283baf8120b",
+      "markdown": "An interesting post, I was thinking along a slightly different (and wrong) route myself.\n\nFirst of all, shouldn’t `cozip` be called `counzip` and vice-versa? `fzip` has type “`(f a * f b) -> f (a*b)`” doesn’t taking the dual give “`(f a + f b) Either (f a) (f b)`”?\n\nI was thinking about the type\n\n```haskell\n> almostcozip :: f (Either a b) -> (f a, f b)\n```\n\nThis function can be implemented unambiguously for `[]` and `Maybe`, and is in quite useful in practice. It also has a right inverse,\n\n```haskell\n> acounzip :: (f a, f b) -> f (Either a b)\n```\n\nIf `(f x)` is a `Monoid` then  \n\n```haskell\n> acounzip (fa, fb) = fmap Left fa `mappend` fmap Right fb\n```\n\nThinking about it some more, there is also the dual type\n\n```haskell\n> azip :: Either (f a) (f b) -> f (a,b)\n> aunzip :: f (a,b) -> Either (f a) (f b)\n```\n\nBut I can’t think of any nice function with this type.",
+      "textEdits": []
+    },
+    "comment-1171": {
+      "sourceMarkdownSha256": "1c388773a5fbba7778fd951eeca7c356f8d0ef3f4b21846c93a52e0b3f4e905a",
+      "markdown": "You’re right, I flipped the names when I was slapping together the code over lunch. I had left my notes at home. I’ll fix it up.\n\nHrmm, of course now you need an extra ‘fair’ `acounzip` as well.",
+      "textEdits": []
+    },
+    "comment-18878": {
+      "sourceMarkdownSha256": "51aa17ccf8ab47201fc9c82727c0b72f8a660abd80878331df24cf1862ba5a60",
+      "markdown": "Counzipping makes a pretty good toy model of the runtime type erasure that happens in Java and Scala generics — it pushes a tag from the root of a container down into the individual ‘holes’. Cases where the `cozip` doesn’t exist become unsafe ‘unchecked casts’. I wonder if this sort of analysis could be used as a basis for better compile-time analysis of where unsafety occurs.",
+      "textEdits": []
+    }
+  },
+  "curried-scheme": {
+    "comment-11336": {
+      "sourceMarkdownSha256": "48b9bad958ec8ff7b1573a72b7b564441898effba982bb83bcae4799e08a69fb",
+      "markdown": "@Anthony:\n\nGood point. I was trying to avoid discriminating, so I could just work parametrically, but a quick `procedure?` check isn’t such a high price to pay to handle the base case more gracefully.\n\nI have two concerns with this proposed fix though.\n\n1.  One is that this will silently eat the remaining arguments when you try to handle a non-procedure. Perhaps it should do the `null?` check on `args` rather than swallow them in the non-procedure case.\n2.  The other is more subtle and has to do with parametricity. Since we now may or may not invoke the result, I might not be able to use this in a number of situations inside of my toy monad library.\n\nBy redefining `(define-curried name body)` to just use a `define` and migrating its current behavior to `(define-curried (name) body)` this obtains, perhaps a more pleasing result. Patching it thus:\n\n```scheme\n((_ () body)\n     (lambda args\n         (if (null? args)\n             body\n             (apply body args))))\n```\n\nyields a result that is identical to the handling of the other two cases in behavior.\n\nThen `(define-curried x 5)` does the right thing, and just gives you 5.  \nand `(define-curried (x) 5)` gives you a nullary function that when invoked will give you back 5, but will try to pass any superfluous over-applied arguments to 5 and crash.",
+      "textEdits": []
+    },
+    "comment-11379": {
+      "sourceMarkdownSha256": "eaa4a6c7229f58fd273ab072f161ff847b6a9aeb9a3b89a509f384c66c6eac91",
+      "markdown": "Hi Dan,\n\nThe code above provides both.\n\n```scheme\n(define id (curried (x) x))\n```\n\nuses the lambda form (perhaps ‘`curried`’ should be renamed ‘`curried-lambda`’ ?)\n\nOn the other hand,\n\n```scheme\n(define-curried (id x) x)\n```\n\nprovides a definition with a `curried` argument list in the same fashion that `(define (id x) x)` desugars to `(define id (lambda (x) x))` — a convenience that I seem to recall you don’t like using. ;)",
+      "textEdits": []
+    }
+  },
+  "deriving-strength-from-laziness": {
+    "comment-51571": {
+      "sourceMarkdownSha256": "9309a92d4486dbd798903da935246ae22e65d6ebe68d258f3d3cbbce784ec41d",
+      "markdown": "BMeph: 1.) nah, the costrength used here was derived from relaxing the notion from a comonad to a functor in the same way that strength was weakened from `mstrength`.\n\n2.) Even with some random `Monoid` constraint on e it wouldn’t give you the power to enumerate all possible values of e, to complete the costrength.",
+      "textEdits": []
+    },
+    "comment-126210": {
+      "sourceMarkdownSha256": "2b4fbb69a2aa6b51ec1f24ed002cf7ed47af6dc5afee362b4c7fcb50272a832f",
+      "markdown": "@blaisorblade:\n\nEven worse than that:\n\n`costrength` as defined here is actually wrong!\n\nI need to spend some time writing that up, but if you check the dual of the strength laws the second one fails for this form!",
+      "textEdits": []
+    },
+    "comment-132152": {
+      "sourceMarkdownSha256": "fd32df5aebdd5b0859c93ad4cadf51ba0f43be67745262ae14733490f176bee9",
+      "markdown": "Just some typo:  \nIn Scheme you can define `costrength` with a the use of `call-cc`, which I’ll leave as an exercise to the reader.\n\nI am also having these, not sure if it is mine or your problem:  \n\n```haskell\nmstrength ma b = ma >>= (\\\\a -> return (a,b))\nmstrength' ma b = ma >>= return . (\\\\a -> (a,b))\nstrength fa b = fmap (\\\\a -> (a,b)) fa\n```\n\nusing firefox",
+      "textEdits": [
+        {
+          "start": 197,
+          "before": "’",
+          "after": "'"
+        }
+      ]
+    }
+  },
+  "dynamorphisms-as-chronomorphisms": {
+    "comment-1083": {
+      "sourceMarkdownSha256": "d402779004d5ba39ce037cdcecae73d3c8f349299047c08c20687482ebea761f",
+      "markdown": "Another notion of `g_dyna` could be to allow the composition of a generalized anamorphism with a histomorphism rather than the one above which has a generalized histomorphism with an anamorphism.\n\nAllowing for them both together yields the near trivial declaration:\n\n```haskell\ng_dyna k = g_hylo (distCofree k)\n```\n\nbut at that point its not clear that its a whole lot more specific than `g_hylo`.",
+      "textEdits": []
+    }
+  },
+  "elgot-coalgebras": {
+    "comment-106277": {
+      "sourceMarkdownSha256": "2e3145c84d1f2805aedca5c443b4d8b2055a59ffc919093673aad419212249c3",
+      "markdown": "This is rather old, but `apo` and `g_apo` need a small fix:  \n\n```haskell\n> apo psi = h .Right where h = InF . fmap h . (fmap Left . outF ||| psi)\n> g_apo g f = h .Right where h = InF . fmap h . (fmap Left . g ||| f)\n```\n\notherwise they will not typecheck.",
+      "textEdits": []
+    },
+    "comment-106278": {
+      "sourceMarkdownSha256": "f2f050793cabeb403c4a5ceeab3c33c49747745eff46cb927e76418080ae6aa4",
+      "markdown": "The type signature of `strength’` needs to be flipped  \n\n```haskell\n> strength' :: Functor f => f a -> t -> f (t, a)\n```",
+      "textEdits": [
+        {
+          "start": 52,
+          "before": "’",
+          "after": "'"
+        }
+      ]
+    }
+  },
+  "fast-circular-substitution": {
+    "comment-127728": {
+      "sourceMarkdownSha256": "c8055c3a3c6aa6c8377de1f1b9f7904bd24984a09dbfa126054bfa120f160dee",
+      "markdown": "That is there for the body of `Lam`, hence the `_` that is there, but the type of the lambda doesn’t have the bound variable occurring inside of it, and so isn’t included in that guarantee and has to be added separately.",
+      "textEdits": []
+    }
+  },
+  "finger-trees": {
+    "comment-16531": {
+      "sourceMarkdownSha256": "219cd83237f527f7c1ab11bbb7758170a531e18af97be9b012ff0ccb994ff4bf",
+      "markdown": "@Dougal:\n\nYou’ll still need to use `mappend` to define them, but `a <> b` — is so much easier on the eyes than ``a `mappend` b`` when it comes to using them.",
+      "textEdits": []
+    }
+  },
+  "forgetful-laziness": {
+    "comment-5401": {
+      "sourceMarkdownSha256": "566744da79866e1c40823aeb8942fb59569ab38d058bc0753b57935e18e904d7",
+      "markdown": "Well, there are two scenarios. In one you can get huge chains of unevaluated thunks in code that isn’t sufficiently strict for simple accumulated `(+1)` type modifications. That is pretty much what you describe. One potential remedy is to gamble on optimistic evaluation techniques like from Robert Ennals’ dissertation. Though, I seem to recall hearing that he himself seems to think lazy semantics isn’t a good default. Perhaps burnout from implementing all of that machinery to get optimistic evaluation to work in GHC?\n\nAnother leak happens in CAFs. This is the one I sought in a fairly poorly thought out manner to resolve here.\n\nBecause there always exists a reference to the object, if you have a CAF that is, say, an infinite list of primes and you ever evaluate the millionth prime, then you keep the entire spine of the list forever.\n\nIf I still thought it to be a viable idea the answer would probably be to only forget stuff that was bigger than the environment contained in the thunk according to some measure, but then that leads to the question of what constitutes a robust metric for size in the presence of cycles, etc.\n\nAlternately I suppose you could consider all references from an evaluated thunk to be weak references. That would let the garbage collector have its way with them, and you would only get to forget evaluations that still had fully intact environments.",
+      "textEdits": []
+    },
+    "comment-5412": {
+      "sourceMarkdownSha256": "dd569a6accd671656714606df6bc852500f266a0a32e09fe27eb4b4559e4b4c4",
+      "markdown": "\\> …he himself seems to think lazy semantics isn’t a good default  \nFor me it works quite well so far and doesn’t get in the way too often. I can’t complain. Is there really such a thing as a good default evaluation semantic, or are we just so used to the workarounds we employ in conjunction with eager evaluation that we no longer notice them anymore? Take forward iterators for iterating through the results from a query on some container. Instead of a forward iterator we could just return a list with all the result values. With strict evaluation this might be a bit of a problem since keeping the entire list in memory takes a bit of space, whereas with lazy semantics we no longer need any iterators and we can work with all those wonderful list functions like `foldr` instead of duplicating them for iterators. Thus, seen from this angle forward iterators are just a workaround for the lack of lazy lists, albeit we usually don’t think of them in this way. (In the iterator example call-by-name as well as your “forgetful-laziness” scheme might be even more of an improvement, just in case we want to keep a reference to an earlier entry whilst traversing. Lazy evaluation might keep too much of the spine in this case).\n\n\\> …Perhaps burnout from implementing all of that machinery to get optimistic evaluation to work in GHC?  \nCan’t comment on it, never took a look at the GHC source nor at his optimistic evaluation papers (although I always wanted to take a look at GHC to see if I could figure out a way to try some of my ideas).\n\n\\> …huge chains of unevaluated … That is pretty much what you describe  \nMostly, but I also had thunks like “`a ! 1`″ in mind, where “a” would be some huge array that isn’t referenced from anywhere else. Once the thunk is evaluated the GC could usuallly free the array. However with forgetful evaluation we have to keep the array around since the thunk might be reevaluated.\n\n\\> Because there always exists a reference to the object, if you have a CAF that is, say, an infinite list of primes and you ever evaluate the millionth prime, then you keep the entire spine of the list forever.  \nIt depends, doesn’t it? Consider a list of naturals instead of a list of primes according to the following (otherwise maybe somewhat unusual) code fragments  \n\n```haskell\nnats1 = 1 : map (+1) nats1\nnats100 = drop 99 nats where nats = 1 : map (+1) nats\nprint (nats1 !! 99)\nprint (nats100 !! 0)\n```\n\nAs it is written every list entry in `nats1` and `nats100` depends directly on the previous entries result (which is somewhat simpler than for a prime sieve where each entry directly depends on many previous ones). Now forcing `(nats1 !! 99)` and `(nats100 !! 0)` basically do the same, return the 100′th entry from a list of naturals. Except of course in the case of `nats1` we keep the evaluated spine with the first 100 entries around for later reuse whereas with “forgetful laziness” we could blissfully discard the spine and only keep the first thunk. However for `nats100` we might get somewhat the opposite problem. With lazy evaluation, after forcing `(nats100 !! 0)` there is no reference left to “`nats`” (the “where” part in `nats100`), the head of `nats100` contains the evaluated value and the tail consists of a thunk that references the value in the head, but no other previous values, thus the gc could discard the entire front of the spine from `nats` up to the head from `nats100`, keeping only the head of `nats100` itself. With “forgetful laziness”, if the GC starts to traverse the root pointers, first encounters `nats100`, it might discard the result in the head, thereby being obliged to keep the thunk which references the previous element, the gc follows this reference, discards the result and again needs to keep the reference to the next previous element in order to be able to recompute the result and so on until the first thunk for the head of “`nats`”. So here we would end with a cascading chain of thunks when using “forgetful laziness” whereas normal “laziness” could collect most of the spine only keeping the head. Given how similar “`nats1 !! 99`″ and “`nats100` !! 0″ appear to us otherwise, their different behaviour under the two evaluation schemes might come to us as a a bit of surprise.\n\n\\> Alternately I suppose you could consider all references from an evaluated thunk to be weak references. …you would only get to forget evaluations that still had fully intact environments.  \nThis is interesting, if we had “`nats100′ = drop 99 nats1`″ and force “`nats1 !! 99`″ and “`nats100′ !! 0`″, then might the space usage depend on the order in which the gc encounters the roots of `nats1` and `nats100′` ? Might we get a cascading chain in one case and keep the evaluated spine in the other? I might have to think through it.\n\n\\> … an infinite list of primes and you ever evaluate the millionth prime, then you keep the entire spine of the list forever.  \nIt just occured to me, that you might have the same problem with the ‘forget at most once’ policy but in an indeterministic way. Suppose again a list of naturals as above instead of primes and you are evaluating ‘`nats !! 999999`′. If the gc starts collecting after the evaluation, then indeed the entire spine gets collected and only the head of `nats` is left. However imagine the gc starts collecting during the evaluation of ‘`nats !! 999999`′, say when already the next to last value has been computed, then the gc would collect all those elements and mark them as ‘collected once’. When the gc has finished, the computation for the last element would start, triggering recomputation of all the previous elements. However the next time the gc starts, it can’t recycle anything of the spine except for the last element since all the others have already been ‘forgotten once’. Now if we had a program that has a hundred such lists and cases and let each fully evaluated list take up 100MB, then depending on when the gc starts in the best case the program won’t take up more than around 100MB and in the worst case it might take 100\\*100MB if the gc collects at the most inopportune moment thereby preventing all those spines from getting collected. So sometimes the program would trash the memory and in other cases it would run just fine, you might not notice the problem until many runs latter. This could be fun, think of the outcry: “My program just runs fine most of the time, but sometimes it completely trashes the memory on the same input. I have now already spent weeks on debugging it but I just can’t figure out the reason. Help!” I guess there are less surprises with lazy-eval.",
+      "textEdits": []
+    },
+    "comment-5420": {
+      "sourceMarkdownSha256": "1c3b80c2898dc0f9d85756b23149c289049e292af3b04b9e0b0e6a9aa29cdc33",
+      "markdown": "The non-deterministic problem with any forgetful laziness policy is the bit I had posted the \\[Edit:\\] block in the original post for, commenting on with the possible loss of sharing. If you had relied on shared thunks for your asymptotic bounds as in, say, dynamic programming then the forgetful laziness thing can be really bad. ;)\n\nThe problem I was alluding to with the CAF list was a little bit simpler than the environment problem you describe. If you have a CAF, it is always considered referenced and is hence uncollectable.\n\nSo something as simple as:\n\n```haskell\nnats = [1..]\n```\n\nwhen used at the module level, will never get collected. This is mostly so things like global MVars can be created using `unsafePerformIO`, etc.\n\nThe only way I was able to redeem the idea of forgetful laziness was to execute it in a setting that is fully hash consed ala linear lisp, but there are even issues with that, mostly when it comes to trying to find a good hash function that can work recursively, since you \\_can\\_ get cycles in a lazy setting – unlike linear lisp – due to the presence of thunk evaluation.\n\nIt can work if you do something like modify GRIN or the STG to perform hash-consing lookup on let binding, but that also has corner cases, Interestingly, in a GRIN setting, using hash consed thunk construction is effectively memoizing every function application that isn’t inlined.\n\nMixed with speculative evaluation to avoid explicit construction of small thunks, it has always struck me as an amusing toy.\n\nIt all runs into theoretical results w.r.t. optimal lambda calculus reduction strategies that prove that in the general case you can’t get it right all the time, but it is fun trying to get it close.",
+      "textEdits": []
+    }
+  },
+  "free-modules-and-functional-linear-functionals": {
+    "comment-64180": {
+      "sourceMarkdownSha256": "02ea01a51b1feb17464cf342bae24574c0d9d74e2cdbd2c83a65695d8ac2a982",
+      "markdown": "This is what I get for trying to nod to the fact that different authors use the same words for different things.\n\nThe vocabulary I’m working with here is that a semiring is a pair of semigroups with a pair of distributive laws and that a rig adds a 0 and 1 to a semiring.\n\nSome authors call what I am calling a rig above a semiring, which is somewhat annoying because the semi- just means ‘not-quite’ in this setting, and has no connection to the relationship between group and semigroup. Moreover it leaves the question of what to call the pair-of-semigroups construction that I’m calling semiring above. The name those authors often use is “ringoid”, but that conflicts with the much more useful use of ringoid for referring to Ab-enriched categories, which is likely to wind up in my semigroupoid package.\n\nIf a group is a groupoid with one object then a ringoid is a ringoid with one object.\n\nSo in the vocabuary I’m using here, we get:\n\n```text\nSemiring <= Rig <= Ring\n```\n\nwhich parallels\n\n```text\nSemigroup <= Monoid <= Group\n```\n\nby adding unit(s) and additive inverses respectively.\n\nI’ll see if I can clear up the verbage to make it clearer.",
+      "textEdits": []
+    },
+    "comment-64236": {
+      "sourceMarkdownSha256": "eae3cd9826700a92dc17dc692fb866d5c74a5c746cd10a446d97d685be267305",
+      "markdown": "@beroal: i didn’t make them symbolic because they have the problem that what do you name the three different operators for ((N+1)\\*), (N\\*) and (Z\\*) ?\n\nwhereas the precedent of `log1p` at least gives some intuition to the name `replicate1p`, and the action of replicate on lists if the repetition of a monoidal value. I had, however originally started using `(#*)` and `(*#)` for times and may revert. They are mostly provided as reasonable default implementations for the natural number multiplication and integer multiplication requirements placed on you by the module superclasses.\n\nAs for the free module, technically I’m permitting the infinite free module. Haskell provides me a largely coinductive universe, I’d be remiss in not taking advantage of it. I’ll throw an (infinite) in there. ;) But unlike the classical case I can’t prove the duality in most cases to begin with and I’m not able to enumerate the set of all e in E such that `E -> R` is non-zero except when the set E is finitely enumerable itself, because I can’t intensionally inspect the function I’m given. Effectively the constraint moves from requiring the function to have a finite number of non-zeros to requiring that any linear functional can only inspect a finite number of vectors, which being constructive is all it can do anyways.\n\nThe invariant in question is linearity. One (potentially conservative) way to enforce that would be to never apply our continuation vector twice and take the product of the results (or add it to some value in the ring), but instead only multiply it by values we have lying around in the ring or add and subtract them. If you think about it, quantifying over the choice of a module then prevents violations of linearity. `\\k -> r .* f k` is well typed, we can plumb in zeroes, etc, but `\\k -> f k * f k` requires our module be strengthened to a semiring, and the unmentioned but also non-linear `\\k -> f k + r` also would fail to type check, since `f k :: m`, and under quantification over the module all we’re permitted to do is use the `(.*)` and the `(+)` from our module. the reason this is a problem is if you want to use the zero from a semigroup-with-zero module, you’d need a new type.\n\nThere is also a performance impact from the fact that we effectively use the `LeftModule` dictionary as an interpreter, and most damningly it costs us the ability to use representable-tries for cheap memoization.",
+      "textEdits": []
+    }
+  },
+  "free-monads-for-less-2": {
+    "comment-104638": {
+      "sourceMarkdownSha256": "0b0a292292f1f70b3eb7d0234b9ba4453ac36dc387dd10a867eb057a8415276a",
+      "markdown": "shouldn’t the type of `improve` be\n\n```haskell\nFunctor f => (forall m. MonadFree f m => m a) -> Free f a\n```\n\ninstead of\n\n```haskell\n(forall a. MonadFree f m => m a) -> Free f a\n```",
+      "textEdits": []
+    }
+  },
+  "free-monads-for-less-3": {
+    "comment-61376": {
+      "sourceMarkdownSha256": "6a0febaf5d50b6c0287b08dea9564501e54e268e4fda1354c798ff53327f4de0",
+      "markdown": "Your language’s `IO` type is extremely reminiscent of the old pre-monad Haskell days of `main :: [Response]->[Request]`. Except that with the coroutine structure you ensure that requests and responses can’t get out of sync. That’s quite elegant. Much nicer than the `RealWorld` baton in a lot of ways.\n\nHave you considered how parallelism plays into this model of I/O?",
+      "textEdits": []
+    },
+    "comment-61383": {
+      "sourceMarkdownSha256": "940b56a36903526f0c16c989170afeaa7fbdd6736191077a7eba67f83b0ed347",
+      "markdown": "@Wren: parallelism works fine and was a large portion of the motivation for this approach. A program exists in a quiescent state. From the outside (a thread), I can ask a term to evaluate itself apply itself to an argument, and do case analysis upon the result. We apply that to `main` and keep pumping. Any of those operations can be performed in parallel; the answers to them are all referentially transparent! Hence we can have as many threads running as we want demanding those answers. We aren’t passing a world. The evaluator just responds transparently to demands from the RTS, potentially many such demands simultaneously.",
+      "textEdits": []
+    },
+    "comment-61413": {
+      "sourceMarkdownSha256": "ea7505e3166b7776762ae933a195901d2e8ddb556442c193be2f29ce8b9e83b6",
+      "markdown": "After being clumsy for a while, I reached the end. Great post.\n\nReordering some arguments in `IO` to\n\n```haskell\n(forall i o. (i -> r) -> FFI o i -> o -> r)\n```\n\ngives the more concise\n\n```haskell\nunsafePerformIO (IO m) = m id fmap\n```\n\nwhich for simple FFI functions is\n\n```haskell\nunsafePerformIO (IO m) = m id (.)\n```",
+      "textEdits": []
+    },
+    "comment-106004": {
+      "sourceMarkdownSha256": "1b754522533744ac702c13455a04fcbf520d9e580b470f3dbda4b3889c6a8333",
+      "markdown": "The difference is in order to support new operations with the usual free monad/a la carte approach you need to define a new data type or a new constructor, or tuple up more and more stuff and pay a higher and higher cost when accessing the next constructor.\n\nWe use this in a language we have here at S&P Capital IQ called Ermine as our only FFI mechanism. It isn’t something you could bolt into, say, GHC without changing out pretty much everything in the language, but in a new Haskell implementation, it has the benefit that you don’t need to deal with magic `RealWorld` tokens and then restrict transformations that may attempt to commute past them.\n\nThis enables you to transform the language more easily, in exchange, we denote operations with this separate FFI type, rather than primops, and view the runtime system as an external agent driving an asymmetric coroutine.",
+      "textEdits": []
+    },
+    "comment-106223": {
+      "sourceMarkdownSha256": "9256e9082ae3307295ea8dc9a03cf5c9efe99fd58c77ea9cb2d25b1c23ae7004",
+      "markdown": "Ok, I understand the cost of tupling up more and more and that being undesirable. Also, you’re right that adding new constructors breaks the whole “a la Carte” notion.\n\nI’m just looking for alternatives to the typical way of building FP apps of using a monad transformer stack with `ReaderT` and `StateT` and type-classes for all the data you want to inject (config, db connections, etc.). I was looking at the a la Carte approach as a way of doing that. Although, to be fair my distaste for this approach comes from a Scala app where it became a PITA to manage everything and if it had been written in Haskell the experience might have been different.",
+      "textEdits": []
+    },
+    "comment-106228": {
+      "sourceMarkdownSha256": "5f377bdf154094a0eee16744c8265e4bafd10f423924c8bc83fd2432adee6b39",
+      "markdown": "The irony with that is that it is particularly easy to add cases to a ‘`Free`’/a la carte monad in scala. Just don’t seal the class. ;)\n\nTo mitigate the boilerplate in Haskell at least, the typeclasses for config, db connection, etc. can be autogenerated by something like `makeClassy` from my lens package.",
+      "textEdits": []
+    }
+  },
+  "free-monads-for-less": {
+    "comment-105455": {
+      "sourceMarkdownSha256": "be28ad4c61d90870b5f640add19d13cd882e7a9a52fe01ae67f08ee79e51eda3",
+      "markdown": "Hi,\n\nThank you for this very informative post.\n\nYou’ve just forgotten to declare `f` to be a functor when defining `MonadFree f (Codensity m)` instance.\n\nRegards",
+      "textEdits": []
+    },
+    "comment-105460": {
+      "sourceMarkdownSha256": "4cb969c2a42ce5b38c469ec6c917aa480a0e52dc3f075ff261467dd15d4b8238",
+      "markdown": "Fixed. I updated it by constraining `MonadFree` instead. It works correctly in the library I referenced. =)",
+      "textEdits": []
+    },
+    "comment-106387": {
+      "sourceMarkdownSha256": "69d89ca75fedbaaa97f5087c2f02cf72c7fcfea46efa13f5df4b34fd2836643a",
+      "markdown": "I’m really fascinated by the idea of correct-by-construction monads. One question, though. `Control.Monad.Free` seems very similar to the `Control.Monad.Prompt` module. What is the relationship between the two?",
+      "textEdits": []
+    },
+    "comment-125515": {
+      "sourceMarkdownSha256": "fffcd78ce378aec593dcc94a49a3f1bb515e18981e21a166fbec5e75439f087d",
+      "markdown": "Hi,  \nI was looking for the `Free` type on the package indicated in the post, but it seems that in the latest version there’s no `Control.Monad.Trans.Free` subpackage.\n\nWas it moved somewhere else?\n\nThanks.",
+      "textEdits": []
+    }
+  },
+  "free-monoids-in-haskell": {
+    "comment-128414": {
+      "sourceMarkdownSha256": "5f0dacb116fc89e3b9516d1cdcc628b5f3de02e4454ab3b7395ed1a341fd56cb",
+      "markdown": "Incidentally, `(a -> m) -> m` is the free algebra for the continuation monad. The monoid instance for `(FM a)` corresponds to what I think should be the `MonadPlus` instance of the continuation monad. By the way: Which of the existing `Monoid` instances are actually \\`proper’ instances in the sense that the denotational semantics of `mempty` and make the semantic domain (including bottom and infinite values) a monoid?",
+      "textEdits": []
+    },
+    "comment-128415": {
+      "sourceMarkdownSha256": "8ee2566c862341c745a2a0bf2ec8c29eda7cbd54aa156438b0a44aa4352882f2",
+      "markdown": "Is `FM` a monad? It seems yes: Just use `return` `(=embed)` and `>>=` of the continuation monad. Also, monoids should now be `FM`-algebras. What is the algebra structure map `Monoid a => FM a -> a`? The first thing that comes to mind is:  \n\n```haskell\nstructure :: Monoid a => FM a -> a;\nstructure (FM f) = f id\n```\n\nAt least `struct.embed = id` is true.",
+      "textEdits": []
+    },
+    "comment-128416": {
+      "sourceMarkdownSha256": "5d8466e6354b508462893ea2f6dc8a354ea3e8688614a500ca8fa7dd52653a88",
+      "markdown": "Imm: in a total language, this does not apply. Types are set-like, and the free monoid is a type of finite sequences. Types containing infinite sequences would not be free, because there is no means to map them correctly into other monoids, because you are not allowed to fold them.\n\ndramforever: The point of this post was to show that the free monoid in Haskell is a type that contains infinite values. It is incorrect to use set-theoretic intuition and say that the free monoid only contains finite sequences (at least, if you care about things beyond a “fast and loose” level).\n\nThis is the same reason that data types contain infinite values in Haskell. They are still inductive definitions, but the induction is properly understood to be on domains, not sets. The domain structure induces the infinite values, despite induction ‘normally’ only giving you finite values in set theory. The same thing happens for free things.\n\nOlaf: I think most `Monoid` instances are fine. The thing you usually have to be careful of is not being too lazy. For instance, if you write ‘`mappend _ _ = ()`’ for the unit monoid, it is wrong, because then ‘`mappend mempty undefined = ()`’, when it should be `undefined`. Most definitions can’t get away without looking at the arguments, though, so they don’t have this problem. `(Monoid a, Monoid b) => Monoid (a,b)` is another case where you’d have to be careful, though.\n\n`FM` is a monad, and you have the relevant structure correct. It’s also a `MonadPlus` that does the ‘obvious’ thing.",
+      "textEdits": []
+    },
+    "comment-145073": {
+      "sourceMarkdownSha256": "bcdf40048ec671f46d59dfe0b5be63554f77008f00824842a373a6314323a8fd",
+      "markdown": "Olaf pointed out that `FM` is indeed a `Monad`. For my own masochistic pleasure, I’ve been trying to write an `Extend` instance for `FM` (as comonad is impossible with the presence of `None`).\n\nTo borrow Haskell notation:\n\n```haskell\nNone =>> f = None\nl : r =>> f = ???\nx =>> f = Single $ f x\n```\n\nI seem to have hit a BST branch without a root node; is there any way to implement `Extend` for the `:` case? The best attempt I’ve made leads to `(l =>> f) : (r =>> f)`, but this seems to be “skipping” a step.",
+      "textEdits": [
+        {
+          "start": 86,
+          "before": "`",
+          "after": ""
+        },
+        {
+          "start": 93,
+          "before": "`",
+          "after": ""
+        },
+        {
+          "start": 146,
+          "before": "`",
+          "after": ""
+        },
+        {
+          "start": 151,
+          "before": "`",
+          "after": ""
+        },
+        {
+          "start": 282,
+          "before": "`",
+          "after": ""
+        },
+        {
+          "start": 289,
+          "before": "`",
+          "after": ""
+        },
+        {
+          "start": 296,
+          "before": "`",
+          "after": ""
+        },
+        {
+          "start": 298,
+          "before": "`",
+          "after": ""
+        },
+        {
+          "start": 333,
+          "before": "`",
+          "after": ""
+        },
+        {
+          "start": 349,
+          "before": "`",
+          "after": ""
+        }
+      ]
+    },
+    "comment-191664": {
+      "sourceMarkdownSha256": "d4cc05ade0b945dfdbdfee91f9df0f65da2b4c062c49785513a3ebda7f06e7b4",
+      "markdown": "Could the following be the monad bind for `FM`?\n\n```haskell\nbind :: FM x -> (x -> FM y) -> FM y\nbind phi k = unFM phi k\n```\n\nIt uses the fact that `FM` has a `Monoid` instance, so `phi` can be applied to the Kleisli map `k`. This looks quite different from the Continuation monad’s bind.",
+      "textEdits": []
+    }
+  },
+  "generalizing-dot": {
+    "comment-3": {
+      "sourceMarkdownSha256": "167db40f66c55d539b9068cdd1ef228f7a371a2c47302db044d04d56e63bd559",
+      "markdown": "As an aside, the idea came from observing the fact that [lambdabot](http://www.cse.unsw.edu.au/~dons/lambdabot.html)’s pointfree conversion command `@pl` had taken to using `fmap` instead of `(.)` in a lot of places.",
+      "textEdits": [
+        {
+          "start": 100,
+          "before": "`",
+          "after": ""
+        },
+        {
+          "start": 105,
+          "before": "`",
+          "after": ""
+        }
+      ]
+    },
+    "comment-42556": {
+      "sourceMarkdownSha256": "09ec8940b1ada2946567161b9b572becf84395242bb3072f618d33f488aaa689",
+      "markdown": "Another great post and really neat idea. I tried  \n\n```haskell\n((+2) . (*3)) 5\n```\n\nand also  \n\n```haskell\n((+2) . (*3)) $ 5\n```\n\nbut this  \n\n```haskell\n(+2) . (*3) $ 5\n```\n\ncomplains about a missing `Num` instance for the literal ‘5′. It makes me wonder why the 5 is accepted in any case, as it’s not (here at least) an instance of `Functor`?",
+      "textEdits": []
+    },
+    "comment-42597": {
+      "sourceMarkdownSha256": "036421c75b2237804e9fda79f8a492c8f23353920adc2e93dc741085c8928b12",
+      "markdown": "Paul:\n\nBack when I wrote this post I gave the updated `(.)` the wrong precedence, it should be\n\n```haskell\ninfixr 9 .\n```",
+      "textEdits": []
+    }
+  },
+  "generatingfunctorology": {
+    "comment-1305": {
+      "sourceMarkdownSha256": "c6977dd821178cb457850ca7005f4303fed2a6926611bd1e15138bbe94d766c6",
+      "markdown": "Flajolet and Sedgewick have a book called “Analytic Combinatorics” along these lines. It was available as a free pdf download for a while, but may actually be published at this point.\n\nYour work on this is really interesting. I have, for years, had the damnedest time wrapping my head around generating functions. This presentation of Haskellisms as generating functions seems very interesting, and might be helpful in gaining an intuition in this area.\n\nHow would you model “evaluation” of your generating functions? I know how a `Maybe` monad behaves in the Haskell interpreter. Having defined it as you do, how do you combine it with other types and values? What does an expression look like, and what does reduction of one expression to a simpler express look like?",
+      "textEdits": []
+    },
+    "comment-1307": {
+      "sourceMarkdownSha256": "71aa55b33215ee0213b6a4f13450b8ce21f07f4cd575ec9b69e304a1c7333ce5",
+      "markdown": "Well, a naive implementation for the ordinary generating function case is to just allocate an array of values the size of your structure, and store its size, and an ‘index’ into the possible structures of that size. This manipulates very poorly, but does allow for a linear time (heck, data parallel!) implementation of `fmap`. =)\n\nA more practical implementation would necessarily want to take a generating function and generate a recurrence. This should give you a refolded version of the functor, like running the derivation for the list and tree functors backwards. This would let you do a transformation like turning the functor ‘`Either Bool`’ into a ternary constructor, which would then permit the use of partial-tagging to do dispatch with one case rather than two.\n\nAt this point though, I am still working on how to use these to model isomorphic structures, modeling contracts by division and subtraction, and what the right way is to extend it to cover codata.\n\nUnfortunately, if we allow arbitrarily complex generating functions the comparison of the resulting streams requires an oracle for the halting problem, so, so far this is just a reasoning tool.",
+      "textEdits": []
+    },
+    "comment-1345": {
+      "sourceMarkdownSha256": "084d78a61f3b5e1b864729d128bbc8fddf44ee22cdd15cc9d88dd69623d28e3c",
+      "markdown": "Hrmm. Just an observation:\n\nIf D^2 = 0, then given a functor F described by a generating function\n\n```text\nF x = a_0 + a_1*x + a_2*x^2 + …\n```\n\nthen\n\n```text\nF D = a_0 + a_1*D\n```\n\ncuts off the series.\n\nIt also seems that D as a ’singleton pattern’ is affine (permits weakening), because nothing currently prevents you from ‘not using’ the D, as evidenced by the possibility of a\\_0 being non-zero.",
+      "textEdits": []
+    }
+  },
+  "hac-phi-slides": {
+    "comment-10809": {
+      "sourceMarkdownSha256": "25b60a38b90c394f9c7841bf24a7e16b405b692135f1cabc0dbc2225c75cacf1",
+      "markdown": "Hi, do you have a working code example for the file position example? I get following error:\n\n```text\n`Reducer SourcePosition’ is not applied to enough type arguments\nExpected kind `*’, but `Reducer SourcePosition’ has kind `* -> *’\nIn the instance declaration for `Reducer SourcePosition’\n```",
+      "textEdits": []
+    },
+    "comment-10826": {
+      "sourceMarkdownSha256": "5a839c1a875b96915df0be7a676f25c54b609691df58f01ee8f6c92bee025ea2",
+      "markdown": "@Stulli\n\nLook on hackage at any revision of monoids before 0.2.0, and it will contain `Data.Monoid.Lexical.SourcePosition` — I recently slimmed the package down and plan to move the remaining functionality into a monoid-extras style package so that the core functionality is available without a laundry list of dependencies.\n\nYour kind error comes from the fact that when I added `Pos`, I added an argument to the type to make it a `Pointed` `Functor`. So you need to make `Monoid (SourcePosition f)` and `Reducer Char (SourcePosition f)`.\n\nI explained the extra argument as part of the narrative during the talk, but naked slides do not provide me such opportunity for elaboration. :)",
+      "textEdits": []
+    }
+  },
+  "introducing-speculation": {
+    "comment-18776": {
+      "sourceMarkdownSha256": "093bf6eb275f10c45687906cecdaadd3777b4b1e5f80e9895914e0281733e570",
+      "markdown": "@Pepe: There are a couple of things happening here.\n\nYou definitely shouldn’t be getting segfaults on the unboxed version. If so, then I have faulty reasoning and will need to revert to the boxed version.\n\nWith regards to the boxed version still showing unevaluated-ness, what you’re experiencing is that the ‘i’ value at that point still points to the indirection because a garbage collection hasn’t happened yet to propagate the tag bits. I’d hazard that if you inserted a call to `performGc` in the middle there that you’d start seeing the tags.",
+      "textEdits": []
+    },
+    "comment-18803": {
+      "sourceMarkdownSha256": "9020f2d20edaf0502a4ce69cc5a2d1eb5e229f38bc3e429cefda70be12f2029a",
+      "markdown": "Ed,\n\nthanks for the tips. I tried inserting a call to `performGC` in the example, but it didn’t help the boxed version.\n\n```haskell\nmain = do\n  let i = trace \"–> evaluated\" ()\n  putStrLn $ \"tagbits: \" ++ show (unsafeGetTagBits i)\n  print i\n  performGC >> putStrLn \"–> GC performed\"\n  putStrLn $ \"tagbits: \" ++ show (unsafeGetTagBits i)\n```\n\n```text\npepe:~/Dropbox/code/snippets$ ghc –make TagBits&& ./TagBits\nLinking TagBits …\ntagbits: 0\n–> evaluated\n()\n–> GC performed\ntagbits: 0\n```\n\nNevertheless, I have gone back to my actual use case (pruning the non-evaluated branches of an incomplete infinite proof tree, for display purposes), and found I was traversing the tree bottom-up, with a non strict fold. In a bottom-up traversal, the boxed version was \\*correctly\\* returning `False` for subtrees (since the fold is lazy), whereas the unboxed version was actually `seq`’ing subtrees and returning `True`, which in the particular example at hand was what I expected. Hence the unboxed version was hiding an actual mistake in my reasoning. Now the boxed version works as expected with a top-down traversal.\n\nTo see why the unboxed version forces evaluation of the argument, let’s look at the core generated by ghc:\n\n```text\nData.TagBits.unsafeGetTagBits =\n\\ (@ a_aqz) (a_syV :: a_aqz) ->\ncase a_syV\n`cast` (CoUnsafe a_aqz GHC.Prim.Word# :: a_aqz ~ GHC.Prim.Word#)\nof wild_syX { __DEFAULT ->\ncase GHC.Prim.and# wild_syX __word 3 of sat_sz3 { __DEFAULT ->\nGHC.Word.W# sat_sz3\n}\n}\n```\n\nThere is a case expression where the scrutinee is the argument. Unless I am wrong, this case expression forces the evaluation of the argument.\n\nIf you are curious I also cooked a version of `unsafeIsEvaluated` which avoids the tricky pointer tagging business and looks directly at the info table: [http://gist.github.com/504764](http://gist.github.com/504764)",
+      "textEdits": [
+        {
+          "start": 112,
+          "before": "“",
+          "after": "\""
+        },
+        {
+          "start": 124,
+          "before": "”",
+          "after": "\""
+        },
+        {
+          "start": 136,
+          "before": "“",
+          "after": "\""
+        },
+        {
+          "start": 145,
+          "before": "”",
+          "after": "\""
+        },
+        {
+          "start": 196,
+          "before": "“",
+          "after": "\""
+        },
+        {
+          "start": 210,
+          "before": "”",
+          "after": "\""
+        },
+        {
+          "start": 220,
+          "before": "“",
+          "after": "\""
+        },
+        {
+          "start": 229,
+          "before": "”",
+          "after": "\""
+        }
+      ]
+    },
+    "comment-18804": {
+      "sourceMarkdownSha256": "e5217f1d94807248bcbd6e689125e4ffbe13fa52d9b2a1ab88f3e6b32b61022e",
+      "markdown": "I was deliberately avoiding reading the info table to avoid dealing with variations in ghc compilation options changing the layout.\n\nI’ll revert to the boxed version for now I guess and then see if I can get a better way to do the `unsafeCoerce#` without forcing.",
+      "textEdits": []
+    },
+    "comment-21221": {
+      "sourceMarkdownSha256": "e680feb074c80540662eb8e21f225794e178be9412f4e3ac249dd400e5a01350",
+      "markdown": "Apparently, `undefined` will sometimes claim to be evaluated. Now I need to chase bottoms too!",
+      "textEdits": []
+    }
+  },
+  "iteratees-parsec-and-monoid": {
+    "comment-11175": {
+      "sourceMarkdownSha256": "daca125f1f15b6daabe9fd0ea633bd9275c87ecda01c4fe7c480a92449cbfa15",
+      "markdown": "@Sebastian: I just added a source link at the bottom of the post for the `Iteratee` code. It doesn’t contain the monoidal layer, since that has changed quite a bit since this was written.",
+      "textEdits": []
+    },
+    "comment-11220": {
+      "sourceMarkdownSha256": "c644c4d476470294b20db5ada819f5e0e640cbeb5f9b12f536cbf7f0e094bb51",
+      "markdown": "@Sjoerd\n\nMostly to follow the original Iteratee write-up with the `flip (.)` combinator. That would be a perfectly valid approach as well.",
+      "textEdits": []
+    }
+  },
+  "just-fokkinga-abide": {
+    "comment-1222": {
+      "sourceMarkdownSha256": "5859819516ea83da6865cc86d0bec6fe0a74f29305e3e806a38fecd7f7e4ab71",
+      "markdown": "It’s worth mentioning that if two abiding operations have identities, then they’re equal to each other and commutative, and the identities coincide.\n\nLet + and \\* be abiding binary operations, with identities 0 and \\* respectively. Then\n\n```text\n0 = 0+0 = (0*1)+(1*0) = (0+1)*(1+0) = 1*1 = 1\n```\n\nAnd now:\n\n```text\nx*y = (0+x)*(y+0) = (0*y)+(x*0) = (1*y)+(x*1) = y+x = (y*1)+(1*x) = (y+1)*(1+x) = (y+0)*(0+x) = y*x = (0+y)*(x+0) = (0*x)+(y*0) = (1*x)+(y*1) = x+y\n```\n\nThis is the Eckmann-Hilton argument beloved of category theorists: among its implications are that a monoid object in the category of monoids is a commutative monoid, and that all higher homotopy groups are abelian. It becomes particularly elegant when you use the\n\n```text\nx | y =(x*y)+(y*w)\nz | w\n```\n\nnotation – try it! The proof can be written in a circle, and it’s then called the [Eckmann-Hilton clock](http://cheng.staff.shef.ac.uk/degeneracy/eggclock.pdf).\n\nThe Catsters have done a [video](http://www.youtube.com/watch?v=Rjdo-RWQVIY) about the Eckmann-Hilton argument.",
+      "textEdits": []
+    },
+    "comment-1226": {
+      "sourceMarkdownSha256": "0824814d6dc16dffea8e944ef5bc91d1316d174c29ce9762f6553e38454639fd",
+      "markdown": "OK, that’s totally weird. You seem to have blocked the comment in which I explained the connection to the [Eckmann-Hilton argument](http://www.youtube.com/watch?v=Rjdo-RWQVIY), and let through my two subsequent comments (in which I tried to reproduce the proof in all its 2-dimensional glory, and in which I complained that my `<pre>` tags had been stripped, rendering the proof unintelligible).\n\nSo, for those who are feeling confused: if \\* and + abide and have units 1 and 0, then 0=1, \\*=+, and \\* (and hence +) is commutative. The proof’s fun and reasonably straightforward, particularly if you use the 2-d notation. This is known as the Eckmann-Hilton argument, and it’s famous in category theory, having many beautiful consequences.",
+      "textEdits": []
+    }
+  },
+  "kan-extension-iii": {
+    "comment-1685": {
+      "sourceMarkdownSha256": "77eaa69acb2379b89c0b3683d2d70c3c1e1a4c787685cef5652420a5e7e193c3",
+      "markdown": "Well, you can look at the `Codensity` monad `(Ran m m)` of a monad m as a weaker form of `ContT` which isn’t allowed to use the type of the ultimate `return` value to ‘pull any tricks’. Consequently, it has fewer inhabitants than `ContT` and we can say more about them. My favorite example so far is in:\n\n[http://wwwtcs.inf.tu-dresden.de/~voigt/mpc08.pdf](http://wwwtcs.inf.tu-dresden.de/~voigt/mpc08.pdf)\n\nThat paper shows that you can substitute a reference to the `Codensity` monad of a free monad in many places where you’d use the original free monad and change the asymptotic performance of the resulting algorithm because the continuation ‘linearizes’ the cost of repeatedly traversing the tree by piling the cost up in the continuation so you only traverse once.\n\nI’d conjecture that the left Kan extension of a cofree comonad should let us pile up the cost of mapping or extending cofree comonads similarly. Though here I have yet to actually generate any performance results here due to other distractions.\n\nWe \\_can\\_ however definitely do the same thing with the Yoneda and Coyoneda lemmas. The resulting (co)monads fit very closely to the operational characteristics of the base monad.\n\nIf you transform a monad with Yoneda you get a monad that has the same overall costs for `return` and `>>=`, but where if your monad had a non constant cost for `map` (such as in the free monad of anything other than the trivial functor that maps everything to \\_|\\_), you can fuse the costs of all of your maps together by accumulating them and applying them all at once during the next `(>>=)` (or when you extract f from the `Yoneda f`).\n\nSimilarly `CoYoneda` accumulates maps for comonads, which is a win if `map` is expensive (such as in the cofree comonad case).\n\nYou can get a feel for why this works by looking at:\n\n[http://comonad.com/haskell/category-extras/src/Control/Functor/Yoneda.hs](http://comonad.com/haskell/category-extras/src/Control/Functor/Yoneda.hs)\n\nand noting what `fmap` does and how `>>=` works for Yoneda. and how `fmap` and `extend` work for `CoYoneda`.\n\nIn category-extras I have generalized all of the constructive algorithmic morphisms that use the free monad or cofree comonad (histomorphisms, futumorphisms, dynamorphisms, chronomorphisms) to support the codensity monad of the free monad, density comonad of the cofree comonad, Yoneda of the free monad, Coyoneda of the cofree comonad, etc by defining a couple of extra typeclasses that express their ‘Free-Like’ behavior in the spirit of the above linked paper by Voigtlaender in\n\n[http://comonad.com/haskell/category-extras/src/Control/Monad/Free.hs](http://comonad.com/haskell/category-extras/src/Control/Monad/Free.hs)\n\nThe generalization can be seen in use here:\n\n[http://comonad.com/haskell/category-extras/src/Control/Morphism/Futu.hs](http://comonad.com/haskell/category-extras/src/Control/Morphism/Futu.hs)\n\nand the instances for `Codensity` here:\n\n[http://comonad.com/haskell/category-extras/src/Control/Monad/Codensity.hs](http://comonad.com/haskell/category-extras/src/Control/Monad/Codensity.hs)",
+      "textEdits": []
+    },
+    "comment-6412": {
+      "sourceMarkdownSha256": "6c8f373dfc0e699a53c2e354f50d9e6dca354fa5c94d25c3b61b133309988757",
+      "markdown": "Now that I’ve been thinking about these things I can point out a tiny tiny typo:\n\n```haskell\ndata LanT k t c m m' = LanT (k m -> c) (t m)\n```\n\nshould probably be\n\n```haskell\ndata LanT k t c m m' = LanT (k m -> c) (t m')\n```\n\nthough it makes no difference in the definition of `Lan`.\n\nOn a less trivial level, I still don’t know what theorem I could quote to justify that, say,\n\n```haskell\ntype DinaturalFromObject x s = x -> forall a. s a a\n```\n\ndefines dinaturals from a constant functor. For a specific choice of s dinaturality is a free theorem. But how do you uniformly prove this for all s, implemented in Haskell, with the right c/contravariance in the arguments?",
+      "textEdits": [
+        {
+          "start": 78,
+          "before": "’",
+          "after": "'"
+        },
+        {
+          "start": 124,
+          "before": "’",
+          "after": "'"
+        },
+        {
+          "start": 140,
+          "before": "’",
+          "after": "'"
+        }
+      ]
+    },
+    "comment-6414": {
+      "sourceMarkdownSha256": "abcddf92c0eaa49458a7ca1c4c814e98077491f9e4f2637f005336a95e9e5c7b",
+      "markdown": "Hey Dan,\n\nFixed the `LanT` definition. (Woops!)\n\nRe the dinatural transformation piece, I’m not as deep as I used to be in this area, so I’ll go back and see what I can dig up from whatever notes I still have from when I wrote this. I recall it seeming quite obvious at the time, but now I can only barely remember what dinaturality is. :) I’d be quite surprised (and pleased) if you came up with a counterexample, however. ;)",
+      "textEdits": []
+    },
+    "comment-12474": {
+      "sourceMarkdownSha256": "71c26decb997bb70b739f83076fff94d9f4d05ae35d888509654a8c38c81bbd5",
+      "markdown": "Just a minor typo note:\n\n```haskell\n> newtype RanT f g c m m' = (c -> K m) -> T m'\n```\n\nShould be:\n\n```haskell\n> newtype RanT k t c m m' = (c -> k m) -> t m'\n```\n\nright?",
+      "textEdits": [
+        {
+          "start": 36,
+          "before": "’",
+          "after": "'"
+        },
+        {
+          "start": 49,
+          "before": "’",
+          "after": "'"
+        },
+        {
+          "start": 76,
+          "before": "’",
+          "after": "'"
+        },
+        {
+          "start": 89,
+          "before": "’",
+          "after": "'"
+        }
+      ]
+    },
+    "comment-63349": {
+      "sourceMarkdownSha256": "cd47fc0d27c95a92fb7a9584a95a18fb43cc974accaf7a9cc7f20aef98a6f79e",
+      "markdown": "Isn’t the type `(exists a. f a a)` the coproduct rather than the coend? The coend is the coproduct modulo the relation imposed by the commuting square (degenerate hexagon) in the definition of a dinatural transformation.",
+      "textEdits": []
+    }
+  },
+  "kan-extensions": {
+    "comment-1419": {
+      "sourceMarkdownSha256": "e3a118116e0cd20ae3e76bca554aecaa6f4f89bea212c93d97efbdcb86da481a",
+      "markdown": "The left Kan extension used in that paper is taken along a functor with domain |Hask| rather than Hask. Where |C| maps a category to its underlying discrete category, discarding all non-identity arrows. Their `Lan` only needs to support this discrete category, because that is all that is necessary to faithfully model GADTs.\n\nThey don’t need it since their only arrows are the identities. Since they only need concern themselves with identities, an equality GADT serves them in better stead.\n\nThis is also why their definition of an `HFunctor` drops `ffmap`. It eases their derivation. For instance in [http://comonad.com/haskell/category-extras/src/Control/Functor/HigherOrder/Composition.hs](http://comonad.com/haskell/category-extras/src/Control/Functor/HigherOrder/Composition.hs)\n\nI have to deal with a lot of `newtype` noise to implement `ffmap`, since they don’t need it at all, they don’t have to cram that into the paper.\n\nIf you look at Johann and Ghani’s earlier paper “Initial Semantics is Enough!” at [http://crab.rutgers.edu/~pjohann/tlca07-rev.pdf](http://crab.rutgers.edu/~pjohann/tlca07-rev.pdf) you’ll find the exact definition above (modulo the choice of newtyping a tuple vs. using a data type.\n\nAs for the derivations I was planning to do a post on that at some point, but the short answer is they are based on the definition of Kan extensions as (co)ends, which can be found readily in the Wikipedia article on Kan extensions or more formally in Categories for the Working Mathematician.",
+      "textEdits": []
+    },
+    "comment-105351": {
+      "sourceMarkdownSha256": "74849b8c6c5021d5bf3089f501579d004a12e85b22b7cc9510848454f0f54154",
+      "markdown": "Can you make the constraint Kan extension? Such as `(forall b. Monoid b => (a -> g b) -> h b)` and so on. Or use the constraint kind to allow it a parameter.",
+      "textEdits": []
+    }
+  },
+  "mirrored-lenses": {
+    "comment-105589": {
+      "sourceMarkdownSha256": "20b13e40693df3b3aa0fc3d24c4b77823072ee8714a753103ab2228d316cabc1",
+      "markdown": "Honestly, I’m pretty far behind in the record debate. Mostly because the signal to noise ratio was bad enough that I just gave up on it. In practice the use of lenses is mostly orthogonal to SORF/DORF.\n\nThis does largely address the use of something like . as a field accessor though, because `foo^.bar.baz.quux` does exactly what an OOP developer would expect.",
+      "textEdits": []
+    },
+    "comment-146846": {
+      "sourceMarkdownSha256": "cacbf1a402967bd2d53d097ee264db7a106a414f3b6b78408d9fb5da2c2e1e5c",
+      "markdown": "Is it possible to use that “pseudo-Haskell” as a definition now? With `PolyKinds` my definition compiles, but are there downsides?\n\n```haskell\n{-# LANGUAGE RankNTypes, PolyKinds, TupleSections, TypeFamilies, TypeFamilyDependencies #-}\n\nimport Data.Kind (Type)\n\ntype LensFamily (outer :: t -> Type) (inner :: t -> Type) =\n  forall a b f. Functor f => (inner a -> f (inner b)) -> (outer a -> f (outer b))\n\ntype family Snd b a :: Type where\n  Snd b a = (a, b)\n\ntype family Fst a b :: Type where\n  Fst a b = (a, b)\n\ntype family Id t = r | r -> t where\n  Id x = x\n\nfstLens :: LensFamily (Snd b) Id\nfstLens f (a, b) = (, b) f a\n\nsndLens :: LensFamily (Fst a) Id\nsndLens f (a, b) = (a, ) f b\n```",
+      "textEdits": []
+    }
+  },
+  "monads-for-free": {
+    "comment-1042": {
+      "sourceMarkdownSha256": "6c4f2b09e092dd99d641458772174412434f78e24096351c484a6c97550fea94",
+      "markdown": "I’m sorry, but what is the `Place` constructor in the `Functor` instance of `Free`? Looks to me that it sould be “`Return (f x)`” instead.\n\n\\- Jaak",
+      "textEdits": []
+    },
+    "comment-1043": {
+      "sourceMarkdownSha256": "42ec3e22ceb2e110632cca742c20a2b11edc38f7d4da89428dd4fcb5a8ca1aba",
+      "markdown": "```haskell\ndata Free f a = Roll (f (Free f a)) | Return a\n```\n\n```haskell\nnewtype Free f a = Free { unfree :: (a, f (Free f a)) }\n```\n\nAren’t those two different types? Isn’t the first a sum and the second a product? Should `g = Free f a` satisfy `g=(f g) + a` or `g=(f g) x a`?",
+      "textEdits": []
+    }
+  },
+  "monads-from-comonads": {
+    "comment-61868": {
+      "sourceMarkdownSha256": "6a941ce42e7c4a44fb13b167166b6a8aea5a4ccc09ce959b31dff3f8a8818d31",
+      "markdown": "Thank you for an awesome blog post! Though I wonder where the ‘`Co`’ data type comes from. You just pull it out of a hat. Is there a story behind it?",
+      "textEdits": []
+    },
+    "comment-61869": {
+      "sourceMarkdownSha256": "65114dc11e2a0c93cef14d599a32017a01fe74cf68cef8c24102056b92e30f3b",
+      "markdown": "Acutally, it \\_was\\_ pretty much pulled out of a hat. ;)\n\nIt came out as a happy accident in an email discussion with Russell O’Connor and Jacques Carette about exactly in what sense `Store` and `State` were dual.",
+      "textEdits": []
+    },
+    "comment-130731": {
+      "sourceMarkdownSha256": "d7ccab758a1b77a634cc02aa97aa8f975461dfa99831abc281b780eb983adeed",
+      "markdown": "It occurs to me that the form of `Co w`:\n\n```haskell\nCo w a = forall r. w (a -> r) -> r\n```\n\nis to the Cokleisli arrow as the Yoneda encoding of m:\n\n```haskell\nYoneda m a = forall r. (a -> r) -> m r\n```\n\nis to the Kleisli arrow. Is there a way to generalize this to any `ArrowApply`?",
+      "textEdits": []
+    }
+  },
+  "more-on-comonads-as-monad-transformers": {
+    "comment-62253": {
+      "sourceMarkdownSha256": "4eec1116928f3f084072388a1dc53a1a381bcea8840521c1e49bfa6672d5372e",
+      "markdown": "_Co w a ~ Co (f . g) ~ g . f_\n\nShouldn’t that be `Co w`?\n\n_CoT w m a ~ Codensity (g . m) r_\n\nShouldn’t that be `Codensity (g . m) a`?",
+      "textEdits": []
+    }
+  },
+  "natural-deduction-sequent-calculus-and-type-classes": {
+    "comment-106932": {
+      "sourceMarkdownSha256": "d8e6728abb4f04c5e7e2dc649d378a3ab06405b8e285b7752a7d74998c8d043b",
+      "markdown": "Programming with type classes in Haskell is remniscent of programming in Prolog, which indeed does a proof seach.\n\nCompare the Prolog membership predicate:\n\n```prolog\nmember(X,[X|Xs]).\nmember(X,[Y|Xs]) :- member(X,Xs)\n```\n\nwith this rough Haskell type class implementation (using tuples instead of lists):\n\n```haskell\nclass Member x xs\n\ninstance Member x (x,xs)\ninstance Member x xs => Member x (y,xs)\n```\n\nCheers!",
+      "textEdits": []
+    },
+    "comment-107068": {
+      "sourceMarkdownSha256": "26a61d9ad9b45d639e9015f7ac202da1b84ce7470dc79966c16cf095cdd8ccae",
+      "markdown": "Not sure if this respects the implicit assumptions that you have in mind, but if you’re willing to change the syntax of your term language, you should be able to get more immediate correspondences between terms and the sequent calculus rules.\n\nFor instance, a term ‘`let (y,z)=x in A`’ corresponding to the AND-L rule, without requiring explicit substitution. This matches your intuitions about the pattern language, of course, but without relying on heavy pattern-based machinery.\n\nIMP-L corresponds to the term ‘`let r = (f A) in B`’ where r and f are variables of the right type (f a function `t(A) -> t(B)`, and r of type `t(B)`), etc.\n\nYou can define standard application as an abbreviation if you have local binding (which you should be able to get as term syntax for the CUT rule):\n\n```haskell\n(A B) == let f = A in let r = (f B) in r\n```\n\nDetails to be checked, of course, but back of the envelope, this might work.",
+      "textEdits": []
+    }
+  },
+  "on-the-unsafety-of-interleaved-io": {
+    "comment-128937": {
+      "sourceMarkdownSha256": "9b543410f62fc48edee4e566be5c6d90679d4894a71992ec6fefb15237715929",
+      "markdown": "I will present counterargument to the claims you actually bring up.\n\nFirst, I completely agree with your definition of referential transparency (and agree that it is widely misused). I also will take your definition of purity for lack of a better one. (It’s the definition I would point to if forced to give one.)\n\nOn to counter-argument:\n\nChannelling Lennart, my first retort is “show me the semantics”. It is not enough to say “well `IO` actions have basically no semantics anyway so anything is allowed”. That’s certainly not true for most `IO` actions, and saying a particular one has no semantics is hardly a compelling argument for it. Luckily for you, you DID actually show a semantics. Unluckily, I disagree that it reasonably reflects `unsafeInterleaveIO`. In particular, I imagine most people would expect `fmap (const ()) (unsafeInterleaveIO (putStrLn “foo”))` to print nothing ever. “But,” you interject, “GHC is perfectly free to evaluate things speculatively!” I agree. Hell, I’d go further. Even if you use it, GHC would be free to not evaluate it, if, for example, it could prove that it always would return (). Still, it’s possible the `threadDelay` could never return. The real clincher is GHC is free to evaluate it \\*multiple\\* times. That means that in “`n <- unsafeInterleaveIO (readIORef r >>= writeIORef r . succ)`”, n can be any number greater than whatever r is initialized to. So the real `unsafeInterleaveIO` is a lot \\*less\\* deterministic than your definition. “Still,” you splutter, “I can have my `unsafeInterleaveIO` simply randomly decide to execute action an arbitrary number of times randomly returning one of the results.” That’s still not enough. Your definition will never lead to `n /= n` but `unsafeInterleaveIO` can (just assume call-by-name, or, in GHC, hope for a thunk to be entered twice). Does Sabry’s purity impress you now?\n\n\\[While it's quite possible that monad-par's IVars are broken, and ivar-simple's semantics are certainly nicer, I think all you are demonstrating with this particular example is the (unpleasant but defined) semantics of asynchronous exceptions. Note, `deref` or any expression could just as well throw a stack overflow exception the first time but not the second. The semantics for asynchronous exceptions accounts for this.\\]",
+      "textEdits": []
+    },
+    "comment-128945": {
+      "sourceMarkdownSha256": "01180c02cd4dd2cc328055d16f1bf35e749251f46d6e70491ee3dd1d0f31cf06",
+      "markdown": "So, I actually wrote up a whole response before providing the one above. I went with the above because it is a more black and white argument (and it directly addresses Sabry’s notion of purity.\\*)\n\nAt any rate, my retort is still “show me the semantics”. If we want to go by the guarantees GHC (strives to) provides, then I would say your definition really is simply wrong.\\*\\* I await the version that only executes if forced. If you think your definition is still adequate, then we agree: `unsafeInterleaveIO` is unnecessary. To be clear (and less snarky), your argument that it “isn’t really that unsafe” is by analogy to concurrency, but concurrency in Haskell doesn’t depend on evaluation order where, I say, `unsafeInterleaveIO` definitionally does.\n\nI will omit (for now) all the software engineering arguments against `unsafeInterleaveIO` (of the sort that, well-defined or not, it’s a bad idea), except to acknowledge that there are software engineering arguments \\*for\\* `unsafeInterleaveIO`, but I (personally) find them no different in kind and less compelling than the arguments for mutable state or continuations.\n\n\\-\n\nFor monad-par, because I’m pretty confident `runPar` and co. do nothing to keep thunks from entering twice, this doesn’t violate referential transparency. I.e. that “the latter” could happen if `deref iv` was factored out (albeit it’s extremely unlikely, in fact, I believe impossible for this particular example and GHC in reality, but not theoretically impossible or something the GHC implementation would go out of its way to avoid in similar scenarios). I think this side discussion is a red herring though.\n\n\\* To be clear, Sabry’s paper argues that lazy `ST` violates his notion of purity. I am willing to support arguments for its modification/removal. I’m not as motivated, though, since people don’t actually seem to be making fragile code depending on it (because they don’t actually seem to be using it at all…)\n\n\\*\\* I think every implementation of Haskell ever would provide the guarantee. I’m less confident about the eager-but-non-strict speculative evaluation implementations, but I suspect even they too give this guarantee or would strive to, potentially by hacking the definition of `unsafeInterleaveIO`.",
+      "textEdits": []
+    },
+    "comment-128946": {
+      "sourceMarkdownSha256": "ef82db66923cbf0c2c8e02019b836a5e34da14883abfa1f15103e0757fa84088",
+      "markdown": "To avoid ping-ponging, what I’m saying is that your argument and response come off as playing both sides of “evaluation order is (un)defined”. For your definition to be a valid interpretation relies on the very loosely constrained evaluation order of Haskell. I’m more than willing to give you that, but you have to give me every other interpretation that Haskell’s semantics allows. If you don’t, and hold me to GHC’s evaluation order, then, as I did, I will hold your definition, or any other definition you could provide, to GHC’s evaluation order, in which case it definitely is not a valid interpretation or else `unsafeInterleaveIO` wouldn’t need to be a primitive.",
+      "textEdits": []
+    },
+    "comment-128951": {
+      "sourceMarkdownSha256": "e382491e1ab03bcc1e270f24d47e20a70c33843c79dbba8750230afa5ab19e7e",
+      "markdown": "Making GHC schedule things the same way it does for `unsafeInterleaveIO` isn’t difficult. It but most `IVar` packages aren’t set up for doing it. Doing it looks like this:\n\n[http://lpaste.net/4819527135217582080](http://lpaste.net/4819527135217582080)\n\nIt can also be implemented using Ed’s promises package, but it isn’t intended to be used with `IO` (so forcing `IO` into the promise monad is unsafe in general), the implementation is much more complicated, and the construction of `unsafeInterleaveIO` is too simple to be instructive:\n\n```haskell\nunsafeInterleaveIO action = runLazyIO_ $ \\p -> unsafePrimToPrim action >>= (!=) p\n```\n\nBut of course, all this only fixes the precise scheduling. If you use my random scheduling to implement `getContents`, for instance, it gives the right answer; it just reads ahead, so it isn’t very good at being lazy.\n\n–\n\nIt’s not true that concurrency in (GHC) Haskell doesn’t depend on evaluation order. Threads can’t be interrupted if they’re evaluating things that don’t do any allocation. So, scheduling will be different depending on when exactly certain optimized loops are evaluated.\n\nBut to be honest, I don’t really care. “Use an oracle to figure out how to run things at exactly the moment they’re needed elsewhere,” is a fine description of a scheduler, if you can implement it. And in the limited case of `unsafeInterleaveIO`, GHC can. It’s not the sort of scheduler people are used to using; it’s more like cooperative concurrency. But I don’t expect to be very impressed by any arguments that try to say that scheduling things according to a more cooperative strategy is less ’safe’ than scheduling things randomly.\n\n–\n\n`usafeInterleaveST` is not at all comparable to `unsafeInterleaveIO`. This is because `ST` has as part of its specification a safe operation:\n\n```haskell\nrunST :: (forall s. ST s a) -> a\n```\n\nYou cannot safely add any non-determinism to `ST` because of this. `fork` and random number generation (without being based deterministically on some passed-in seed) are also not allowable.\n\n–\n\n`runPar` uses `unsafePerformIO`, which also prevents `IO` actions from being executed twice via duplicate thunk entering in GHC. Presumably this is because it is now used for situations where it would be undesirable for the duplication to occur, unlike the original intentions of the FFI (where you’d probably only be reading pointers that would never change).\n\nTalking about monad-par is probably not important. But the no-duplication property is important for `unsafeInterleaveIO`, at least. It would be inadequate for implementing the things it’s intended to implement if it didn’t ensure it, or if there weren’t something else that ensured it. But it might as well be rolled into `unsafeInterleaveIO` itself (and since as far as I can tell, there’s no actual specification of `unsafeInterleaveIO` outside of base, I don’t feel very bad taking it to be part of the operation).",
+      "textEdits": []
+    },
+    "comment-128953": {
+      "sourceMarkdownSha256": "5c112464dc4d452f7112cdf660e6f72032bd6af5621fa7df38978792e6a540bd",
+      "markdown": "If we’re going to stipulate that concurrency (in `IO`) that schedules things in the way that matches GHC’s `unsafeInterleaveIO` is impure, then I don’t think I believe that any scheduler that anyone would actually implement is pure, either. In fact, I don’t think the one that GHC uses would count as pure, even if non-allocating code could be preempted. And I think many other “safe” `IO` features would count as impure, as well. `IO` would have to be largely thrown out, so at that point it isn’t even worth discussing whether `unsafeInterleaveIO` as implemented conserves purity.\n\nAlso, I don’t think I ever implied that GHC’s thread scheduler was specified to be the oracle scheduler. My point was that the way `unsafeInterleaveIO` behaves would be like having a second concurrency system that did schedule things that way, and included `fork` and `IVar`.\n\nAnd finally, and maybe I didn’t get this across well enough, I think it’s not exactly worth caring whether what exactly happens is pure if you work out the details (and, I think I agree with your \\* there). \\_Define\\_ `unsafeInterleaveIO` to be pure, and rather arbitrarily interleaving, because you do not know the exact order that GHC will evaluate your code in, without looking at the output of the compiler. Even most of the tools people like to believe enforce ordering do not.\n\nIn practice the scheduling will match some selected evaluation order, but you cannot (necessarily) easily know that order. But quotienting by concerns like that is like purity, and is rather the point of purity (you don’t need to worry about the things you can’t know).",
+      "textEdits": []
+    },
+    "comment-128962": {
+      "sourceMarkdownSha256": "5abd968bd0df16b93d52d8635038c7f185be94fc92d04ed38c3b763ccb0d4eac",
+      "markdown": "My point is that the semantics of concurrency are non-deterministic and so, at the level of semantics, you get a set of possible meanings. This set doesn’t change when you change evaluation order. It may well be that the particular \\*implementation\\* guarantees a specific meaning or a smaller subset of meanings, and further, that changing the evaluation order would lead to a different subset of meanings, but since I’m ignorant of that implementation detail, to me the meaning is the larger set, and that set is invariant with respect to evaluation order modulo termination.\n\nI would say most schedulers including GHC’s (modulo things that would be considered bugs) provide evaluation order invariant semantics. (To be clear: evaluation is NOT execution of the `IO` monad.) If I switch Haskell from a call-by-need language to a call-by-value, modulo some programs not terminating anymore, I’m pretty confident that the results I see from concurrent programs will be just the same. At worst, they may differ, but only in ways that I would have accepted as correct before (- they just happened not to happen before).\n\nI’m perfectly fine with `unsafeInterleaveIO` existing.\\* We can say that the semantics is similar to your original post. If I write a program that works correctly given that semantics, but just happens to be a lot more efficient if `unsafeInterleaveIO` just happens to follow evaluation order, then \\*wink\\* \\*wink\\*, \\*nod\\* \\*nod\\*, `unsafeInterleaveIO` may be a good choice.\n\nUnfortunately, people don’t do this. They write programs \\*relying\\* on `unsafeInterleaveIO` having a specific semantics related to evaluation order, and when things go wrong, they enter the losing game of trying to control evaluation order. With your ivar-simple-based definition, evaluation order is irrelevant; trying to control it is a non sequitur.\n\nIf you still don’t understand what I’m saying (and think I’m saying something different from what I am saying), this is my last attempt: If we change the evaluation order of Haskell to call-by-value, then, modulo being strict (note: strict NOT eager), your definition of `unsafeInterleaveIO` in terms of ivar-simple will mean \\*exactly\\* the same thing. The specification of `unsafeInterleaveIO` in terms of evaluation order would \\*obviously\\* change. In fact, that specification would make `unsafeInterleaveIO = id` in the case of call-by-value which it observably is not in the case of call-by-need (as demonstrated by `fmap (const ())`). My argument the whole time is the difference between what your program MEANS versus what it DOES. Evaluation order is highly relevant to what it DOES, but should not change what it MEANS (modulo termination). Modulo termination, nothing in Safe Haskell can change the MEANING of your program if the evaluation order changes (i.e. nothing can observe evaluation order in a usable way). `unsafeInterleaveIO` breaks this property UNLESS you define it to have a broad semantics. If you do, that makes a program using it also have a broad semantics. If you want your program to have a definite meaning, you will need to tolerate `unsafeInterleaveIO`’s broad semantics. Once you’ve gotten the desired meaning for your program you can THEN use what `unsafeInterleaveIO` actually DOES to improve what your program actually DOES which won’t change the MEANING.\n\n\\* I’m am NOT fine with it being in `Prelude` functions like `readFile` though. Not that its “incorrect” to have it there, just that it’s insane. Imagine the semantics \\*were\\* the ones from your post. Then `readFile` is an insane function that I can’t imagine anyone wanting.",
+      "textEdits": []
+    },
+    "comment-128964": {
+      "sourceMarkdownSha256": "254a61ae3252151937983dbafa20db79badf5611e2cff565440573ca562d24d5",
+      "markdown": "Well, to be honest, I have no idea what most `IO` stuff “means,” other than being an (opaque) embedded description telling something else what to do. So it is almost trivial to me that they wouldn’t mean anything different on changing evaluation order, because they barely mean anything to begin with. So when you say that my oracle scheduler is impure, it doesn’t make any sense to me, because the scheduler is part of the ‘doing’ not the ‘meaning.’ And that goes for a lot of other stuff we’ve been talking about. For instance, I don’t think I would say my pasted code means something different than the code from this article. It just does something different.\n\nSo I guess we’re on the same page? I think if you want to talk about meaning, you can’t tell much about `unsafeInterleaveIO`. Even if you want to talk about doing, you can’t necessarily tell much. For instance, for the program I began with, people expect to see:\n\n```text\n(True, False)\n(True, False)\n```\n\nprinted on their screen. But nothing actually says they won’t see any of the other output my random delay version produces. Because there is no guarantee that GHC will evaluate the tuple components left-to-right, and there’s no guarantee that it will choose the same evaluation order both times. And all that is true no matter how many seqs you bury the code in. So, inasmuch as `unsafeInterleaveIO` \\_does\\_ something that corresponds to a valid Haskell evaluation order, what it does is completely non-deterministic in this example. GHC isn’t actually crazy enough to make it output all the different possibilities (in this case, at least). But there’s nothing that says you can rely on that.",
+      "textEdits": []
+    },
+    "comment-128976": {
+      "sourceMarkdownSha256": "cddc15cfc48aee0d60ddd13f1be30b1bf7d0e17c2969c5facf71eb4c336d4803",
+      "markdown": "The IOSpec library gives a very concrete answer to the semantics of many features of `IO`. To model concurrency, you just add a CPS aspect to the model of `IO`, implement a cooperative scheduler, and throw a `yield` into the denotation of `(>>=)`. Now, that will be deterministic, but all you need to do then is define the scheduler as a non-deterministic choice between the runnable threads. This already is enough for most purposes, e.g. this is adequate to give the (True,False), (False,True), and (False,False) answers in your example. You can even handle the relaxed consistency memory model for IORefs by adding an explicit notion of “thread”, having writeIORef add to a “pending writes” set state component (in addition to updating a thread-local heap as normal), and readIORef non-deterministically chooses to commit zero or more pending writes (from other threads) to the thread-local heap before reading. Possibly, the most awkward part is dealing with non-termination at the value level (i.e. fix id). It’s possible just using an angelic non-deterministic operator will handle this. At any rate, it’s solvable, it’s just a matter of doing it in a clean, modular way that’s not necessarily completely obvious.\n\nI/O is actually pretty easy. The problem isn’t that I/O operations in the `IO` monad don’t have semantics but that the “OS” doesn’t have semantics. The semantics from the `IO` monad’s perspective is a request/response denotation similar to the meaning of conduit or pipes. Given no semantics for the “OS”, you are correct that the meaning of hGetChar is that, if the response is ever received, it can be any character or an error result (or an, unrelated, asynchronous exception). But that doesn’t stop `IO` from being \\*completely\\* specified.\n\nStill, as before, you do actually believe the “OS” operations have some semantics or else you would have no reason to call any of them. So you can imagine and make models of “OS” that refine the completely free semantics above. IOSpec has an example of this. Whether your model is actually sound with respect to the actual OS is a different question.\n\nIf it wasn’t clear before, I do believe that your oracle scheduler is a completely legitimate (but not complete) refinement of the scheduler I sketched above. I never intended to imply that such a scheduler was disallowed if you got that impression. The difference is, to refine the scheduler to, say, a round-robin scheduler, requires knowing and changing nothing about how expressions are evaluated\\*. To have your oracle scheduler requires invasive changes to the meaning of evaluation. This is what I meant about it being impure. I think you’ll agree that there are many schedulers, including most textbook ones, that can be written without such a change. (There are also many for which it’s not obvious that you can. For example, if I want to schedule based on which thread is using the most memory, then I need to know how much memory evaluation uses.)\n\nTo conclude, the \\*only\\* reason I view unsafeInterleaveIO as unsafe is \\*because\\* it makes evaluation order observable. If it had semantics similar to your definition, I obviously couldn’t complain since it’s a readily definable safe function. The appellation “unsafe” would be unwarranted. It would then just be sillyInterleaveIO\\*\\*, and I think few people would ever want to use it, and they certainly couldn’t be surprised by the behavior it gives, and they certainly wouldn’t try to solve the races it can give rise to by throwing seqs around.\n\n\\* To be a bit more precise, we have a denotation function that turns expressions into values (evaluation), and then a separate denotation function that gives `IO` values semantics (execution). The second uses the first, but the first doesn’t use the second and needn’t know anything about the second. This is why the `IO` monad doesn’t make Haskell impure. To handle your oracle scheduler or unsafeInterleaveIO directly requires that the first denotation function must cooperate with the second. For example, by returning, in addition to the value, a data structure describing the complete reduction order.\n\n\\*\\* A better name might be “race”.",
+      "textEdits": []
+    },
+    "comment-128977": {
+      "sourceMarkdownSha256": "ef40ed9480f2650176f50996ea8ab46e9520274a455fc0d83f030eb29f575f5c",
+      "markdown": "I think most people want to use schedulers that provide some kind of fairness guarantees. And they expect that fairness to be based on how much time the thread has run, including evaluation. So, I mean what I said before: I think most schedulers that people would actually use are impure if you’re going to take the scheduler into account as part of the ‘meaning’.\n\nSame with I/O stuff. The OS has things happening concurrently entirely out of your program’s control, and it isn’t waiting for you to yield so that scheduling can be ‘pure’. With other programs modifying files, evaluation order is going to affect what you see those files containing. And it doesn’t even help if you imagine that you have as many parallel processors as you have processes (so that you don’t really need to schedule anything per se), because evaluation order will still affect the relative ordering of accesses to shared state.\n\nAnd of course, anything that lets you access the current time is probably impure.\n\nYou could just say that that’s not part of the ‘meaing,’ or that you’re not going to model it. But then I don’t see why I can’t say that `unsafeInterleaveIO` is specified to be nondeterministic, but in practice something good happens that we’re not going to model.\n\nAnd I might still use sillyInterleaveIO. I probably wouldn’t use it to read and write to IORefs; but I wouldn’t do that anyway. `sillyReadFile` is still just a better version of `strictReadFile` for many uses, because it lets work get done concurrently with the file being read in (and memory getting eaten). And it retains the nice interface of `strictReadFile`, instead of having an interface I dislike. The big problem is that the IVars add even more overhead. :)",
+      "textEdits": []
+    },
+    "comment-128979": {
+      "sourceMarkdownSha256": "5c831d0cd71eee48af38af7c005980df5c5896f39c8bd06fb645a13a3f2c50a6",
+      "markdown": "For them to be impure, they’d need some way of connecting evaluation to time. A pure specification doesn’t preclude an impure realization. Most schedulers don’t schedule a number of reductions but a number of milliseconds. You’re going from some expression evaluating in an unknown number of milliseconds under one evaluation order to a possibly different unknown number of milliseconds in another. Either way it’s an unknown. A model can’t distinguish between these unless you model the time evaluation takes, and no one is proposing specifying that. Similarly for OS calls. To put it another way, given a complete model (complete in the model theory sense which implies that anything you can prove it in is true for every other sound model, i.e. it’s a model that makes no assumptions), how would you go about showing that changing the evaluation order (say the model is parameterized by an “evaluation order” function) would lead to different results? A model where reductions take zero time or a model where reductions take 10 billion years are both valid refinements of the complete model. If the Haskell Report said, “beta reductions take 30ns”, then Haskell would not be a pure language because different evaluation orders would lead to denotations that differed in more than just whether they terminated or not.\n\nYou \\*can\\* say `unsafeInterleaveIO` is specified to be nondeterministic. That’s what I \\*have\\* been recommending. However, you can’t specify it as following evaluation order without modeling and depending on evaluation order. It’s completely fine for the specification to be non-deterministic and the implementation to follow evaluation order. But to make claims about the meaning/correctness of your program you have to do it against the specification, not the implementation details. It’s clear that, at least in people’s minds, `unsafeInterleaveIO` is specified as following evaluation order (and that evaluation order is constrained to something reasonable). Believing that `unsafeInterleaveIO` executes the action at some non-deterministic point in the future gives absolutely no license or reason to believe that adding `seq` somewhere will reliably change anything. By such a definition, a program using `unsafeInterleaveIO` that does something incorrect cannot be fixed by adding `seq`.\n\n\\-\n\nWe may completely agree extensionally if not intensionally, at least about `unsafeInterleaveIO`. As a check, would you agree with the following statements:  \n1\\) For a person to claim their code using `unsafeInterleaveIO` is correct, it must also be correct with regards to implementations like the one you gave.  \n2\\) Adding things like `seq` and such cannot make incorrect code correct, though it may make incorrect code work for a particular implementation.",
+      "textEdits": []
+    },
+    "comment-128984": {
+      "sourceMarkdownSha256": "64d4432e162159f37e71985ee9496f2cb796fb524776c50412aef30c80f5318c",
+      "markdown": "Yes, I think I would agree with those statements. Although I’m tempted to write incorrect code that works at times. For instance, when people complain about running out of file descriptors with `` `mapM` readFile l ``, one way to make it work is to interleave the `mapM`. But that is not correct, since it may (or may not) start too many threads and still use up all file descriptors (although, if you have to handle more than 1,000 files, maybe you shouldn’t use lazy I/O, much as it pains me to say).\n\n–\n\nTo quibble some more, it’s not clear to me how `IVar` isn’t in violation of your specification, either. Sometimes evaluation has to stop to block on the value of a concurrent reference cell. So it seems to me, prima facie, that evaluation is going to have to be modified to work together with execution. You need yield points not just as part of `IO` execution, but evaluation as well.\n\nThere will exist terms for which different evaluation orders yield differently. In the barest way of modeling this that I can think of, there will be a different number of yields. However, if you want to model what any good implementation would probably do, evaluation would yield with a specification of which `IVar` needs to be written to, so that we don’t need to bother trying to resume evaluation on something that will immediately re-yield.\n\nBut this is exactly the information a scheduler needs to implement `unsafeInterleaveIO` as GHC does. It’s why I was able to do it so easily in my paste. `value` already calls out to `IO`, there’s just no ‘wait until this `MVar` needs to be filled’ primitive, so I added a second `MVar` directly.\n\nI guess monad-par makes one answer clear: you don’t know that ‘value’ won’t just throw an exception. In monad-par it does if the `IVar` hasn’t been written yet. So that’s the pure semantics; you may or may not get a value. And the implementation of ivar-simple blocks and tries to get you an answer if one can be gotten.\n\nYet, people are pretty okay with IVars, and not `unsafeInterleaveIO`, even though they look pretty similar to me, any way you want to slice it.",
+      "textEdits": [
+        {
+          "start": 167,
+          "before": "",
+          "after": "`"
+        },
+        {
+          "start": 176,
+          "before": "`",
+          "after": ""
+        },
+        {
+          "start": 1211,
+          "before": "`",
+          "after": ""
+        },
+        {
+          "start": 1217,
+          "before": "`",
+          "after": ""
+        }
+      ]
+    }
+  },
+  "parameterized-monads-in-haskell": {
+    "comment-226": {
+      "sourceMarkdownSha256": "3399dd4b6d94e8f23a18a0436dae37323d994753dcf54795aa071ec1bd512798",
+      "markdown": "It seems that Oleg’s version mentioned there was the one I linked to above for a form of restricted monad, where the parameter passed to the monad is restricted as to the types it can take, limiting it to being an endofunctor supporting injections from a portion of the category smaller than the whole of the category of all types.\n\nUnfortunately that isn’t so useful for the part of this I was working up next.\n\nWhat I need (for something else) is a monad that could contain anything, but where I could either vary a type parameter which can be done through a fairly boring MTL-style bit of typeclass hackery, in which case all of the nice examples in the parameterized monad module would require a lot of ‘`lift`’ style plumbing or where I could change out the monad itself, which was the path I decided to try out.\n\nThe main reason I decided to write out the above was because of the fairly interesting (to me anyways) property that by employing the monad laws we get back a notion of type inference for that weakened type for `bind`.\n\nEr.. that is unless you are referring to somewhere else where Oleg wrote up another form of parameterized monad. Which is quite likely, as I’ve just grown to assume anything worth doing in Haskell or Scheme has already been done by him and is just waiting for someone to come along and read the message on the mailing list.",
+      "textEdits": []
+    }
+  },
+  "rotten-bananas": {
+    "comment-132462": {
+      "sourceMarkdownSha256": "6dc5ee87c1b92f12d74e776202b30569b1689fed4e3950d10ceb6024b7926247",
+      "markdown": "The `Rec` type looks exactly like `Free`, and `Rollable` like `MonadFree`. Is this a coincidence of some sort, or does it explain something about the structure?",
+      "textEdits": []
+    }
+  },
+  "searching-infinity": {
+    "comment-92185": {
+      "sourceMarkdownSha256": "ccef1e1ffef69a2421c3474ec717349f8f18a6542972ce08c457d4fbcf418df0",
+      "markdown": "I would hesitate calling the Cantor space\n\n```haskell\ntype Cantor = Integer -> Bool\n```\n\n“uncountable”. After all, this is the type of Haskell functions, of which there is only countably many.",
+      "textEdits": []
+    },
+    "comment-92191": {
+      "sourceMarkdownSha256": "7078ca0a455ed84737832874ae28f77271e3c002ad0a4405f04cc50bd83ce64c",
+      "markdown": "@Sean: It is not fair to judge a Haskell type from outside Haskell. As far as Haskell is concerned, `Integer -> Bool` is uncountable. Given any sequence alleged enumeration `e : Integer -> (Integer -> Bool)` of cantor space, the sequence `\\n -> not (e n n)` is missed by e. So you cannot enumerate the type in Haskell, which is the relevant thing, who cares if god can enumerate Haskell types? (Yes, it takes the birth of Jesus to enumerate total functions, so Merry Christmas!) And another observation: Haskell has access to the real world and can use real-world data to construct elements of type `Integer -> Bool`. Are you saying there are only countably many streams of bits in the real world?\n\n@Edward: Very nice post. I suspected something of the kind can be done, but you’re very good at minimizing the “damage” done by explicit monads. One questions remains, I think. What specification is the input predicate supposed to satisfy? The LICS 2010 paper by Martin Hofmann et al. might be relevant, see [http://www2.in.tum.de/bib/files/Hofmann10Pure.pdf](http://www2.in.tum.de/bib/files/Hofmann10Pure.pdf). They also use the trick with “parametric in all monads”.",
+      "textEdits": []
+    },
+    "comment-92198": {
+      "sourceMarkdownSha256": "f5ff58561168365a8925268de7a268d8332fd2091d78ce001c59fef5ce79e0f0",
+      "markdown": "@Andrej: Fair enough, but if you want to stay within Haskell, your definition of “uncountable” may not be what you are expecting anymore. It’s true that there is no total surjection `e : Integer -> (Integer -> Bool)`, but there is a partial surjection. Decode the `Integer` into Haskell code via your favorite encoding, and interpret the Haskell code. Some will fail to decode as well-typed Haskell programs of type `Integer -> Bool`, and some will fail to terminate. But you’ll cover all of them. So in some sense there are actually “fewer” functions `Integer -> Bool` than there are Integers.\n\nAs for the existence of uncountably many streams of bits in the real world, I’m not willing to make any sort of commitment on that statement. I will say that no one has yet satisfactorily shown me uncountably many streams in the real world :)",
+      "textEdits": []
+    },
+    "comment-92209": {
+      "sourceMarkdownSha256": "660c6d77e51e4a5e1f9820cc22288ec00421bbfcbcc54047a8d112e3359852eb",
+      "markdown": "@Sean: one of the nice things about Haskell is that you can pretty much run it on paper or on an abstract machine.\n\nWe use it to model mathematical ideas all the time, ignoring the fact that (for example) `Integer`, being implemented on top of GMP, is finite (2^53 bits or something is the maximum allowed, even if you did have infinite memory). I think that pointing out one of the implementation details of one of Haskell’s “interpreters” (a CPU) is kind of missing the point here.",
+      "textEdits": []
+    },
+    "comment-92237": {
+      "sourceMarkdownSha256": "3d1cfda097cf06bfd5c2be7bc787283d2d1dbb62eca10f2f1670511b0470ea9a",
+      "markdown": "@Sean: the definition of countable simply is “there is a surjection from the natural numbers”. Subsets of countable sets are called “subcountable” and can be very, very complicated in intuitionistic logic, for example they need not be countable. In addition, your proposed plan to take codes of functions does not quite work inside Haskell, as there is no way to get the code of a function in Haskell, i.e., all total maps `(int -> bool) -> int` are constant. You would have to extend Haskell by some sort of a quoting mechanism that would allow you to always access source code (or the machine instructions of the compiled code). With such modifications your idea demonstrates the fact that it is consistent to assume intuitionistically that the Cantor space is a quotient of a subset of a countable set. Nevertheless, it is still uncountable.",
+      "textEdits": []
+    },
+    "comment-101849": {
+      "sourceMarkdownSha256": "27e5c5dcdfe2530e63451f6bb111aef3d7b23f9a3921a5f42271b839fb101051",
+      "markdown": "One thing that’s interesting to me is the transformation from\n\n```haskell\ntype Pure a b c = (a -> b) -> c\n```\n\nto\n\n```haskell\ntype Effect a b c = forall f. Monad f => (a -> f b) -> f c\n```\n\nClearly `f_effect` is pure; you can get `f_pure` from `f_effect` by specializing f to the identity monad:\n\n```haskell\npurify :: Effect a b c -> Pure a b c\npurify f ab = runIdentity $ f $ \\a -> Identity $ ab a\n```\n\nBut it seems to me that no unsoundness is introduced by allowing this isomorphism in the other direction as well, although I don’t think that’s implementable in Haskell.\n\n```haskell\neffectify :: Pure a b c -> Effect a b c\neffectify f = ???\n```",
+      "textEdits": []
+    }
+  },
+  "the-cofree-comonad-and-the-expression-problem": {
+    "comment-1102": {
+      "sourceMarkdownSha256": "9446995eb8e2a337b690b54fd02d7d7dbac7c42d636b5bccb83ec2f3925d90d1",
+      "markdown": "Here is a quick take on the `Incr/Recall` example.\n\n\\[Edit: typechecked, added to source code, and a couple typos corrected\\]\n\n```haskell\ndata Incr t = Incr Int t\ndata Recall t = Recall (Int -> t)\n\ninstance Functor Incr where\n  fmap f (Incr i t) = Incr i (f t)\n\ninstance Functor Recall where\n  fmap f (Recall g) = Recall (f . g)\n\n(/+/) :: (Functor f, Functor g) => (f a -> a) -> (g a -> a) -> ((f :+: g) a -> a)\n(f /+/ g) (Inl a) = f a\n(f /+/ g) (Inr b) = g b\n\nnewtype Mem = Mem Int\ntype RunAlg f a = f (Mem -> (a,Mem)) -> Mem -> (a,Mem)\n\nincrRun :: RunAlg Incr a\nincrRun (Incr k r) (Mem i) = r (Mem (i + k))\n\nrecallRun :: RunAlg Recall a\nrecallRun (Recall r) (Mem i) = r i (Mem i)\n\nrun :: Functor f => RunAlg f a -> Free f a -> Mem -> (a, Mem)\nrun = cataFree (,)\n\nrunMyExpr :: Free (Incr :+: Recall) a -> Mem -> (a, Mem)\nrunMyExpr = run (incrRun /+/ recallRun)\n```",
+      "textEdits": []
+    },
+    "comment-1125": {
+      "sourceMarkdownSha256": "7817bb7ae979f8784ef7dc95bea3722808218df530557280c90f245b9787d304",
+      "markdown": "It’s only two years old, but Oleg describes how to handle polymorphic variants using a record of functions in . He doesn’t have the neat `Dual` class, though.",
+      "textEdits": []
+    },
+    "comment-104596": {
+      "sourceMarkdownSha256": "66b86f8b5c56bb4dcfcc8c3d4b708a7f2753dc09b97565b957ecb14bc679f622",
+      "markdown": "I’ve really enjoyed studying and trying to understand this, but one thing has still got me hung up that I just can’t seem to get past.\n\nI’ve been trying, as an exercise, to get the addition example from Swierstra’s paper working in terms of `Free` and `Cofree`. I translated `Expr` to `Free` successfully and am able to right an `eval` function\n\n```haskell\neval :: (Eval f, Functor f) => Free f Int -> Int\n```\n\nthat works using `cataFree`. I’ve also taken the next step and eliminated the `Eval` type-class and written `runArith` and `runVal` functions that I can then compose in the way outlined in the comment above.\n\nBut I just can’t seem to take that mental leap to translate it using `Cofree`. I think my problem is in determining what the dual of `Addition` and `Val` should be.\n\nAn example of that would be greatly appreciated and hopefully shine light the last bits that are still eluding me.\n\nThanks.",
+      "textEdits": []
+    }
+  },
+  "the-pointed-set-comonad": {
+    "comment-5484": {
+      "sourceMarkdownSha256": "fd0d8df9ec07eddcf1aaae9207d8277e18f452514e7ff225ad0d97de71434fcc",
+      "markdown": "Do you mean that have no `return`, just `bind`? Monads without `mzero` are er.. just monads. ;)",
+      "textEdits": []
+    }
+  },
+  "towards-formal-power-series-for-functors": {
+    "comment-1273": {
+      "sourceMarkdownSha256": "c4dcacebffc65886484b2643d00c0c7ee5b52ac6458879b114a2d4f3ce23b4a2",
+      "markdown": "I don’t see why you’d need overlapping or undecidable instances, all your class instances look like H98 (modulo the type family).\n\nThere seems to be a problem with the power series constructor, I fail to see how it’s different from\n\n```haskell\nnewtype Power _ a = P (a, Power _ a)\n```\n\ni.e. an infinite stream of a . The instance then simply becomes\n\n```haskell\ninstance Functor (Power f) where\n  fmap f = Power . bimap f (fmap f) . runPower\n```\n\nThis is probably not what you want. In the case you want, the real obstruction is that for power series, the functor in question must be differentiable an infinite number of times. In other words, something like\n\n```haskell\ninstance Differentiable f => Differentiable (D f) where …\n```\n\nThen, a context\n\n```haskell\ninstance Differentiable f => Functor (Power f)\n```\n\nshould be enough.",
+      "textEdits": []
+    },
+    "comment-1274": {
+      "sourceMarkdownSha256": "47d03f2bca954abf72642c793a5b60748387a0e63b8c34f39baea1a7495b0423",
+      "markdown": "Good point. OTOH:\n\n```haskell\ninstance Differentiable f => Differentiable (D f)\n```\n\ndoesn’t work because `D` isn’t a type constructor for the compiler to grab onto, which is why I started beating my head against the other part.\n\nWhat i was looking for was actually to say:  \n\n```haskell\nnewtype Power f a = Power (f a, Power (D f) a)\n```\n\ninstead of\n\n```haskell\nnewtype Power f a = Power (a, Power (D f) a)\n```\n\n\\[Edit: fixed\\]",
+      "textEdits": []
+    },
+    "comment-1278": {
+      "sourceMarkdownSha256": "531d07639e5b8842d484de1ccda2d7dd208ad1821aea3b81c9080a70f23dca5a",
+      "markdown": "Oh, maybe a more interesting instance for this would probably be the notion of a derivative for a list since that doesn’t zero out:\n\n```haskell\ninstance Derivable [] where\n  type D [] = [] :*: []\n```\n\nI also would like to find out a way to include a simplification step in the type function to go through and do the `Zero :*: x = Zero` step, etc to make the encoding a little less naive.",
+      "textEdits": []
+    },
+    "comment-1280": {
+      "sourceMarkdownSha256": "0a56718272b710e24245375cdfcbcd54f244277899b51addcda998dcc809732c",
+      "markdown": "Although the context on `Functor (AD f)` is sufficient, it seems (to me) like the wrong place to specify it. Since\n\n`AD f a ~~ (f a, AD (D f) a)`\n\nWith `(Derivable f) => Functor (AD f)` you only need `(Derivable (D f))` to justify using `bimap (fmap f) (fmap f)`. So, it seems like what you’d really want is:\n\n```haskell\nclass (Functor f, Derivable (D f)) => Derivable f where\n  type D f :: * -> *\n```\n\n```haskell\ninstance (Derivable f) => Functor (AD f) where …\n```\n\nWhere the context on `Derivable` enforces that all such functors are arbitrarily differentiable. But, of course, GHC complains about a cycle there (in 6.8, at least. I don’t have 6.9 handy).\n\nSimplification should, I think, be possible with total type families once they go into 6.9. For instance:\n\n```haskell\ntype family (f :: * -> *) :+: (g :: * -> *) :: * -> * where\n  Zero :+: g = g\n  f :+: Zero = f\n  f :+: g = Lift Either f g\n```\n\nYou’re allowed to overlap instances for total type families, because they’re closed.",
+      "textEdits": []
+    },
+    "comment-1289": {
+      "sourceMarkdownSha256": "234d2c96718f39678f774788adb361ab40626c9d15bae6412887eb3fb0bc6a3a",
+      "markdown": "Hrmm,\n\nSo a simple encoding of the basic AD rules leaves your `Dual` class, just one level up.\n\n```haskell\ndata D f g a = D (f a) (g a)\n\ntype family (:+>) (f :: * -> *) (g :: * -> *) :: * -> *\ntype family (:*>) (f :: * -> *) (g :: * -> *) :: * -> *\ntype family DLift (f :: (* -> *) -> * -> *) (f' :: (* -> *) -> * -> *) (g :: * -> *) :: * -> *\ntype instance (D x a :+> D y b) = D (x :+: y) (a :+: b)\ntype instance (D x a :*> D y b) = D (x :*: y) (x :*: b :+: a :*: y)\ntype instance DLift f f' (D x a) = D (f x) (a :+: f' x)\n\ndConst :: a -> D Identity Zero a\ndConst z = D (Identity z) zero\n\ndVar :: a -> D Identity One a\ndVar z = D (Identity z) (suck zero)\n```\n\nI think the general AD case requires polymorphic kinds, so yeah something like Omega is probably better suited. Alas.",
+      "textEdits": [
+        {
+          "start": 204,
+          "before": "’",
+          "after": "'"
+        },
+        {
+          "start": 340,
+          "before": "’",
+          "after": "'"
+        },
+        {
+          "start": 358,
+          "before": "’",
+          "after": "'"
+        }
+      ]
+    }
+  },
+  "what-constraints-entail-part-1": {
+    "comment-84922": {
+      "sourceMarkdownSha256": "315a26291490cdc2541019151ed9c70cf027ef4cde33fa74e2ec4189a983f4dc",
+      "markdown": "This overloading problem with `(,)` and `()` seems like it’s just yet another case of there be insufficiently many kinds of bracketing characters that (a) Unicode encodes, (b) can be typed (keyboarded) easily, and (c) are visually distinguishable.\n\nThe same problem arises with `{}` signifying the empty set and the record with no attributes. Basically the same thing clutters up the possibility of having a nice concrete syntax for all of: lists, sets, bags, vectors, matrices.\n\nAt the same time, it adds a lot more noise to require writing `Set { 3, 7, 2 }` everywhere since just `{ 3, 7, 2 }` doesn’t overlap with the concrete syntax for records like `{ frog := 2, apple := “moose” }`.\n\nIt seems like the middle ground approach is to make a lot of granular “re-bindable syntax” type classes for all of the different literals.\n\nFollowing that approach seems to work well, and ordinary type ascription expressions suffice to resolve the empty cases. Committing to it fully does feel a little silly in some cases though.\n\nFor example, zero is more polymorphic than other numeric literals. This arises because zero may have any dimension, but 3.7 is always dimensionless. The only language I know of that encodes this is CSS, although I’m sure there are others.\n\nThis sort of thing is leading to my pet language having a large number of type classes which play a role in desugaring, but I think that’s a tradeoff I’m willing to make.",
+      "textEdits": []
+    },
+    "comment-105339": {
+      "sourceMarkdownSha256": "60959a5a41bb0e9c4b83c02194023bf9710d4e3d193c770dec58511609503a7b",
+      "markdown": "What I have decided for Ibtlfmm it does not use this kind of superkinds (and `Constraint` is named & while @ is used for program modules, although you can give them alphabetic names if you want using kind synonyms), rather I would think `(,)` and `()` and so on are macros that decide the corresponding types according to what fits. There could also be “kind classes” to rebind the syntax, although I prefer using macros. But yes `()` should be a constraint too. I do not think making up the new superkiind for this purpose is such a good idea (including for the reasons you have described).",
+      "textEdits": []
+    },
+    "comment-148646": {
+      "sourceMarkdownSha256": "78901e80527ac433bf57483bab45b41c2f18c60e4794dd50c8e62388e9a9af38",
+      "markdown": "Conal: The category of constraints has coproducts, or at least, they are admissable, even if not expressed in Haskell today, but they are more like a greatest lower bound than the disjunction you are looking for.\n\n(p \\\\/ q) :- r given `p :- r` and `q :- r`\n\nBut because of the thinness of the category, the ‘r’ dictionary that results will be the same result given either path.\n\ne.g. (`Ord [a]`\\\\/ `Eq a`) :- `Eq [[[a]]]`\n\nwould let you produce `Eq [[[a]]]` given either `Eq a` or an `Ord [a]`\n\nGiving you the ability to do true general ‘`Either`’ constraints would compromise the thinness of the category and the safety of global instance resolution. (Mind you, incoherent instances also do that.)",
+      "textEdits": []
+    }
+  },
+  "what-constraints-entail-part-2": {
+    "comment-84914": {
+      "sourceMarkdownSha256": "1f0d4e1c23f855c5769ccdf4f5f011beeec790ba97b1ec9e20fd31998c2a8df1",
+      "markdown": "Working on the problem of expressing the pattern behind the relationship between `sort`/`sortBy`, `maximum`/`maximumBy`, etc, I have a few observations.\n\nFirst, you’ve shown the existence of a type `Dict :: Constraint -> *` (which I suggest might more naturally be named `Evidence` in keeping with most of the work I have seen on qualified types, but that’s not important). A little bit of magic (the TH approach that you mention would do it) should suffice to make this a surjective type function. There’s a plausible argument that it’s injective as well (since we take a nominal typing approach to constraints and ignore ordering of constraint conjunctions), but I don’t think this accomplishes much so let’s ignore it.\n\nSecond, I postulate the existence of another (surjective, but surely not injective) type function `Qualifier :: * -> Constraint` which extracts the context of its argument and returns the empty constraint if its argument is unqualified.\n\nThird, twisting the same idea, I postulate the existence of another surjective type function (for which I don’t have a good name…) `Unqualified :: * -> *` which discards the context if its argument is qualified and is otherwise the identity function.\n\nTaking 1 and assuming 2 and 3, then shouldn’t we be able to have a function:\n\n`by :: t -> Evidence (Qualifier t) -> Unqualified t`?\n\nWorking through the translation for an example, and ignoring the term level for a bit, we’d get:\n\n```haskell\nsort :: (Ord a) => [a] -> [a]\nQualifier ((Ord a) => [a] -> [a]) ~ Ord a\nEvidence (Ord a) ~ OrdDict a\nUnqualified ((Ord a) => [a] -> [a]) ~ [a] -> [a]\n```\n\n```haskell\n(sort `by`) :: OrdDict a -> [a] -> [a]\n```\n\n… which is what we were looking for.\n\nSadly/oddly this is applicable at types which are not (possibly-qualified) arrow types, but it seems fairly harmless:\n\n``(True `by`) :: () -> Bool`` (assuming `()` is the type of evidence for the empty constraint?)\n\nDid I skip any steps? Is there a reason in principle why we couldn’t write either `Qualifier` or `Unqualified` (I could see how we might need a language extension…).\n\nStepping back to the term level, I’m a bit stuck. I think I am stuck on understanding your concrete syntax more than on any fundamental reason why this is impossible, but I’m not sure.",
+      "textEdits": []
+    },
+    "comment-84920": {
+      "sourceMarkdownSha256": "60216ad13bda05cabba50214e7fb73f4feb0b1a1ff8b04b969bcbcffbe1eb65a",
+      "markdown": "Oops, one more:  \nIf you really were concerned about expressions like ``(True `by`)`` you could strengthen the type of `by` from\n\n```haskell\nby :: t -> Evidence (Qualifier t) -> Unqualified t\n```\n\nto\n\n```haskell\nby :: (Unqualified t ~ a -> b) => t -> Evidence (Qualifier t) -> Unqualified t\n```",
+      "textEdits": []
+    },
+    "comment-84931": {
+      "sourceMarkdownSha256": "7dc788cf0b36c6edcb209c066f53e65b6d38f116349e87720a83946c3676d79a",
+      "markdown": "The problem with `Qualifier` and `Unqualified` is that unification of types involving `=>` isn’t done by simple unification, but instead by bi-implication for constraints, so while you can write some types with them, you typically can’t build inhabitants.",
+      "textEdits": []
+    },
+    "comment-84938": {
+      "sourceMarkdownSha256": "caefe924360aa2438cb86f300e229284034a667af4d60e0a1bc8cc7e9904af63",
+      "markdown": "That explains why you can’t define them in Haskell, but I don’t think it bars you from adding them as primitives, does it? And the type checker already has the implementation that would back the primitive?\n\nI don’t have access to a machine with bleeding edge GHC on it at the moment, but is `(c => t) -> Dict c -> t` a syntactically valid type? If not, why not?",
+      "textEdits": []
+    },
+    "comment-84952": {
+      "sourceMarkdownSha256": "76a8bcb743f56d9ea90488785fc97648c169649891bb0f4a2f983848eb344a6a",
+      "markdown": "```haskell\ndischarge :: (c => t) -> Dict c -> t\ndischarge t Dict = t\n```\n\nworks fine.\n\nas for whether the type checker has the machinery, that is somewhat harder to answer, becuase it would depend on the details of the largely underspecified constraint simplifier.",
+      "textEdits": []
+    },
+    "comment-84953": {
+      "sourceMarkdownSha256": "1166827d4a843ca2fa0cf9ad25b593291be25fde71ffe289842cebedd0b4ea39",
+      "markdown": "Dan Peebles has some nice examples for things like a more polymorphic ‘`on`’ that could benefit, but in the meantime, one can use explicit proxies to work around the inability to name the constraint implicitly.",
+      "textEdits": []
+    },
+    "comment-85115": {
+      "sourceMarkdownSha256": "9e48e366e49f011a9812716a107b3a58246fcf81b5da1e2d861c78946c828a92",
+      "markdown": "As an aside, you can \\_write\\_\n\n```haskell\ntype family Constraints t :: Constraints\ntype instance Constraints (p => q) = p\n```\n\nyou just can’t use it anywhere. =/\n\nThe compiler complains when you go to use it that you need `LiberalTypeSynonyms` even if you have `LiberalTypeSynonyms` turned on. ;)",
+      "textEdits": []
+    },
+    "comment-85119": {
+      "sourceMarkdownSha256": "4d2abe2c83cdf54653cc4b9170363f7a5ec94b64811f0f2a44b9ab70d9a4aef4",
+      "markdown": "Yeah, I was thinking of that definition and the corresponding\n\n```haskell\ntype family Unqualified t :: *\ntype instance Unqualified (p => q) = q\n```\n\nAlas there is a logical reason why it doesn’t make sense.\n\n`{-# LANGUAGE CommunistTypeSynonyms #-}`?",
+      "textEdits": []
+    },
+    "comment-85122": {
+      "sourceMarkdownSha256": "bdffb8dd27e30b326042a69663ef2e64aec6d96fa968be24b920e3f8766fcbcb",
+      "markdown": "I raised the issue to Max. Not sure there is a good way for it to be defined in user land, because\n\n`() => q` and q are interchangeable, so it would require compiler support.\n\nThe most compelling use case is to make code like\n\n```haskell\non :: (p a, p b) => (c -> c -> d) -> (forall x. p x => x -> c) -> a -> b -> d\n```\n\ninhabitable for\n\n```haskell\n((++) `on` show)\n```\n\nbut it impacts all sorts of unrelated areas in the compiler.",
+      "textEdits": []
+    }
+  },
+  "zapping-strong-adjunctions": {
+    "comment-1719": {
+      "sourceMarkdownSha256": "1d397e652c5eb733256d0f3065956a41d3e6867128c30901263e6fda002e0c51",
+      "markdown": "Good catch.\n\nI added `Control.Comonad.Exponent` in response to a comment over on Dan Piponi’s blog and forgot that I had those in progress at the time.\n\nFixed and uploading to hackage as I write this.\n\nI may drop `Dyad` though, since it doesn’t add much value. As near as I can tell there are no interesting dyads in Haskell that aren’t just monads or comonads, and they force a profusion of typeclasses to define that lack other uses. This may also explain why there has been no followup to Fokkinga’s paper on them in the last 14 years. The distributive law is required to be a natural isomorphism, which seems to be too strong to be practical.",
+      "textEdits": []
+    }
+  },
+  "zipping-and-unzipping-functors": {
+    "comment-1163": {
+      "sourceMarkdownSha256": "aa5551e27115f907e201942627a514d144c2cb7b24dcae1b29c8843c4f03c96c",
+      "markdown": "your `Zip` class is almost the same as `Applicative`:\n\n```haskell\nfzipWith f a b = fmap f a b\n```\n\nYour `fzip` function is suggested in the `Applicative` paper as making more sense from a category theory perspective.\n\nThis also raises the question of what exactly `fzip` should do. How do you say that it should ‘zip’? For instance `[]` is also an applicative functor with the usual `Monad`-style cartestian product behaviour.\n\nSpecifying that `unfzip` is the inverse of `fzip` is a good idea. For `[]` `fzip` is only a right inverse of `unfzip`, since you could zip lists of different lengths. The same holds for `Maybe`: `funzip (fzip (Just x) Nothing) /= (Just x, Nothing)`.",
+      "textEdits": []
+    },
+    "comment-9740": {
+      "sourceMarkdownSha256": "a2eebf31f9999213105b3deaca5518595380c502b887120b88e76492bcc6a66f",
+      "markdown": "@Jake\n\nI almost agree. I’ve had people point out the connection to `Applicative` on several occasions before, but it falters slightly.\n\nThere is no requirement for the existence of unit, so your functor need not be pointed. This permits the class of zippable functors to be slightly wider than the class of applicative functors.\n\nSecondly the particular near-applicative operation is selected explicitly so it will be a left inverse to `unzip`.\n\n```haskell\nfzip . unfzip = id\n```\n\nSince that should hold for any functor to claim to be a member of `Zip` the definition is narrower than that of `Applicative`. Using list monad semantics for `fzip` on `[]` would fail this law.\n\nSo `Zip` is neither a superclass nor a subclass of `Applicative`.\n\nThat, at least, was my justification for a zippable functor as an independent concept; I may not have fully articulated the justification back when i wrote this article.",
+      "textEdits": []
+    }
+  }
+}

@@ -6,6 +6,7 @@ import MarkdownIt from 'markdown-it';
 const read = p => fs.readFileSync(p, 'utf8');
 const document = p => parseHTML(read(p)).document;
 const posts = JSON.parse(read('content/articles.json'));
+const commentFormatting = JSON.parse(read('content/comment-formatting.json'));
 const md = new MarkdownIt({html:true});
 const compact = text => text.replace(/\s+/g, '');
 let totalBlocks = 0;
@@ -64,7 +65,22 @@ for (const post of posts) {
       const old=original.getElementById(comment.id);
       const text=[...old.children].filter(n=>['P','PRE','BLOCKQUOTE','UL','OL'].includes(n.nodeName)).map(n=>n.textContent).join('');
       const current=doc.getElementById(comment.id).cloneNode(true);current.querySelector('header').remove();
-      assert.equal(compact(current.textContent),compact(text),`${post.slug}: verbatim comment ${comment.id}`);
+      let expected=compact(text);
+      const edits=commentFormatting[post.slug]?.[comment.id]?.textEdits||[];
+      for(const edit of [...edits].reverse()) {
+        assert.match(edit.before+edit.after,/^[`’“”"']*$/u,'Comment typography edits cannot change words or code operators');
+        assert.equal(expected.slice(edit.start,edit.start+edit.before.length),edit.before,'Comment typography edit matches original text');
+        expected=expected.slice(0,edit.start)+edit.after+expected.slice(edit.start+edit.before.length);
+      }
+      assert.equal(compact(current.textContent),expected,`${post.slug}: preserved comment ${comment.id}`);
+      const commentFences=md.parse(comment.markdown,{}).filter(t=>t.type==='fence');
+      const renderedFences=[...current.querySelectorAll('pre code')];
+      assert.equal(renderedFences.length,commentFences.length,`${comment.id}: all code blocks rendered`);
+      commentFences.forEach((fence,i)=>{
+        assert.equal(renderedFences[i].textContent,fence.content,`${comment.id}: highlighting preserves code`);
+        assert.equal(renderedFences[i].className,'language-'+fence.info,`${comment.id}: correct code language`);
+        assert.equal(renderedFences[i].parentElement.getAttribute('tabindex'),'0',`${comment.id}: keyboard scrolling`);
+      });
     }
   }
   assert.equal(doc.querySelectorAll('h1').length, 1);

@@ -6,19 +6,19 @@
       "id": "comment-105455",
       "author": "Yo Eight",
       "date": "July 5th, 2012 at 6:52 am",
-      "markdown": "Hi,\n\nThank you for this very informative post.\n\nYou’ve just forgotten to declare f to be a functor when defining MonadFree f (Codensity m) instance.\n\nRegards"
+      "markdown": "Hi,\n\nThank you for this very informative post.\n\nYou’ve just forgotten to declare `f` to be a functor when defining `MonadFree f (Codensity m)` instance.\n\nRegards"
     },
     {
       "id": "comment-105460",
       "author": "Edward Kmett",
       "date": "July 5th, 2012 at 11:41 am",
-      "markdown": "Fixed. I updated it by constraining MonadFree instead. It works correctly in the library I referenced. =)"
+      "markdown": "Fixed. I updated it by constraining `MonadFree` instead. It works correctly in the library I referenced. =)"
     },
     {
       "id": "comment-106387",
       "author": "Tac-Tics",
       "date": "October 26th, 2012 at 6:59 pm",
-      "markdown": "I’m really fascinated by the idea of correct-by-construction monads. One question, though. Control.Monad.Free seems very similar to the Control.Monad.Prompt module. What is the relationship between the two?"
+      "markdown": "I’m really fascinated by the idea of correct-by-construction monads. One question, though. `Control.Monad.Free` seems very similar to the `Control.Monad.Prompt` module. What is the relationship between the two?"
     },
     {
       "id": "comment-106591",
@@ -30,7 +30,7 @@
       "id": "comment-125515",
       "author": "Rafael  Calsaverini",
       "date": "June 21st, 2014 at 10:06 am",
-      "markdown": "Hi,  \nI was looking for the Free type on the package indicated in the post, but it seems that in the latest version there’s no Control.Monad.Trans.Free subpackage.\n\nWas it moved somewhere else?\n\nThanks."
+      "markdown": "Hi,  \nI was looking for the `Free` type on the package indicated in the post, but it seems that in the latest version there’s no `Control.Monad.Trans.Free` subpackage.\n\nWas it moved somewhere else?\n\nThanks."
     }
   ],
   "decisions": [

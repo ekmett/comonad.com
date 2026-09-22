@@ -6,7 +6,7 @@
       "id": "comment-127728",
       "author": "Edward Kmett",
       "date": "December 30th, 2014 at 3:23 pm",
-      "markdown": "That is there for the body of Lam, hence the \\_ that is there, but the type of the lambda doesn’t have the bound variable occurring inside of it, and so isn’t included in that guarantee and has to be added separately."
+      "markdown": "That is there for the body of `Lam`, hence the `_` that is there, but the type of the lambda doesn’t have the bound variable occurring inside of it, and so isn’t included in that guarantee and has to be added separately."
     }
   ],
   "decisions": [

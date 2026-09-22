@@ -6,13 +6,13 @@
       "id": "comment-11175",
       "author": "Edward Kmett",
       "date": "August 21st, 2009 at 8:29 am",
-      "markdown": "@Sebastian: I just added a source link at the bottom of the post for the Iteratee code. It doesn’t contain the monoidal layer, since that has changed quite a bit since this was written."
+      "markdown": "@Sebastian: I just added a source link at the bottom of the post for the `Iteratee` code. It doesn’t contain the monoidal layer, since that has changed quite a bit since this was written."
     },
     {
       "id": "comment-11220",
       "author": "Edward Kmett",
       "date": "August 23rd, 2009 at 6:04 am",
-      "markdown": "@Sjoerd\n\nMostly to follow the original Iteratee write-up with the flip (.) combinator. That would be a perfectly valid approach as well."
+      "markdown": "@Sjoerd\n\nMostly to follow the original Iteratee write-up with the `flip (.)` combinator. That would be a perfectly valid approach as well."
     }
   ],
   "decisions": [

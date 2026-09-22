@@ -6,7 +6,7 @@
       "id": "comment-104638",
       "author": "Philip J-F",
       "date": "April 27th, 2012 at 12:01 am",
-      "markdown": "shouldn’t the type of improve be\n\nFunctor f => (forall m. MonadFree f m => m a) -> Free f a\n\ninstead of\n\n(forall a. MonadFree f m => m a) -> Free f a"
+      "markdown": "shouldn’t the type of `improve` be\n\n```haskell\nFunctor f => (forall m. MonadFree f m => m a) -> Free f a\n```\n\ninstead of\n\n```haskell\n(forall a. MonadFree f m => m a) -> Free f a\n```"
     }
   ],
   "decisions": [

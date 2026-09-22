@@ -1,0 +1,724 @@
+{
+  "checked": "2026-09-22",
+  "snapshot": "2013-08-20",
+  "repository": "https://github.com/ekmett/ekmett.github.com",
+  "articles": [
+    {
+      "slug": "internalized-guarded-recursion-for-equational-reasoning",
+      "status": "missing",
+      "date": "2022-10-21"
+    },
+    {
+      "slug": "computational-quadrinitarianism-curious-correspondences-go-cubical",
+      "status": "missing",
+      "date": "2018-01-16"
+    },
+    {
+      "slug": "the-state-comonad",
+      "status": "missing",
+      "date": "2018-01-06"
+    },
+    {
+      "slug": "adjoint-triples",
+      "status": "missing",
+      "date": "2016-01-13"
+    },
+    {
+      "slug": "some-rough-notes-on-univalent-foundations-and-b-systems-part-i",
+      "status": "missing",
+      "date": "2015-09-15"
+    },
+    {
+      "slug": "on-the-unsafety-of-interleaved-io",
+      "status": "missing",
+      "date": "2015-07-22"
+    },
+    {
+      "slug": "categories-of-structures-in-haskell",
+      "status": "missing",
+      "date": "2015-05-25"
+    },
+    {
+      "slug": "domains-sets-traversals-and-applicatives",
+      "status": "missing",
+      "date": "2015-04-29"
+    },
+    {
+      "slug": "free-monoids-in-haskell",
+      "status": "missing",
+      "date": "2015-02-21"
+    },
+    {
+      "slug": "fast-circular-substitution",
+      "status": "missing",
+      "date": "2014-12-30"
+    },
+    {
+      "slug": "letter-to-a-young-haskell-enthusiast",
+      "status": "missing",
+      "date": "2014-08-01"
+    },
+    {
+      "slug": "cufp-cfp",
+      "status": "missing",
+      "date": "2014-04-20"
+    },
+    {
+      "slug": "representing-applicatives",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2013/representing-applicatives/",
+      "oldLength": 8720,
+      "newLength": 8720,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "japanese-workshop-1",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2013/japanese-workshop-1/",
+      "oldLength": 6334,
+      "newLength": 6334,
+      "sameText": true,
+      "images": 3
+    },
+    {
+      "slug": "algebras-of-applicatives",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2013/algebras-of-applicatives/",
+      "oldLength": 8149,
+      "newLength": 8149,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "abstracting-with-applicatives",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2012/abstracting-with-applicatives/",
+      "oldLength": 13659,
+      "newLength": 13659,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "natural-deduction-sequent-calculus-and-type-classes",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2012/natural-deduction-sequent-calculus-and-type-classes/",
+      "oldLength": 6241,
+      "newLength": 6241,
+      "sameText": true,
+      "images": 24
+    },
+    {
+      "slug": "unnatural-transformations-and-quantifiers",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2012/unnatural-transformations-and-quantifiers/",
+      "oldLength": 6496,
+      "newLength": 6496,
+      "sameText": true,
+      "images": 60
+    },
+    {
+      "slug": "hackage-mirror",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2012/hackage-mirror/",
+      "oldLength": 759,
+      "newLength": 759,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "mirrored-lenses",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2012/mirrored-lenses/",
+      "oldLength": 13900,
+      "newLength": 13900,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "wheres-waldo",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2012/wheres-waldo/",
+      "oldLength": 1052,
+      "newLength": 1052,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "catamorphism-knol",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2012/catamorphism-knol/",
+      "oldLength": 691,
+      "newLength": 691,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "wadlers-law-revisited",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2012/wadlers-law-revisited/",
+      "oldLength": 2748,
+      "newLength": 2748,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "searching-infinity",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2011/searching-infinity/",
+      "oldLength": 9624,
+      "newLength": 9624,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "what-constraints-entail-part-1",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2011/what-constraints-entail-part-1/",
+      "oldLength": 8506,
+      "newLength": 8506,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "what-constraints-entail-part-2",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2011/what-constraints-entail-part-2/",
+      "oldLength": 14892,
+      "newLength": 14892,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "homotopy-and-directed-type-theory-slides",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2011/homotopy-and-directed-type-theory-slides/",
+      "oldLength": 149,
+      "newLength": 149,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "hac-boston",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2011/hac-boston/",
+      "oldLength": 1110,
+      "newLength": 1110,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "a-parsec-full-of-rats",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2011/a-parsec-full-of-rats/",
+      "oldLength": 6576,
+      "newLength": 6576,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "a-parsec-full-of-rats-part-2",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2011/a-parsec-full-of-rats-part-2/",
+      "oldLength": 7089,
+      "newLength": 7089,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "free-modules-and-functional-linear-functionals",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2011/free-modules-and-functional-linear-functionals/",
+      "oldLength": 13263,
+      "newLength": 13263,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "a-product-of-an-imperfect-union",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2011/a-product-of-an-imperfect-union/",
+      "oldLength": 7102,
+      "newLength": 7102,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "more-on-comonads-as-monad-transformers",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2011/more-on-comonads-as-monad-transformers/",
+      "oldLength": 2108,
+      "newLength": 2108,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "monad-transformers-from-comonads",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2011/monad-transformers-from-comonads/",
+      "oldLength": 4110,
+      "newLength": 4110,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "monads-from-comonads",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2011/monads-from-comonads/",
+      "oldLength": 9855,
+      "newLength": 9855,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "free-monads-for-less-3",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2011/free-monads-for-less-3/",
+      "oldLength": 7812,
+      "newLength": 7812,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "free-monads-for-less",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2011/free-monads-for-less/",
+      "oldLength": 8623,
+      "newLength": 8623,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "free-monads-for-less-2",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2011/free-monads-for-less-2/",
+      "oldLength": 9104,
+      "newLength": 9104,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "introducing-speculation",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2010/introducing-speculation/",
+      "oldLength": 1972,
+      "newLength": 1972,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "boston-haskell-june",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2010/boston-haskell-june/",
+      "oldLength": 969,
+      "newLength": 969,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "hac-phi",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2010/hac-phi/",
+      "oldLength": 337,
+      "newLength": 337,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "brodal-okasaki-heaps-in-haskell",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2010/brodal-okasaki-heaps-in-haskell/",
+      "oldLength": 456,
+      "newLength": 456,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "reverse-mode-automatic-differentiation-in-haskell",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2010/reverse-mode-automatic-differentiation-in-haskell/",
+      "oldLength": 957,
+      "newLength": 957,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "finger-trees",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2010/finger-trees/",
+      "oldLength": 1430,
+      "newLength": 1430,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "iteratees-take-2",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2009/iteratees-take-2/",
+      "oldLength": 862,
+      "newLength": 862,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "remodeling-precision",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2009/remodeling-precision/",
+      "oldLength": 3092,
+      "newLength": 3092,
+      "sameText": true,
+      "images": 1
+    },
+    {
+      "slug": "curried-scheme",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2009/curried-scheme/",
+      "oldLength": 2101,
+      "newLength": 2101,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "iteratees-parsec-and-monoid",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2009/iteratees-parsec-and-monoid/",
+      "oldLength": 1443,
+      "newLength": 1443,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "clearer-reflection",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2009/clearer-reflection/",
+      "oldLength": 2006,
+      "newLength": 2006,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "hac-phi-slides",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2009/hac-phi-slides/",
+      "oldLength": 572,
+      "newLength": 572,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "recursion-schemes",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2009/recursion-schemes/",
+      "oldLength": 2384,
+      "newLength": 2384,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "incremental-folds",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2009/incremental-folds/",
+      "oldLength": 13180,
+      "newLength": 13180,
+      "sameText": true,
+      "images": 1
+    },
+    {
+      "slug": "the-pointed-set-comonad",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2008/the-pointed-set-comonad/",
+      "oldLength": 6036,
+      "newLength": 6036,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "still-alive",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2008/still-alive/",
+      "oldLength": 392,
+      "newLength": 392,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "representing-adjunctions",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2008/representing-adjunctions/",
+      "oldLength": 3918,
+      "newLength": 3918,
+      "sameText": true,
+      "images": 11
+    },
+    {
+      "slug": "zapping-strong-adjunctions",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2008/zapping-strong-adjunctions/",
+      "oldLength": 4534,
+      "newLength": 4534,
+      "sameText": true,
+      "images": 4
+    },
+    {
+      "slug": "linear-bloom-filters",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2008/linear-bloom-filters/",
+      "oldLength": 13173,
+      "newLength": 13173,
+      "sameText": true,
+      "images": 2
+    },
+    {
+      "slug": "kan-extension-iii",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2008/kan-extension-iii/",
+      "oldLength": 5404,
+      "newLength": 5404,
+      "sameText": true,
+      "images": 34
+    },
+    {
+      "slug": "kan-extensions-ii",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2008/kan-extensions-ii/",
+      "oldLength": 9474,
+      "newLength": 9474,
+      "sameText": false,
+      "images": 14
+    },
+    {
+      "slug": "kan-extensions",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2008/kan-extensions/",
+      "oldLength": 7522,
+      "newLength": 7522,
+      "sameText": true,
+      "images": 1
+    },
+    {
+      "slug": "elgot-coalgebras",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2008/elgot-coalgebras/",
+      "oldLength": 6017,
+      "newLength": 6017,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "forgetful-laziness",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2008/forgetful-laziness/",
+      "oldLength": 1497,
+      "newLength": 1497,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "generatingfunctorology",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2008/generatingfunctorology/",
+      "oldLength": 4947,
+      "newLength": 4947,
+      "sameText": true,
+      "images": 5
+    },
+    {
+      "slug": "towards-formal-power-series-for-functors",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2008/towards-formal-power-series-for-functors/",
+      "oldLength": 3972,
+      "newLength": 3972,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "just-fokkinga-abide",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2008/just-fokkinga-abide/",
+      "oldLength": 1240,
+      "newLength": 1240,
+      "sameText": true,
+      "images": 6
+    },
+    {
+      "slug": "cozipping",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2008/cozipping/",
+      "oldLength": 4222,
+      "newLength": 4222,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "zipping-and-unzipping-functors",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2008/zipping-and-unzipping-functors/",
+      "oldLength": 5843,
+      "newLength": 5843,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "deriving-strength-from-laziness",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2008/deriving-strength-from-laziness/",
+      "oldLength": 6601,
+      "newLength": 6863,
+      "sameText": false,
+      "images": 3
+    },
+    {
+      "slug": "the-cofree-comonad-and-the-expression-problem",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2008/the-cofree-comonad-and-the-expression-problem/",
+      "oldLength": 8228,
+      "newLength": 8228,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "dynamorphisms-as-chronomorphisms",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2008/dynamorphisms-as-chronomorphisms/",
+      "oldLength": 1318,
+      "newLength": 1318,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "time-for-chronomorphisms",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2008/time-for-chronomorphisms/",
+      "oldLength": 3849,
+      "newLength": 3849,
+      "sameText": true,
+      "images": 2
+    },
+    {
+      "slug": "unnatural-transformations",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2008/unnatural-transformations/",
+      "oldLength": 5824,
+      "newLength": 5824,
+      "sameText": true,
+      "images": 1
+    },
+    {
+      "slug": "generalized-hylomorphisms",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2008/generalized-hylomorphisms/",
+      "oldLength": 1217,
+      "newLength": 1217,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "monads-for-free",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2008/monads-for-free/",
+      "oldLength": 5738,
+      "newLength": 5738,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "higher-order-abstract-syntax-a-la-carte",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2008/higher-order-abstract-syntax-a-la-carte/",
+      "oldLength": 2933,
+      "newLength": 2933,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "rotten-bananas",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2008/rotten-bananas/",
+      "oldLength": 15999,
+      "newLength": 15999,
+      "sameText": true,
+      "images": 1
+    },
+    {
+      "slug": "elgot-algebras",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2008/elgot-algebras/",
+      "oldLength": 105,
+      "newLength": 105,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "parameterized-monads-in-haskell",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2007/parameterized-monads-in-haskell/",
+      "oldLength": 7906,
+      "newLength": 7906,
+      "sameText": true,
+      "images": 2
+    },
+    {
+      "slug": "updated-datatype",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2007/updated-datatype/",
+      "oldLength": 226,
+      "newLength": 226,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "javascript-interpreter-recompiler-atomizer-threading-library",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2007/javascript-interpreter-recompiler-atomizer-threading-library/",
+      "oldLength": 1120,
+      "newLength": 1120,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "logic",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2006/logic/",
+      "oldLength": 616,
+      "newLength": 616,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "generalizing-dot",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2006/generalizing-dot/",
+      "oldLength": 1329,
+      "newLength": 1329,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "overloaded-functions-with-subtyping",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2006/overloaded-functions-with-subtyping/",
+      "oldLength": 1048,
+      "newLength": 1048,
+      "sameText": true,
+      "images": 2
+    },
+    {
+      "slug": "wikipress",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2006/wikipress/",
+      "oldLength": 735,
+      "newLength": 735,
+      "sameText": true,
+      "images": 0
+    },
+    {
+      "slug": "hello-world",
+      "status": "present",
+      "archiveUrl": "https://ekmett.github.io/reader/2006/hello-world/",
+      "oldLength": 377,
+      "newLength": 377,
+      "sameText": true,
+      "images": 5
+    }
+  ]
+}

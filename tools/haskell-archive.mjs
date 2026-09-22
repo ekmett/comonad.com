@@ -79,7 +79,7 @@ export function buildArchive(archive) {
   const unavailable = new Map((archive.failures || []).map(f => [f.url, f.error]));
   const escape=s=>s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;');
   fs.mkdirSync('dist/source/unavailable',{recursive:true});
-  (archive.failures||[]).forEach((f,i)=>fs.writeFileSync(`dist/source/unavailable/haskell-${i}.html`,`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Historical source unavailable</title><h1>Historical source unavailable</h1><p>This article linked to <code>${escape(f.url)}</code>.</p><p>The original server returned ${escape(f.error)} during preservation. No replacement has been invented.</p><p><a href="../../reader/">Return to the archive</a></p></html>`));
+  (archive.failures||[]).forEach((f,i)=>fs.writeFileSync(`dist/source/unavailable/haskell-${i}.html`,`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Historical source unavailable</title><h1>Historical source unavailable</h1><p>This article linked to <code>${escape(f.url)}</code>.</p><p>This file is unavailable.</p><p><a href="../../reader/">Return to the archive</a></p></html>`));
   for (const record of archive.resources) {
     const original = fs.readFileSync(path.join(rawRoot, record.path));
     let output = original;

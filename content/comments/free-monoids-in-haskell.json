@@ -6,31 +6,31 @@
       "id": "comment-128414",
       "author": "Olaf",
       "date": "February 26th, 2015 at 7:51 am",
-      "markdown": "Incidentally, (a -> m) -> m is the free algebra for the continuation monad. The monoid instance for (FM a) corresponds to what I think should be the MonadPlus instance of the continuation monad. By the way: Which of the existing Monoid instances are actually \\`proper’ instances in the sense that the denotational semantics of mempty and make the semantic domain (including bottom and infinite values) a monoid?"
+      "markdown": "Incidentally, `(a -> m) -> m` is the free algebra for the continuation monad. The monoid instance for `(FM a)` corresponds to what I think should be the `MonadPlus` instance of the continuation monad. By the way: Which of the existing `Monoid` instances are actually \\`proper’ instances in the sense that the denotational semantics of `mempty` and make the semantic domain (including bottom and infinite values) a monoid?"
     },
     {
       "id": "comment-128415",
       "author": "Olaf",
       "date": "February 26th, 2015 at 8:46 am",
-      "markdown": "Is FM a monad? It seems yes: Just use return (=embed) and >>= of the continuation monad. Also, monoids should now be FM-algebras. What is the algebra structure map Monoid a => FM a -> a? The first thing that comes to mind is:  \nstructure :: Monoid a => FM a -> a;  \nstructure (FM f) = f id  \nAt least struct.embed = id is true."
+      "markdown": "Is `FM` a monad? It seems yes: Just use `return` `(=embed)` and `>>=` of the continuation monad. Also, monoids should now be `FM`-algebras. What is the algebra structure map `Monoid a => FM a -> a`? The first thing that comes to mind is:  \n\n```haskell\nstructure :: Monoid a => FM a -> a;\nstructure (FM f) = f id\n```\n\nAt least `struct.embed = id` is true."
     },
     {
       "id": "comment-128416",
       "author": "Dan Doel",
       "date": "February 27th, 2015 at 6:23 pm",
-      "markdown": "Imm: in a total language, this does not apply. Types are set-like, and the free monoid is a type of finite sequences. Types containing infinite sequences would not be free, because there is no means to map them correctly into other monoids, because you are not allowed to fold them.\n\ndramforever: The point of this post was to show that the free monoid in Haskell is a type that contains infinite values. It is incorrect to use set-theoretic intuition and say that the free monoid only contains finite sequences (at least, if you care about things beyond a “fast and loose” level).\n\nThis is the same reason that data types contain infinite values in Haskell. They are still inductive definitions, but the induction is properly understood to be on domains, not sets. The domain structure induces the infinite values, despite induction ‘normally’ only giving you finite values in set theory. The same thing happens for free things.\n\nOlaf: I think most Monoid instances are fine. The thing you usually have to be careful of is not being too lazy. For instance, if you write ‘mappend \\_ \\_ = ()’ for the unit monoid, it is wrong, because then ‘mappend mempty undefined = ()’, when it should be undefined. Most definitions can’t get away without looking at the arguments, though, so they don’t have this problem. (Monoid a, Monoid b) => Monoid (a,b) is another case where you’d have to be careful, though.\n\nFM is a monad, and you have the relevant structure correct. It’s also a MonadPlus that does the ‘obvious’ thing."
+      "markdown": "Imm: in a total language, this does not apply. Types are set-like, and the free monoid is a type of finite sequences. Types containing infinite sequences would not be free, because there is no means to map them correctly into other monoids, because you are not allowed to fold them.\n\ndramforever: The point of this post was to show that the free monoid in Haskell is a type that contains infinite values. It is incorrect to use set-theoretic intuition and say that the free monoid only contains finite sequences (at least, if you care about things beyond a “fast and loose” level).\n\nThis is the same reason that data types contain infinite values in Haskell. They are still inductive definitions, but the induction is properly understood to be on domains, not sets. The domain structure induces the infinite values, despite induction ‘normally’ only giving you finite values in set theory. The same thing happens for free things.\n\nOlaf: I think most `Monoid` instances are fine. The thing you usually have to be careful of is not being too lazy. For instance, if you write ‘`mappend _ _ = ()`’ for the unit monoid, it is wrong, because then ‘`mappend mempty undefined = ()`’, when it should be `undefined`. Most definitions can’t get away without looking at the arguments, though, so they don’t have this problem. `(Monoid a, Monoid b) => Monoid (a,b)` is another case where you’d have to be careful, though.\n\n`FM` is a monad, and you have the relevant structure correct. It’s also a `MonadPlus` that does the ‘obvious’ thing."
     },
     {
       "id": "comment-145073",
       "author": "Tom",
       "date": "June 14th, 2017 at 8:36 am",
-      "markdown": "Olaf pointed out that FM is indeed a Monad. For my own masochistic pleasure, I’ve been trying to write an \\`Extend\\` instance for FM (as comonad is impossible with the presence of \\`None\\`).\n\nTo borrow Haskell notation:\n\nNone =>> f = None  \nl : r =>> f = ???  \nx =>> f = Single $ f x\n\nI seem to have hit a BST branch without a root node; is there any way to implement \\`Extend\\` for the \\`:\\` case? The best attempt I’ve made leads to \\`(l =>> f) : (r =>> f)\\`, but this seems to be “skipping” a step."
+      "markdown": "Olaf pointed out that `FM` is indeed a `Monad`. For my own masochistic pleasure, I’ve been trying to write an `Extend` instance for `FM` (as comonad is impossible with the presence of `None`).\n\nTo borrow Haskell notation:\n\n```haskell\nNone =>> f = None\nl : r =>> f = ???\nx =>> f = Single $ f x\n```\n\nI seem to have hit a BST branch without a root node; is there any way to implement `Extend` for the `:` case? The best attempt I’ve made leads to `(l =>> f) : (r =>> f)`, but this seems to be “skipping” a step."
     },
     {
       "id": "comment-191664",
       "author": "Olaf",
       "date": "June 19th, 2018 at 4:57 pm",
-      "markdown": "Could the following be the monad bind for FM?\n\nbind :: FM x -> (x -> FM y) -> FM y  \nbind phi k = unFM phi k\n\nIt uses the fact that FM has a Monoid instance, so phi can be applied to the Kleisli map k. This looks quite different from the Continuation monad’s bind."
+      "markdown": "Could the following be the monad bind for `FM`?\n\n```haskell\nbind :: FM x -> (x -> FM y) -> FM y\nbind phi k = unFM phi k\n```\n\nIt uses the fact that `FM` has a `Monoid` instance, so `phi` can be applied to the Kleisli map `k`. This looks quite different from the Continuation monad’s bind."
     }
   ],
   "decisions": [

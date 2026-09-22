@@ -6,13 +6,13 @@
       "id": "comment-107120",
       "author": "Edward Kmett",
       "date": "December 26th, 2012 at 8:52 pm",
-      "markdown": "Const c >>= f doesn’t work\n\nreturn a >>= f = f a is a Monad law.\n\nConsider:\n\nreturn a >>= \\\\ \\_ -> Const “hello”\n\nBut from that definition\n\nreturn a >>= \\\\ \\_ -> Const “hello” = Const “”\n\nbut\n\n(\\\\ \\_ -> Const “hello”) a = Const “hello”\n\nYour proposal only works when mempty is the only value of your monoid. It works for Const (), but nothing else really."
+      "markdown": "`Const c >>= f` doesn’t work\n\n`return a >>= f = f a` is a Monad law.\n\nConsider:\n\n```haskell\nreturn a >>= \\ _ -> Const \"hello\"\n```\n\nBut from that definition\n\n```haskell\nreturn a >>= \\ _ -> Const \"hello\" = Const \"\"\n```\n\nbut\n\n```haskell\n(\\ _ -> Const \"hello\") a = Const \"hello\"\n```\n\nYour proposal only works when `mempty` is the only value of your monoid. It works for `Const ()`, but nothing else really."
     },
     {
       "id": "comment-107123",
       "author": "Sjoerd Visscher",
       "date": "December 27th, 2012 at 5:05 am",
-      "markdown": "Great article!\n\nI came across the Sum applicative for the first time just two days ago in this comment on Stack Overflow by Conor McBride \\[1\\]. There he notes Identity is the initial Applicative functor, so you can replace that last Natural instance with:\n\ninstance Applicative g => Natural Identity g where  \neta (Identity x) = pure x\n\n\\[1\\] [http://stackoverflow.com/questions/14022791/what-is-control-applicative-lift-useful-for/14022871#comment19369023\\_14022871](http://stackoverflow.com/questions/14022791/what-is-control-applicative-lift-useful-for/14022871#comment19369023_14022871)"
+      "markdown": "Great article!\n\nI came across the `Sum` applicative for the first time just two days ago in this comment on Stack Overflow by Conor McBride \\[1\\]. There he notes `Identity` is the initial `Applicative` functor, so you can replace that last `Natural` instance with:\n\n```haskell\ninstance Applicative g => Natural Identity g where\n  eta (Identity x) = pure x\n```\n\n\\[1\\] [http://stackoverflow.com/questions/14022791/what-is-control-applicative-lift-useful-for/14022871#comment19369023\\_14022871](http://stackoverflow.com/questions/14022791/what-is-control-applicative-lift-useful-for/14022871#comment19369023_14022871)"
     }
   ],
   "decisions": [

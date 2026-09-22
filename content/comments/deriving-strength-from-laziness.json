@@ -12,19 +12,19 @@
       "id": "comment-51571",
       "author": "Edward Kmett",
       "date": "May 1st, 2011 at 3:31 am",
-      "markdown": "BMeph: 1.) nah, the costrength used here was derived from relaxing the notion from a comonad to a functor in the same way that strength was weakened from mstrength.\n\n2.) Even with some random Monoid constraint on e it wouldn’t give you the power to enumerate all possible values of e, to complete the costrength."
+      "markdown": "BMeph: 1.) nah, the costrength used here was derived from relaxing the notion from a comonad to a functor in the same way that strength was weakened from `mstrength`.\n\n2.) Even with some random `Monoid` constraint on e it wouldn’t give you the power to enumerate all possible values of e, to complete the costrength."
     },
     {
       "id": "comment-126210",
       "author": "Edward Kmett",
       "date": "August 1st, 2014 at 3:47 am",
-      "markdown": "@blaisorblade:\n\nEven worse than that:\n\ncostrength as defined here is actually wrong!\n\nI need to spend some time writing that up, but if you check the dual of the strength laws the second one fails for this form!"
+      "markdown": "@blaisorblade:\n\nEven worse than that:\n\n`costrength` as defined here is actually wrong!\n\nI need to spend some time writing that up, but if you check the dual of the strength laws the second one fails for this form!"
     },
     {
       "id": "comment-132152",
       "author": "marisa",
       "date": "March 2nd, 2016 at 8:15 am",
-      "markdown": "Just some typo:  \nIn Scheme you can define costrength with a the use of call-cc, which I’ll leave as an exercise to the reader.\n\nI am also having these, not sure if it is mine or your problem:  \nmstrength ma b = ma >>= (\\\\\\\\a -> return (a,b))  \nmstrength’ ma b = ma >>= return . (\\\\\\\\a -> (a,b))  \nstrength fa b = fmap (\\\\\\\\a -> (a,b)) fa  \nusing firefox"
+      "markdown": "Just some typo:  \nIn Scheme you can define `costrength` with a the use of `call-cc`, which I’ll leave as an exercise to the reader.\n\nI am also having these, not sure if it is mine or your problem:  \n\n```haskell\nmstrength ma b = ma >>= (\\\\a -> return (a,b))\nmstrength' ma b = ma >>= return . (\\\\a -> (a,b))\nstrength fa b = fmap (\\\\a -> (a,b)) fa\n```\n\nusing firefox"
     }
   ],
   "decisions": [

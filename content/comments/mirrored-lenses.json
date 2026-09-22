@@ -12,13 +12,13 @@
       "id": "comment-105589",
       "author": "Edward Kmett",
       "date": "July 17th, 2012 at 1:23 pm",
-      "markdown": "Honestly, I’m pretty far behind in the record debate. Mostly because the signal to noise ratio was bad enough that I just gave up on it. In practice the use of lenses is mostly orthogonal to SORF/DORF.\n\nThis does largely address the use of something like . as a field accessor though, because foo^.bar.baz.quux does exactly what an OOP developer would expect."
+      "markdown": "Honestly, I’m pretty far behind in the record debate. Mostly because the signal to noise ratio was bad enough that I just gave up on it. In practice the use of lenses is mostly orthogonal to SORF/DORF.\n\nThis does largely address the use of something like . as a field accessor though, because `foo^.bar.baz.quux` does exactly what an OOP developer would expect."
     },
     {
       "id": "comment-146846",
       "author": "Porges",
       "date": "August 4th, 2017 at 1:06 am",
-      "markdown": "Is it possible to use that “pseudo-Haskell” as a definition now? With PolyKinds my definition compiles, but are there downsides?\n\n{-# LANGUAGE RankNTypes, PolyKinds, TupleSections, TypeFamilies, TypeFamilyDependencies #-}\n\nimport Data.Kind (Type)\n\ntype LensFamily (outer :: t -> Type) (inner :: t -> Type) =  \nforall a b f. Functor f => (inner a -> f (inner b)) -> (outer a -> f (outer b))\n\ntype family Snd b a :: Type where  \nSnd b a = (a, b)\n\ntype family Fst a b :: Type where  \nFst a b = (a, b)\n\ntype family Id t = r | r -> t where  \nId x = x\n\nfstLens :: LensFamily (Snd b) Id  \nfstLens f (a, b) = (, b) f a\n\nsndLens :: LensFamily (Fst a) Id  \nsndLens f (a, b) = (a, ) f b"
+      "markdown": "Is it possible to use that “pseudo-Haskell” as a definition now? With `PolyKinds` my definition compiles, but are there downsides?\n\n```haskell\n{-# LANGUAGE RankNTypes, PolyKinds, TupleSections, TypeFamilies, TypeFamilyDependencies #-}\n\nimport Data.Kind (Type)\n\ntype LensFamily (outer :: t -> Type) (inner :: t -> Type) =\n  forall a b f. Functor f => (inner a -> f (inner b)) -> (outer a -> f (outer b))\n\ntype family Snd b a :: Type where\n  Snd b a = (a, b)\n\ntype family Fst a b :: Type where\n  Fst a b = (a, b)\n\ntype family Id t = r | r -> t where\n  Id x = x\n\nfstLens :: LensFamily (Snd b) Id\nfstLens f (a, b) = (, b) f a\n\nsndLens :: LensFamily (Fst a) Id\nsndLens f (a, b) = (a, ) f b\n```"
     }
   ],
   "decisions": [

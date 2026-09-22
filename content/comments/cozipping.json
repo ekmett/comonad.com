@@ -6,19 +6,19 @@
       "id": "comment-1168",
       "author": "Twan van Laarhoven",
       "date": "May 5th, 2008 at 7:23 pm",
-      "markdown": "An interesting post, I was thinking along a slightly different (and wrong) route myself.\n\nFirst of all, shouldn’t cozip be called counzip and vice-versa? fzip has type “(f a \\* f b) -> f (a\\*b)” doesn’t taking the dual give “(f a + f b) Either (f a) (f b)”?\n\nI was thinking about the type\n\n\\> almostcozip :: f (Either a b) -> (f a, f b)\n\nThis function can be implemented unambiguously for \\[\\] and Maybe, and is in quite useful in practice. It also has a right inverse,\n\n\\> acounzip :: (f a, f b) -> f (Either a b)\n\nIf (f x) is a Monoid then  \n\\> acounzip (fa, fb) = fmap Left fa \\`mappend\\` fmap Right fb\n\nThinking about it some more, there is also the dual type\n\n\\> azip :: Either (f a) (f b) -> f (a,b)  \n\\> aunzip :: f (a,b) -> Either (f a) (f b)\n\nBut I can’t think of any nice function with this type."
+      "markdown": "An interesting post, I was thinking along a slightly different (and wrong) route myself.\n\nFirst of all, shouldn’t `cozip` be called `counzip` and vice-versa? `fzip` has type “`(f a * f b) -> f (a*b)`” doesn’t taking the dual give “`(f a + f b) Either (f a) (f b)`”?\n\nI was thinking about the type\n\n```haskell\n> almostcozip :: f (Either a b) -> (f a, f b)\n```\n\nThis function can be implemented unambiguously for `[]` and `Maybe`, and is in quite useful in practice. It also has a right inverse,\n\n```haskell\n> acounzip :: (f a, f b) -> f (Either a b)\n```\n\nIf `(f x)` is a `Monoid` then  \n\n```haskell\n> acounzip (fa, fb) = fmap Left fa `mappend` fmap Right fb\n```\n\nThinking about it some more, there is also the dual type\n\n```haskell\n> azip :: Either (f a) (f b) -> f (a,b)\n> aunzip :: f (a,b) -> Either (f a) (f b)\n```\n\nBut I can’t think of any nice function with this type."
     },
     {
       "id": "comment-1171",
       "author": "Edward Kmett",
       "date": "May 5th, 2008 at 8:00 pm",
-      "markdown": "You’re right, I flipped the names when I was slapping together the code over lunch. I had left my notes at home. I’ll fix it up.\n\nHrmm, of course now you need an extra ‘fair’ acounzip as well."
+      "markdown": "You’re right, I flipped the names when I was slapping together the code over lunch. I had left my notes at home. I’ll fix it up.\n\nHrmm, of course now you need an extra ‘fair’ `acounzip` as well."
     },
     {
       "id": "comment-18878",
       "author": "Xplat",
       "date": "August 4th, 2010 at 3:03 pm",
-      "markdown": "Counzipping makes a pretty good toy model of the runtime type erasure that happens in Java and Scala generics — it pushes a tag from the root of a container down into the individual ‘holes’. Cases where the cozip doesn’t exist become unsafe ‘unchecked casts’. I wonder if this sort of analysis could be used as a basis for better compile-time analysis of where unsafety occurs."
+      "markdown": "Counzipping makes a pretty good toy model of the runtime type erasure that happens in Java and Scala generics — it pushes a tag from the root of a container down into the individual ‘holes’. Cases where the `cozip` doesn’t exist become unsafe ‘unchecked casts’. I wonder if this sort of analysis could be used as a basis for better compile-time analysis of where unsafety occurs."
     }
   ],
   "decisions": [

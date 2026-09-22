@@ -6,13 +6,13 @@
       "id": "comment-1042",
       "author": "Jaak",
       "date": "April 12th, 2008 at 10:29 am",
-      "markdown": "I’m sorry, but what is the Place constructor in the Functor instance of Free? Looks to me that it sould be “Return (f x)” instead.\n\n\\- Jaak"
+      "markdown": "I’m sorry, but what is the `Place` constructor in the `Functor` instance of `Free`? Looks to me that it sould be “`Return (f x)`” instead.\n\n\\- Jaak"
     },
     {
       "id": "comment-1043",
       "author": "Omar",
       "date": "April 12th, 2008 at 12:50 pm",
-      "markdown": "data Free f a = Roll (f (Free f a)) | Return a\n\nnewtype Free f a = Free { unfree :: (a, f (Free f a)) }\n\nAren’t those two different types? Isn’t the first a sum and the second a product? Should g = Free f a satisfy g=(f g) + a or g=(f g) x a?"
+      "markdown": "```haskell\ndata Free f a = Roll (f (Free f a)) | Return a\n```\n\n```haskell\nnewtype Free f a = Free { unfree :: (a, f (Free f a)) }\n```\n\nAren’t those two different types? Isn’t the first a sum and the second a product? Should `g = Free f a` satisfy `g=(f g) + a` or `g=(f g) x a`?"
     },
     {
       "id": "comment-1044",

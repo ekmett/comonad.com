@@ -6,13 +6,13 @@
       "id": "comment-1273",
       "author": "apfelmus",
       "date": "May 13th, 2008 at 7:38 am",
-      "markdown": "I don’t see why you’d need overlapping or undecidable instances, all your class instances look like H98 (modulo the type family).\n\nThere seems to be a problem with the power series constructor, I fail to see how it’s different from\n\nnewtype Power \\_ a = P (a, Power \\_ a)\n\ni.e. an infinite stream of a . The instance then simply becomes\n\ninstance Functor (Power f) where  \nfmap f = Power . bimap f (fmap f) . runPower\n\nThis is probably not what you want. In the case you want, the real obstruction is that for power series, the functor in question must be differentiable an infinite number of times. In other words, something like\n\ninstance Differentiable f => Differentiable (D f) where …\n\nThen, a context\n\ninstance Differentiable f => Functor (Power f)\n\nshould be enough."
+      "markdown": "I don’t see why you’d need overlapping or undecidable instances, all your class instances look like H98 (modulo the type family).\n\nThere seems to be a problem with the power series constructor, I fail to see how it’s different from\n\n```haskell\nnewtype Power _ a = P (a, Power _ a)\n```\n\ni.e. an infinite stream of a . The instance then simply becomes\n\n```haskell\ninstance Functor (Power f) where\n  fmap f = Power . bimap f (fmap f) . runPower\n```\n\nThis is probably not what you want. In the case you want, the real obstruction is that for power series, the functor in question must be differentiable an infinite number of times. In other words, something like\n\n```haskell\ninstance Differentiable f => Differentiable (D f) where …\n```\n\nThen, a context\n\n```haskell\ninstance Differentiable f => Functor (Power f)\n```\n\nshould be enough."
     },
     {
       "id": "comment-1274",
       "author": "Edward Kmett",
       "date": "May 13th, 2008 at 10:04 am",
-      "markdown": "Good point. OTOH:\n\ninstance Differentiable f => Differentiable (D f)\n\ndoesn’t work because D isn’t a type constructor for the compiler to grab onto, which is why I started beating my head against the other part.\n\nWhat i was looking for was actually to say:  \nnewtype Power f a = Power (f a, Power (D f) a)\n\ninstead of\n\nnewtype Power f a = Power (a, Power (D f) a)\n\n\\[Edit: fixed\\]"
+      "markdown": "Good point. OTOH:\n\n```haskell\ninstance Differentiable f => Differentiable (D f)\n```\n\ndoesn’t work because `D` isn’t a type constructor for the compiler to grab onto, which is why I started beating my head against the other part.\n\nWhat i was looking for was actually to say:  \n\n```haskell\nnewtype Power f a = Power (f a, Power (D f) a)\n```\n\ninstead of\n\n```haskell\nnewtype Power f a = Power (a, Power (D f) a)\n```\n\n\\[Edit: fixed\\]"
     },
     {
       "id": "comment-1275",
@@ -30,13 +30,13 @@
       "id": "comment-1278",
       "author": "Edward Kmett",
       "date": "May 13th, 2008 at 11:43 am",
-      "markdown": "Oh, maybe a more interesting instance for this would probably be the notion of a derivative for a list since that doesn’t zero out:\n\ninstance Derivable \\[\\] where  \ntype D \\[\\] = \\[\\] :\\*: \\[\\]\n\nI also would like to find out a way to include a simplification step in the type function to go through and do the Zero :\\*: x = Zero step, etc to make the encoding a little less naive."
+      "markdown": "Oh, maybe a more interesting instance for this would probably be the notion of a derivative for a list since that doesn’t zero out:\n\n```haskell\ninstance Derivable [] where\n  type D [] = [] :*: []\n```\n\nI also would like to find out a way to include a simplification step in the type function to go through and do the `Zero :*: x = Zero` step, etc to make the encoding a little less naive."
     },
     {
       "id": "comment-1280",
       "author": "Dan Doel",
       "date": "May 13th, 2008 at 3:21 pm",
-      "markdown": "Although the context on Functor (AD f) is sufficient, it seems (to me) like the wrong place to specify it. Since\n\nAD f a ~~ (f a, AD (D f) a)\n\nWith (Derivable f) => Functor (AD f) you only need (Derivable (D f)) to justify using bimap (fmap f) (fmap f). So, it seems like what you’d really want is:\n\nclass (Functor f, Derivable (D f)) => Derivable f where  \ntype D f :: \\* -> \\*\n\ninstance (Derivable f) => Functor (AD f) where …\n\nWhere the context on Derivable enforces that all such functors are arbitrarily differentiable. But, of course, GHC complains about a cycle there (in 6.8, at least. I don’t have 6.9 handy).\n\nSimplification should, I think, be possible with total type families once they go into 6.9. For instance:\n\ntype family (f :: \\* -> \\*) :+: (g :: \\* -> \\*) :: \\* -> \\* where  \nZero :+: g = g  \nf :+: Zero = f  \nf :+: g = Lift Either f g\n\nYou’re allowed to overlap instances for total type families, because they’re closed."
+      "markdown": "Although the context on `Functor (AD f)` is sufficient, it seems (to me) like the wrong place to specify it. Since\n\n`AD f a ~~ (f a, AD (D f) a)`\n\nWith `(Derivable f) => Functor (AD f)` you only need `(Derivable (D f))` to justify using `bimap (fmap f) (fmap f)`. So, it seems like what you’d really want is:\n\n```haskell\nclass (Functor f, Derivable (D f)) => Derivable f where\n  type D f :: * -> *\n```\n\n```haskell\ninstance (Derivable f) => Functor (AD f) where …\n```\n\nWhere the context on `Derivable` enforces that all such functors are arbitrarily differentiable. But, of course, GHC complains about a cycle there (in 6.8, at least. I don’t have 6.9 handy).\n\nSimplification should, I think, be possible with total type families once they go into 6.9. For instance:\n\n```haskell\ntype family (f :: * -> *) :+: (g :: * -> *) :: * -> * where\n  Zero :+: g = g\n  f :+: Zero = f\n  f :+: g = Lift Either f g\n```\n\nYou’re allowed to overlap instances for total type families, because they’re closed."
     },
     {
       "id": "comment-1282",
@@ -54,7 +54,7 @@
       "id": "comment-1289",
       "author": "Edward Kmett",
       "date": "May 13th, 2008 at 8:41 pm",
-      "markdown": "Hrmm,\n\nSo a simple encoding of the basic AD rules leaves your Dual class, just one level up.\n\ndata D f g a = D (f a) (g a)\n\ntype family (:+>) (f :: \\* -> \\*) (g :: \\* -> \\*) :: \\* -> \\*  \ntype family (:\\*>) (f :: \\* -> \\*) (g :: \\* -> \\*) :: \\* -> \\*  \ntype family DLift (f :: (\\* -> \\*) -> \\* -> \\*) (f’ :: (\\* -> \\*) -> \\* -> \\*) (g :: \\* -> \\*) :: \\* -> \\*  \ntype instance (D x a :+> D y b) = D (x :+: y) (a :+: b)  \ntype instance (D x a :\\*> D y b) = D (x :\\*: y) (x :\\*: b :+: a :\\*: y)  \ntype instance DLift f f’ (D x a) = D (f x) (a :+: f’ x)\n\ndConst :: a -> D Identity Zero a  \ndConst z = D (Identity z) zero\n\ndVar :: a -> D Identity One a  \ndVar z = D (Identity z) (suck zero)\n\nI think the general AD case requires polymorphic kinds, so yeah something like Omega is probably better suited. Alas."
+      "markdown": "Hrmm,\n\nSo a simple encoding of the basic AD rules leaves your `Dual` class, just one level up.\n\n```haskell\ndata D f g a = D (f a) (g a)\n\ntype family (:+>) (f :: * -> *) (g :: * -> *) :: * -> *\ntype family (:*>) (f :: * -> *) (g :: * -> *) :: * -> *\ntype family DLift (f :: (* -> *) -> * -> *) (f' :: (* -> *) -> * -> *) (g :: * -> *) :: * -> *\ntype instance (D x a :+> D y b) = D (x :+: y) (a :+: b)\ntype instance (D x a :*> D y b) = D (x :*: y) (x :*: b :+: a :*: y)\ntype instance DLift f f' (D x a) = D (f x) (a :+: f' x)\n\ndConst :: a -> D Identity Zero a\ndConst z = D (Identity z) zero\n\ndVar :: a -> D Identity One a\ndVar z = D (Identity z) (suck zero)\n```\n\nI think the general AD case requires polymorphic kinds, so yeah something like Omega is probably better suited. Alas."
     }
   ],
   "decisions": [

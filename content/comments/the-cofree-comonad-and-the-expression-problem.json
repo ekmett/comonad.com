@@ -6,19 +6,19 @@
       "id": "comment-1102",
       "author": "Edward Kmett",
       "date": "May 1st, 2008 at 10:36 am",
-      "markdown": "Here is a quick take on the Incr/Recall example.\n\n\\[Edit: typechecked, added to source code, and a couple typos corrected\\]\n\ndata Incr t = Incr Int t  \ndata Recall t = Recall (Int -> t)\n\ninstance Functor Incr where  \nfmap f (Incr i t) = Incr i (f t)\n\ninstance Functor Recall where  \nfmap f (Recall g) = Recall (f . g)\n\n(/+/) :: (Functor f, Functor g) => (f a -> a) -> (g a -> a) -> ((f :+: g) a -> a)  \n(f /+/ g) (Inl a) = f a  \n(f /+/ g) (Inr b) = g b\n\nnewtype Mem = Mem Int  \ntype RunAlg f a = f (Mem -> (a,Mem)) -> Mem -> (a,Mem)\n\nincrRun :: RunAlg Incr a  \nincrRun (Incr k r) (Mem i) = r (Mem (i + k))\n\nrecallRun :: RunAlg Recall a  \nrecallRun (Recall r) (Mem i) = r i (Mem i)\n\nrun :: Functor f => RunAlg f a -> Free f a -> Mem -> (a, Mem)  \nrun = cataFree (,)\n\nrunMyExpr :: Free (Incr :+: Recall) a -> Mem -> (a, Mem)  \nrunMyExpr = run (incrRun /+/ recallRun)"
+      "markdown": "Here is a quick take on the `Incr/Recall` example.\n\n\\[Edit: typechecked, added to source code, and a couple typos corrected\\]\n\n```haskell\ndata Incr t = Incr Int t\ndata Recall t = Recall (Int -> t)\n\ninstance Functor Incr where\n  fmap f (Incr i t) = Incr i (f t)\n\ninstance Functor Recall where\n  fmap f (Recall g) = Recall (f . g)\n\n(/+/) :: (Functor f, Functor g) => (f a -> a) -> (g a -> a) -> ((f :+: g) a -> a)\n(f /+/ g) (Inl a) = f a\n(f /+/ g) (Inr b) = g b\n\nnewtype Mem = Mem Int\ntype RunAlg f a = f (Mem -> (a,Mem)) -> Mem -> (a,Mem)\n\nincrRun :: RunAlg Incr a\nincrRun (Incr k r) (Mem i) = r (Mem (i + k))\n\nrecallRun :: RunAlg Recall a\nrecallRun (Recall r) (Mem i) = r i (Mem i)\n\nrun :: Functor f => RunAlg f a -> Free f a -> Mem -> (a, Mem)\nrun = cataFree (,)\n\nrunMyExpr :: Free (Incr :+: Recall) a -> Mem -> (a, Mem)\nrunMyExpr = run (incrRun /+/ recallRun)\n```"
     },
     {
       "id": "comment-1125",
       "author": "Dave Menendez",
       "date": "May 3rd, 2008 at 2:00 am",
-      "markdown": "It’s only two years old, but Oleg describes how to handle polymorphic variants using a record of functions in . He doesn’t have the neat Dual class, though."
+      "markdown": "It’s only two years old, but Oleg describes how to handle polymorphic variants using a record of functions in . He doesn’t have the neat `Dual` class, though."
     },
     {
       "id": "comment-104596",
       "author": "Richard Wallace",
       "date": "April 23rd, 2012 at 8:11 pm",
-      "markdown": "I’ve really enjoyed studying and trying to understand this, but one thing has still got me hung up that I just can’t seem to get past.\n\nI’ve been trying, as an exercise, to get the addition example from Swierstra’s paper working in terms of Free and Cofree. I translated Expr to Free successfully and am able to right an eval function\n\neval :: (Eval f, Functor f) => Free f Int -> Int\n\nthat works using cataFree. I’ve also taken the next step and eliminated the Eval type-class and written runArith and runVal functions that I can then compose in the way outlined in the comment above.\n\nBut I just can’t seem to take that mental leap to translate it using Cofree. I think my problem is in determining what the dual of Addition and Val should be.\n\nAn example of that would be greatly appreciated and hopefully shine light the last bits that are still eluding me.\n\nThanks."
+      "markdown": "I’ve really enjoyed studying and trying to understand this, but one thing has still got me hung up that I just can’t seem to get past.\n\nI’ve been trying, as an exercise, to get the addition example from Swierstra’s paper working in terms of `Free` and `Cofree`. I translated `Expr` to `Free` successfully and am able to right an `eval` function\n\n```haskell\neval :: (Eval f, Functor f) => Free f Int -> Int\n```\n\nthat works using `cataFree`. I’ve also taken the next step and eliminated the `Eval` type-class and written `runArith` and `runVal` functions that I can then compose in the way outlined in the comment above.\n\nBut I just can’t seem to take that mental leap to translate it using `Cofree`. I think my problem is in determining what the dual of `Addition` and `Val` should be.\n\nAn example of that would be greatly appreciated and hopefully shine light the last bits that are still eluding me.\n\nThanks."
     }
   ],
   "decisions": [

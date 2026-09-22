@@ -6,7 +6,7 @@
       "id": "comment-1719",
       "author": "Edward Kmett",
       "date": "June 19th, 2008 at 1:10 am",
-      "markdown": "Good catch.\n\nI added Control.Comonad.Exponent in response to a comment over on Dan Piponi’s blog and forgot that I had those in progress at the time.\n\nFixed and uploading to hackage as I write this.\n\nI may drop Dyad though, since it doesn’t add much value. As near as I can tell there are no interesting dyads in Haskell that aren’t just monads or comonads, and they force a profusion of typeclasses to define that lack other uses. This may also explain why there has been no followup to Fokkinga’s paper on them in the last 14 years. The distributive law is required to be a natural isomorphism, which seems to be too strong to be practical."
+      "markdown": "Good catch.\n\nI added `Control.Comonad.Exponent` in response to a comment over on Dan Piponi’s blog and forgot that I had those in progress at the time.\n\nFixed and uploading to hackage as I write this.\n\nI may drop `Dyad` though, since it doesn’t add much value. As near as I can tell there are no interesting dyads in Haskell that aren’t just monads or comonads, and they force a profusion of typeclasses to define that lack other uses. This may also explain why there has been no followup to Fokkinga’s paper on them in the last 14 years. The distributive law is required to be a natural isomorphism, which seems to be too strong to be practical."
     }
   ],
   "decisions": [

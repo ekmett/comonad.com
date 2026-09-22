@@ -6,19 +6,19 @@
       "id": "comment-61376",
       "author": "wren ng thornton",
       "date": "June 24th, 2011 at 11:36 pm",
-      "markdown": "Your language’s IO type is extremely reminiscent of the old pre-monad Haskell days of main :: \\[Response\\]->\\[Request\\]. Except that with the coroutine structure you ensure that requests and responses can’t get out of sync. That’s quite elegant. Much nicer than the RealWorld baton in a lot of ways.\n\nHave you considered how parallelism plays into this model of I/O?"
+      "markdown": "Your language’s `IO` type is extremely reminiscent of the old pre-monad Haskell days of `main :: [Response]->[Request]`. Except that with the coroutine structure you ensure that requests and responses can’t get out of sync. That’s quite elegant. Much nicer than the `RealWorld` baton in a lot of ways.\n\nHave you considered how parallelism plays into this model of I/O?"
     },
     {
       "id": "comment-61383",
       "author": "Edward Kmett",
       "date": "June 25th, 2011 at 12:31 am",
-      "markdown": "@Wren: parallelism works fine and was a large portion of the motivation for this approach. A program exists in a quiescent state. From the outside (a thread), I can ask a term to evaluate itself apply itself to an argument, and do case analysis upon the result. We apply that to main and keep pumping. Any of those operations can be performed in parallel; the answers to them are all referentially transparent! Hence we can have as many threads running as we want demanding those answers. We aren’t passing a world. The evaluator just responds transparently to demands from the RTS, potentially many such demands simultaneously."
+      "markdown": "@Wren: parallelism works fine and was a large portion of the motivation for this approach. A program exists in a quiescent state. From the outside (a thread), I can ask a term to evaluate itself apply itself to an argument, and do case analysis upon the result. We apply that to `main` and keep pumping. Any of those operations can be performed in parallel; the answers to them are all referentially transparent! Hence we can have as many threads running as we want demanding those answers. We aren’t passing a world. The evaluator just responds transparently to demands from the RTS, potentially many such demands simultaneously."
     },
     {
       "id": "comment-61413",
       "author": "Chris Kuklewicz",
       "date": "June 25th, 2011 at 9:13 am",
-      "markdown": "After being clumsy for a while, I reached the end. Great post.\n\nReordering some arguments in IO to\n\n(forall i o. (i -> r) -> FFI o i -> o -> r)\n\ngives the more concise\n\nunsafePerformIO (IO m) = m id fmap\n\nwhich for simple FFI functions is\n\nunsafePerformIO (IO m) = m id (.)"
+      "markdown": "After being clumsy for a while, I reached the end. Great post.\n\nReordering some arguments in `IO` to\n\n```haskell\n(forall i o. (i -> r) -> FFI o i -> o -> r)\n```\n\ngives the more concise\n\n```haskell\nunsafePerformIO (IO m) = m id fmap\n```\n\nwhich for simple FFI functions is\n\n```haskell\nunsafePerformIO (IO m) = m id (.)\n```"
     },
     {
       "id": "comment-106002",
@@ -30,19 +30,19 @@
       "id": "comment-106004",
       "author": "Edward Kmett",
       "date": "September 7th, 2012 at 8:53 am",
-      "markdown": "The difference is in order to support new operations with the usual free monad/a la carte approach you need to define a new data type or a new constructor, or tuple up more and more stuff and pay a higher and higher cost when accessing the next constructor.\n\nWe use this in a language we have here at S&P Capital IQ called Ermine as our only FFI mechanism. It isn’t something you could bolt into, say, GHC without changing out pretty much everything in the language, but in a new Haskell implementation, it has the benefit that you don’t need to deal with magic RealWorld tokens and then restrict transformations that may attempt to commute past them.\n\nThis enables you to transform the language more easily, in exchange, we denote operations with this separate FFI type, rather than primops, and view the runtime system as an external agent driving an asymmetric coroutine."
+      "markdown": "The difference is in order to support new operations with the usual free monad/a la carte approach you need to define a new data type or a new constructor, or tuple up more and more stuff and pay a higher and higher cost when accessing the next constructor.\n\nWe use this in a language we have here at S&P Capital IQ called Ermine as our only FFI mechanism. It isn’t something you could bolt into, say, GHC without changing out pretty much everything in the language, but in a new Haskell implementation, it has the benefit that you don’t need to deal with magic `RealWorld` tokens and then restrict transformations that may attempt to commute past them.\n\nThis enables you to transform the language more easily, in exchange, we denote operations with this separate FFI type, rather than primops, and view the runtime system as an external agent driving an asymmetric coroutine."
     },
     {
       "id": "comment-106223",
       "author": "Richard Wallace",
       "date": "October 6th, 2012 at 6:44 pm",
-      "markdown": "Ok, I understand the cost of tupling up more and more and that being undesirable. Also, you’re right that adding new constructors breaks the whole “a la Carte” notion.\n\nI’m just looking for alternatives to the typical way of building FP apps of using a monad transformer stack with ReaderT and StateT and type-classes for all the data you want to inject (config, db connections, etc.). I was looking at the a la Carte approach as a way of doing that. Although, to be fair my distaste for this approach comes from a Scala app where it became a PITA to manage everything and if it had been written in Haskell the experience might have been different."
+      "markdown": "Ok, I understand the cost of tupling up more and more and that being undesirable. Also, you’re right that adding new constructors breaks the whole “a la Carte” notion.\n\nI’m just looking for alternatives to the typical way of building FP apps of using a monad transformer stack with `ReaderT` and `StateT` and type-classes for all the data you want to inject (config, db connections, etc.). I was looking at the a la Carte approach as a way of doing that. Although, to be fair my distaste for this approach comes from a Scala app where it became a PITA to manage everything and if it had been written in Haskell the experience might have been different."
     },
     {
       "id": "comment-106228",
       "author": "Edward Kmett",
       "date": "October 6th, 2012 at 10:38 pm",
-      "markdown": "The irony with that is that it is particularly easy to add cases to a ‘Free’/a la carte monad in scala. Just don’t seal the class. ;)\n\nTo mitigate the boilerplate in Haskell at least, the typeclasses for config, db connection, etc. can be autogenerated by something like makeClassy from my lens package."
+      "markdown": "The irony with that is that it is particularly easy to add cases to a ‘`Free`’/a la carte monad in scala. Just don’t seal the class. ;)\n\nTo mitigate the boilerplate in Haskell at least, the typeclasses for config, db connection, etc. can be autogenerated by something like `makeClassy` from my lens package."
     }
   ],
   "decisions": [

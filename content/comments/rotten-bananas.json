@@ -30,7 +30,7 @@
       "id": "comment-132462",
       "author": "David Feuer",
       "date": "March 13th, 2016 at 2:08 am",
-      "markdown": "The Rec type looks exactly like Free, and Rollable like MonadFree. Is this a coincidence of some sort, or does it explain something about the structure?"
+      "markdown": "The `Rec` type looks exactly like `Free`, and `Rollable` like `MonadFree`. Is this a coincidence of some sort, or does it explain something about the structure?"
     }
   ],
   "decisions": [
