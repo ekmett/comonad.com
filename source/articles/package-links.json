@@ -5,112 +5,146 @@
   "policy": "Reviewed topic links. A current Hackage page does not assert compatibility with historical examples. Original version-specific documentation links remain intact. Membership does not imply sole authorship.",
   "packages": {
     "ad": {
-      "url": "https://hackage.haskell.org/package/ad"
+      "url": "https://hackage.haskell.org/package/ad",
+      "repository": "https://github.com/ekmett/ad"
     },
     "adjunctions": {
-      "url": "https://hackage.haskell.org/package/adjunctions"
+      "url": "https://hackage.haskell.org/package/adjunctions",
+      "repository": "https://github.com/ekmett/adjunctions"
     },
     "algebra": {
-      "url": "https://hackage.haskell.org/package/algebra"
+      "url": "https://hackage.haskell.org/package/algebra",
+      "repository": "https://github.com/ekmett/algebra"
     },
     "bound": {
-      "url": "https://hackage.haskell.org/package/bound"
+      "url": "https://hackage.haskell.org/package/bound",
+      "repository": "https://github.com/ekmett/bound"
     },
     "category-extras": {
-      "url": "https://hackage.haskell.org/package/category-extras"
+      "url": "https://hackage.haskell.org/package/category-extras",
+      "repository": "https://github.com/ekmett/category-extras"
     },
     "comonad": {
-      "url": "https://hackage.haskell.org/package/comonad"
+      "url": "https://hackage.haskell.org/package/comonad",
+      "repository": "https://github.com/ekmett/comonad"
     },
     "comonad-transformers": {
-      "url": "https://hackage.haskell.org/package/comonad-transformers"
+      "url": "https://hackage.haskell.org/package/comonad-transformers",
+      "repository": "https://github.com/ekmett/comonad-transformers"
     },
     "comonads-fd": {
-      "url": "https://hackage.haskell.org/package/comonads-fd"
+      "url": "https://hackage.haskell.org/package/comonads-fd",
+      "repository": "https://github.com/ekmett/comonads-fd"
     },
     "concurrent-supply": {
-      "url": "https://hackage.haskell.org/package/concurrent-supply"
+      "url": "https://hackage.haskell.org/package/concurrent-supply",
+      "repository": "https://github.com/ekmett/concurrent-supply"
     },
     "constraints": {
-      "url": "https://hackage.haskell.org/package/constraints"
+      "url": "https://hackage.haskell.org/package/constraints",
+      "repository": "https://github.com/ekmett/constraints"
     },
     "contravariant": {
-      "url": "https://hackage.haskell.org/package/contravariant"
+      "url": "https://hackage.haskell.org/package/contravariant",
+      "repository": "https://github.com/ekmett/contravariant"
     },
     "data-lens": {
-      "url": "https://hackage.haskell.org/package/data-lens"
+      "url": "https://hackage.haskell.org/package/data-lens",
+      "repository": "https://github.com/ekmett/data-lens"
     },
     "discrimination": {
-      "url": "https://hackage.haskell.org/package/discrimination"
+      "url": "https://hackage.haskell.org/package/discrimination",
+      "repository": "https://github.com/ekmett/discrimination"
     },
     "distributive": {
-      "url": "https://hackage.haskell.org/package/distributive"
+      "url": "https://hackage.haskell.org/package/distributive",
+      "repository": "https://github.com/ekmett/distributive"
     },
     "folds": {
-      "url": "https://hackage.haskell.org/package/folds"
+      "url": "https://hackage.haskell.org/package/folds",
+      "repository": "https://github.com/ekmett/folds"
     },
     "free": {
-      "url": "https://hackage.haskell.org/package/free"
+      "url": "https://hackage.haskell.org/package/free",
+      "repository": "https://github.com/ekmett/free"
     },
     "heaps": {
-      "url": "https://hackage.haskell.org/package/heaps"
+      "url": "https://hackage.haskell.org/package/heaps",
+      "repository": "https://github.com/ekmett/heaps"
     },
     "hybrid-vectors": {
-      "url": "https://hackage.haskell.org/package/hybrid-vectors"
+      "url": "https://hackage.haskell.org/package/hybrid-vectors",
+      "repository": "https://github.com/ekmett/hybrid-vectors"
     },
     "kan-extensions": {
-      "url": "https://hackage.haskell.org/package/kan-extensions"
+      "url": "https://hackage.haskell.org/package/kan-extensions",
+      "repository": "https://github.com/ekmett/kan-extensions"
     },
     "lca": {
-      "url": "https://hackage.haskell.org/package/lca"
+      "url": "https://hackage.haskell.org/package/lca",
+      "repository": "https://github.com/ekmett/lca"
     },
     "lens": {
-      "url": "https://hackage.haskell.org/package/lens"
+      "url": "https://hackage.haskell.org/package/lens",
+      "repository": "https://github.com/ekmett/lens"
     },
     "machines": {
-      "url": "https://hackage.haskell.org/package/machines"
+      "url": "https://hackage.haskell.org/package/machines",
+      "repository": "https://github.com/ekmett/machines"
     },
     "monad-param": {
       "url": "https://hackage.haskell.org/package/monad-param"
     },
     "monoids": {
-      "url": "https://hackage.haskell.org/package/monoids"
+      "url": "https://hackage.haskell.org/package/monoids",
+      "repository": "https://github.com/ekmett/monoids"
     },
     "parsers": {
-      "url": "https://hackage.haskell.org/package/parsers"
+      "url": "https://hackage.haskell.org/package/parsers",
+      "repository": "https://github.com/ekmett/parsers"
     },
     "prelude-extras": {
-      "url": "https://hackage.haskell.org/package/prelude-extras"
+      "url": "https://hackage.haskell.org/package/prelude-extras",
+      "repository": "https://github.com/ekmett/prelude-extras"
     },
     "profunctors": {
-      "url": "https://hackage.haskell.org/package/profunctors"
+      "url": "https://hackage.haskell.org/package/profunctors",
+      "repository": "https://github.com/ekmett/profunctors"
     },
     "rad": {
-      "url": "https://hackage.haskell.org/package/rad"
+      "url": "https://hackage.haskell.org/package/rad",
+      "repository": "https://github.com/ekmett/rad"
     },
     "recursion-schemes": {
       "url": "https://hackage.haskell.org/package/recursion-schemes"
     },
     "reducers": {
-      "url": "https://hackage.haskell.org/package/reducers"
+      "url": "https://hackage.haskell.org/package/reducers",
+      "repository": "https://github.com/ekmett/reducers"
     },
     "reflection": {
-      "url": "https://hackage.haskell.org/package/reflection"
+      "url": "https://hackage.haskell.org/package/reflection",
+      "repository": "https://github.com/ekmett/reflection"
     },
     "representable-functors": {
-      "url": "https://hackage.haskell.org/package/representable-functors"
+      "url": "https://hackage.haskell.org/package/representable-functors",
+      "repository": "https://github.com/ekmett/representable-functors"
     },
     "representable-tries": {
-      "url": "https://hackage.haskell.org/package/representable-tries"
+      "url": "https://hackage.haskell.org/package/representable-tries",
+      "repository": "https://github.com/ekmett/representable-tries"
     },
     "speculation": {
-      "url": "https://hackage.haskell.org/package/speculation"
+      "url": "https://hackage.haskell.org/package/speculation",
+      "repository": "https://github.com/ekmett/speculation"
     },
     "tables": {
-      "url": "https://hackage.haskell.org/package/tables"
+      "url": "https://hackage.haskell.org/package/tables",
+      "repository": "https://github.com/ekmett/tables"
     },
     "trifecta": {
-      "url": "https://hackage.haskell.org/package/trifecta"
+      "url": "https://hackage.haskell.org/package/trifecta",
+      "repository": "https://github.com/ekmett/trifecta"
     }
   },
   "articles": {
@@ -745,11 +779,38 @@
       "url": "https://github.com/ekmett/guanxi"
     },
     "nominal": {
-      "url": "https://github.com/ekmett/nominal",
-      "note": "Original repository URL supplied by the recording; it currently returns 404."
+      "url": "https://github.com/ekmett/name",
+      "aliases": [
+        "https://github.com/ekmett/nominal",
+        "http://github.com/ekmett/nominal"
+      ],
+      "verification": "Edward Kmett confirmed this replacement on 22 September 2026."
+    },
+    "linear-logic": {
+      "url": "https://github.com/ekmett/linear-logic"
+    },
+    "hkd": {
+      "url": "https://github.com/ekmett/hkd"
+    },
+    "succinct": {
+      "url": "https://github.com/ekmett/succinct"
+    },
+    "propagators": {
+      "url": "https://github.com/ekmett/propagators"
+    },
+    "succinct-binary": {
+      "url": "https://github.com/ekmett/succinct-binary",
+      "verification": "Edward Kmett confirmed sessions 9–14 refer to this repository on 22 September 2026."
     }
   },
-  "streamProjects": {
+  "streamLinkEvidence": {
+    "reviewed": "2026-09-22",
+    "live-coding-1": "The recording names abelian; abelian.cabal declares free, contravariant, and comonad dependencies. Related package links do not assert a particular historical API version.",
+    "guanxi": "The stream descriptions identify guanxi (Session 16 explicitly continues Session 15). Its current guanxi.cabal declares comonad, contravariant, and lens. Links are project dependencies, not claims that every episode discusses each package.",
+    "live-coding-26": "The description explicitly describes work on distributive functors; distributive is a related library, not asserted to be the codebase on screen.",
+    "nominal": "Edward Kmett confirmed ekmett/name is the project in Session 18. Its original nominal URL is retained in the archived recording metadata; the current page links to name. Hackage nominal is an unrelated package."
+  },
+  "entryProjects": {
     "live-coding-1": [
       "abelian"
     ],
@@ -785,13 +846,50 @@
     ],
     "live-coding-25": [
       "guanxi"
+    ],
+    "linear-optics-bx-2021": [
+      "linear-logic"
+    ],
+    "live-coding-26": [
+      "hkd"
+    ],
+    "live-coding-5-1": [
+      "propagators"
+    ],
+    "live-coding-5-2": [
+      "propagators"
+    ],
+    "live-coding-8": [
+      "succinct"
+    ],
+    "live-coding-9": [
+      "succinct-binary"
+    ],
+    "live-coding-10": [
+      "succinct-binary"
+    ],
+    "live-coding-11": [
+      "succinct-binary"
+    ],
+    "live-coding-12": [
+      "succinct-binary"
+    ],
+    "live-coding-13": [
+      "succinct-binary"
+    ],
+    "live-coding-14-1": [
+      "succinct-binary"
+    ],
+    "live-coding-14-2": [
+      "succinct-binary"
+    ],
+    "live-coding-14-3": [
+      "succinct-binary"
     ]
   },
-  "streamLinkEvidence": {
-    "reviewed": "2026-09-22",
-    "live-coding-1": "The recording names abelian; abelian.cabal declares free, contravariant, and comonad dependencies. Related package links do not assert a particular historical API version.",
-    "guanxi": "The stream descriptions identify guanxi (Session 16 explicitly continues Session 15). Its current guanxi.cabal declares comonad, contravariant, and lens. Links are project dependencies, not claims that every episode discusses each package.",
-    "live-coding-26": "The description explicitly describes work on distributive functors; distributive is a related library, not asserted to be the codebase on screen.",
-    "nominal": "Do not link this stream to Hackage nominal, which is Peter Selinger’s unrelated package. Retain the repository URL from the recording."
+  "repositoryReview": {
+    "date": "2026-09-22",
+    "publicRepositoriesChecked": 311,
+    "basis": "Exact package names matched non-fork public repositories on ekmett. Project links match recording titles/descriptions. Linear Optics → linear-logic explicitly supplied by Edward Kmett."
   }
 }

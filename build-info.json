@@ -1,15 +1,16 @@
 {
   "compiler": "GHC 9.14.1.20260731",
   "target": "wasm32-wasi",
-  "wasm_bytes": 2006672,
-  "wasm_sha256": "fbfd7bcf99716c34aeb0eec6d3235a705ad834bd58cd0349011ea3e36414bb21",
+  "wasm_bytes": 2153185,
+  "wasm_sha256": "50ab73711c91e1e5c82947583f47477a27c0710167f80b0c716970159db75f5d",
   "source_sha256": {
-    "Browser.hs": "8294f872ca1813c4d6327db7c6d1d9f5bddc9166092e0466d2abca181e75d8df",
+    "Browser.hs": "4c99d81573b6456d86b97895c485a936dcc4919143ad7d2806b7162c8ded4927",
     "Automaton.hs": "0ee350a757ab8fc33ce3535d6c21661e42426bf606e3892ecf7a25d8f4654946",
     "BindingDemo.hs": "2acc34d56d5f66be977ea00fce4216e4703f12288c5c88bdb3e295b18786e11a",
     "CRC.hs": "51024e167fb5119c66053c13208ed88b088058a0ebbc2d65d0867cf185c9c67e",
     "Server.hs": "0e4417e6f8b8da6173e608861d3901e84816888816800b49cf0588def993f295",
     "ADDemo.hs": "7d2e86a39866b720b211e49de2fb318755f20ddff27a8855fa1b06b182f1e707",
+    "PNGDemo.hs": "dcd320e775db074e91a31805dd000be4acc95f645e7cdd3cba0b6915a84d10aa",
     "LCADemo.hs": "3ba06cb65b68a3efd7bcafd9fd8f5e8d6959ef3f717453bd4bed98d875e99825",
     "MortonDemo.hs": "bac31c92cc28c4489d1a5f6d2d60ffd92786558caf6085f2d9e88605ad164542",
     "DemoJSON.hs": "189539a932ecc2eda365c3b82fd6d830dcf74739b8dd66dbfb6fc3fbd717bc05"
@@ -25,6 +26,7 @@
     "crc_combine",
     "crc_finish",
     "automaton_step",
+    "image_demo",
     "binding_demo",
     "morton_demo",
     "ad_demo",
