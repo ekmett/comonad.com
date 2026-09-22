@@ -679,6 +679,119 @@
     "monad-transformer-lenses-warsaw-2016": [
       "lens",
       "profunctors"
+    ],
+    "live-coding-1": [
+      "free",
+      "contravariant",
+      "comonad"
+    ],
+    "live-coding-26": [
+      "distributive"
+    ],
+    "live-coding-15": [
+      "comonad",
+      "contravariant",
+      "lens"
+    ],
+    "live-coding-16": [
+      "comonad",
+      "contravariant",
+      "lens"
+    ],
+    "live-coding-17": [
+      "comonad",
+      "contravariant",
+      "lens"
+    ],
+    "live-coding-19": [
+      "comonad",
+      "contravariant",
+      "lens"
+    ],
+    "live-coding-20": [
+      "comonad",
+      "contravariant",
+      "lens"
+    ],
+    "live-coding-21": [
+      "comonad",
+      "contravariant",
+      "lens"
+    ],
+    "live-coding-23": [
+      "comonad",
+      "contravariant",
+      "lens"
+    ],
+    "live-coding-24": [
+      "comonad",
+      "contravariant",
+      "lens"
+    ],
+    "live-coding-25": [
+      "comonad",
+      "contravariant",
+      "lens"
     ]
+  },
+  "projects": {
+    "abelian": {
+      "url": "https://github.com/ekmett/abelian"
+    },
+    "auth": {
+      "url": "https://github.com/ekmett/auth"
+    },
+    "guanxi": {
+      "url": "https://github.com/ekmett/guanxi"
+    },
+    "nominal": {
+      "url": "https://github.com/ekmett/nominal",
+      "note": "Original repository URL supplied by the recording; it currently returns 404."
+    }
+  },
+  "streamProjects": {
+    "live-coding-1": [
+      "abelian"
+    ],
+    "live-coding-3": [
+      "auth"
+    ],
+    "live-coding-18": [
+      "nominal"
+    ],
+    "live-coding-15": [
+      "guanxi"
+    ],
+    "live-coding-16": [
+      "guanxi"
+    ],
+    "live-coding-17": [
+      "guanxi"
+    ],
+    "live-coding-19": [
+      "guanxi"
+    ],
+    "live-coding-20": [
+      "guanxi"
+    ],
+    "live-coding-21": [
+      "guanxi"
+    ],
+    "live-coding-23": [
+      "guanxi"
+    ],
+    "live-coding-24": [
+      "guanxi"
+    ],
+    "live-coding-25": [
+      "guanxi"
+    ]
+  },
+  "streamLinkEvidence": {
+    "reviewed": "2026-09-22",
+    "live-coding-1": "The recording names abelian; abelian.cabal declares free, contravariant, and comonad dependencies. Related package links do not assert a particular historical API version.",
+    "guanxi": "The stream descriptions identify guanxi (Session 16 explicitly continues Session 15). Its current guanxi.cabal declares comonad, contravariant, and lens. Links are project dependencies, not claims that every episode discusses each package.",
+    "live-coding-26": "The description explicitly describes work on distributive functors; distributive is a related library, not asserted to be the codebase on screen.",
+    "nominal": "Do not link this stream to Hackage nominal, which is Peter Selinger’s unrelated package. Retain the repository URL from the recording."
   }
 }
