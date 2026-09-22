@@ -5,11 +5,13 @@ if (disclosure) {
   const preferenceKey = 'reader-archive-expanded';
   let desktopExpanded = true;
   try { desktopExpanded = localStorage.getItem(preferenceKey) !== 'false'; } catch {}
-  const adapt = () => { disclosure.open = desktop.matches && desktopExpanded; };
+  const isDesktop = () => desktop.matches && document.documentElement.dataset.readerLayout !== 'drawer';
+  const adapt = () => { disclosure.open = isDesktop() && desktopExpanded; };
   adapt();
   desktop.addEventListener('change', adapt);
+  window.addEventListener('reader-layout-change', adapt);
   disclosure.addEventListener('toggle', () => {
-    if (!desktop.matches) return;
+    if (!isDesktop()) return;
     desktopExpanded = disclosure.open;
     try { localStorage.setItem(preferenceKey, String(desktopExpanded)); } catch {}
   });

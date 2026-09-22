@@ -131,3 +131,19 @@ html{font-size:calc(100% * var(--reader-text-scale,1))}
 }
 .reading,.archive-sidebar{overflow-wrap:anywhere}
 .appearance-done{min-height:44px;width:100%;margin-top:8px}
+
+/* Give larger text real room before spending viewport space on decoration. */
+:root{--reader-frame:71.125rem}
+.reader-masthead,.reader-layout{max-width:var(--reader-frame)}
+.reader-layout{grid-template-columns:minmax(0,1fr) 15rem;gap:2.5rem}
+.reader-layout:has(.archive-disclosure:not([open])){grid-template-columns:minmax(0,1fr) 2.75rem;gap:1.5rem}
+.margin-cells{mask-image:linear-gradient(to right,#000,transparent max(0px,calc((100vw - var(--reader-frame))/2)),transparent min(100vw,calc((100vw + var(--reader-frame))/2)),#000)}
+:root[data-reader-layout="full"],:root[data-reader-layout="drawer"]{--reader-frame:100%}
+:root:not([data-reader-layout="margins"]) .margin-cells{display:none}
+:root[data-reader-layout="drawer"] .reader-layout{display:flex;flex-direction:column;gap:0}
+:root[data-reader-layout="drawer"] .archive-sidebar{position:static;max-height:none;width:100%;max-width:none;margin:18px 0 0;overflow:visible;scrollbar-gutter:auto}
+:root[data-reader-layout="drawer"] .archive-toggle{writing-mode:horizontal-tb;justify-content:space-between;min-height:44px;padding:10px 0;border:0;border-bottom:1px solid var(--line);font:.875rem/1.5 system-ui,sans-serif}
+:root[data-reader-layout="drawer"] .archive-toggle-icon{transform:rotate(-90deg)}
+:root[data-reader-layout="drawer"] .archive-disclosure[open]>.archive-toggle .archive-toggle-icon{transform:rotate(90deg)}
+:root[data-reader-layout="drawer"] .archive-panel{max-width:30rem;margin:20px auto 24px;padding:0 8px}
+@media(max-width:1000px){.reader-layout,.reader-layout:has(.archive-disclosure:not([open])){gap:0}}
