@@ -30,6 +30,7 @@ controls.addEventListener('click', event => {
   textSize = action === 'reset' ? 100 : textSizes[Math.max(0, Math.min(textSizes.length-1, index + (action === 'larger' ? 1 : -1)))];
   applyTextSize();
   save('reader-text-size', String(textSize));
+  resize();
 });
 let theme = read('reader-theme', 'system');
 let background = read('reader-background', 'auto');
@@ -44,7 +45,15 @@ let graphs = [];
 function resize() {
   width = innerWidth;
   height = innerHeight;
-  gutter = Math.max(0, (width - 1138) / 2);
+  const fontSize = parseFloat(getComputedStyle(root).fontSize);
+  const pageWidth = 71.125 * fontSize;
+  // Leave a useful reading measure beside the archive; decoration yields first.
+  const layout = width <= 1000 || width < 45.5 * fontSize + 72 ? 'drawer'
+    : width < pageWidth + 192 ? 'full' : 'margins';
+  const changed = root.dataset.readerLayout !== layout;
+  root.dataset.readerLayout = layout;
+  gutter = layout === 'margins' ? (width - pageWidth) / 2 : 0;
+  if (changed) window.dispatchEvent(new Event('reader-layout-change'));
   const scale = Math.min(devicePixelRatio || 1, 1.5);
   canvas.width = Math.round(width * scale);
   canvas.height = Math.round(height * scale);
