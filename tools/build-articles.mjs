@@ -212,7 +212,7 @@ function renderArticle(article, route = article.path) {
 ${navigation.neighbors(article,root)}
 <footer><span>The Comonad.Reader</span><p>Writing and code © ${esc(article.author || 'Edward Kmett')}.<br>Comments attributed to their original authors.</p></footer>`;
   const series=collections.find(c=>c.slug===article.series);
-  const seriesNav=series ? `<nav class="series-navigation" aria-label="Article series"><p>In <a href="${root+series.path}">${esc(series.title)}</a></p><ol>${series.links.map(link=>articles.find(a=>sourceKey(a.origin)===sourceKey(link.origin))).filter(Boolean).map(a=>`<li><a href="${root+a.path}"${a.slug===article.slug?' aria-current="page"':''}>${esc(a.originalTitle||a.title)}</a></li>`).join('')}</ol></nav>` : '';
+  const seriesNav=series ? `<nav class="series-navigation" aria-label="Article series"><p>In <a href="${root+series.path}">${esc(series.title)}</a></p><ol>${series.links.map(link=>articles.find(a=>sourceKey(a.origin)===sourceKey(link.origin))).filter(Boolean).map(a=>`<li><a href="${root+a.path}"${a.slug===article.slug?' aria-current="page"':''}>${esc(a.seriesTitle||a.originalTitle||a.title)}</a></li>`).join('')}</ol></nav>` : '';
   const main = `<header class="article-header"><div class="article-meta"><span>${esc(article.categories)}</span><span>${esc(article.author || 'Edward Kmett')} · <time datetime="${article.date}">${article.dateLabel}</time></span></div><h1>${esc(article.title)}</h1></header>${seriesNav}${headings.length?toc:''}${body}${packageLine(packageNames(packageCatalog,article.slug),root)}${companions}${comments}${footer}`;
   const script = hasInlineDemo ? `<script type="module" src="${root}article-demos.js"></script>` : article.slug === 'parallel-crc' ? `<script type="module" src="${root}app.js"></script>` : article.slug==='cellular-automata-part-1' ? `<script type="module" src="${root}automaton.js"></script>` : '';
   write('dist/' + route + 'index.html', shell({title:article.title, base:root, main, script, date:article.date,route,entry:article}));
@@ -247,7 +247,8 @@ write('docs/pending-migration-links.json', JSON.stringify([...pending.values()],
 for(const collection of collections) {
   const root=(path.posix.relative(collection.path,'.')||'.')+'/';
   const members=collection.links.map(link=>articles.find(a=>sourceKey(a.origin)===sourceKey(link.origin))).filter(Boolean);
-  write('dist/'+collection.path+'index.html',shell({title:collection.title,base:root,route:collection.path,main:`<header class="article-header"><p class="article-meta">A series by Edward Kmett</p><h1>${esc(collection.title)}</h1></header><div class="prose">${md.render(collection.description)}</div><div class="article-list">${members.map(a=>`<article><time datetime="${a.date}">${a.dateLabel}</time><h2><a href="${root+a.path}">${esc(a.title)}</a></h2></article>`).join('') || '<p>No articles were published in this collection.</p>'}</div><nav class="related"><a href="${root}reader/">All writing</a></nav>`}));
+  const authors=[...new Set(members.map(a=>a.author||'Edward Kmett'))].join(', ');
+  write('dist/'+collection.path+'index.html',shell({title:collection.title,base:root,route:collection.path,main:`<header class="article-header"><p class="article-meta">A series by ${esc(authors)}</p><h1>${esc(collection.title)}</h1></header><div class="prose">${md.render(collection.description)}</div><div class="article-list">${members.map(a=>`<article><time datetime="${a.date}">${a.dateLabel}</time><h2><a href="${root+a.path}">${esc(a.title)}</a></h2></article>`).join('') || '<p>No articles were published in this collection.</p>'}</div><nav class="related"><a href="${root}reader/">All writing</a></nav>`}));
 }
 for(const video of videos) {
   const root=(path.posix.relative(video.path,'.')||'.')+'/';

@@ -47,9 +47,22 @@ for(const article of articles.filter(a=>a.series)){
  const links=[...doc.querySelectorAll('.series-navigation li a')];
  assert.equal(links.length,members.length,'Series lists all articles');
  links.forEach((a,i)=>assert.ok(a.getAttribute('href').endsWith(members[i].path),'Original series order'));
- assert.equal(doc.querySelector('.series-navigation [aria-current="page"]').textContent,article.originalTitle||article.title);
+ assert.equal(doc.querySelector('.series-navigation [aria-current="page"]').textContent,article.seriesTitle||article.originalTitle||article.title);
 }
 for(const slugs of [['free-monads-for-less','free-monads-for-less-2','free-monads-for-less-3'],['2019-monadic-party-guanxi-1','2019-monadic-party-guanxi-2','2019-monadic-party-guanxi-3','2019-monadic-party-guanxi-4']]){
  const ascending=[...entries].reverse().filter(e=>slugs.some(s=>e.file.endsWith('/'+s+'/index.html')));
  assert.deepEqual(ascending.map(e=>e.file.split('/').at(-2)),slugs,'Reading chronology follows numbered parts');
 }
+
+for(const collection of collections){
+ const members=collection.links.map(l=>articles.find(a=>a.origin===l.origin));
+ assert.ok(members.every(Boolean),'Every series member resolves to a preserved article');
+ assert.equal(new Set(members.map(a=>a.slug)).size,members.length,'No duplicate series members');
+ for(const [i,member] of members.entries()){
+  assert.equal(member.series,collection.slug,'Series membership is reciprocal');
+  assert.equal(member.seriesOrder,i+1,'Explicit reading order matches the series listing');
+ }
+ const doc=read('dist/'+collection.path+'index.html');
+ for(const author of new Set(members.map(a=>a.author)))assert.ok(doc.querySelector('.article-meta').textContent.includes(author),'Credit actual series authors');
+}
+assert.deepEqual(collections.find(c=>c.slug==='kan-extensions').links.map(l=>articles.find(a=>a.origin===l.origin).slug),['kan-extensions','kan-extensions-ii','kan-extension-iii']);

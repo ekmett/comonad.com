@@ -88,7 +88,8 @@
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/ef3bb842b9000d78432bcff461f73bed06069b8d",
     "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
     "series": "fibonacci",
-    "originalTitle": "Part 2: Open-Ended Fibonacci Search"
+    "originalTitle": "Part 2: Open-Ended Fibonacci Search",
+    "seriesOrder": 2
   },
   {
     "slug": "some-rough-notes-on-univalent-foundations-and-b-systems-part-i",
@@ -167,7 +168,8 @@
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/604212fe84a3e9f477c2f975737b8e05d70a941f",
     "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
     "series": "cellular-automata",
-    "originalTitle": "Part II: PNGs and Moore"
+    "originalTitle": "Part II: PNGs and Moore",
+    "seriesOrder": 2
   },
   {
     "slug": "moore-for-less",
@@ -184,7 +186,8 @@
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/9ab8b288c6c5cc9d1ab36ccb8c3c74167b4dd00f",
     "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
-    "series": "moore"
+    "series": "moore",
+    "seriesOrder": 1
   },
   {
     "slug": "categories-of-structures-in-haskell",
@@ -198,7 +201,9 @@
     "source": "Comonad.Reader",
     "rawHTML": "content/original/corpus/792e103937b4b7f485e7dd61.html",
     "rawSource": "content/original/corpus/792e103937b4b7f485e7dd61.html",
-    "rawFormat": "html"
+    "rawFormat": "html",
+    "series": "free-constructions-in-haskell",
+    "seriesOrder": 3
   },
   {
     "slug": "heap-of-successes",
@@ -228,7 +233,9 @@
     "source": "Comonad.Reader",
     "rawHTML": "content/original/corpus/a8ac59dd61c5ec9d78cdbf08.html",
     "rawSource": "content/original/corpus/a8ac59dd61c5ec9d78cdbf08.html",
-    "rawFormat": "html"
+    "rawFormat": "html",
+    "series": "free-constructions-in-haskell",
+    "seriesOrder": 2
   },
   {
     "slug": "fibonacci-leonardo",
@@ -246,7 +253,8 @@
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/3a2678a9238b713dbb2240b8e98bff28c88444f4",
     "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
     "series": "fibonacci",
-    "originalTitle": "Part 1: Leonardo Random Access Lists"
+    "originalTitle": "Part 1: Leonardo Random Access Lists",
+    "seriesOrder": 1
   },
   {
     "slug": "free-monoids-in-haskell",
@@ -260,7 +268,9 @@
     "source": "Comonad.Reader",
     "rawHTML": "content/original/corpus/ab5038cca0a712ac8d06ab5f.html",
     "rawSource": "content/original/corpus/ab5038cca0a712ac8d06ab5f.html",
-    "rawFormat": "html"
+    "rawFormat": "html",
+    "series": "free-constructions-in-haskell",
+    "seriesOrder": 1
   },
   {
     "slug": "snippets-fmap",
@@ -277,7 +287,8 @@
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/f8868a34da7b6bd25296d160942294f74bccdf11",
     "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
-    "series": "snippets"
+    "series": "snippets",
+    "seriesOrder": 1
   },
   {
     "slug": "fast-circular-substitution",
@@ -310,7 +321,8 @@
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/2a6140398ce46eceac790037f4afbd66c3b9c7c5",
     "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
     "series": "cellular-automata",
-    "originalTitle": "Part I: From Theory to Pretty Pictures"
+    "originalTitle": "Part I: From Theory to Pretty Pictures",
+    "seriesOrder": 1
   },
   {
     "slug": "revisiting-matrix-multiplication-part-5",
@@ -328,7 +340,8 @@
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/b43bf065739f05937cdb8de9cdac53ec646bed1a",
     "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
     "series": "revisiting-matrix-multiplication",
-    "originalTitle": "Part V: Heaps of Performance"
+    "originalTitle": "Part V: Heaps of Performance",
+    "seriesOrder": 5
   },
   {
     "slug": "letter-to-a-young-haskell-enthusiast",
@@ -374,7 +387,8 @@
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/9f247ee93e3ec7d8b226e906eb1d7648a1e57c76",
     "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
-    "series": "recursion-schemes"
+    "series": "recursion-schemes",
+    "seriesOrder": 1
   },
   {
     "slug": "phoas",
@@ -408,7 +422,8 @@
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/adea78b22dcf260126adedf58d7500caf297b583",
     "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
     "series": "cellular-automata",
-    "originalTitle": "Part III: A World in a Bottle"
+    "originalTitle": "Part III: A World in a Bottle",
+    "seriesOrder": 3
   },
   {
     "slug": "oblivious-deamortized-st",
@@ -426,7 +441,8 @@
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/4244d5709e256fd7dacdf3512e7d00334eafbc6b",
     "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
     "series": "oblivious",
-    "originalTitle": "Part I: Deamortized ST"
+    "originalTitle": "Part I: Deamortized ST",
+    "seriesOrder": 1
   },
   {
     "slug": "editorial-procrustean-mathematics",
@@ -443,7 +459,8 @@
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/97cc863d550b152cbbcf6a645709d80f16ba96cd",
     "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
-    "series": "editorial"
+    "series": "editorial",
+    "seriesOrder": 1
   },
   {
     "slug": "conquering-folds",
@@ -492,7 +509,8 @@
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/5075dba7d5304c8f12a24c282c3d243564ea9e0a",
     "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
-    "series": "snippets"
+    "series": "snippets",
+    "seriesOrder": 3
   },
   {
     "slug": "snippets-once",
@@ -509,7 +527,8 @@
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/52c9d1c864e897525f61e645d40e7d6a561f1c77",
     "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
-    "series": "snippets"
+    "series": "snippets",
+    "seriesOrder": 2
   },
   {
     "slug": "revisiting-matrix-multiplication-part-1",
@@ -527,7 +546,8 @@
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/499f6f6ad03e6dc2feab4905f94308e5417e7458",
     "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
     "series": "revisiting-matrix-multiplication",
-    "originalTitle": "Part I: Bit Shuffling with Lenses and Isomorphisms"
+    "originalTitle": "Part I: Bit Shuffling with Lenses and Isomorphisms",
+    "seriesOrder": 1
   },
   {
     "slug": "revisiting-matrix-multiplication-part-2",
@@ -545,7 +565,8 @@
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/99e5ad65aa6415d56184e2621cde1187820b2b7d",
     "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
     "series": "revisiting-matrix-multiplication",
-    "originalTitle": "Part II: The Zen of Z-Ordering"
+    "originalTitle": "Part II: The Zen of Z-Ordering",
+    "seriesOrder": 2
   },
   {
     "slug": "revisiting-matrix-multiplication-part-3",
@@ -563,7 +584,8 @@
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/c9948ec20386ad678e5f35781e4854b172e6308a",
     "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
     "series": "revisiting-matrix-multiplication",
-    "originalTitle": "Part III: Extending Vector"
+    "originalTitle": "Part III: Extending Vector",
+    "seriesOrder": 3
   },
   {
     "slug": "revisiting-matrix-multiplication-part-4",
@@ -581,7 +603,8 @@
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/4892553edbb35ab05743b820e3d3f17b88343c66",
     "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
     "series": "revisiting-matrix-multiplication",
-    "originalTitle": "Part IV: IntMap!?"
+    "originalTitle": "Part IV: IntMap!?",
+    "seriesOrder": 4
   },
   {
     "slug": "revisiting-matrix-multiplication-part-6",
@@ -599,7 +622,8 @@
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/fa630871f2e42363a2ebddceb1c6878594eccc6b",
     "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
     "series": "revisiting-matrix-multiplication",
-    "originalTitle": "Part VI: A Most Significant Comparison"
+    "originalTitle": "Part VI: A Most Significant Comparison",
+    "seriesOrder": 6
   },
   {
     "slug": "representing-applicatives",
@@ -613,7 +637,9 @@
     "source": "Comonad.Reader",
     "rawHTML": "content/original/corpus/dbdf2e5c1f78a98171249552.html",
     "rawSource": "content/original/corpus/dbdf2e5c1f78a98171249552.html",
-    "rawFormat": "html"
+    "rawFormat": "html",
+    "series": "applicatives",
+    "seriesOrder": 3
   },
   {
     "slug": "japanese-workshop-1",
@@ -642,7 +668,9 @@
     "source": "Comonad.Reader",
     "rawHTML": "content/original/corpus/ab323cdc1b95356ed9701073.html",
     "rawSource": "content/original/corpus/ab323cdc1b95356ed9701073.html",
-    "rawFormat": "html"
+    "rawFormat": "html",
+    "series": "applicatives",
+    "seriesOrder": 2
   },
   {
     "slug": "abstracting-with-applicatives",
@@ -656,7 +684,9 @@
     "source": "Comonad.Reader",
     "rawHTML": "content/original/corpus/a4d2ddb09de01a42e85583f0.html",
     "rawSource": "content/original/corpus/a4d2ddb09de01a42e85583f0.html",
-    "rawFormat": "html"
+    "rawFormat": "html",
+    "series": "applicatives",
+    "seriesOrder": 1
   },
   {
     "slug": "natural-deduction-sequent-calculus-and-type-classes",
@@ -787,7 +817,9 @@
     "rawHTML": "content/original/corpus/2c326e37f09fbe0b8b3b3c1f.html",
     "rawSource": "content/original/corpus/2c326e37f09fbe0b8b3b3c1f.html",
     "rawFormat": "html",
-    "legacyId": "430"
+    "legacyId": "430",
+    "series": "what-constraints-entail",
+    "seriesOrder": 1
   },
   {
     "slug": "what-constraints-entail-part-2",
@@ -802,7 +834,9 @@
     "rawHTML": "content/original/corpus/b9d99a850e678e678a3ac805.html",
     "rawSource": "content/original/corpus/b9d99a850e678e678a3ac805.html",
     "rawFormat": "html",
-    "legacyId": "461"
+    "legacyId": "461",
+    "series": "what-constraints-entail",
+    "seriesOrder": 2
   },
   {
     "slug": "homotopy-and-directed-type-theory-slides",
@@ -845,7 +879,9 @@
     "rawHTML": "content/original/corpus/f9d846723bea758f226b6d72.html",
     "rawSource": "content/original/corpus/f9d846723bea758f226b6d72.html",
     "rawFormat": "html",
-    "legacyId": "380"
+    "legacyId": "380",
+    "series": "a-parsec-full-of-rats",
+    "seriesOrder": 1
   },
   {
     "slug": "a-parsec-full-of-rats-part-2",
@@ -860,7 +896,9 @@
     "rawHTML": "content/original/corpus/addfcc9b01ec393709b44f7b.html",
     "rawSource": "content/original/corpus/addfcc9b01ec393709b44f7b.html",
     "rawFormat": "html",
-    "legacyId": "397"
+    "legacyId": "397",
+    "series": "a-parsec-full-of-rats",
+    "seriesOrder": 2
   },
   {
     "slug": "free-modules-and-functional-linear-functionals",
@@ -890,7 +928,9 @@
     "rawHTML": "content/original/corpus/efc0b4425795e319138377e4.html",
     "rawSource": "content/original/corpus/efc0b4425795e319138377e4.html",
     "rawFormat": "html",
-    "legacyId": "337"
+    "legacyId": "337",
+    "series": "monads-from-comonads",
+    "seriesOrder": 4
   },
   {
     "slug": "more-on-comonads-as-monad-transformers",
@@ -905,7 +945,9 @@
     "rawHTML": "content/original/corpus/9a277b69866cffbd67af9093.html",
     "rawSource": "content/original/corpus/9a277b69866cffbd67af9093.html",
     "rawFormat": "html",
-    "legacyId": "328"
+    "legacyId": "328",
+    "series": "monads-from-comonads",
+    "seriesOrder": 3
   },
   {
     "slug": "monad-transformers-from-comonads",
@@ -920,7 +962,9 @@
     "rawHTML": "content/original/corpus/3889fe429d58a30ebad4601d.html",
     "rawSource": "content/original/corpus/3889fe429d58a30ebad4601d.html",
     "rawFormat": "html",
-    "legacyId": "321"
+    "legacyId": "321",
+    "series": "monads-from-comonads",
+    "seriesOrder": 2
   },
   {
     "slug": "monads-from-comonads",
@@ -935,7 +979,9 @@
     "rawHTML": "content/original/corpus/de9a358fc36178db2c60e8bf.html",
     "rawSource": "content/original/corpus/de9a358fc36178db2c60e8bf.html",
     "rawFormat": "html",
-    "legacyId": "291"
+    "legacyId": "291",
+    "series": "monads-from-comonads",
+    "seriesOrder": 1
   },
   {
     "slug": "free-monads-for-less-3",
@@ -1280,7 +1326,9 @@
     "rawHTML": "content/original/corpus/c7b7487534ab916058fe2750.html",
     "rawSource": "content/original/corpus/c7b7487534ab916058fe2750.html",
     "rawFormat": "html",
-    "legacyId": "65"
+    "legacyId": "65",
+    "series": "kan-extensions",
+    "seriesOrder": 3
   },
   {
     "slug": "kan-extensions-ii",
@@ -1295,7 +1343,9 @@
     "rawHTML": "content/original/corpus/bf080b25f6fb7791cc3a8d0c.html",
     "rawSource": "content/original/corpus/bf080b25f6fb7791cc3a8d0c.html",
     "rawFormat": "html",
-    "legacyId": "64"
+    "legacyId": "64",
+    "series": "kan-extensions",
+    "seriesOrder": 2
   },
   {
     "slug": "kan-extensions",
@@ -1310,7 +1360,10 @@
     "rawHTML": "content/original/corpus/86f9f50b192345a65ac39d16.html",
     "rawSource": "content/original/corpus/86f9f50b192345a65ac39d16.html",
     "rawFormat": "html",
-    "legacyId": "63"
+    "legacyId": "63",
+    "series": "kan-extensions",
+    "seriesOrder": 1,
+    "seriesTitle": "Kan Extensions I"
   },
   {
     "slug": "elgot-coalgebras",
@@ -1355,7 +1408,9 @@
     "rawHTML": "content/original/corpus/5fa81b552ea892ac8cde12e9.html",
     "rawSource": "content/original/corpus/5fa81b552ea892ac8cde12e9.html",
     "rawFormat": "html",
-    "legacyId": "58"
+    "legacyId": "58",
+    "series": "functor-power-series",
+    "seriesOrder": 2
   },
   {
     "slug": "towards-formal-power-series-for-functors",
@@ -1370,7 +1425,9 @@
     "rawHTML": "content/original/corpus/f08625f38af011ea1aa05c11.html",
     "rawSource": "content/original/corpus/f08625f38af011ea1aa05c11.html",
     "rawFormat": "html",
-    "legacyId": "57"
+    "legacyId": "57",
+    "series": "functor-power-series",
+    "seriesOrder": 1
   },
   {
     "slug": "just-fokkinga-abide",
@@ -1399,7 +1456,9 @@
     "rawHTML": "content/original/corpus/4716f2528db8571a4e985ab5.html",
     "rawSource": "content/original/corpus/4716f2528db8571a4e985ab5.html",
     "rawFormat": "html",
-    "legacyId": "55"
+    "legacyId": "55",
+    "series": "zipping-and-cozipping",
+    "seriesOrder": 2
   },
   {
     "slug": "zipping-and-unzipping-functors",
@@ -1414,7 +1473,9 @@
     "rawHTML": "content/original/corpus/965396383c90dac98623109a.html",
     "rawSource": "content/original/corpus/965396383c90dac98623109a.html",
     "rawFormat": "html",
-    "legacyId": "54"
+    "legacyId": "54",
+    "series": "zipping-and-cozipping",
+    "seriesOrder": 1
   },
   {
     "slug": "deriving-strength-from-laziness",
@@ -1459,7 +1520,9 @@
     "rawHTML": "content/original/corpus/b492c26975e3d814b46e952f.html",
     "rawSource": "content/original/corpus/b492c26975e3d814b46e952f.html",
     "rawFormat": "html",
-    "legacyId": "51"
+    "legacyId": "51",
+    "series": "chronomorphisms",
+    "seriesOrder": 3
   },
   {
     "slug": "time-for-chronomorphisms",
@@ -1473,7 +1536,9 @@
     "source": "Comonad.Reader",
     "rawHTML": "content/original/corpus/deda6ee42bcdbf0c547a1502.html",
     "rawSource": "content/original/corpus/deda6ee42bcdbf0c547a1502.html",
-    "rawFormat": "html"
+    "rawFormat": "html",
+    "series": "chronomorphisms",
+    "seriesOrder": 2
   },
   {
     "slug": "unnatural-transformations",
@@ -1502,7 +1567,9 @@
     "source": "Comonad.Reader",
     "rawHTML": "content/original/corpus/6c1ddf89aceb309ddc64f5d8.html",
     "rawSource": "content/original/corpus/6c1ddf89aceb309ddc64f5d8.html",
-    "rawFormat": "html"
+    "rawFormat": "html",
+    "series": "chronomorphisms",
+    "seriesOrder": 1
   },
   {
     "slug": "monads-for-free",
@@ -1691,7 +1758,8 @@
     "rawSource": "content/original/external/kmett-2001-harmless-algorithms-04.html",
     "rawFormat": "html",
     "dateBasis": "Publisher publication date. The original signed date is retained in the article.",
-    "series": "harmless-algorithms"
+    "series": "harmless-algorithms",
+    "seriesOrder": 4
   },
   {
     "slug": "harmless-algorithms-3",
@@ -1707,7 +1775,8 @@
     "rawSource": "content/original/external/kmett-2000-harmless-algorithms-03.html",
     "rawFormat": "html",
     "dateBasis": "Publisher publication date. The original signed date is retained in the article.",
-    "series": "harmless-algorithms"
+    "series": "harmless-algorithms",
+    "seriesOrder": 3
   },
   {
     "slug": "harmless-algorithms-2",
@@ -1723,7 +1792,8 @@
     "rawSource": "content/original/external/kmett-1999-harmless-algorithms-02.html",
     "rawFormat": "html",
     "dateBasis": "Publisher publication date. The original signed date is retained in the article.",
-    "series": "harmless-algorithms"
+    "series": "harmless-algorithms",
+    "seriesOrder": 2
   },
   {
     "slug": "harmless-algorithms-1",
@@ -1739,7 +1809,8 @@
     "rawSource": "content/original/external/kmett-1999-harmless-algorithms-01.html",
     "rawFormat": "html",
     "dateBasis": "Publisher publication date. The original signed date is retained in the article.",
-    "series": "harmless-algorithms"
+    "series": "harmless-algorithms",
+    "seriesOrder": 1
   },
   {
     "slug": "wavelets-in-3d-graphics",

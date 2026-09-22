@@ -6,7 +6,7 @@ import MarkdownIt from 'markdown-it';
 
 const catalog = JSON.parse(fs.readFileSync('content/corpus.json','utf8'));
 const articles = JSON.parse(fs.readFileSync('content/articles.json','utf8'));
-const collections = [];
+const collections = JSON.parse(fs.readFileSync('content/collections.json','utf8')); // Preserve curated membership and ordering.
 const td = new TurndownService({headingStyle:'atx',codeBlockStyle:'fenced',emDelimiter:'*',bulletListMarker:'-'});
 td.keep(['sup','sub','table','details','summary']);
 export function cleanCode(text) {
@@ -35,7 +35,7 @@ for (const item of [...catalog.blog,...catalog.school]) {
     const main=doc.querySelector('.main-content');
     const body=main.querySelector('[itemprop="desc"] article');
     const links=[...main.querySelectorAll('.media-heading a')].filter(a=>!a.classList.contains('author-name')).map(a=>({title:a.textContent.trim(),origin:a.getAttribute('href')}));
-    collections.push({slug,title:item.title,origin:item.origin,path:`reader/series/${slug}/`,description:body?td.turndown(body.innerHTML):'',links,raw:item.raw});
+    if(!collections.some(c=>c.slug===slug)) collections.push({slug,title:item.title,origin:item.origin,path:`reader/series/${slug}/`,description:body?td.turndown(body.innerHTML):'',links,raw:item.raw});
     continue;
   }
   const existing=articles.find(a=>identity(a.origin)===identity(item.origin));

@@ -196,5 +196,200 @@
         "origin": "http://comonad.com/reader/2011/free-monads-for-less-3/"
       }
     ]
+  },
+  {
+    "slug": "kan-extensions",
+    "title": "Kan Extensions",
+    "origin": "http://comonad.com/reader/2008/kan-extensions/#series",
+    "path": "reader/series/kan-extensions/",
+    "description": "Kan extensions, adjunctions, and their formulation as ends and coends.",
+    "links": [
+      {
+        "title": "Kan Extensions",
+        "origin": "http://comonad.com/reader/2008/kan-extensions/"
+      },
+      {
+        "title": "Kan Extensions II: Adjunctions, Composition, Lifting",
+        "origin": "http://comonad.com/reader/2008/kan-extensions-ii/"
+      },
+      {
+        "title": "Kan Extensions III: As Ends and Coends",
+        "origin": "http://comonad.com/reader/2008/kan-extension-iii/"
+      }
+    ],
+    "editorial": true,
+    "seriesEvidence": "Part III explicitly links to the first two Kan Extension posts; Free Monads for Less also names all three as a series."
+  },
+  {
+    "slug": "what-constraints-entail",
+    "title": "What Constraints Entail",
+    "origin": "http://comonad.com/reader/2011/what-constraints-entail-part-1/#series",
+    "path": "reader/series/what-constraints-entail/",
+    "description": "Constraint dictionaries and entailment, followed by reflection of classes and instances.",
+    "links": [
+      {
+        "title": "What Constraints Entail: Part 1",
+        "origin": "http://comonad.com/reader/2011/what-constraints-entail-part-1/"
+      },
+      {
+        "title": "What Constraints Entail: Part 2",
+        "origin": "http://comonad.com/reader/2011/what-constraints-entail-part-2/"
+      }
+    ],
+    "editorial": true,
+    "seriesEvidence": "Part I ends with a Next link to Part II; Part II begins with Last time linking back."
+  },
+  {
+    "slug": "a-parsec-full-of-rats",
+    "title": "A Parsec Full of Rats",
+    "origin": "http://comonad.com/reader/2011/a-parsec-full-of-rats/#series",
+    "path": "reader/series/a-parsec-full-of-rats/",
+    "description": "Packrat parsing and monadic parser combinators, followed by packrat support on top of Parsec 3.",
+    "links": [
+      {
+        "title": "A Parsec Full of Rats, Part 1",
+        "origin": "http://comonad.com/reader/2011/a-parsec-full-of-rats/"
+      },
+      {
+        "title": "A Parsec Full of Rats, Part 2",
+        "origin": "http://comonad.com/reader/2011/a-parsec-full-of-rats-part-2/"
+      }
+    ],
+    "editorial": true,
+    "seriesEvidence": "Numbered titles and the opening Last time / This time recap in Part II."
+  },
+  {
+    "slug": "monads-from-comonads",
+    "title": "Monads from Comonads",
+    "origin": "http://comonad.com/reader/2011/monads-from-comonads/#series",
+    "path": "reader/series/monads-from-comonads/",
+    "description": "From comonads to monads and monad transformers, then comonad transformers.",
+    "links": [
+      {
+        "title": "Monads from Comonads",
+        "origin": "http://comonad.com/reader/2011/monads-from-comonads/"
+      },
+      {
+        "title": "Monad Transformers from Comonads",
+        "origin": "http://comonad.com/reader/2011/monad-transformers-from-comonads/"
+      },
+      {
+        "title": "More on Comonads as Monad Transformers",
+        "origin": "http://comonad.com/reader/2011/more-on-comonads-as-monad-transformers/"
+      },
+      {
+        "title": "A Product of an Imperfect Union",
+        "origin": "http://comonad.com/reader/2011/a-product-of-an-imperfect-union/"
+      }
+    ],
+    "editorial": true,
+    "seriesEvidence": "Each follow-up explicitly identifies the earlier posts; A Product of an Imperfect Union opens In the last few posts and continues the construction."
+  },
+  {
+    "slug": "applicatives",
+    "title": "Applicatives",
+    "origin": "http://comonad.com/reader/2012/abstracting-with-applicatives/#series",
+    "path": "reader/series/applicatives/",
+    "description": "Building applicative functors, exploring their algebras, and comparing their representations.",
+    "links": [
+      {
+        "title": "Abstracting with Applicatives",
+        "origin": "http://comonad.com/reader/2012/abstracting-with-applicatives/"
+      },
+      {
+        "title": "Algebras of Applicatives",
+        "origin": "http://comonad.com/reader/2013/algebras-of-applicatives/"
+      },
+      {
+        "title": "Representing Applicatives",
+        "origin": "http://comonad.com/reader/2013/representing-applicatives/"
+      }
+    ],
+    "editorial": true,
+    "seriesEvidence": "Algebras says previous post in this series; Representing links to both previous posts."
+  },
+  {
+    "slug": "free-constructions-in-haskell",
+    "title": "Free Constructions in Haskell",
+    "origin": "http://comonad.com/reader/2015/free-monoids-in-haskell/#series",
+    "path": "reader/series/free-constructions-in-haskell/",
+    "description": "Free monoids, domains and traversals, and categories of structures in Haskell.",
+    "links": [
+      {
+        "title": "Free Monoids in Haskell",
+        "origin": "http://comonad.com/reader/2015/free-monoids-in-haskell/"
+      },
+      {
+        "title": "Domains, Sets, Traversals and Applicatives",
+        "origin": "http://comonad.com/reader/2015/domains-sets-traversals-and-applicatives/"
+      },
+      {
+        "title": "Categories of Structures in Haskell",
+        "origin": "http://comonad.com/reader/2015/categories-of-structures-in-haskell/"
+      }
+    ],
+    "editorial": true,
+    "seriesEvidence": "Domains begins Last time I looked at free monoids. Categories begins In the last couple posts I have used some free constructions."
+  },
+  {
+    "slug": "functor-power-series",
+    "title": "Power Series of Functors",
+    "origin": "http://comonad.com/reader/2008/towards-formal-power-series-for-functors/#series",
+    "path": "reader/series/functor-power-series/",
+    "description": "An exploration of differentiation and generating functions for functors.",
+    "links": [
+      {
+        "title": "Towards Formal Power Series for Functors",
+        "origin": "http://comonad.com/reader/2008/towards-formal-power-series-for-functors/"
+      },
+      {
+        "title": "Generatingfunctorology",
+        "origin": "http://comonad.com/reader/2008/generatingfunctorology/"
+      }
+    ],
+    "editorial": true,
+    "seriesEvidence": "Generatingfunctorology explicitly revisits the flawed approach in the last post, with a link."
+  },
+  {
+    "slug": "zipping-and-cozipping",
+    "title": "Zipping and Cozipping",
+    "origin": "http://comonad.com/reader/2008/zipping-and-unzipping-functors/#series",
+    "path": "reader/series/zipping-and-cozipping/",
+    "description": "Zipping and unzipping functors, followed by their dual constructions.",
+    "links": [
+      {
+        "title": "Zipping and Unzipping Functors",
+        "origin": "http://comonad.com/reader/2008/zipping-and-unzipping-functors/"
+      },
+      {
+        "title": "Cozipping",
+        "origin": "http://comonad.com/reader/2008/cozipping/"
+      }
+    ],
+    "editorial": true,
+    "seriesEvidence": "Cozipping explicitly resumes the dual operation deferred in Zipping and Unzipping Functors."
+  },
+  {
+    "slug": "chronomorphisms",
+    "title": "Generalized Hylomorphisms and Chronomorphisms",
+    "origin": "http://comonad.com/reader/2008/generalized-hylomorphisms/#series",
+    "path": "reader/series/chronomorphisms/",
+    "description": "Generalized hylomorphisms, their fusion into chronomorphisms, and dynamorphisms as a special case.",
+    "links": [
+      {
+        "title": "Generalized Hylomorphisms",
+        "origin": "http://comonad.com/reader/2008/generalized-hylomorphisms/"
+      },
+      {
+        "title": "Time for Chronomorphisms",
+        "origin": "http://comonad.com/reader/2008/time-for-chronomorphisms/"
+      },
+      {
+        "title": "Dynamorphisms as Chronomorphisms",
+        "origin": "http://comonad.com/reader/2008/dynamorphisms-as-chronomorphisms/"
+      }
+    ],
+    "editorial": true,
+    "seriesEvidence": "Time for Chronomorphisms begins with the generalized hylomorphism from the other day; Dynamorphisms directly specializes the linked chronomorphism construction."
   }
 ]
