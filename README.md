@@ -4,11 +4,11 @@ A static home for the original blog and Edward Kmett’s School of Haskell writi
 
 ## Contents
 
-- 85 Comonad.Reader posts and 25 School of Haskell articles, plus eight series pages.
-- 52 talk pages: 33 Boston Haskell recordings and 19 additional recordings, including Learning to Learn, Discrimination Is Wrong, and the four Monadic Party/Guanxi sessions published by Monadic Warsaw.
+- 85 Comonad.Reader posts, 25 School of Haskell articles, and four Harmless Algorithms columns, plus ten series pages.
+- 56 talk pages: four locally preserved slide decks and 52 recordings. The recordings comprise 33 Boston Haskell recordings and 19 additional recordings, including Learning to Learn, Discrimination Is Wrong, and the four Monadic Party/Guanxi sessions published by Monadic Warsaw.
 - 187 selected historical comments; all 12,370 original comment records remain in source snapshots.
 - 1,014 linked Haskell archive resources, preserved with checksums. Parent directory links do not expand the crawl.
-- 1,202 article code blocks, local KaTeX/fonts, six editable SVG category diagrams, and local article images/attachments.
+- 1,259 article source blocks (including typeset derivations), local KaTeX/fonts, six editable SVG category diagrams, and local article images/attachments.
 - Real GHC/WebAssembly figures for CRCs, cellular automata, capture avoidance, Morton order, reverse-mode AD, and growing-tree LCA. Original historical code remains alongside them. The CRC also has a native HTTP companion.
 
 ## Preview and edit
@@ -53,7 +53,7 @@ npm run build
 npm run check
 ```
 
-The pinned bootstrap currently targets Apple Silicon macOS; it installs only into ignored `.toolchain/`. GHC is 9.14.1.20260731 targeting wasm32-wasi. Publishing the prebuilt branch does not download that toolchain. All article pages work without JavaScript; interactive figures and search use JavaScript. Videos load YouTube only after a reader selects Play.
+The pinned bootstrap currently targets Apple Silicon macOS; it installs only into ignored `.toolchain/`. GHC is 9.14.1.20260731 targeting wasm32-wasi. Publishing the prebuilt branch does not download that toolchain. All article pages work without JavaScript; interactive figures and search use JavaScript. Talk pages show the native YouTube player without autoplay, using the privacy-enhanced embed domain.
 
 ## Package cross-links
 
@@ -71,4 +71,4 @@ Dates distinguish publication, presentation, revision, and upload. School dates 
 
 Seventeen Haskell targets and four C# attachments were already unavailable from the old server. The old Wiki is empty and its legacy endpoints partly return 404. Local notices record these gaps; no source is invented. External citations to other people’s writing remain external. See `docs/pending-migration-links.json`, `content/haskell-archive.json`, and `content/assets-manifest.json`.
 
-Additional writing outside the two original hosts is researched in `docs/edward-kmett-research.md` and `content/external-articles.json`; those 16 candidates are not represented as migrated article bodies. Video metadata is preserved locally, but recordings themselves remain on YouTube. General TikZ-cd compilation, arbitrary code editing, and live comment submission are not needed by this static implementation.
+Additional writing outside the two original hosts is researched in `docs/edward-kmett-research.md` and `content/external-articles.json`; the four Harmless Algorithms columns are now preserved as full articles, and ApplicativeDo is preserved as a complete local PDF with all four authors credited. Four additional talks have locally preserved slides; `content/publications.json` records their dates and materials. Remaining research candidates are not automatically included. Video metadata is preserved locally, but recordings themselves remain on YouTube. The Hello World diagram is compiled from the retained TikZ-cd source to a standalone SVG; normal site builds use the committed SVG and need no TeX installation. Arbitrary code editing and live comment submission are not part of this static implementation.

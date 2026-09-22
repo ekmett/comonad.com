@@ -150,5 +150,51 @@
       }
     ],
     "raw": "content/original/corpus/30e2ec6b124c56ea41be90a7.html"
+  },
+  {
+    "slug": "harmless-algorithms",
+    "title": "Harmless Algorithms",
+    "origin": "https://flipcode.com/archives/articles.shtml",
+    "path": "reader/series/harmless-algorithms/",
+    "description": "Four columns on visibility, scene traversal, and graphics-engine design, originally published on Flipcode between 1999 and 2001.",
+    "links": [
+      {
+        "title": "Harmless Algorithms — Issue 01: Fine Occlusion Culling Algorithms",
+        "origin": "https://flipcode.com/archives/Harmless_Algorithms-Issue_01_Fine_Occlusion_Culling_Algorithms.shtml"
+      },
+      {
+        "title": "Harmless Algorithms — Issue 02: Scene Traversal Algorithms",
+        "origin": "https://flipcode.com/archives/Harmless_Algorithms-Issue_02_Scene_Traversal_Algorithms.shtml"
+      },
+      {
+        "title": "Harmless Algorithms — Issue 03: Design Patterns And 3D Gaming",
+        "origin": "https://flipcode.com/archives/Harmless_Algorithms-Issue_03_Design_Patterns_And_3D_Gaming.shtml"
+      },
+      {
+        "title": "Harmless Algorithms — Issue 04: A Hybrid Approach to Visibility",
+        "origin": "https://flipcode.com/archives/Harmless_Algorithms-Issue_04_A_Hybrid_Approach_to_Visibility.shtml"
+      }
+    ]
+  },
+  {
+    "slug": "free-monads-for-less",
+    "title": "Free Monads for Less",
+    "origin": "http://comonad.com/reader/2011/free-monads-for-less/#series",
+    "path": "reader/series/free-monads-for-less/",
+    "description": "Codensity, Yoneda, and yielding IO, in reading order.",
+    "links": [
+      {
+        "title": "Free Monads for Less (Part 1 of 3): Codensity",
+        "origin": "http://comonad.com/reader/2011/free-monads-for-less/"
+      },
+      {
+        "title": "Free Monads for Less (Part 2 of 3): Yoneda",
+        "origin": "http://comonad.com/reader/2011/free-monads-for-less-2/"
+      },
+      {
+        "title": "Free Monads for Less (Part 3 of 3): Yielding IO",
+        "origin": "http://comonad.com/reader/2011/free-monads-for-less-3/"
+      }
+    ]
   }
 ]

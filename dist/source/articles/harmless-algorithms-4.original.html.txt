@@ -1,0 +1,278 @@
+<html>
+<head><title>flipcode - Harmless Algorithms</title>
+<style type="text/css">
+
+
+a.menulink:link    {color: #b9ffd0; }
+a.menulink:visited {color: #b9ffd0; }
+a.menulink:active  {color: #b9ffd0; }
+
+a.menulinkempty:link    {color: #b9ffd0; }
+a.menulinkempty:visited {color: #b9ffd0; }
+a.menulinkempty:active  {color: #b9ffd0; }
+a.menulinkempty:link, a.menulinkempty:visited, a.menulinkempty:active {text-decoration: none}
+
+a.orangelink:link    { color:#FFAB04; }
+a.orangelink:visited { color:#FFAB04; }
+a.orangelink:active  { color:#FFAB04; }
+
+a.palegreen:link    {color: #b9ffd0; }
+a.palegreen:visited {color: #b9ffd0; }
+a.palegreen:active  {color: #b9ffd0; }
+
+a.bluelink:link    { color:#03F0FF; }
+a.bluelink:visited { color:#03F0FF; }
+a.bluelink:active  { color:#03F0FF; }
+
+a.softyellow:link     { color:#FFFCA9; }
+a.softyellow:visited  { color:#FFFCA9; }
+a.softyellow:active   { color:#FFFCA9; }
+
+a.nounderline:link        {color: #FFFCA9; }
+a.nounderline:visited     {color: #FFFCA9; }
+a.nounderline:active      {color: #FFFCA9; }
+a.nounderline:link, a.nounderline:visited, a.nounderline:active {text-decoration: none}
+
+<!--
+#code_comment { font-family:Courier,Courier New; font-size:12px; color:#007f00; }
+#code_text    { font-family:Courier,Courier New; font-size:12px; color:#000000; }
+#code_keyword { font-family:Courier,Courier New; font-size:12px; color:#0000FF; }
+-->
+
+</style>
+</head>
+<body bgcolor="#000000" text="#ffffff" link="#FFFCA9" vlink="#FFFCA9" alink="#FFFCA9">
+<center>
+<br>
+
+<br><center><table cellspacing=0 cellpadding=2 border=0 width="80%"><tr><td background="comments_bar2.jpg" bgcolor="#333333" width="100" valign="center"><font size=1>&nbsp;</font></td></tr></table></center><br>
+<center>
+<table width="80%" cellspacing=0 cellpadding=0 border=0>
+<tr>
+<td>
+<font size=3 face="Verdana, Helvetica" color="#ffffff"><b>Harmless Algorithms - <font size=1>Issue 04 - A Hybrid Approach to Visibility</font></b><br>
+<font size=2>by <a href="mailto:n/a">Edward Kmett</a> (19 February 2001)</font>
+</font>
+<br><br><br>
+</td>
+<td align="right" valign="top"><font face="Verdana, Helvetica" size=2><a href="articles.shtml">Return to The Archives</a>
+</td>
+</tr></table>
+</center><center>
+<table style="table-layout:fixed;" width="80%" cellspacing=0 cellpadding=0 border=0>
+<tr>
+<td width="100%">
+<font size=3 color="#ffffff" face="Verdana, Helvetica, Arial, Times New Roman"><b>
+
+Introduction
+<font size=1><br><img src="line_grey.png"><br><br></font></b></font></td></tr></table>
+</center>
+<center>
+<table style="table-layout:fixed;" width="80%" cellspacing=0 cellpadding=0 border=0>
+<tr>
+<td width="100%">
+<font size=2 color="#FFE291" face="Verdana, Helvetica, Arial, Times New Roman">
+
+This column will discuss an example of a hybrid visibility algorithm from a few-year-old test engine of mine, 
+which used approaches from the previous columns. Providing the terminology to give the explanation below was the 
+main thrust of the original Harmless Algorithms columns, but I quite simply never found the time to finish. My 
+career has taken me far away from 3d graphics. Well, since a number of people have been nagging me about it and 
+it has been over a year since my last update, here goes.<br><br>Hybrid Visibility:
+<blockquote>
+<ul>
+<b><li><a href="#goals">Goals</a></b>
+<b><li><a href="#octree">Octree</a></b>
+<b><li><a href="#bspcache">BSP Cache</a></b>
+<b><li><a href="#lights">Point Lights</a></b>
+<b><li><a href="#rendering">Rendering</a></b>
+<b><li><a href="#summary">Summary</a></b>
+</ul>
+</blockquote>
+</font></td></tr></table>
+</center><br><br><center>
+<table style="table-layout:fixed;" width="80%" cellspacing=0 cellpadding=0 border=0>
+<tr>
+<td width="100%">
+<font size=3 color="#ffffff" face="Verdana, Helvetica, Arial, Times New Roman"><b>
+
+Goals
+<font size=1><br><img src="line_grey.png"><br><br></font></b></font></td></tr></table>
+</center>
+<center>
+<table style="table-layout:fixed;" width="80%" cellspacing=0 cellpadding=0 border=0>
+<tr>
+<td width="100%">
+<font size=2 color="#FFE291" face="Verdana, Helvetica, Arial, Times New Roman">
+
+<a name="goals">First of all, lets state our goals for this particular engine. I want to manage a million polygon scene
+with some highly dynamic areas and some very stable portions.  I also want to minimize level compilation time to 
+facilitate rapid prototyping by the art staff. I need fast collision detection so I can afford to run physics. 
+The engine is geared for a primarily indoor scene, so I can avoid dealing with horizon issues, or failing that 
+always fall back on a far clip plane. I also want to experiment with shadow casting point lights, because of the
+ambience I want to give the world.<br><br>With these goals in mind, I'll really just dive into the choices made to support this engine, rather than the reasoning
+behind the different choices made. Some of them will seem rather counter-intuitive, and they very well may be wrong for 
+the type of engine the typical reader of this column may wish to build. Some of the choices were made simply because
+of some feature that I wanted to support that I could not support through a conventional approach (i.e. shadow casting
+point lights) and may induce a global suboptimization in search of a single goal. All of game engine design is about 
+trade-offs, and I do not mean to try to prove that the approach below is the perfect approach, merely that it is an 
+approach.
+</font></td></tr></table>
+</center><br><br><center>
+<table style="table-layout:fixed;" width="80%" cellspacing=0 cellpadding=0 border=0>
+<tr>
+<td width="100%">
+<font size=3 color="#ffffff" face="Verdana, Helvetica, Arial, Times New Roman"><b>
+
+Octree
+<font size=1><br><img src="line_grey.png"><br><br></font></b></font></td></tr></table>
+</center>
+<center>
+<table style="table-layout:fixed;" width="80%" cellspacing=0 cellpadding=0 border=0>
+<tr>
+<td width="100%">
+<font size=2 color="#FFE291" face="Verdana, Helvetica, Arial, Times New Roman">
+
+<a name="octree">The first piece is to use an <A HREF="harmless_issue02.shtml#octrees">Octree</A> to divide space up into manageable pieces. The scene preprocessor just grabs polygons
+and dumps them into <A HREF="harmless_issue02.shtml#octrees">Octree</A> buckets, recursing until a maximum depth is reached or a reasonable number of polygons per<br><br><A HREF="harmless_issue02.shtml#octrees">Octree</A> node (around 50) is reached. <br><br>Now, I could stop here, clip the polygons to the <A HREF="harmless_issue02.shtml#octrees">Octree</A> and traverse my scene using a neighbor traversal of the <A HREF="harmless_issue02.shtml#octrees">Octree</A> structure, 
+by inserting checking each of the polygons in the node against a <A HREF="harmless_issue01.shtml#cbuffer">C-Buffer</A> and rendering the ones that pass, then inserting
+all of the nodes into the <A HREF="harmless_issue01.shtml#cbuffer">C-Buffer</A> before checking the faces of the tree against the c-buffer and traversing outwards. The
+problem is this does not provide me with intra-node polygon culling (No polygon within the <A HREF="harmless_issue02.shtml#octrees">Octree</A> node can occlude any other 
+polygon within the <A HREF="harmless_issue02.shtml#octrees">Octree</A> node), and I have no way to achieve front-to-back sorting within the node, and my collision detection
+times are terrible. This would be fine, if I didn't want to deal with collision or shadow casting point lights.
+</font></td></tr></table>
+</center><br><br><center>
+<table style="table-layout:fixed;" width="80%" cellspacing=0 cellpadding=0 border=0>
+<tr>
+<td width="100%">
+<font size=3 color="#ffffff" face="Verdana, Helvetica, Arial, Times New Roman"><b>
+
+BSP Cache
+<font size=1><br><img src="line_grey.png"><br><br></font></b></font></td></tr></table>
+</center>
+<center>
+<table style="table-layout:fixed;" width="80%" cellspacing=0 cellpadding=0 border=0>
+<tr>
+<td width="100%">
+<font size=2 color="#FFE291" face="Verdana, Helvetica, Arial, Times New Roman">
+
+<a name="bspcache">So, instead I decide to go with miniature <A HREF="harmless_issue02.shtml#bsptrees">BSP</A>s inside of the <A HREF="harmless_issue02.shtml#octrees">Octree</A> nodes, and to really play devil's advocate, I don't even
+precompile them. Before you panic, please consider that these individual <A HREF="harmless_issue02.shtml#bsptrees">BSP</A>s have very manageable polygon counts (usually 50 
+or less), and so the nonlinearities of the <A HREF="harmless_issue02.shtml#bsptrees">BSP</A> compilation process are minimized. 70,000<SUP>3</SUP> polgyons for a 70,000 polygon scene in
+a Quake-style engine vs 50<SUP>3</SUP> performed 1400 times (2000 allowing for shared polygons) differs by several orders of magnitude.
+~350 trillion operations vs. 250 million operations is quite a spread, especially when you consider that the 250 million operation
+version can be handled in chunks of 125,000 operations. Please note that these numbers are worst case scenarios. Also note that
+this is for only a 70,000 polygon scene. As the scene approaches a million polygons, these numbers become far more ridiculous.
+(1e18 vs 2.5e9)<br><br>The polygon soup is tagged with what <A HREF="harmless_issue02.shtml#octrees">Octree</A> nodes they belong to and are accessible through lists from the 
+<A HREF="harmless_issue02.shtml#octrees">Octree</A> nodes themselves, so when I need to compile a node into the mini-<A HREF="harmless_issue02.shtml#bsptrees">BSP</A> cache, I just pass in each of the polygons known to 
+be in the node to the <A HREF="harmless_issue02.shtml#bsptrees">BSP</A> compiler. The <A HREF="harmless_issue02.shtml#bsptrees">BSP</A> compiler does not bother balancing the tree because the computational overhead of
+balancing is worse than the pathological cases an unbalanced tree can induce. The compiler generates clipped polygon fragments
+which are used for visibility determination, but keeps pointers from the fragments to the original polygons. The mini<A HREF="harmless_issue02.shtml#bsptrees">BSP</A> cache
+is maintained on a LRU (least recently used) basis. You could gain a global speed-up by removing the cache and precompiling the <br><br><A HREF="harmless_issue02.shtml#bsptrees">BSP</A>s, but you would lose the ability to perform gross geometry changes by changing the polygons or large-scale objects that 
+occupy a set of nodes and expiring their LRU cache entries.<br><br>When performing a front-to-back traversal of the node, you walk the <A HREF="harmless_issue02.shtml#bsptrees">BSP</A> inserting fragments into your visibility system (Either 
+<A HREF="harmless_issue01.shtml#cbuffer">C-Buffer</A> or <A HREF="harmless_issue01.shtml#beamtrees">Beam Tree</A> have their own relative merits, depending on display resolution and if you are using anti-aliasing), but if you
+insert a fragment you render the whole polygon (skipping it of course if you have already inserted another fragment from this 
+same polygon). Rendering the scene could still be done ignoring the <A HREF="harmless_issue02.shtml#bsptrees">BSP</A>, using the approach above if you wish - and may be 
+considerably faster if the <A HREF="harmless_issue02.shtml#bsptrees">BSP</A> fragments too heavily, but the presence of a front-to-back structure is useful for collision 
+detection and complex lighting. If the <A HREF="harmless_issue02.shtml#bsptrees">BSP</A> is too fragmented then the cache hit of walking the polygons in the <A HREF="harmless_issue02.shtml#octrees">Octree</A> node 
+twice to render then insert into the fine occlusion culling algorithm is less than the overhead of walking the structure.<br><br>The real purpose of the <A HREF="harmless_issue02.shtml#bsptrees">BSP</A> is to provide something to lean on for collision detection. <A HREF="harmless_issue02.shtml#bsptrees">BSP</A> collision detection algorithms are
+among the fastest in the industry and are very elegant and pleasant to code. <br><br>Other uses for the <A HREF="harmless_issue02.shtml#bsptrees">BSP</A> are real-time CSG, which is useful if you really want to blow holes in walls. CSG of a convex solid 
+against a <A HREF="harmless_issue02.shtml#bsptrees">BSP</A> is actually a surprisingly straight forward process. The problem is the number of polygons will increase 
+dramatically over time if you leave this unchecked, and so it really needs good in-game support and reasoning to be practical.<br><br>I should stress that characters are not part of the <A HREF="harmless_issue02.shtml#bsptrees">BSP</A>. Their moving polygon count renders them far too complex to reasonably
+insert into such a structure. 
+</font></td></tr></table>
+</center><br><br><center>
+<table style="table-layout:fixed;" width="80%" cellspacing=0 cellpadding=0 border=0>
+<tr>
+<td width="100%">
+<font size=3 color="#ffffff" face="Verdana, Helvetica, Arial, Times New Roman"><b>
+
+Point Lights
+<font size=1><br><img src="line_grey.png"><br><br></font></b></font></td></tr></table>
+</center>
+<center>
+<table style="table-layout:fixed;" width="80%" cellspacing=0 cellpadding=0 border=0>
+<tr>
+<td width="100%">
+<font size=2 color="#FFE291" face="Verdana, Helvetica, Arial, Times New Roman">
+
+<a name="lights">Now we have reasonable collision detection, and a solid scene traversal which will prevent us from seeing things which aren't 
+there, with safety valves for their more pathological cases. Let there be light.<br><br>Note that thus far there hasn't been much of a preprocessing step. Dumping polygons into <A HREF="harmless_issue02.shtml#octrees">Octree</A> buckets can be done, worst case, 
+as the engine loads. This is a good thing for rapid prototyping. However, we all know that you can't get away with radiosity
+under such conditions. So, if you want radiosity, you'll have to preprocess it. On the other hand, this will doom any attempt 
+at dynamic geometry in the areas in which you pre-light, because it will not properly adapt to environmental changes. <br><br>My answer was to go goth and move to harsher lighting. The Beam Tree algorithm from the earlier columns can be used
+not only for visibility but to determine the visible polygon fragments in a scene from a given point. These fragments happen to
+directly correspond to the fragments that would be lit from a light source at that point.<br><br>What is required is a front-to-back traversable scene structure and a <A HREF="harmless_issue01.shtml#beamtrees">Beam Tree</A> per light. If you provide linear fall off for the 
+light source you can terminate within a known distance of the source light, providing caps on the time the lighting algorithm
+will consume. Also, you can 'render' lights on a cached basis, because the polygon fragments lit by a given point light do not 
+change from frame to frame unless the geometry is moving. If you limit their use to areas of low dynamic geometry and/or limited 
+CSG, then you'll do fine. 
+</font></td></tr></table>
+</center><br><br><center>
+<table style="table-layout:fixed;" width="80%" cellspacing=0 cellpadding=0 border=0>
+<tr>
+<td width="100%">
+<font size=3 color="#ffffff" face="Verdana, Helvetica, Arial, Times New Roman"><b>
+
+Rendering
+<font size=1><br><img src="line_grey.png"><br><br></font></b></font></td></tr></table>
+</center>
+<center>
+<table style="table-layout:fixed;" width="80%" cellspacing=0 cellpadding=0 border=0>
+<tr>
+<td width="100%">
+<font size=2 color="#FFE291" face="Verdana, Helvetica, Arial, Times New Roman">
+
+<a name="rendering">First of all, I'm going to need to stand more of the conventional rendering process on its ear. Instead of rendering textures 
+first, I'll render light. This way I can use additive textures to add multiple lights to the same surface. The cost of this
+is that this engine cannot use detail textures. If you want ambient light you can render it by rendering an ambient light polygon as a base. Otherwise, rendering a black starting polygon will do. Then render the polygon fragments for each light source affecting
+this surface. (Cached as a list in the polygon). Any bumpmapping type pass can also be performed here. Finally render the actual 
+texture for the polygon using a multiplicative pass.<br><br>If you want to move back towards a conventional rendering pipeline you could in theory render the point lights to a lightmap
+and apply the lightmap as a multiplicative post-process. However this will mean considerably more texture memory usage and 
+thrashing of the texture memory will now be guaranteed as will the overhead of performing software lighting on the texture. 
+Using the approach above, texture memory remains stable and available for use by more textures.<br><br>With some tweaking you can use the lighting algorithm to project light through stained glass and you can provide some cheap 
+volumetric lighting effects by using the edges in the <A HREF="harmless_issue01.shtml#beamtrees">Beam Tree</A> to provide you edges for volumetric light streamers. They are not
+physically accurate, but they can look pretty good anyways. You can mix and match with the standard bag of tricks, like 
+putting billboard coronas around the light when looking right at it and/or a lens flare if you want to be tacky, etc.
+</font></td></tr></table>
+</center><br><br><center>
+<table style="table-layout:fixed;" width="80%" cellspacing=0 cellpadding=0 border=0>
+<tr>
+<td width="100%">
+<font size=3 color="#ffffff" face="Verdana, Helvetica, Arial, Times New Roman"><b>
+
+Summary
+<font size=1><br><img src="line_grey.png"><br><br></font></b></font></td></tr></table>
+</center>
+<center>
+<table style="table-layout:fixed;" width="80%" cellspacing=0 cellpadding=0 border=0>
+<tr>
+<td width="100%">
+<font size=2 color="#FFE291" face="Verdana, Helvetica, Arial, Times New Roman">
+
+<a name="summary">My primary goal for this column was to show the ways that a number of innocuous algorithms that in-and-of-themselves are not 
+very useful can be strung together to achieve goals that none of them can achieve alone. For example, a <A HREF="harmless_issue02.shtml#bsptrees">BSP</A> could not handle 
+the dynamic geometry or even the sheer size of the world. An <A HREF="harmless_issue02.shtml#octrees">Octree</A> could not provide decent collision detection or support 
+for the shadow casting point lights. A <A HREF="harmless_issue01.shtml#beamtrees">Beam Tree</A> is not always the best algorithm for visible surface determination, so we 
+provide the <A HREF="harmless_issue01.shtml#cbuffer">C-Buffer</A> as a fallback.<br><br><i>Harmless</i><br>
+February 3, 2001<br><br>You can contact the author at the following address: <a href="mailto:harmless@mich.com">harmless@mich.com</a><br><br>You can also check out his web site at: <a target="_blank" href="http://www.kmett.com/">http://www.kmett.com/</a><br><br><i><font size=1>This document is (C) 1999 Edward Kmett and may not be reproduced in any way without
+explicit permission from the author (Edward Kmett).</font></i>
+</font></td></tr></table>
+</center><center>
+<table width="80%" cellspacing=0 cellpadding=0 border=0>
+<tr>
+<td>
+<font size=2 face="Verdana" color="#ffffff">
+<br>
+<hr noshade><b>Article Series:</b><blockquote><li><a href="Harmless_Algorithms-Issue_01_Fine_Occlusion_Culling_Algorithms.shtml">Harmless Algorithms - Issue 01 - Fine Occlusion Culling Algorithms</a><li><a href="Harmless_Algorithms-Issue_02_Scene_Traversal_Algorithms.shtml">Harmless Algorithms - Issue 02 - Scene Traversal Algorithms</a><li><a href="Harmless_Algorithms-Issue_03_Design_Patterns_And_3D_Gaming.shtml">Harmless Algorithms - Issue 03 - Design Patterns And 3D Gaming</a><li><b><i>Harmless Algorithms - Issue 04 - A Hybrid Approach to Visibility</i></b></blockquote>
+
+</font>
+</td>
+</tr>
+</table>
+</center>
+<center><table cellspacing=0 cellpadding=2 border=0 width="80%"><tr><td background="comments_bar2.jpg" bgcolor="#333333" width="100" valign="center"><font size=1>&nbsp;</font></td></tr></table></center><br>
+<center><font face="Arial, Helvetica" size=1><font face="Helvetica,Tahoma,Verdana" size=1>Copyright 1999-2008 (C) FLIPCODE.COM and/or the original content author(s).  All rights reserved.</font> <center><font face="Helvetica,Tahoma,Verdana" size=1>Please read our <a href="terms.shtml">Terms</a>, <a href="terms.shtml">Conditions</a>, and <a href="terms.shtml">Privacy information</a>.</font></center></font></center>
+<br>
+</body>
+</html>
+

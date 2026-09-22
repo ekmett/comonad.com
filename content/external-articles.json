@@ -1014,6 +1014,36 @@
       "sameWorkAsVideoEntry": null,
       "publishedNoLaterThan": "2001-05-26",
       "originalUrl": "http://www.bloodshed.com/wavelets/haar.shtml"
+    },
+    {
+      "id": "kmett-2019-functional-conf-written-interview",
+      "title": "Speaker Interview with Edward Kmett",
+      "authors": [],
+      "contributors": [
+        {
+          "name": "Edward Kmett",
+          "role": "interviewee"
+        }
+      ],
+      "publisher": "Functional Conf / ConfEngine",
+      "medium": [
+        "written_interview"
+      ],
+      "url": "https://confengine.com/conferences/functional-conf-2019/speaker/interview/edward-kmett",
+      "articleUrl": "https://confengine.com/conferences/functional-conf-2019/speaker/interview/edward-kmett",
+      "date": null,
+      "dateValue": "2019",
+      "datePrecision": "year",
+      "dateBasis": "conference year; publicly linked by 2019-10-17",
+      "sourceUrls": [
+        "https://confengine.com/conferences/functional-conf-2019/speaker/interview/edward-kmett",
+        "https://haskellweekly.news/issue/181.html"
+      ],
+      "inclusion": "recommended",
+      "verifiedOn": "2026-09-22",
+      "uncertainty": [
+        "Exact publication day is not stated. The Haskell Weekly link is an upper bound, not a publication date. Interviewer attribution is unverified. Distinct written Q&A from the later video excerpts."
+      ]
     }
   ],
   "unresolvedLeads": [

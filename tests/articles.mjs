@@ -23,8 +23,23 @@ for (const post of posts) {
     assert.ok(!/[\u00a0\t]/.test(blocks[i].textContent), 'no blog padding or tabs');
   });
   totalBlocks += allFences.length;
+  if(post.source==='Flipcode') {
+    const original=document(post.rawHTML);
+    const tables=[...original.querySelectorAll('table[style]')].filter(t=>t.getAttribute('style').includes('table-layout'));
+    let before=tables.map(t=>t.querySelector('td').textContent).join('');
+    for(const change of JSON.parse(read('content/editorial-changes.json')).filter(e=>e.article===post.slug&&e.status==='applied'&&!e.field))before=before.replaceAll(change.before,change.after);
+    assert.equal(compact(doc.querySelector('.prose').textContent),compact(before),post.slug+': complete column, including code and headings');
+    const oldBlocks=tables.flatMap(t=>[...t.querySelectorAll('pre')]);
+    assert.equal(oldBlocks.length,blocks.length);
+    oldBlocks.forEach((b,i)=>assert.equal(compact(b.textContent),compact(blocks[i].textContent),post.slug+': unchanged code tokens'));
+  }
   if(post.source==='Comonad.Reader') {
-    const original=document(post.rawHTML), before=[...original.querySelector('.post-content').querySelectorAll('pre')];
+    const original=document(post.rawHTML), oldProse=original.querySelector('.post-content');
+    const restored=JSON.parse(read('content/code-formatting.json')).some(e=>e.article===post.slug&&e.blocks);
+    const candidates=[...oldProse.querySelectorAll('pre,code,p')].filter(n=>n.tagName==='PRE'||(restored&&!n.closest('pre')&&n.querySelector('br')&&(n.tagName==='CODE'||(!n.querySelector('code,pre,a,img')&&/^(?:class |instance |newtype |data |type |-- |\w+ ::)/.test(n.textContent.trim())))));
+    const before=candidates.filter(n=>n.tagName==='PRE'||blocks.some(b=>compact(b.textContent)===compact(n.textContent)));
+    const restoredCount=JSON.parse(read('content/code-formatting.json')).filter(e=>e.article===post.slug).reduce((sum,e)=>sum+(e.blocks||0),0);
+    assert.equal(blocks.length,oldProse.querySelectorAll('pre').length+restoredCount,post.slug+': every restored block retained');
     assert.equal(before.length,blocks.length,`${post.slug}: every historical code block retained`);
     before.forEach((block,i)=>assert.equal(compact(blocks[i].textContent),compact(block.textContent.replace(/^> ?/gm,'').replace(/\\\\(?=[a-z])/g,'\\')),`${post.slug}: historical code tokens ${i+1}`));
     const ledger=JSON.parse(read(`content/comments/${post.slug}.json`));
@@ -38,7 +53,7 @@ for (const post of posts) {
     }
   }
   assert.equal(doc.querySelectorAll('h1').length, 1);
-  assert.ok(!/@@@|```|<!-- (demo|figure):/.test(doc.querySelector('.prose').innerHTML));
+  assert.ok(!/@@@|```|<!-- (demo|figure):/.test(doc.querySelector('.prose').innerHTML),post.slug+': no unrendered markup');
   for (const asset of doc.querySelectorAll('img[src], script[src], link[rel="stylesheet"]')) {
     const url = asset.getAttribute('src') || asset.getAttribute('href');
     assert.ok(!/^(https?:)?\/\//.test(url), `no remote rendering dependency: ${url}`);

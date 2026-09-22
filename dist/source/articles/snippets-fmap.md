@@ -18,14 +18,14 @@ To prove this we're going to need the [free theorem](http://ttic.uchicago.edu/~d
 > ```haskell
 > g . h = k . f
 > ```
-> 
+>
 > then
 >
-> ```
+> ```haskell
 > $map g . fmap h = fmap k . $map f
 > ```
 >
-> where `$map` is the "natural map" for the type constructor `F`. 
+> where `$map` is the "natural map" for the type constructor `F`.
 >
 >
 > ###Proof:
@@ -49,20 +49,20 @@ Note: There are some caveats about precisely when such a natural map exists in t
 To do that we start with
 
 > ###Lemma 1:
-> 
+>
 > Given `fmap id = id`, then
-> 
-> ```
+>
+> ```haskell
 > fmap f = $map f
 > ```
 >
 > ###Proof:
 >
-> ```
-> fmap f 
+> ```haskell
+> fmap f
 > = {- by $map id = id -}
 > $map id . fmap f
-> = {- by free theorem, using g = k = id, h = f -} 
+> = {- by free theorem, using g = k = id, h = f -}
 > fmap id . $map f
 > = {- by fmap id = id -}
 > $map f
@@ -70,7 +70,7 @@ To do that we start with
 
 Now we know that `fmap f = $map f` pointwise, and if we assume functional extensionality, we can even show `fmap = $map`.
 
-**Lemma 1** is sufficient to show that any two definitions `fmap1` and `fmap2` for `fmap` that each satisfy `fmap id = id`, are equivalent up to functional extensionality, as of course `fmap1 f = $map f = fmap2 f`. 
+**Lemma 1** is sufficient to show that any two definitions `fmap1` and `fmap2` for `fmap` that each satisfy `fmap id = id`, are equivalent up to functional extensionality, as of course `fmap1 f = $map f = fmap2 f`.
 
 Therefore the observable behavior of `fmap` is uniquely determined.
 
@@ -81,8 +81,8 @@ Next we'll, need another precondition:
 > ```haskell
 > f . g = id . (f . g)
 > ```
-> 
-> ###Proof: 
+>
+> ###Proof:
 >
 > Naively, `id` is the unit for `(.)`. In reality it results in it eta-expanded.
 >
@@ -90,21 +90,21 @@ Next we'll, need another precondition:
 Now we're finally ready to proceed to the real proof:
 
 > ###Theorem:
-> 
+>
 > Given `fmap id = id`, we can show that
 >
-> ```
+> ```haskell
 > fmap f . fmap g = fmap (f . g)
 > ```
-> 
+>
 > ###Proof:
-> 
+>
 > We can read this off of the properties of the free theorem several ways.
-> 
+>
 > The easiest one which does not use the same shaped property on `$map` is to just play with `$map id = id`
-> 
+>
 > ```haskell
-> fmap f . fmap g 
+> fmap f . fmap g
 > = {- by lemma 1, fmap f = $map f -}
 > $map f . fmap g
 > = {- by the free theorem for fmap using lemma 2 for the precondition -}

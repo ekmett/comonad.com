@@ -6,7 +6,9 @@ I've uploaded a copy of my slides here:
 
 This package provides speculative function application and speculative folds. Speculative STM transactions take the place of the transactional rollback machinery from the paper, but transactions are not always required in pure code. To get a feel for the shape of the library, here is an excerpt from the [documentation](http://hackage.haskell.org/package/speculation) for one of the combinators:
 
-> `    spec :: Eq a => a -> (a -> b) -> a -> b    `
+```haskell
+spec :: Eq a => a -> (a -> b) -> a -> b
+```
 > 
 > `spec g f a` evaluates `f g` while forcing `a`, if `g == a` then `f g` is returned, otherwise `f a` is evaluated and returned. Furthermore, if the argument has already been evaluated, we skip the `f g` computation entirely. If a good guess at the value of `a` is available, this is one way to induce parallelism in an otherwise sequential task. However, if the guess isn't available more cheaply than the actual answer, then this saves no work and if the guess is wrong, you risk evaluating the function twice. Under high load, since `f g` is computed via the spark queue, the speculation will be skipped and you will obtain the same answer as `f $! a`.
 

@@ -37,7 +37,7 @@
           "evidence": "Part1 upload timestamp2011-05-26T20:26:36-07:00; other parts separately linked without inferred upload dates."
         }
       ],
-      "description": "Lenses: A Functional Imperative \u2014 Boston Area Scala Enthusiasts (BASE), Google Cambridge.",
+      "description": "Lenses: A Functional Imperative — Boston Area Scala Enthusiasts (BASE), Google Cambridge.",
       "materials": [
         {
           "kind": "video_part",
@@ -124,7 +124,7 @@
           "evidence": "Lens project Recent Activity lists recording on this date; YouTube upload not independently verified."
         }
       ],
-      "description": "Lenses, Folds and Traversals \u2014 New York Haskell.",
+      "description": "Lenses, Folds and Traversals — New York Haskell.",
       "materials": [
         {
           "kind": "video",
@@ -187,7 +187,7 @@
           "evidence": "YouTube player metadata."
         }
       ],
-      "description": "The Ermine programming language \u2014 Boston Haskell.",
+      "description": "The Ermine programming language — Boston Haskell.",
       "materials": [
         {
           "kind": "video",
@@ -216,7 +216,7 @@
     {
       "id": "kmett-2013-haskellcast-lenses",
       "videoId": "6GNDzrgFhGM",
-      "title": "Episode 1 \u2014 Edward Kmett on Lenses",
+      "title": "Episode 1 — Edward Kmett on Lenses",
       "speakers": [
         "Edward Kmett"
       ],
@@ -252,7 +252,7 @@
           "evidence": "Official haskellcast channel watch-page metadata: 2013-09-23T05:41:23-07:00; description explicitly identifies uncut video of episode001."
         }
       ],
-      "description": "Episode 1 \u2014 Edward Kmett on Lenses \u2014 The Haskell Cast.",
+      "description": "Episode 1 — Edward Kmett on Lenses — The Haskell Cast.",
       "materials": [
         {
           "kind": "mp3",
@@ -294,7 +294,8 @@
       ],
       "workFamily": null,
       "inclusion": "recommended",
-      "archiveType": "interview"
+      "archiveType": "interview",
+      "displayTitle": "Episode 1 — On Lenses"
     },
     {
       "id": "kmett-2013-functional-reporting",
@@ -323,7 +324,7 @@
           "evidence": "Contemporary CUFP liveblog dated Sep22; organizer PC member confirms talks day Sep22."
         }
       ],
-      "description": "Functional Reporting \u2014 CUFP2013.",
+      "description": "Functional Reporting — CUFP2013.",
       "materials": [
         {
           "kind": "video",
@@ -378,7 +379,7 @@
           "value": "2013-10-18",
           "type": "presentation",
           "precision": "day",
-          "evidence": "Edward\u2019s own recording description explicitly names October18 2013."
+          "evidence": "Edward’s own recording description explicitly names October18 2013."
         },
         {
           "value": "2013-10-25",
@@ -393,7 +394,7 @@
           "evidence": "PDF footer Saturday October26 13; later than talk."
         }
       ],
-      "description": "Cache-Oblivious Maps \u2014 Bay Area Haskell User Group at Mozilla San Francisco.",
+      "description": "Cache-Oblivious Maps — Bay Area Haskell User Group at Mozilla San Francisco.",
       "materials": [
         {
           "kind": "video",
@@ -461,7 +462,7 @@
           "evidence": "YouTube player metadata."
         }
       ],
-      "description": "On Hask \u2014 Boston Haskell at Akamai, Cambridge.",
+      "description": "On Hask — Boston Haskell at Akamai, Cambridge.",
       "materials": [
         {
           "kind": "video",
@@ -470,7 +471,7 @@
         }
       ],
       "uncertainty": [
-        "Exact talk date in Edward\u2019s own recording description; source code https://github.com/ekmett/hask. Parent verified original player metadata in work/on-hask.json."
+        "Exact talk date in Edward’s own recording description; source code https://github.com/ekmett/hask. Parent verified original player metadata in work/on-hask.json."
       ],
       "sourceUrls": [
         "https://www.mail-archive.com/haskell%40haskell.org/msg24962.html",
@@ -519,7 +520,7 @@
           "evidence": "Direct YouTube metadata; original offset timestamp 2015-07-28T10:58:33-07:00"
         }
       ],
-      "description": "Discrimination is Wrong: Improving Productivity \u2014 ZuriHac 2015.",
+      "description": "Discrimination is Wrong: Improving Productivity — ZuriHac 2015.",
       "materials": [
         {
           "kind": "slides_pdf",
@@ -578,7 +579,7 @@
           "evidence": "Google retrospective publication 2016-09-30 is not the talk date."
         }
       ],
-      "description": "Monad Homomorphisms \u2014 ZuriHac 2016.",
+      "description": "Monad Homomorphisms — ZuriHac 2016.",
       "materials": [
         {
           "kind": "video",
@@ -636,12 +637,12 @@
           "evidence": "Direct YouTube metadata; original offset timestamp 2017-07-06T22:29:18-07:00"
         }
       ],
-      "description": "Efficiently coding for modern CPUs \u2014 ZuriHac 2017.",
+      "description": "Efficiently coding for modern CPUs — ZuriHac 2017.",
       "materials": [
         {
           "kind": "video",
           "url": "https://www.youtube.com/watch?v=KzqNQMpRbac",
-          "verification": "Parent directly checked metadata: uploader OST \u2013 Ostschweizer Fachhochschule; title correct; description dates event June9\u201311."
+          "verification": "Parent directly checked metadata: uploader OST – Ostschweizer Fachhochschule; title correct; description dates event June9–11."
         }
       ],
       "uncertainty": [
@@ -685,10 +686,10 @@
           "value": "2014",
           "type": "presentation",
           "precision": "year",
-          "evidence": "Edward\u2019s own 2017 interview confirms learning-to-learn talk at YOW!2014. Attendee identifies Sydney."
+          "evidence": "Edward’s own 2017 interview confirms learning-to-learn talk at YOW!2014. Attendee identifies Sydney."
         }
       ],
-      "description": "Stop Treading Water: Learning to Learn \u2014 YOW!2014.",
+      "description": "Stop Treading Water: Learning to Learn — YOW!2014.",
       "materials": [
         {
           "kind": "video",
@@ -761,7 +762,7 @@
           "evidence": ""
         }
       ],
-      "description": "Combinators Revisited \u2014 YOW! Lambda Jam 2018, Sydney.",
+      "description": "Combinators Revisited — YOW! Lambda Jam 2018, Sydney.",
       "materials": [
         {
           "kind": "slides_pdf",
@@ -820,7 +821,7 @@
           "evidence": "Google publication 2018-08-17 is not presentation date; recording differs from YOW."
         }
       ],
-      "description": "Combinators Revisited \u2014 ZuriHac 2018.",
+      "description": "Combinators Revisited — ZuriHac 2018.",
       "materials": [
         {
           "kind": "video",
@@ -854,7 +855,7 @@
         "Edward Kmett"
       ],
       "event": "Monadic Party 2019",
-      "location": "Pozna\u0144, Poland",
+      "location": "Poznań, Poland",
       "publisher": "Monadic Warsaw",
       "videoId": "D7rlJWc3474",
       "videoUrl": "https://www.youtube.com/watch?v=D7rlJWc3474",
@@ -868,7 +869,7 @@
       "datePrecision": "day",
       "dateConfidence": "high",
       "seriesId": "monadic-party-2019-guanxi",
-      "series": "Guanxi - Logic Programming in Haskell (Monadic Party 2019)",
+      "series": "monadic-party-2019-guanxi",
       "sequence": 1,
       "sequenceTotal": 4,
       "durationSeconds": 2851,
@@ -881,7 +882,7 @@
       "sources": [
         {
           "url": "https://github.com/mkawalec/monadic-party/blob/87898f578f99bd50550ef40e9fe1e6b5cc55be36/src/index.html#L50-L53",
-          "role": "Organizer site source: June 18\u201321, 2019 in Pozna\u0144",
+          "role": "Organizer site source: June 18–21, 2019 in Poznań",
           "source_type": "primary"
         },
         {
@@ -917,7 +918,9 @@
           "target": "youtube-DyPzPeOPgUE",
           "note": "Boston2015 Propagators is a separate performance."
         }
-      ]
+      ],
+      "displayTitle": "Guanxi: Logic Programming in Haskell — Part 1 of 4",
+      "seriesOrder": 1
     },
     {
       "id": "2019-monadic-party-guanxi-2",
@@ -928,7 +931,7 @@
         "Edward Kmett"
       ],
       "event": "Monadic Party 2019",
-      "location": "Pozna\u0144, Poland",
+      "location": "Poznań, Poland",
       "publisher": "Monadic Warsaw",
       "videoId": "s5OnhepyL7w",
       "videoUrl": "https://www.youtube.com/watch?v=s5OnhepyL7w",
@@ -942,7 +945,7 @@
       "datePrecision": "day",
       "dateConfidence": "high",
       "seriesId": "monadic-party-2019-guanxi",
-      "series": "Guanxi - Logic Programming in Haskell (Monadic Party 2019)",
+      "series": "monadic-party-2019-guanxi",
       "sequence": 2,
       "sequenceTotal": 4,
       "durationSeconds": 2624,
@@ -955,7 +958,7 @@
       "sources": [
         {
           "url": "https://github.com/mkawalec/monadic-party/blob/87898f578f99bd50550ef40e9fe1e6b5cc55be36/src/index.html#L50-L53",
-          "role": "Organizer site source: June 18\u201321, 2019 in Pozna\u0144",
+          "role": "Organizer site source: June 18–21, 2019 in Poznań",
           "source_type": "primary"
         },
         {
@@ -991,7 +994,9 @@
           "target": "youtube-DyPzPeOPgUE",
           "note": "Boston2015 Propagators is a separate performance."
         }
-      ]
+      ],
+      "displayTitle": "Guanxi: Logic Programming in Haskell — Part 2 of 4",
+      "seriesOrder": 2
     },
     {
       "id": "2019-monadic-party-guanxi-3",
@@ -1002,7 +1007,7 @@
         "Edward Kmett"
       ],
       "event": "Monadic Party 2019",
-      "location": "Pozna\u0144, Poland",
+      "location": "Poznań, Poland",
       "publisher": "Monadic Warsaw",
       "videoId": "c3UE41eYXHA",
       "videoUrl": "https://www.youtube.com/watch?v=c3UE41eYXHA",
@@ -1016,7 +1021,7 @@
       "datePrecision": "day",
       "dateConfidence": "high",
       "seriesId": "monadic-party-2019-guanxi",
-      "series": "Guanxi - Logic Programming in Haskell (Monadic Party 2019)",
+      "series": "monadic-party-2019-guanxi",
       "sequence": 3,
       "sequenceTotal": 4,
       "durationSeconds": 2791,
@@ -1029,7 +1034,7 @@
       "sources": [
         {
           "url": "https://github.com/mkawalec/monadic-party/blob/87898f578f99bd50550ef40e9fe1e6b5cc55be36/src/index.html#L50-L53",
-          "role": "Organizer site source: June 18\u201321, 2019 in Pozna\u0144",
+          "role": "Organizer site source: June 18–21, 2019 in Poznań",
           "source_type": "primary"
         },
         {
@@ -1065,7 +1070,9 @@
           "target": "youtube-DyPzPeOPgUE",
           "note": "Boston2015 Propagators is a separate performance."
         }
-      ]
+      ],
+      "displayTitle": "Guanxi: Logic Programming in Haskell — Part 3 of 4",
+      "seriesOrder": 3
     },
     {
       "id": "2019-monadic-party-guanxi-4",
@@ -1076,7 +1083,7 @@
         "Edward Kmett"
       ],
       "event": "Monadic Party 2019",
-      "location": "Pozna\u0144, Poland",
+      "location": "Poznań, Poland",
       "publisher": "Monadic Warsaw",
       "videoId": "TnohBRvoUJk",
       "videoUrl": "https://www.youtube.com/watch?v=TnohBRvoUJk",
@@ -1090,7 +1097,7 @@
       "datePrecision": "day",
       "dateConfidence": "high",
       "seriesId": "monadic-party-2019-guanxi",
-      "series": "Guanxi - Logic Programming in Haskell (Monadic Party 2019)",
+      "series": "monadic-party-2019-guanxi",
       "sequence": 4,
       "sequenceTotal": 4,
       "durationSeconds": 3128,
@@ -1103,7 +1110,7 @@
       "sources": [
         {
           "url": "https://github.com/mkawalec/monadic-party/blob/87898f578f99bd50550ef40e9fe1e6b5cc55be36/src/index.html#L50-L53",
-          "role": "Organizer site source: June 18\u201321, 2019 in Pozna\u0144",
+          "role": "Organizer site source: June 18–21, 2019 in Poznań",
           "source_type": "primary"
         },
         {
@@ -1139,7 +1146,9 @@
           "target": "youtube-DyPzPeOPgUE",
           "note": "Boston2015 Propagators is a separate performance."
         }
-      ]
+      ],
+      "displayTitle": "Guanxi: Logic Programming in Haskell — Part 4 of 4",
+      "seriesOrder": 4
     },
     {
       "id": "cadenza-yow-2020",
@@ -1168,7 +1177,7 @@
           "evidence": "Live coding normalization by evaluation and Graal/Truffle. Distinct occurrence from Haskell Day 2019."
         }
       ],
-      "description": "Cadenza: Building Fast Functional Languages Fast \u2014 YOW! Lambda Jam 2020, online.",
+      "description": "Cadenza: Building Fast Functional Languages Fast — YOW! Lambda Jam 2020, online.",
       "materials": [
         {
           "kind": "video",
@@ -1216,7 +1225,7 @@
           "value": "2022-08-18",
           "type": "episode_publication",
           "precision": "day",
-          "evidence": "Official show\u2019s syndicated Apple Podcasts episode metadata says August 18, 2022 at 19:36 UTC."
+          "evidence": "Official show’s syndicated Apple Podcasts episode metadata says August 18, 2022 at 19:36 UTC."
         },
         {
           "value": "2022-08-23",
@@ -1231,7 +1240,7 @@
           "evidence": "Serokell original video jZrCVp5ekbA upload2022-08-18T12:41:38-07:00."
         }
       ],
-      "description": "Across the Kmettverse with Edward Kmett \u2014 Functional Futures / Serokell.",
+      "description": "Across the Kmettverse with Edward Kmett — Functional Futures / Serokell.",
       "materials": [
         {
           "kind": "video",
@@ -1274,7 +1283,8 @@
       ],
       "workFamily": null,
       "inclusion": "recommended",
-      "archiveType": "interview"
+      "archiveType": "interview",
+      "displayTitle": "Across the Kmettverse"
     }
   ],
   "unrecordedTalks": [
@@ -1408,7 +1418,7 @@
     },
     {
       "id": "kmett-2013-wavelet-ljubljana",
-      "title": "What\u2019s a wavelet tree? Why do we care?",
+      "title": "What’s a wavelet tree? Why do we care?",
       "medium": [
         "talk"
       ],
@@ -1432,7 +1442,7 @@
           "value": "2013-11-15",
           "type": "presentation",
           "precision": "day",
-          "evidence": "Organizer gives November15, 12:00\u201314:00; room3.06 Jadranska21."
+          "evidence": "Organizer gives November15, 12:00–14:00; room3.06 Jadranska21."
         },
         {
           "value": "2013-11-12",
@@ -1700,7 +1710,7 @@
           "value": "2015-05-26",
           "type": "presentation",
           "precision": "day",
-          "evidence": "Minutes say title; supplied PDF supplies actual title. Slot 11:50\u201312:30. Linked 2014 videos are prior performances, not recordings of this occurrence."
+          "evidence": "Minutes say title; supplied PDF supplies actual title. Slot 11:50–12:30. Linked 2014 videos are prior performances, not recordings of this occurrence."
         }
       ],
       "sources": [
@@ -1735,7 +1745,7 @@
       "videoUrl": null,
       "confidence": "high",
       "inclusion": "recommended",
-      "notes": "Minutes say title; supplied PDF supplies actual title. Slot 11:50\u201312:30. Linked 2014 videos are prior performances, not recordings of this occurrence.",
+      "notes": "Minutes say title; supplied PDF supplies actual title. Slot 11:50–12:30. Linked 2014 videos are prior performances, not recordings of this occurrence.",
       "workFamily": "functionally-oblivious-and-succinct",
       "relationships": []
     },
@@ -1901,7 +1911,7 @@
     },
     {
       "id": "logic-a-la-carte-yow-2019",
-      "title": "Logic Programming \u00e0 la Carte",
+      "title": "Logic Programming à la Carte",
       "medium": [
         "talk"
       ],
@@ -1997,7 +2007,7 @@
     },
     {
       "id": "logic-a-la-carte-fnconf-2019",
-      "title": "Logic Programming \u00e0 la Carte",
+      "title": "Logic Programming à la Carte",
       "medium": [
         "keynote_slides_video"
       ],
@@ -2027,7 +2037,7 @@
       "sources": [
         {
           "url": "https://confengine.com/conferences/functional-conf-2019/schedule",
-          "role": "Organizer title, date and 09:30\u201310:15 IST slot",
+          "role": "Organizer title, date and 09:30–10:15 IST slot",
           "source_type": "primary"
         },
         {
@@ -2117,7 +2127,7 @@
       "sources": [
         {
           "url": "https://confengine.com/conferences/functional-conf-2019/schedule",
-          "role": "Organizer date, title, 17:00\u201317:45 IST slot and participants",
+          "role": "Organizer date, title, 17:00–17:45 IST slot and participants",
           "source_type": "primary"
         },
         {
@@ -2177,7 +2187,7 @@
       "sources": [
         {
           "url": "https://confengine.com/conferences/functional-conf-2019/schedule",
-          "role": "Organizer date, title, 11:00\u201311:45 IST slot and recording link",
+          "role": "Organizer date, title, 11:00–11:45 IST slot and recording link",
           "source_type": "primary"
         },
         {
@@ -2242,7 +2252,7 @@
       "sources": [
         {
           "url": "https://confengine.com/conferences/functional-conf-2019/proposal/12476/lets-lens",
-          "role": "Organizer title, co-presenters, 10:00\u201318:00 IST date",
+          "role": "Organizer title, co-presenters, 10:00–18:00 IST date",
           "source_type": "primary"
         }
       ],
@@ -2295,7 +2305,7 @@
         },
         {
           "url": "https://bx-community.wikidot.com/bx2021:program",
-          "role": "09:10\u201310:30 CEST slot and downloadable slides",
+          "role": "09:10–10:30 CEST slot and downloadable slides",
           "source_type": "primary"
         },
         {
@@ -2402,7 +2412,7 @@
           "evidence": "Exact day unresolved. Video discovered in gwils gist; do not inherit its erroneous Boston year."
         }
       ],
-      "description": "Propagators \u2014 YOW! Lambda Jam 2016.",
+      "description": "Propagators — YOW! Lambda Jam 2016.",
       "materials": [
         {
           "kind": "video",
@@ -2453,7 +2463,7 @@
           "evidence": "Exact day unresolved. Distinct occurrence from Lambda Jam and Boston."
         }
       ],
-      "description": "Propagators \u2014 YOW! West 2016.",
+      "description": "Propagators — YOW! West 2016.",
       "materials": [
         {
           "kind": "video",

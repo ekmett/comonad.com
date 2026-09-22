@@ -138,7 +138,7 @@ Greyscaling just involves changing one of the constants in the PNG header.
 
 Getting multiple `IDAT` blocks just involves replacing
 
-```
+```haskell
 putChunk "IDAT"
 ```
 

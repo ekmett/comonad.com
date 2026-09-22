@@ -7,20 +7,26 @@ import MarkdownIt from 'markdown-it';
 import hljs from 'highlight.js/lib/core';
 import haskell from 'highlight.js/lib/languages/haskell';
 import c from 'highlight.js/lib/languages/c';
+import cpp from 'highlight.js/lib/languages/cpp';
 import ocaml from 'highlight.js/lib/languages/ocaml';
 import scheme from 'highlight.js/lib/languages/scheme';
 import katex from 'katex';
 import { parseHTML } from 'linkedom';
 import { readerNavigation } from './reader-navigation.mjs';
+import { createSite } from './site-metadata.mjs';
 import { crcMath } from './article-math.mjs';
 import { packageNames, linkPackageMentions } from './package-links.mjs';
 const packageCatalog = JSON.parse(fs.readFileSync('content/package-links.json','utf8'));
+const siteConfig=JSON.parse(fs.readFileSync('content/site.json','utf8'));
+if(process.env.READER_SITE_URL)siteConfig.baseUrl=process.env.READER_SITE_URL;
+const publicSite=createSite(siteConfig);
 import { loadArchive, archiveLookup, buildArchive, localArchiveLink } from './haskell-archive.mjs';
 
 hljs.registerLanguage('haskell', haskell);
-for (const [name, grammar] of Object.entries({c,ocaml,scheme})) hljs.registerLanguage(name,grammar);
+for (const [name, grammar] of Object.entries({c,cpp,ocaml,scheme})) hljs.registerLanguage(name,grammar);
 const articles = JSON.parse(fs.readFileSync('content/articles.json', 'utf8'));
-articles.sort((a,b)=>b.date.localeCompare(a.date)||a.title.localeCompare(b.title));
+const newestFirst=(a,b)=>b.date.localeCompare(a.date)||((a.series&&a.series===b.series)?(b.seriesOrder||0)-(a.seriesOrder||0):0)||a.title.localeCompare(b.title);
+articles.sort(newestFirst);
 const collections = JSON.parse(fs.readFileSync('content/collections.json','utf8'));
 const videoSources=['content/boston-haskell-videos.json','content/external-talks.json'].filter(f=>fs.existsSync(f)).flatMap(f=>{const data=JSON.parse(fs.readFileSync(f,'utf8'));return data.videos || data;});
 function dateLabel(date) {
@@ -31,9 +37,11 @@ function dateLabel(date) {
 const videos=[...new Map(videoSources.map(v=>[v.videoId || v.id,v])).values()].map(v=>{
   const date=v.eventDate||v.eventMonth||v.eventYear||v.date;
   const dateNote=v.eventDate||v.eventMonth||v.eventYear?'':v.dateBasis==='publication'?' · published':' · uploaded';
-  return {...v,date,dateNote,path:`reader/talks/${v.id}/`,author:(v.speakers||[]).join(', '),source:v.publisher||v.event||'Talk',dateLabel:dateLabel(date),kind:'Talk'};
+  return {...v,title:v.displayTitle||v.title,originalTitle:v.title,date,dateNote,path:`reader/talks/${v.id}/`,author:(v.speakers||[]).join(', '),source:v.publisher||v.event||'Talk',dateLabel:dateLabel(date),kind:'Talk'};
 });
-const timeline=[...articles.map(a=>({...a,kind:'Article'})),...videos].sort((a,b)=>b.date.localeCompare(a.date)||a.title.localeCompare(b.title));
+const publications=JSON.parse(fs.readFileSync('content/publications.json','utf8')).map(p=>({...p,author:p.authors.join(', '),dateLabel:dateLabel(p.date)}));
+const externalPreservation=JSON.parse(fs.readFileSync('content/external-preservation.json','utf8'));
+const timeline=[...articles.map(a=>({...a,kind:'Article'})),...videos,...publications].sort(newestFirst);
 const navigation=readerNavigation(timeline);
 const importedAssets = fs.existsSync('content/assets-manifest.json') ? JSON.parse(fs.readFileSync('content/assets-manifest.json','utf8')) : [];
 function sourceKey(href, base='http://comonad.com/') {
@@ -102,12 +110,18 @@ const figureCaptions = {
 function relative(route, target) {
   return path.posix.relative(route || '.', target) || './';
 }
-function shell({title, base, main, script = '', date}) {
+function shell({title, base, main, script = '', date, route, entry}) {
+  const doc=parseHTML(`<div>${main}</div>`).document;
+  const lead=doc.querySelector('.prose > p')?.textContent||entry?.description||entry?.context||'Types, (co)monads, substructural logic. Writing, papers, and talks from Edward Kmett and guests.';
+  const description=lead.replace(/\s+/g,' ').trim().slice(0,240);
+  const metadata=route===undefined?null:publicSite.metadata({title,route,entry,description});
+  const head=metadata?`<link rel="canonical" href="${route?'./':siteConfig.readerPath}"><meta name="description" content="${esc(description)}"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(description)}"><meta property="og:url" content="${esc(metadata.pageUrl)}"><meta property="og:type" content="${entry&&!entry.videoId&&entry.kind!=='Talk'?'article':'website'}"><meta property="og:site_name" content="The Comonad.Reader"><script type="application/ld+json">${JSON.stringify(metadata.data).replaceAll('<','\\u003c')}</script>`:'';
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)} · The Comonad.Reader</title>
+${head}
 <link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="${base}feed.xml"><link rel="stylesheet" href="${base}style.css"><link rel="stylesheet" href="${base}article.css?v=${articleStyleHash}"><link rel="stylesheet" href="${base}vendor/katex/katex.min.css">
-</head><body><header class="masthead reader-masthead"><a class="site-identity" href="${base}reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="${base}reader/">Home</a><a href="${base}reader/packages/">Packages</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="${base}reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="${base}reader/">Home</a><a href="${base}reader/packages/">Packages</a><a href="${base}feed.xml">RSS</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
 <div class="reader-layout">${navigation.calendar(base,date)}<main class="reading">${main}</main></div><script src="${base}reader-sidebar.js"></script>${script}</body></html>\n`;
 }
 function packageLine(names,root) {
@@ -152,7 +166,7 @@ function renderArticle(article, route = article.path) {
   function localLinks(container) {
     for (const a of container.querySelectorAll('a[href]')) {
       const href = a.getAttribute('href');
-      const imported = [...articles,...collections].find(post => sourceKey(href,article.origin) === sourceKey(post.origin) || (post.aliases || []).some(alias=>sourceKey(href,article.origin)===sourceKey(alias)) || (post.legacyId && /comonad.com/.test(href) && new URL(href,article.origin).searchParams.get('p')===post.legacyId));
+    const imported = [...articles,...collections,...publications].find(post => sourceKey(href,article.origin) === sourceKey(post.origin) || (post.aliases || []).some(alias=>sourceKey(href,article.origin)===sourceKey(alias)) || (post.legacyId && /comonad.com/.test(href) && new URL(href,article.origin).searchParams.get('p')===post.legacyId));
       if (imported) a.setAttribute('href', root + imported.path + (href.includes('#') ? '#' + href.split('#')[1] : ''));
       else if (/^https?:\/\/comonad\.com\/reader\/(?:wiki|source)(?:[/?;]|$)/.test(href)) a.setAttribute('href',root+'reader/wiki/');
       else {
@@ -195,9 +209,11 @@ function renderArticle(article, route = article.path) {
   const footer = `<aside class="edition-note"><details><summary>About this edition</summary><p>${historical}</p><p>First home: ${esc(article.source || 'Comonad.Reader')}.${article.dateBasis?' '+esc(article.dateBasis):''}</p><p><a href="${root}source/articles/${article.slug}.md" download>Article Markdown</a> · <a href="${root}source/articles/${article.slug}.original.${article.rawFormat === 'md' ? 'md' : 'html.txt'}" download>Archived original source</a> · <a href="${root}source/articles/provenance.json">Provenance</a> · <a href="${root}source/articles/editorial-changes.json">Editorial changes</a></p></details></aside>
 ${navigation.neighbors(article,root)}
 <footer><span>The Comonad.Reader</span><p>Writing and code © ${esc(article.author || 'Edward Kmett')}.<br>Comments attributed to their original authors.</p></footer>`;
-  const main = `<header class="article-header"><div class="article-meta"><span>${esc(article.categories)}</span><span>${esc(article.author || 'Edward Kmett')} · <time datetime="${article.date}">${article.dateLabel}</time></span></div><h1>${esc(article.title)}</h1></header>${headings.length?toc:''}${body}${packageLine(packageNames(packageCatalog,article.slug),root)}${companions}${comments}${footer}`;
+  const series=collections.find(c=>c.slug===article.series);
+  const seriesNav=series ? `<nav class="series-navigation" aria-label="Article series"><p>In <a href="${root+series.path}">${esc(series.title)}</a></p><ol>${series.links.map(link=>articles.find(a=>sourceKey(a.origin)===sourceKey(link.origin))).filter(Boolean).map(a=>`<li><a href="${root+a.path}"${a.slug===article.slug?' aria-current="page"':''}>${esc(a.originalTitle||a.title)}</a></li>`).join('')}</ol></nav>` : '';
+  const main = `<header class="article-header"><div class="article-meta"><span>${esc(article.categories)}</span><span>${esc(article.author || 'Edward Kmett')} · <time datetime="${article.date}">${article.dateLabel}</time></span></div><h1>${esc(article.title)}</h1></header>${seriesNav}${headings.length?toc:''}${body}${packageLine(packageNames(packageCatalog,article.slug),root)}${companions}${comments}${footer}`;
   const script = hasInlineDemo ? `<script type="module" src="${root}article-demos.js"></script>` : article.slug === 'parallel-crc' ? `<script type="module" src="${root}app.js"></script>` : article.slug==='cellular-automata-part-1' ? `<script type="module" src="${root}automaton.js"></script>` : '';
-  write('dist/' + route + 'index.html', shell({title:article.title, base:root, main, script, date:article.date}));
+  write('dist/' + route + 'index.html', shell({title:article.title, base:root, main, script, date:article.date,route,entry:article}));
 }
 
 const provenance = [];
@@ -208,7 +224,7 @@ for (const article of articles) {
   const archived = `dist/source/articles/${article.slug}.original.${article.rawFormat === 'md' ? 'md' : 'html.txt'}`;
   write(archived, bytes);
   write(`dist/source/articles/${article.slug}.md`, read(`content/articles/${article.slug}.md`));
-  provenance.push({...article, retrieved:'2026-09-21', sha256:crypto.createHash('sha256').update(bytes).digest('hex'), archive:archived.replace('dist/','')});
+  provenance.push({...article, retrieved:externalPreservation.find(p=>p.path===raw)?.retrieved||'2026-09-21', sha256:crypto.createHash('sha256').update(bytes).digest('hex'), archive:archived.replace('dist/','')});
 }
 write('dist/source/articles/provenance.json', JSON.stringify(provenance, null, 2)+'\n');
 // References to the old hosts are migration work, not a permanent escape hatch.
@@ -229,12 +245,20 @@ write('docs/pending-migration-links.json', JSON.stringify([...pending.values()],
 for(const collection of collections) {
   const root=(path.posix.relative(collection.path,'.')||'.')+'/';
   const members=collection.links.map(link=>articles.find(a=>sourceKey(a.origin)===sourceKey(link.origin))).filter(Boolean);
-  write('dist/'+collection.path+'index.html',shell({title:collection.title,base:root,main:`<header class="article-header"><p class="article-meta">A series by Edward Kmett</p><h1>${esc(collection.title)}</h1></header><div class="prose">${md.render(collection.description)}</div><div class="article-list">${members.map(a=>`<article><time datetime="${a.date}">${a.dateLabel}</time><h2><a href="${root+a.path}">${esc(a.title)}</a></h2></article>`).join('') || '<p>No articles were published in this collection.</p>'}</div><nav class="related"><a href="${root}reader/">All writing</a></nav>`}));
+  write('dist/'+collection.path+'index.html',shell({title:collection.title,base:root,route:collection.path,main:`<header class="article-header"><p class="article-meta">A series by Edward Kmett</p><h1>${esc(collection.title)}</h1></header><div class="prose">${md.render(collection.description)}</div><div class="article-list">${members.map(a=>`<article><time datetime="${a.date}">${a.dateLabel}</time><h2><a href="${root+a.path}">${esc(a.title)}</a></h2></article>`).join('') || '<p>No articles were published in this collection.</p>'}</div><nav class="related"><a href="${root}reader/">All writing</a></nav>`}));
 }
 for(const video of videos) {
   const root=(path.posix.relative(video.path,'.')||'.')+'/';
-  const main=`<header class="article-header"><div class="article-meta"><span>${esc(video.source)} · Talk</span><span><time datetime="${video.date}">${esc(video.dateLabel)}</time>${video.dateNote}</span></div><h1>${esc(video.title)}</h1><p class="talk-speakers">${esc(video.author)}</p></header><div class="prose"><figure class="talk-video" data-video-id="${esc(video.videoId)}"><button type="button" class="load-video" aria-label="Play ${esc(video.title)}"><span aria-hidden="true">▶</span> Play recording</button><figcaption><a href="${esc(video.videoUrl)}">Watch on YouTube</a>${video.durationSeconds?' · '+Math.floor(video.durationSeconds/60)+' minutes':''}</figcaption></figure>${video.seriesId?'<nav aria-label="Talk series">'+videos.filter(v=>v.seriesId===video.seriesId).sort((a,b)=>a.sequence-b.sequence).map(v=>`<a href="${root+v.path}">Part ${v.sequence}</a>`).join(' · ')+'</nav>':''}${video.editorialNote?'<p class="editorial">'+esc(video.editorialNote)+'</p>':''}${(video.description||video.context||'').split(/\n\s*\n/).filter(Boolean).map(p=>'<p>'+esc(p).replaceAll('\n','<br>')+'</p>').join('')}${video.materials?.length?'<h2>Materials</h2><ul>'+video.materials.map(m=>`<li><a href="${esc(typeof m==='string'?m:m.url)}">${esc(typeof m==='string'?m:m.title||m.label||m.kind?.replaceAll('_',' ')||'Related material')}</a></li>`).join('')+'</ul>':''}</div>${packageLine(packageCatalog.talks[video.id]||[],root)}<aside class="edition-note"><details><summary>Recording details</summary><p>${video.eventDate?'Talk date: '+esc(video.eventDate)+'. ':''}${video.eventYear&&!video.eventDate?'Presentation year: '+esc(video.eventYear)+'. ':''}Uploaded: ${esc(video.uploadDate||'not established')}. ${esc(video.dateBasis||'')}</p>${(video.uncertainty||[]).map(s=>'<p>'+esc(s)+'</p>').join('')}<p>The recording is hosted on YouTube. Its description, credits, and dating evidence are preserved here.</p></details></aside>${navigation.neighbors(video,root)}`;
-  write('dist/'+video.path+'index.html',shell({title:video.title,base:root,main,date:video.date,script:`<script type="module" src="${root}video.js"></script>`}));
+  const main=`<header class="article-header"><div class="article-meta"><span>${esc(video.source)} · Talk</span><span><time datetime="${video.date}">${esc(video.dateLabel)}</time>${video.dateNote}</span></div><h1>${esc(video.title)}</h1><p class="talk-speakers">${esc(video.author)}</p></header><div class="prose"><figure class="talk-video" data-video-id="${esc(video.videoId)}"><iframe src="https://www.youtube-nocookie.com/embed/${esc(video.videoId)}?playsinline=1" title="${esc(video.title)}" loading="eager" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><figcaption><a href="${esc(video.videoUrl)}">Watch on YouTube</a>${video.durationSeconds?' · '+Math.floor(video.durationSeconds/60)+' minutes':''}</figcaption></figure>${video.seriesId?'<nav aria-label="Talk series">'+videos.filter(v=>v.seriesId===video.seriesId).sort((a,b)=>a.sequence-b.sequence).map(v=>`<a href="${root+v.path}"${v.id===video.id?' aria-current="page"':''}>Part ${v.sequence}</a>`).join(' · ')+'</nav>':''}${video.editorialNote?'<p class="editorial">'+esc(video.editorialNote)+'</p>':''}${(video.description||video.context||'').split(/\n\s*\n/).filter(Boolean).map(p=>'<p>'+esc(p).replaceAll('\n','<br>')+'</p>').join('')}${video.materials?.length?'<h2>Materials</h2><ul>'+video.materials.map(m=>`<li><a href="${esc(typeof m==='string'?m:m.url)}">${esc(typeof m==='string'?m:m.title||m.label||m.kind?.replaceAll('_',' ')||'Related material')}</a></li>`).join('')+'</ul>':''}</div>${packageLine(packageCatalog.talks[video.id]||[],root)}<aside class="edition-note"><details><summary>Recording details</summary><p>${video.eventDate?'Talk date: '+esc(video.eventDate)+'. ':''}${video.eventYear&&!video.eventDate?'Presentation year: '+esc(video.eventYear)+'. ':''}Uploaded: ${esc(video.uploadDate||'not established')}. ${esc(video.dateBasis||'')}</p>${(video.uncertainty||[]).map(s=>'<p>'+esc(s)+'</p>').join('')}<p>The recording is hosted on YouTube. Its description, credits, and dating evidence are preserved here.</p></details></aside>${navigation.neighbors(video,root)}`;
+  write('dist/'+video.path+'index.html',shell({title:video.title,base:root,main,date:video.date,route:video.path,entry:video}));
+}
+for(const publication of publications) {
+  const root=(path.posix.relative(publication.path,'.')||'.')+'/';
+  const slides=publication.deck?externalPreservation.filter(p=>p.deck===publication.deck&&p.path).sort((a,b)=>a.slide-b.slide):[];
+  const material=publication.pdf ? `<p><a class="document-download" href="${root+publication.pdf}">Read the ${publication.kind==='Paper'?'paper':'slides'} (PDF · ${publication.pages} pages)</a> · <a href="${root+publication.pdf}" download>Download</a></p><object class="document-preview" data="${root+publication.pdf}" type="application/pdf" aria-label="${esc(publication.title)}"><p><a href="${root+publication.pdf}">Open the PDF</a></p></object>` : `<section class="slide-deck" aria-label="Presentation slides"><p>${slides.length} slides · <a href="#slide-1">Start reading</a></p>${slides.map(s=>`<figure id="slide-${s.slide}"><img src="${root+s.path.replace(/^content\//,'')}" alt="${esc(s.alt.replaceAll('\\n','\n').trim())}" loading="lazy" width="2048" height="1536"><figcaption>Slide ${s.slide} of ${slides.length}${s.slide>1?` · <a href="#slide-${s.slide-1}" aria-label="Previous slide">←</a>`:''}${s.slide<slides.length?` · <a href="#slide-${s.slide+1}" aria-label="Next slide">→</a>`:''}</figcaption></figure>`).join('')}</section>`;
+  const related=articles.find(a=>a.slug===publication.relatedArticle);
+  const main=`<header class="article-header"><div class="article-meta"><span>${esc(publication.source)} · ${publication.kind}</span><span><time datetime="${publication.date}">${esc(publication.dateLabel)}</time>${esc(publication.dateNote||'')}</span></div><h1>${esc(publication.title)}</h1><p class="talk-speakers">${esc(publication.author)}</p></header><div class="prose"><p>${esc(publication.description)}</p>${related?`<p>Related article: <a href="${root+related.path}">${esc(related.title)}</a>.</p>`:''}${material}</div>${packageLine(publication.packages||[],root)}<aside class="edition-note"><details><summary>About this edition</summary><p>${esc(publication.dateBasis)}</p><p>${publication.pdf?'The complete original PDF is preserved locally.':'All publicly displayed slide images and their supplied text are preserved locally.'}</p><p><a href="${esc(publication.origin)}">Source record</a> · <a href="${root}source/articles/external-preservation.json">Preservation manifest</a></p></details></aside>${navigation.neighbors(publication,root)}`;
+  write('dist/'+publication.path+'index.html',shell({title:publication.title,base:root,main,date:publication.date,route:publication.path,entry:publication}));
 }
 function archivePage(route, period) {
   const base=(path.posix.relative(route||'.','.')||'.')+'/';
@@ -245,28 +269,35 @@ function archivePage(route, period) {
   const entries=selected.map(a=>{
     const nextYear=a.date.slice(0,4),heading=year!==nextYear?`<h2 class="archive-year" id="year-${nextYear}">${nextYear}</h2>`:'';year=nextYear;
     const dayId=seenDates.has(a.date)?'':` id="day-${a.date}"`;seenDates.add(a.date);
-    return heading+`<article${dayId} class="archive-entry" data-kind="${a.kind}" data-search="${esc([a.title,a.slug,a.author,a.categories,a.date,a.source,a.kind].join(' ').toLowerCase())}"><div class="entry-date"><time datetime="${a.date}">${esc(a.dateLabel)}${a.dateNote||''}</time><span>${a.kind==='Talk'?'Talk · ':''}${esc(a.source)}</span></div><h3><a href="${base+a.path}">${esc(a.title)}</a></h3>${a.author!=='Edward Kmett'?`<p class="entry-author">${esc(a.author)}</p>`:''}</article>`;
+    return heading+`<article${dayId} class="archive-entry" data-kind="${a.kind}" data-search="${esc([a.title,a.slug,a.author,a.categories,a.date,a.source,a.kind].join(' ').toLowerCase())}"><div class="entry-date"><time datetime="${a.date}">${esc(a.dateLabel)}${a.dateNote||''}</time><span>${a.kind!=='Article'?a.kind+' · ':''}${esc(a.source)}</span></div><h3><a href="${base+a.path}">${esc(a.title)}</a></h3><p class="entry-author">${esc(a.author||'Edward Kmett')}</p></article>`;
   }).join('');
-  return shell({title,base,date:period,main:`<header class="archive-header"><p class="article-meta">Edward Kmett &amp; guests</p><h1>${esc(title)}</h1><p>${period?`<a href="${base}reader/">All writing &amp; talks</a>`:"Types, programs, and the structures between them."}</p></header><div class="archive-tools"><label for="archive-search">Explore the archive</label><div class="archive-search-row"><input id="archive-search" type="search" placeholder="Title, topic, speaker, or year…"><select id="archive-kind" aria-label="Content type"><option value="">Everything</option><option>Article</option><option>Talk</option></select></div><p id="archive-count" aria-live="polite">${selected.filter(a=>a.kind==='Article').length} articles · ${selected.filter(a=>a.kind==='Talk').length} talks</p></div><div class="article-list chronological">${entries}</div><p id="archive-empty" hidden>No matching entries.</p><details class="series-list"><summary>Browse series</summary><ul>${collections.filter(c=>c.links.length).map(c=>`<li><a href="${base+c.path}">${esc(c.title)}</a></li>`).join('')}</ul></details><footer><span>The Comonad.Reader</span><p>Writing and recordings together in date order.<br>Articles and talks credited to their authors and speakers.</p></footer>`,script:`<script type="module" src="${base}archive.js"></script>`});
+  return shell({title,base,date:period,route,main:`<header class="archive-header"><p class="article-meta">Edward Kmett &amp; guests</p><h1>${esc(title)}</h1><p>${period?`<a href="${base}reader/">All writing &amp; talks</a>`:"Types, programs, and the structures between them."}</p></header><div class="archive-tools"><label for="archive-search">Explore the archive</label><div class="archive-search-row"><input id="archive-search" type="search" placeholder="Title, topic, speaker, or year…"><select id="archive-kind" aria-label="Content type"><option value="">Everything</option><option>Article</option><option>Talk</option><option>Paper</option></select></div><p id="archive-count" aria-live="polite">${selected.filter(a=>a.kind==='Article').length} articles · ${selected.filter(a=>a.kind==='Talk').length} talks · ${selected.filter(a=>a.kind==='Paper').length} papers</p></div><div class="article-list chronological">${entries}</div><p id="archive-empty" hidden>No matching entries.</p><details class="series-list"><summary>Browse series</summary><ul>${collections.filter(c=>c.links.length).map(c=>`<li><a href="${base+c.path}">${esc(c.title)}</a></li>`).join('')}</ul></details><footer><span>The Comonad.Reader</span><p>Writing and recordings together in date order.<br>Articles and talks credited to their authors and speakers.</p></footer>`,script:`<script type="module" src="${base}archive.js"></script>`});
 }
 const packageSections=Object.entries(packageCatalog.packages).map(([name,pkg])=>{
   const writing=articles.filter(a=>packageNames(packageCatalog,a.slug).includes(name));
-  const talks=videos.filter(v=>(packageCatalog.talks[v.id]||[]).includes(name));
+  const talks=[...videos,...publications].filter(v=>(v.packages||packageCatalog.talks[v.id]||[]).includes(name));
   return `<section class="package-section" id="${name}"><h2><a href="${pkg.url}">${esc(name)}</a></h2><ul>${[...writing,...talks].sort((a,b)=>b.date.localeCompare(a.date)).map(a=>`<li><a href="../../${a.path}">${esc(a.title)}</a> <span class="package-date">${a.date.slice(0,4)}</span></li>`).join('')}</ul></section>`;
 }).join('');
-write('dist/reader/packages/index.html',shell({title:'Packages & writing',base:'../../',main:`<header class="article-header"><h1>Packages &amp; writing</h1><p>Follow an idea from the article to its Haskell library.</p></header><p class="editorial">These links connect the writing to relevant packages on Hackage. Historical examples may use different APIs; their original version-specific documentation links are preserved.</p><nav class="package-jump" aria-label="Package index">${Object.keys(packageCatalog.packages).map(n=>`<a href="#${n}">${esc(n)}</a>`).join(' · ')}</nav>${packageSections}`}));
+write('dist/reader/packages/index.html',shell({title:'Packages & writing',base:'../../',route:'reader/packages/',main:`<header class="article-header"><h1>Packages &amp; writing</h1><p>Follow an idea from the article to its Haskell library.</p></header><p class="editorial">These links connect the writing to relevant packages on Hackage. Historical examples may use different APIs; their original version-specific documentation links are preserved.</p><nav class="package-jump" aria-label="Package index">${Object.keys(packageCatalog.packages).map(n=>`<a href="#${n}">${esc(n)}</a>`).join(' · ')}</nav>${packageSections}`}));
 write('dist/source/articles/package-links.json',JSON.stringify(packageCatalog,null,2)+'\n');
 write('dist/reader/index.html',archivePage('reader/'));
-write('dist/index.html',archivePage(''));
+write('dist/index.html',`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>The Comonad.Reader</title><link rel="canonical" href="${siteConfig.readerPath}"><meta http-equiv="refresh" content="0;url=${siteConfig.readerPath}"></head><body><p><a href="${siteConfig.readerPath}">Continue to The Comonad.Reader</a></p></body></html>\n`);
 write('dist/reader/wiki/index.html',shell({title:'Historical Wiki',base:'../../',main:'<h1>Historical Wiki</h1><p>The original Wiki page was empty when this archive was preserved. Its older item and source endpoints either returned that empty page or HTTP 404.</p><p><a href="../../source/articles/wiki.original.html.txt">Archived page source</a> · <a href="../../source/articles/legacy-link-status.json">Retrieval details</a></p>'}));
 write('dist/source/articles/wiki.original.html.txt',read('content/original/wiki.html'));
-for(const name of ['editorial-changes','math-migration','code-formatting','legacy-link-status','external-talks','boston-haskell-videos'])write(`dist/source/articles/${name}.json`,read(`content/${name}.json`));
+for(const name of ['editorial-changes','math-migration','code-formatting','legacy-link-status','external-talks','boston-haskell-videos','publications','external-preservation'])write(`dist/source/articles/${name}.json`,read(`content/${name}.json`));
 for(const year of new Set(timeline.map(a=>a.date.slice(0,4))))write(`dist/reader/${year}/index.html`,archivePage(`reader/${year}/`,year));
 for(const month of navigation.months)write('dist/'+navigation.monthPath(month)+'index.html',archivePage(navigation.monthPath(month),month));
-const site='https://comonad.com/';
-const feed=`<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>The Comonad.Reader</title><link>${site}reader/</link><description>Types, (co)monads, substructural logic</description>${articles.slice(0,30).map(a=>`<item><title>${esc(a.title)}</title><link>${site+a.path}</link><guid>${site+a.path}</guid><pubDate>${new Date(a.date+'T12:00:00Z').toUTCString()}</pubDate><description>${esc(md.render(read('content/articles/'+a.slug+'.md')).replace(/<!--.*?-->/gs,''))}</description></item>`).join('')}</channel></rss>`;
+const site=siteConfig.baseUrl;
+write('dist/source/articles/site.json',JSON.stringify(siteConfig,null,2)+'\n');
+function feedBody(article){
+ const prose=parseHTML(read('dist/'+article.path+'index.html')).document.querySelector('.prose');
+ prose.querySelectorAll('.experiment,script,button,input,select').forEach(n=>n.remove());
+ for(const n of prose.querySelectorAll('[href],[src]'))for(const attr of ['href','src'])if(n.hasAttribute(attr))n.setAttribute(attr,new URL(n.getAttribute(attr),publicSite.url(article.path)).href);
+ return prose.innerHTML;
+}
+const feed=`<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>The Comonad.Reader</title><link>${site}reader/</link><description>Types, (co)monads, substructural logic</description>${articles.slice(0,30).map(a=>`<item><title>${esc(a.title)}</title><link>${site+a.path}</link><guid isPermaLink="false">${siteConfig.permanentIdentityBaseUrl+a.path}</guid><pubDate>${new Date(a.date+'T12:00:00Z').toUTCString()}</pubDate><description>${esc(feedBody(a))}</description></item>`).join('')}</channel></rss>`;
 write('dist/reader/feed/index.xml',feed);
 write('dist/reader/feed/index.html',feed);
 write('dist/feed.xml',feed);
-write('dist/sitemap.xml',`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${['reader/','reader/packages/',...articles.map(a=>a.path),...collections.map(a=>a.path),...videos.map(v=>v.path)].map(p=>`<url><loc>${site+p}</loc></url>`).join('')}</urlset>`);
-console.log(`Built ${articles.length} complete articles, local math and diagrams, curated comments, and ${videos.length} talk pages.`);
+write('dist/sitemap.xml',`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${['reader/','reader/packages/',...articles.map(a=>a.path),...collections.map(a=>a.path),...videos.map(v=>v.path),...publications.map(p=>p.path)].map(p=>`<url><loc>${site+p}</loc></url>`).join('')}</urlset>`);
+console.log(`Built ${articles.length} complete articles, local math and diagrams, curated comments, and ${videos.length} recording pages, and ${publications.length} preserved publications.`);

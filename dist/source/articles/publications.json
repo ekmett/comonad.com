@@ -1,0 +1,100 @@
+[
+  {
+    "id": "applicative-do",
+    "title": "Desugaring Haskell’s do-Notation into Applicative Operations",
+    "authors": [
+      "Simon Marlow",
+      "Simon Peyton Jones",
+      "Edward Kmett",
+      "Andrey Mokhov"
+    ],
+    "date": "2016-09",
+    "kind": "Paper",
+    "source": "Haskell Symposium 2016",
+    "path": "reader/papers/applicative-do/",
+    "pdf": "assets/documents/applicative-do.pdf",
+    "pages": 13,
+    "description": "An algorithm for translating Haskell’s do-notation into applicative operations where possible, retaining monadic dependencies where necessary. The paper describes the design, implementation, and applications of ApplicativeDo.",
+    "origin": "https://simon.peytonjones.org/desugaring-haskell/",
+    "dateBasis": "Publication month; an exact publication day is not assigned.",
+    "packages": []
+  },
+  {
+    "id": "functionally-oblivious-ifip-2015",
+    "title": "Functionally Oblivious (and Succinct)",
+    "authors": [
+      "Edward Kmett"
+    ],
+    "date": "2015-05-26",
+    "kind": "Talk",
+    "source": "IFIP WG2.8 · Kefalonia",
+    "path": "reader/talks/functionally-oblivious-ifip-2015/",
+    "pdf": "assets/documents/functionally-oblivious-2015.pdf",
+    "pages": 49,
+    "description": "Slides from the 33rd IFIP Working Group 2.8 meeting, exploring cache-oblivious and succinct data structures.",
+    "origin": "https://www.cs.ox.ac.uk/ralf.hinze/WG2.8/33/minutes.html",
+    "dateBasis": "Presentation date from the meeting minutes.",
+    "packages": []
+  },
+  {
+    "id": "linear-optics-bx-2021",
+    "title": "A Taste of Linear Optics",
+    "authors": [
+      "Edward Kmett"
+    ],
+    "date": "2021-06-21",
+    "kind": "Talk",
+    "source": "Bx 2021",
+    "path": "reader/talks/linear-optics-bx-2021/",
+    "pdf": "assets/documents/linear-optics-2021.pdf",
+    "pages": 47,
+    "description": "Keynote slides on linear logic, Haskell, and optics, presented at Bx 2021.",
+    "origin": "https://bx-community.wikidot.com/bx2021:program",
+    "dateBasis": "Presentation date from the conference program.",
+    "packages": [
+      "lens"
+    ]
+  },
+  {
+    "id": "kmett-2012-online-lca",
+    "title": "Purely Functional Data Structures for On-Line LCA",
+    "authors": [
+      "Edward Kmett"
+    ],
+    "date": "2012-05-31",
+    "kind": "Talk",
+    "source": "Boston Haskell",
+    "path": "reader/talks/kmett-2012-online-lca/",
+    "deck": "lca",
+    "pages": 43,
+    "description": "Slides on skew-binary representations and online lowest-common-ancestor search.",
+    "origin": "https://www.slideshare.net/slideshow/skewbinary-online-lowest-common-ancestor-search/13144385",
+    "dateBasis": "Ordered by slide publication date, 31 May 2012, from SlideShare metadata. A reproduced deck reports the presentation as 30 May 2012; that date is less certain.",
+    "dateNote": " · slides published",
+    "packages": [
+      "lca"
+    ],
+    "relatedArticle": "online-lca"
+  },
+  {
+    "id": "bound-slides-2012",
+    "title": "Making de Bruijn Succ Less",
+    "authors": [
+      "Edward Kmett"
+    ],
+    "date": "2012-07-26",
+    "kind": "Talk",
+    "source": "Slides",
+    "path": "reader/talks/bound-slides-2012/",
+    "deck": "bound",
+    "pages": 50,
+    "description": "A presentation on variable binding, de Bruijn indices, and the approach used by the bound library.",
+    "origin": "https://www.slideshare.net/slideshow/bound-making-de-bruijn-succ-less/13768903",
+    "dateBasis": "Ordered by slide publication date, 26 July 2012, from SlideShare metadata. The presentation date and event have not been established.",
+    "dateNote": " · slides published",
+    "packages": [
+      "bound"
+    ],
+    "relatedArticle": "bound"
+  }
+]

@@ -74,7 +74,7 @@
   },
   {
     "slug": "fibonacci-search",
-    "title": "Part 2: Open-Ended Fibonacci Search",
+    "title": "Fibonacci — Part 2: Open-Ended Fibonacci Search",
     "date": "2015-10-13",
     "dateLabel": "13 October 2015",
     "path": "reader/2015/fibonacci-search/",
@@ -86,7 +86,9 @@
     "rawSource": "content/original/corpus/911c9304c31c6c3a8a6f905b.md",
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/ef3bb842b9000d78432bcff461f73bed06069b8d",
-    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision."
+    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
+    "series": "fibonacci",
+    "originalTitle": "Part 2: Open-Ended Fibonacci Search"
   },
   {
     "slug": "some-rough-notes-on-univalent-foundations-and-b-systems-part-i",
@@ -151,7 +153,7 @@
   },
   {
     "slug": "cellular-automata-part-2",
-    "title": "Part II: PNGs and Moore",
+    "title": "Cellular Automata — Part II: PNGs and Moore",
     "date": "2015-06-10",
     "dateLabel": "10 June 2015",
     "path": "reader/2015/cellular-automata-part-2/",
@@ -163,7 +165,9 @@
     "rawSource": "content/original/corpus/6f6f69b9cc40609b9a22cafe.md",
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/604212fe84a3e9f477c2f975737b8e05d70a941f",
-    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision."
+    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
+    "series": "cellular-automata",
+    "originalTitle": "Part II: PNGs and Moore"
   },
   {
     "slug": "moore-for-less",
@@ -179,7 +183,8 @@
     "rawSource": "content/original/corpus/a2bd380233477b12005aa3b7.md",
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/9ab8b288c6c5cc9d1ab36ccb8c3c74167b4dd00f",
-    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision."
+    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
+    "series": "moore"
   },
   {
     "slug": "categories-of-structures-in-haskell",
@@ -227,7 +232,7 @@
   },
   {
     "slug": "fibonacci-leonardo",
-    "title": "Part 1: Leonardo Random Access Lists",
+    "title": "Fibonacci — Part 1: Leonardo Random Access Lists",
     "date": "2015-04-28",
     "dateLabel": "28 April 2015",
     "path": "reader/2015/fibonacci-leonardo/",
@@ -239,7 +244,9 @@
     "rawSource": "content/original/corpus/375863705d98619cdb11fc1a.md",
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/3a2678a9238b713dbb2240b8e98bff28c88444f4",
-    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision."
+    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
+    "series": "fibonacci",
+    "originalTitle": "Part 1: Leonardo Random Access Lists"
   },
   {
     "slug": "free-monoids-in-haskell",
@@ -269,7 +276,8 @@
     "rawSource": "content/original/corpus/e6d0788672cacbb738446f7b.md",
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/f8868a34da7b6bd25296d160942294f74bccdf11",
-    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision."
+    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
+    "series": "snippets"
   },
   {
     "slug": "fast-circular-substitution",
@@ -288,7 +296,7 @@
   },
   {
     "slug": "cellular-automata-part-1",
-    "title": "Part I: From Theory to Pretty Pictures",
+    "title": "Cellular Automata — Part I: From Theory to Pretty Pictures",
     "date": "2014-11-29",
     "dateLabel": "29 November 2014",
     "path": "reader/2014/cellular-automata-part-1/",
@@ -300,11 +308,13 @@
     "rawSource": "content/original/corpus/bc357760cd1fe01afd085626.md",
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/2a6140398ce46eceac790037f4afbd66c3b9c7c5",
-    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision."
+    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
+    "series": "cellular-automata",
+    "originalTitle": "Part I: From Theory to Pretty Pictures"
   },
   {
     "slug": "revisiting-matrix-multiplication-part-5",
-    "title": "Part V: Heaps of Performance",
+    "title": "Revisiting Matrix Multiplication — Part V: Heaps of Performance",
     "date": "2014-11-16",
     "dateLabel": "16 November 2014",
     "path": "reader/2014/revisiting-matrix-multiplication-part-5/",
@@ -316,7 +326,9 @@
     "rawSource": "content/original/corpus/485d93f33aa0885db5a24360.md",
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/b43bf065739f05937cdb8de9cdac53ec646bed1a",
-    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision."
+    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
+    "series": "revisiting-matrix-multiplication",
+    "originalTitle": "Part V: Heaps of Performance"
   },
   {
     "slug": "letter-to-a-young-haskell-enthusiast",
@@ -361,7 +373,8 @@
     "rawSource": "content/original/corpus/e1154a13f41bf133d66f892b.md",
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/9f247ee93e3ec7d8b226e906eb1d7648a1e57c76",
-    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision."
+    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
+    "series": "recursion-schemes"
   },
   {
     "slug": "phoas",
@@ -381,7 +394,7 @@
   },
   {
     "slug": "cellular-automata-part-3",
-    "title": "Part III: A World in a Bottle",
+    "title": "Cellular Automata — Part III: A World in a Bottle",
     "date": "2013-11-16",
     "dateLabel": "16 November 2013",
     "path": "reader/2013/cellular-automata-part-3/",
@@ -393,11 +406,13 @@
     "rawSource": "content/original/corpus/4883ae2c2d44cc80469bb460.md",
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/adea78b22dcf260126adedf58d7500caf297b583",
-    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision."
+    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
+    "series": "cellular-automata",
+    "originalTitle": "Part III: A World in a Bottle"
   },
   {
     "slug": "oblivious-deamortized-st",
-    "title": "Part I: Deamortized ST",
+    "title": "Cache-Oblivious Data Structures — Part I: Deamortized ST",
     "date": "2013-11-08",
     "dateLabel": "8 November 2013",
     "path": "reader/2013/oblivious-deamortized-st/",
@@ -409,7 +424,9 @@
     "rawSource": "content/original/corpus/dbf50348ed361f4e6db353be.md",
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/4244d5709e256fd7dacdf3512e7d00334eafbc6b",
-    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision."
+    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
+    "series": "oblivious",
+    "originalTitle": "Part I: Deamortized ST"
   },
   {
     "slug": "editorial-procrustean-mathematics",
@@ -425,7 +442,8 @@
     "rawSource": "content/original/corpus/92880915dacbf1849e4408db.md",
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/97cc863d550b152cbbcf6a645709d80f16ba96cd",
-    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision."
+    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
+    "series": "editorial"
   },
   {
     "slug": "conquering-folds",
@@ -473,7 +491,8 @@
     "rawSource": "content/original/corpus/adfa97de2be831c784d42b96.md",
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/5075dba7d5304c8f12a24c282c3d243564ea9e0a",
-    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision."
+    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
+    "series": "snippets"
   },
   {
     "slug": "snippets-once",
@@ -489,11 +508,12 @@
     "rawSource": "content/original/corpus/f1ad9dbd9e0ec6f5513cc200.md",
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/52c9d1c864e897525f61e645d40e7d6a561f1c77",
-    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision."
+    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
+    "series": "snippets"
   },
   {
     "slug": "revisiting-matrix-multiplication-part-1",
-    "title": "Part I: Bit Shuffling with Lenses and Isomorphisms",
+    "title": "Revisiting Matrix Multiplication — Part I: Bit Shuffling with Lenses and Isomorphisms",
     "date": "2013-08-25",
     "dateLabel": "25 August 2013",
     "path": "reader/2013/revisiting-matrix-multiplication-part-1/",
@@ -505,11 +525,13 @@
     "rawSource": "content/original/corpus/4f17dfa96cb53d09b9993e31.md",
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/499f6f6ad03e6dc2feab4905f94308e5417e7458",
-    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision."
+    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
+    "series": "revisiting-matrix-multiplication",
+    "originalTitle": "Part I: Bit Shuffling with Lenses and Isomorphisms"
   },
   {
     "slug": "revisiting-matrix-multiplication-part-2",
-    "title": "Part II: The Zen of Z-Ordering",
+    "title": "Revisiting Matrix Multiplication — Part II: The Zen of Z-Ordering",
     "date": "2013-08-25",
     "dateLabel": "25 August 2013",
     "path": "reader/2013/revisiting-matrix-multiplication-part-2/",
@@ -521,11 +543,13 @@
     "rawSource": "content/original/corpus/51f419b87492a70a3d2f9ac2.md",
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/99e5ad65aa6415d56184e2621cde1187820b2b7d",
-    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision."
+    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
+    "series": "revisiting-matrix-multiplication",
+    "originalTitle": "Part II: The Zen of Z-Ordering"
   },
   {
     "slug": "revisiting-matrix-multiplication-part-3",
-    "title": "Part III: Extending Vector",
+    "title": "Revisiting Matrix Multiplication — Part III: Extending Vector",
     "date": "2013-08-25",
     "dateLabel": "25 August 2013",
     "path": "reader/2013/revisiting-matrix-multiplication-part-3/",
@@ -537,11 +561,13 @@
     "rawSource": "content/original/corpus/5a62211b97d2d50f7d26295c.md",
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/c9948ec20386ad678e5f35781e4854b172e6308a",
-    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision."
+    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
+    "series": "revisiting-matrix-multiplication",
+    "originalTitle": "Part III: Extending Vector"
   },
   {
     "slug": "revisiting-matrix-multiplication-part-4",
-    "title": "Part IV: IntMap!?",
+    "title": "Revisiting Matrix Multiplication — Part IV: IntMap!?",
     "date": "2013-08-25",
     "dateLabel": "25 August 2013",
     "path": "reader/2013/revisiting-matrix-multiplication-part-4/",
@@ -553,11 +579,13 @@
     "rawSource": "content/original/corpus/70b3b22050550f3226171f87.md",
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/4892553edbb35ab05743b820e3d3f17b88343c66",
-    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision."
+    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
+    "series": "revisiting-matrix-multiplication",
+    "originalTitle": "Part IV: IntMap!?"
   },
   {
     "slug": "revisiting-matrix-multiplication-part-6",
-    "title": "Part VI: A Most Significant Comparison",
+    "title": "Revisiting Matrix Multiplication — Part VI: A Most Significant Comparison",
     "date": "2013-08-25",
     "dateLabel": "25 August 2013",
     "path": "reader/2013/revisiting-matrix-multiplication-part-6/",
@@ -569,7 +597,9 @@
     "rawSource": "content/original/corpus/9859fd8454605faf2dc4e119.md",
     "rawFormat": "md",
     "rawURL": "https://www.schoolofhaskell.com/tutorial-raw/4906/fa630871f2e42363a2ebddceb1c6878594eccc6b",
-    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision."
+    "dateBasis": "Date displayed by School of Haskell; may reflect a later revision.",
+    "series": "revisiting-matrix-multiplication",
+    "originalTitle": "Part VI: A Most Significant Comparison"
   },
   {
     "slug": "representing-applicatives",
@@ -920,7 +950,9 @@
     "rawHTML": "content/original/corpus/878af0b5d85503c63221d3ba.html",
     "rawSource": "content/original/corpus/878af0b5d85503c63221d3ba.html",
     "rawFormat": "html",
-    "legacyId": "251"
+    "legacyId": "251",
+    "series": "free-monads-for-less",
+    "seriesOrder": 3
   },
   {
     "slug": "free-monads-for-less",
@@ -935,7 +967,9 @@
     "rawHTML": "content/original/corpus/3d111298b5de18e86c50f0bb.html",
     "rawSource": "content/original/corpus/3d111298b5de18e86c50f0bb.html",
     "rawFormat": "html",
-    "legacyId": "218"
+    "legacyId": "218",
+    "series": "free-monads-for-less",
+    "seriesOrder": 1
   },
   {
     "slug": "free-monads-for-less-2",
@@ -950,7 +984,9 @@
     "rawHTML": "content/original/corpus/29832ea55e9362ff1e44c667.html",
     "rawSource": "content/original/corpus/29832ea55e9362ff1e44c667.html",
     "rawFormat": "html",
-    "legacyId": "243"
+    "legacyId": "243",
+    "series": "free-monads-for-less",
+    "seriesOrder": 2
   },
   {
     "slug": "introducing-speculation",
@@ -1640,5 +1676,69 @@
     "rawHTML": "content/original/corpus/48d3b217a96e5bd9c482d5a8.html",
     "rawSource": "content/original/corpus/48d3b217a96e5bd9c482d5a8.html",
     "rawFormat": "html"
+  },
+  {
+    "slug": "harmless-algorithms-4",
+    "title": "Harmless Algorithms — Part 4: A Hybrid Approach to Visibility",
+    "date": "2001-02-19",
+    "dateLabel": "19 February 2001",
+    "path": "reader/2001/harmless-algorithms-4/",
+    "categories": "Graphics · Algorithms · C++",
+    "origin": "https://flipcode.com/archives/Harmless_Algorithms-Issue_04_A_Hybrid_Approach_to_Visibility.shtml",
+    "author": "Edward Kmett",
+    "source": "Flipcode",
+    "rawHTML": "content/original/external/kmett-2001-harmless-algorithms-04.html",
+    "rawSource": "content/original/external/kmett-2001-harmless-algorithms-04.html",
+    "rawFormat": "html",
+    "dateBasis": "Publisher publication date. The original signed date is retained in the article.",
+    "series": "harmless-algorithms"
+  },
+  {
+    "slug": "harmless-algorithms-3",
+    "title": "Harmless Algorithms — Part 3: Design Patterns And 3D Gaming",
+    "date": "2000-01-26",
+    "dateLabel": "26 January 2000",
+    "path": "reader/2000/harmless-algorithms-3/",
+    "categories": "Graphics · Algorithms · C++",
+    "origin": "https://flipcode.com/archives/Harmless_Algorithms-Issue_03_Design_Patterns_And_3D_Gaming.shtml",
+    "author": "Edward Kmett",
+    "source": "Flipcode",
+    "rawHTML": "content/original/external/kmett-2000-harmless-algorithms-03.html",
+    "rawSource": "content/original/external/kmett-2000-harmless-algorithms-03.html",
+    "rawFormat": "html",
+    "dateBasis": "Publisher publication date. The original signed date is retained in the article.",
+    "series": "harmless-algorithms"
+  },
+  {
+    "slug": "harmless-algorithms-2",
+    "title": "Harmless Algorithms — Part 2: Scene Traversal Algorithms",
+    "date": "1999-04-30",
+    "dateLabel": "30 April 1999",
+    "path": "reader/1999/harmless-algorithms-2/",
+    "categories": "Graphics · Algorithms · C++",
+    "origin": "https://flipcode.com/archives/Harmless_Algorithms-Issue_02_Scene_Traversal_Algorithms.shtml",
+    "author": "Edward Kmett",
+    "source": "Flipcode",
+    "rawHTML": "content/original/external/kmett-1999-harmless-algorithms-02.html",
+    "rawSource": "content/original/external/kmett-1999-harmless-algorithms-02.html",
+    "rawFormat": "html",
+    "dateBasis": "Publisher publication date. The original signed date is retained in the article.",
+    "series": "harmless-algorithms"
+  },
+  {
+    "slug": "harmless-algorithms-1",
+    "title": "Harmless Algorithms — Part 1: Fine Occlusion Culling Algorithms",
+    "date": "1999-04-09",
+    "dateLabel": "9 April 1999",
+    "path": "reader/1999/harmless-algorithms-1/",
+    "categories": "Graphics · Algorithms · C++",
+    "origin": "https://flipcode.com/archives/Harmless_Algorithms-Issue_01_Fine_Occlusion_Culling_Algorithms.shtml",
+    "author": "Edward Kmett",
+    "source": "Flipcode",
+    "rawHTML": "content/original/external/kmett-1999-harmless-algorithms-01.html",
+    "rawSource": "content/original/external/kmett-1999-harmless-algorithms-01.html",
+    "rawFormat": "html",
+    "dateBasis": "Publisher publication date. The original signed date is retained in the article.",
+    "series": "harmless-algorithms"
   }
 ]

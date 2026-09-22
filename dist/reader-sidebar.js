@@ -14,3 +14,12 @@ if (disclosure) {
     try { localStorage.setItem(preferenceKey, String(desktopExpanded)); } catch {}
   });
 }
+
+// A month link in the year overview reveals its article list without navigation.
+function revealArchiveMonth() {
+  if(!location.hash.startsWith('#calendar-month-'))return;
+  const target=document.getElementById(location.hash.slice(1));
+  if(target?.matches('details.archive-month-posts'))target.open=true;
+}
+window.addEventListener('hashchange',revealArchiveMonth);
+revealArchiveMonth();

@@ -1,0 +1,11 @@
+% Replaces the XY-pic diagram from Hello, World! (2006).
+% e is epic, m is monic; the dashed diagonal is the lift h.
+\documentclass[tikz,border=6pt]{standalone}
+\usepackage{tikz-cd}
+\begin{document}
+\begin{tikzcd}[row sep=3.5em,column sep=5.5em]
+ A \arrow[r,two heads,"e"] \arrow[d,"f"']
+ & B \arrow[d,"g"] \arrow[dl,dashed,"h" description] \\
+ C \arrow[r,hook,"m"'] & D
+\end{tikzcd}
+\end{document}

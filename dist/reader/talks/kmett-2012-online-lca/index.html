@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Purely Functional Data Structures for On-Line LCA · The Comonad.Reader</title>
+<link rel="canonical" href="./"><meta name="description" content="Slides on skew-binary representations and online lowest-common-ancestor search."><meta property="og:title" content="Purely Functional Data Structures for On-Line LCA"><meta property="og:description" content="Slides on skew-binary representations and online lowest-common-ancestor search."><meta property="og:url" content="https://ekmett.github.io/comonad.com/reader/talks/kmett-2012-online-lca/"><meta property="og:type" content="website"><meta property="og:site_name" content="The Comonad.Reader"><script type="application/ld+json">{"@context":"https://schema.org","@type":"PresentationDigitalDocument","@id":"https://ekmett.github.io/comonad.com/reader/talks/kmett-2012-online-lca/#content","url":"https://ekmett.github.io/comonad.com/reader/talks/kmett-2012-online-lca/","name":"Purely Functional Data Structures for On-Line LCA","inLanguage":"en","description":"Slides on skew-binary representations and online lowest-common-ancestor search.","isPartOf":{"@type":"WebSite","@id":"https://ekmett.github.io/comonad.com/reader/#website","name":"The Comonad.Reader","url":"https://ekmett.github.io/comonad.com/reader/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://ekmett.github.io/comonad.com/reader/talks/kmett-2012-online-lca/"},"author":[{"@type":"Person","name":"Edward Kmett"}],"datePublished":"2012-05-31"}</script>
+<link rel="alternate" type="application/rss+xml" title="The Comonad.Reader" href="../../../feed.xml"><link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../article.css?v=57d19e7f58b2"><link rel="stylesheet" href="../../../vendor/katex/katex.min.css">
+</head><body><header class="masthead reader-masthead"><a class="site-identity" href="../../../reader/"><span class="lambda-mark" aria-hidden="true">λ</span><span class="site-wording"><span class="wordmark">The Comonad.Reader</span><span class="tagline">types, (co)monads, substructural logic</span></span></a><nav aria-label="Site navigation"><a href="../../../reader/">Home</a><a href="../../../reader/packages/">Packages</a><a href="../../../feed.xml">RSS</a><a href="mailto:ekmett@gmail.com">Contact</a></nav></header>
+<div class="reader-layout"><aside class="archive-sidebar" aria-label="Yearly archive"><details class="archive-disclosure"><summary class="archive-toggle"><span>Archive</span><span class="archive-toggle-icon" aria-hidden="true">‹</span></summary><div class="archive-panel"><nav class="calendar-month calendar-year" aria-label="Archive years"><a href="../../../reader/2011/" aria-label="Earlier year: 2011">←</a><a href="../../../reader/2012/">2012</a><a href="../../../reader/2013/" aria-label="Later year: 2013">→</a></nav><nav class="archive-month-grid" aria-label="Months in 2012"><span class="empty-month">Jan</span><span class="empty-month">Feb</span><span class="empty-month">Mar</span><a href="#calendar-month-2012-04" aria-label="April 2012: 1 entries"><span>Apr</span><small>1</small></a><a href="#calendar-month-2012-05" aria-label="May 2012: 2 entries" aria-current="date"><span>May</span><small>2</small></a><a href="#calendar-month-2012-06" aria-label="June 2012: 2 entries"><span>Jun</span><small>2</small></a><a href="#calendar-month-2012-07" aria-label="July 2012: 1 entries"><span>Jul</span><small>1</small></a><a href="#calendar-month-2012-08" aria-label="August 2012: 1 entries"><span>Aug</span><small>1</small></a><a href="#calendar-month-2012-09" aria-label="September 2012: 1 entries"><span>Sep</span><small>1</small></a><span class="empty-month">Oct</span><span class="empty-month">Nov</span><a href="#calendar-month-2012-12" aria-label="December 2012: 3 entries"><span>Dec</span><small>3</small></a></nav><div class="calendar-posts"><h3>In 2012</h3><details class="archive-month-posts" id="calendar-month-2012-04"><summary>April <span>1</span></summary><a class="month-page" href="../../../reader/2012/04/">April archive →</a><section class="calendar-day" id="calendar-day-2012-04-02"><h4><time datetime="2012-04-02">2 April</time></h4><ul><li><a href="../../../reader/2012/wadlers-law-revisited/">Wadler’s Law Revisited</a></li></ul></section></details><details class="archive-month-posts" id="calendar-month-2012-05" open><summary>May <span>2</span></summary><a class="month-page" href="../../../reader/2012/05/">May archive →</a><section class="calendar-day" id="calendar-day-2012-05-27"><h4><time datetime="2012-05-27">27 May</time></h4><ul><li><a href="../../../reader/2012/catamorphism-knol/">Catamorphism Knol</a></li></ul></section><section class="calendar-day" id="calendar-day-2012-05-31"><h4><time datetime="2012-05-31">31 May</time></h4><ul><li><a href="../../../reader/talks/kmett-2012-online-lca/">Purely Functional Data Structures for On-Line LCA</a><span class="calendar-kind">Talk</span></li></ul></section></details><details class="archive-month-posts" id="calendar-month-2012-06"><summary>June <span>2</span></summary><a class="month-page" href="../../../reader/2012/06/">June archive →</a><section class="calendar-day" id="calendar-day-2012-06-10"><h4><time datetime="2012-06-10">10 June</time></h4><ul><li><a href="../../../reader/2012/wheres-waldo/">Where’s Waldo?</a></li></ul></section><section class="calendar-day" id="calendar-day-2012-06-24"><h4><time datetime="2012-06-24">24 June</time></h4><ul><li><a href="../../../reader/2012/mirrored-lenses/">Mirrored Lenses</a></li></ul></section></details><details class="archive-month-posts" id="calendar-month-2012-07"><summary>July <span>1</span></summary><a class="month-page" href="../../../reader/2012/07/">July archive →</a><section class="calendar-day" id="calendar-day-2012-07-26"><h4><time datetime="2012-07-26">26 July</time></h4><ul><li><a href="../../../reader/talks/bound-slides-2012/">Making de Bruijn Succ Less</a><span class="calendar-kind">Talk</span></li></ul></section></details><details class="archive-month-posts" id="calendar-month-2012-08"><summary>August <span>1</span></summary><a class="month-page" href="../../../reader/2012/08/">August archive →</a><section class="calendar-day" id="calendar-day-2012-08-29"><h4><time datetime="2012-08-29">29 August</time></h4><ul><li><a href="../../../reader/2012/hackage-mirror/">Working around Hackage Outages</a></li></ul></section></details><details class="archive-month-posts" id="calendar-month-2012-09"><summary>September <span>1</span></summary><a class="month-page" href="../../../reader/2012/09/">September archive →</a><section class="calendar-day" id="calendar-day-2012-09-22"><h4><time datetime="2012-09-22">22 September</time></h4><ul><li><a href="../../../reader/2012/unnatural-transformations-and-quantifiers/">Unnatural Transformations and Quantifiers</a></li></ul></section></details><details class="archive-month-posts" id="calendar-month-2012-12"><summary>December <span>3</span></summary><a class="month-page" href="../../../reader/2012/12/">December archive →</a><section class="calendar-day" id="calendar-day-2012-12-07"><h4><time datetime="2012-12-07">7 December</time></h4><ul><li><a href="../../../reader/2012/natural-deduction-sequent-calculus-and-type-classes/">Natural Deduction, Sequent Calculus and Type Classes</a></li></ul></section><section class="calendar-day" id="calendar-day-2012-12-12"><h4><time datetime="2012-12-12">12 December</time></h4><ul><li><a href="../../../reader/talks/kmett-2012-lenses-nyc/">Lenses, Folds and Traversals</a><span class="calendar-kind">Talk</span></li></ul></section><section class="calendar-day" id="calendar-day-2012-12-26"><h4><time datetime="2012-12-26">26 December</time></h4><ul><li><a href="../../../reader/2012/abstracting-with-applicatives/">Abstracting with Applicatives</a></li></ul></section></details></div><details class="calendar-years"><summary>All years</summary><nav aria-label="All archive years"><a href="../../../reader/2022/">2022</a><a href="../../../reader/2021/">2021</a><a href="../../../reader/2020/">2020</a><a href="../../../reader/2019/">2019</a><a href="../../../reader/2018/">2018</a><a href="../../../reader/2017/">2017</a><a href="../../../reader/2016/">2016</a><a href="../../../reader/2015/">2015</a><a href="../../../reader/2014/">2014</a><a href="../../../reader/2013/">2013</a><a href="../../../reader/2012/" aria-current="date">2012</a><a href="../../../reader/2011/">2011</a><a href="../../../reader/2010/">2010</a><a href="../../../reader/2009/">2009</a><a href="../../../reader/2008/">2008</a><a href="../../../reader/2007/">2007</a><a href="../../../reader/2006/">2006</a><a href="../../../reader/2001/">2001</a><a href="../../../reader/2000/">2000</a><a href="../../../reader/1999/">1999</a></nav></details></div></details></aside><main class="reading"><header class="article-header"><div class="article-meta"><span>Boston Haskell · Talk</span><span><time datetime="2012-05-31">31 May 2012</time> · slides published</span></div><h1>Purely Functional Data Structures for On-Line LCA</h1><p class="talk-speakers">Edward Kmett</p></header><div class="prose"><p>Slides on skew-binary representations and online lowest-common-ancestor search.</p><p>Related article: <a href="../../../reader/2015/online-lca/">On-line Lowest Common Ancestor</a>.</p><section class="slide-deck" aria-label="Presentation slides"><p>43 slides · <a href="#slide-1">Start reading</a></p><figure id="slide-1"><img src="../../../assets/slides/lca/01.webp" alt="Purely Functional Data Structures
+         for On-line LCA
+            Edward Kmett" loading="lazy" width="2048" height="1536"><figcaption>Slide 1 of 43 · <a href="#slide-2" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-2"><img src="../../../assets/slides/lca/02.webp" alt="Overview
+The Lowest Common Ancestor (LCA) Problem
+
+Tarjan’s Off-line LCA
+
+Off-line Tree-Like LCA
+
+Off-line Range-Min LCA
+
+Naïve On-line LCA
+
+Data Structures from Number Systems
+
+Skew-Binary Random Access Lists
+
+Skew-Binary On-line LCA" loading="lazy" width="2048" height="1536"><figcaption>Slide 2 of 43 · <a href="#slide-1" aria-label="Previous slide">←</a> · <a href="#slide-3" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-3"><img src="../../../assets/slides/lca/03.webp" alt="The Lowest Common Ancestor Problem
+Given a tree, and two nodes in the tree, find the lowest
+entry in the tree that is an ancestor to both.
+
+
+                         A
+
+            B                         E
+
+       C         D           F        G          I
+
+                                      H         J" loading="lazy" width="2048" height="1536"><figcaption>Slide 3 of 43 · <a href="#slide-2" aria-label="Previous slide">←</a> · <a href="#slide-4" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-4"><img src="../../../assets/slides/lca/04.webp" alt="" loading="lazy" width="2048" height="1536"><figcaption>Slide 4 of 43 · <a href="#slide-3" aria-label="Previous slide">←</a> · <a href="#slide-5" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-5"><img src="../../../assets/slides/lca/05.webp" alt="The Lowest Common Ancestor Problem
+Given a tree and two nodes in the tree, find the lowest
+entry in the tree that is an ancestor to both.
+
+Applications:
+  Computing Dominators in Flow Graphs
+  Three-Way Merge Algorithms in Revision Control
+  Common Word Roots/Suffixes
+  Range-Min Query (RMQ) problems
+  Computing Distance in a Tree
+  …" loading="lazy" width="2048" height="1536"><figcaption>Slide 5 of 43 · <a href="#slide-4" aria-label="Previous slide">←</a> · <a href="#slide-6" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-6"><img src="../../../assets/slides/lca/06.webp" alt="The Lowest Common Ancestor Problem
+Given a tree and two nodes in the tree, find the lowest
+entry in the tree that is an ancestor to both.
+
+First formalized by Aho, Hopcraft, and Ullman in 1973.
+
+They provided ephemeral on-line and off-line versions of
+the problem in terms of two operations, with their off-line
+version of the algorithm requiring O(n log*(n)) and their
+online version requiring O(n log n) steps.
+
+Research has largely focused on the off-line versions of
+this problem where you are given the entire tree a priori." loading="lazy" width="2048" height="1536"><figcaption>Slide 6 of 43 · <a href="#slide-5" aria-label="Previous slide">←</a> · <a href="#slide-7" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-7"><img src="../../../assets/slides/lca/07.webp" alt="cons, link, or grow?
+The original formulation of LCA was in terms of two
+operations link x y which grafts an unattached tree x
+on as a child of y, and lca x y which computes the
+lowest common ancestor of x and y.
+
+Alternately, we can work with lca x y and cons a
+y, which returns a new extended version of the path y
+grown downward with the globally unique node ID a, and
+
+We can replace cons a y with a monadic grow y, which
+tracks the variable supply internally. By using a concurrent
+variable supply like the one supplied by the concurrent-
+supply package enables you to grow the tree in parallel." loading="lazy" width="2048" height="1536"><figcaption>Slide 7 of 43 · <a href="#slide-6" aria-label="Previous slide">←</a> · <a href="#slide-8" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-8"><img src="../../../assets/slides/lca/08.webp" alt="Tarjan’s Off-line LCA
+In 1979, Robert Tarjan found a way to compute a
+predetermined set of distinct LCA queries at the same
+time given the complete tree by creatively using disjoint-
+set forests in O(nα(n)). (This is stronger condition than the usual offline problem
+statement.) TarjanOLCA(u)
+  function
+      MakeSet(u);
+      u.ancestor := u;
+      for each v in u.children do
+           TarjanOLCA(v);
+           Union(u,v);
+           Find(u).ancestor := u;
+      u.colour := black;
+      for each v such that {u,v} in P do
+           if v.colour == black
+               print &quot;The LCA of “+u+&quot; and “+v+&quot; is &quot; + Find(v).ancestor;" loading="lazy" width="2048" height="1536"><figcaption>Slide 8 of 43 · <a href="#slide-7" aria-label="Previous slide">←</a> · <a href="#slide-9" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-9"><img src="../../../assets/slides/lca/09.webp" alt="Tarjan’s Off-line LCA
+In 1979, Robert Tarjan found a way to compute a
+predetermined set of distinct LCA queries at the same
+time given the complete tree by creatively using disjoint-
+set forests in O(nα(n)).
+
+In 1983, Harold Gabow and Robert Tarjan improved the
+asymptotics of the preceding algorithm to O(n) by noting
+special-case opportunities not available in general
+purpose disjoint-set forest problems." loading="lazy" width="2048" height="1536"><figcaption>Slide 9 of 43 · <a href="#slide-8" aria-label="Previous slide">←</a> · <a href="#slide-10" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-10"><img src="../../../assets/slides/lca/10.webp" alt="Tree-Like Off-line LCA
+In 1984, Dov Harel and Robert Tarjan provided the first
+asymptotically optimal off-line solution, which converts the
+tree in O(n) into a structure that can be queried in O(1).
+
+In 1988, Baruch Scheiber and Uzi Vishkin simplified that
+structure, by building arbitrary-fanout trees out of paths
+and binary trees, and providing fast indexing into each
+case." loading="lazy" width="2048" height="1536"><figcaption>Slide 10 of 43 · <a href="#slide-9" aria-label="Previous slide">←</a> · <a href="#slide-11" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-11"><img src="../../../assets/slides/lca/11.webp" alt="Range-Min Off-line LCA
+In 1993, Omer Berkman and Uzi Vishkin found another
+conversion with the same O(n) preprocessing using an
+Euler tour to convert the tree structure into a Range-Min
+structure, that can be queried in O(1) time.
+This was improved in 2000 by Michael Bender and Martin
+Farach-Colton.
+Alstrup, Gavoille, Kaplan and Rauhe focused on
+distributing this algorithm.
+Fischer and Heun reduced the memory requirements, but
+also show logarithmically slower RMQ algorithms are
+often faster the common problem sizes of today!" loading="lazy" width="2048" height="1536"><figcaption>Slide 11 of 43 · <a href="#slide-10" aria-label="Previous slide">←</a> · <a href="#slide-12" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-12"><img src="../../../assets/slides/lca/12.webp" alt="Backup Plans" loading="lazy" width="2048" height="1536"><figcaption>Slide 12 of 43 · <a href="#slide-11" aria-label="Previous slide">←</a> · <a href="#slide-13" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-13"><img src="../../../assets/slides/lca/13.webp" alt="Naïve On-line LCA
+Build paths as lists of node IDs, using cons as you go.
+
+    x = [5,4,3,2,1] :# 5
+    y = [6,3,2,1] :# 4
+
+To compute lca x y, first cut both lists to have the same
+length.
+
+    x’ = [4,3,2,1], y’ = [6,3,2,1], len = 4
+
+Then keep dropping elements from both until the IDs
+match.
+
+    lca x y = [3,2,1] :# 3" loading="lazy" width="2048" height="1536"><figcaption>Slide 13 of 43 · <a href="#slide-12" aria-label="Previous slide">←</a> · <a href="#slide-14" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-14"><img src="../../../assets/slides/lca/14.webp" alt="Naïve On-line LCA
+No preprocessing step.
+
+O(h) LCA query time where h is the length of the path.
+
+O(1) to extend a path.
+
+No need to store the entire tree, just the paths you are
+currently using. This helps with distribution and
+parallelization.
+
+As an on-line algorithm, the tree can grow without
+requiring costly recalculations." loading="lazy" width="2048" height="1536"><figcaption>Slide 14 of 43 · <a href="#slide-13" aria-label="Previous slide">←</a> · <a href="#slide-15" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-15"><img src="../../../assets/slides/lca/15.webp" alt="Naïve On-line LCA
+To go faster we’d need to extract a common suffix in
+sublinear time. Very Well…" loading="lazy" width="2048" height="1536"><figcaption>Slide 15 of 43 · <a href="#slide-14" aria-label="Previous slide">←</a> · <a href="#slide-16" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-16"><img src="../../../assets/slides/lca/16.webp" alt="Data Structures from
+        Number Systems
+We are already familiar with at least one data structure
+derived from a number system.
+    data Nat        = Zero | Succ Nat
+    data List a = Nil        | Cons a (List a)
+
+
+            O(1) succ grants us O(1) cons" loading="lazy" width="2048" height="1536"><figcaption>Slide 16 of 43 · <a href="#slide-15" aria-label="Previous slide">←</a> · <a href="#slide-17" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-17"><img src="../../../assets/slides/lca/17.webp" alt="Binary Random-Access
+           Lists
+We could construct a data structure from binary numbers
+as well, where you have a linked list of “flags” with 2n
+elements in them.
+
+However, adding 1 to a binary number can affect all log n
+digits in the number, yielding O(log n) cons." loading="lazy" width="2048" height="1536"><figcaption>Slide 17 of 43 · <a href="#slide-16" aria-label="Previous slide">←</a> · <a href="#slide-18" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-18"><img src="../../../assets/slides/lca/18.webp" alt="Skew-Binary Numbers                         15   7 3   1
+
+                                                       0
+
+                                                       1
+
+                                                       2
+
+                                                   1   0
+The nth digit has value2n+1-1,  and each
+                                                   1   1
+digit has a value of 0,1, or 2.                    1   2
+
+                                                   2   0
+We only allow a single 2 in the
+                                                 1 0   0
+number, which must be the first non-zero
+                                                 1 0   1
+digit.                                           1 0   2
+
+                                                 1 1   0
+Every natural number can be uniquely
+                                                 1 1   1
+represented by this scheme.
+                                                 1 1   2
+
+                                                 1 2   0
+succ is an O(1) operation.
+                                                 2 0   0
+
+There are 2n+1-1 nodes in a complete tree    1   0 0   0
+
+of height n." loading="lazy" width="2048" height="1536"><figcaption>Slide 18 of 43 · <a href="#slide-17" aria-label="Previous slide">←</a> · <a href="#slide-19" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-19"><img src="../../../assets/slides/lca/19.webp" alt="Skew-Binary Random Access
+             Lists
+  We store a linked list of complete trees, where we are
+  allowed to have two trees of the same size at the front of
+  the list, but after that all trees are of strictly increasing
+  height.
+data Tree a = Tip a | Bin a (Tree a) (Tree a)
+data Path a = Nil | Cons !Int !Int (Tree a) (Path a)
+
+length :: Path a -&gt; Int
+length Nil = 0
+length (Cons n _ _ _) = n
+
+
+
+
+   I call these random-access lists a Path here, because of our use case." loading="lazy" width="2048" height="1536"><figcaption>Slide 19 of 43 · <a href="#slide-18" aria-label="Previous slide">←</a> · <a href="#slide-20" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-20"><img src="../../../assets/slides/lca/20.webp" alt="Skew-Binary On-line LCA
+Naïve On-line LCA:
+     Build paths as lists of node IDs, using cons as you go.
+     To compute lca x y, first cut both lists to have the same length.
+     Then keep dropping elements until the IDs match." loading="lazy" width="2048" height="1536"><figcaption>Slide 20 of 43 · <a href="#slide-19" aria-label="Previous slide">←</a> · <a href="#slide-21" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-21"><img src="../../../assets/slides/lca/21.webp" alt="Skew-Binary On-line LCA
+Naïve On-line LCA:
+     Build paths as lists of node IDs, using cons as you go.
+     To compute lca x y, first cut both lists to have the same length.
+     Then keep dropping elements until the IDs match." loading="lazy" width="2048" height="1536"><figcaption>Slide 21 of 43 · <a href="#slide-20" aria-label="Previous slide">←</a> · <a href="#slide-22" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-22"><img src="../../../assets/slides/lca/22.webp" alt="Skew-Binary On-line LCA
+Naïve On-line LCA:
+     Build paths as lists of node IDs, using cons as you go.
+     To compute lca x y, first cut both lists to have the same length.
+     Then keep dropping elements until the IDs match.
+
+
+
+
+                                      1" loading="lazy" width="2048" height="1536"><figcaption>Slide 22 of 43 · <a href="#slide-21" aria-label="Previous slide">←</a> · <a href="#slide-23" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-23"><img src="../../../assets/slides/lca/23.webp" alt="Skew-Binary On-line LCA
+Naïve On-line LCA:
+     Build paths as lists of node IDs, using cons as you go.
+     To compute lca x y, first cut both lists to have the same length.
+     Then keep dropping elements until the IDs match.
+
+
+
+
+                  2                                       1" loading="lazy" width="2048" height="1536"><figcaption>Slide 23 of 43 · <a href="#slide-22" aria-label="Previous slide">←</a> · <a href="#slide-24" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-24"><img src="../../../assets/slides/lca/24.webp" alt="Skew-Binary On-line LCA
+Naïve On-line LCA:
+     Build paths as lists of node IDs, using cons as you go.
+     To compute lca x y, first cut both lists to have the same length.
+     Then keep dropping elements until the IDs match.
+
+
+
+
+                                      3
+
+                            2                   1" loading="lazy" width="2048" height="1536"><figcaption>Slide 24 of 43 · <a href="#slide-23" aria-label="Previous slide">←</a> · <a href="#slide-25" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-25"><img src="../../../assets/slides/lca/25.webp" alt="Skew-Binary On-line LCA
+Naïve On-line LCA:
+     Build paths as lists of node IDs, using cons as you go.
+     To compute lca x y, first cut both lists to have the same length.
+     Then keep dropping elements until the IDs match.
+
+
+
+
+                       4                   3
+
+                                 2                   1" loading="lazy" width="2048" height="1536"><figcaption>Slide 25 of 43 · <a href="#slide-24" aria-label="Previous slide">←</a> · <a href="#slide-26" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-26"><img src="../../../assets/slides/lca/26.webp" alt="Skew-Binary On-line LCA
+Naïve On-line LCA:
+     Build paths as lists of node IDs, using cons as you go.
+     To compute lca x y, first cut both lists to have the same length.
+     Then keep dropping elements until the IDs match.
+
+
+
+
+            5                    4                   3
+
+                                           2                   1" loading="lazy" width="2048" height="1536"><figcaption>Slide 26 of 43 · <a href="#slide-25" aria-label="Previous slide">←</a> · <a href="#slide-27" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-27"><img src="../../../assets/slides/lca/27.webp" alt="Skew-Binary On-line LCA
+Naïve On-line LCA:
+     Build paths as lists of node IDs, using cons as you go.
+     To compute lca x y, first cut both lists to have the same length.
+     Then keep dropping elements until the IDs match.
+
+
+
+
+                   6                                     3
+
+         5                  4                  2                   1" loading="lazy" width="2048" height="1536"><figcaption>Slide 27 of 43 · <a href="#slide-26" aria-label="Previous slide">←</a> · <a href="#slide-28" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-28"><img src="../../../assets/slides/lca/28.webp" alt="Skew-Binary On-line LCA
+Naïve On-line LCA:
+     Build paths as lists of node IDs, using cons as you go.
+     To compute lca x y, first cut both lists to have the same length.
+     Then keep dropping elements until the IDs match.
+
+
+
+
+                                      7
+
+                         6                         3
+
+                   5            4            2           1" loading="lazy" width="2048" height="1536"><figcaption>Slide 28 of 43 · <a href="#slide-27" aria-label="Previous slide">←</a> · <a href="#slide-29" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-29"><img src="../../../assets/slides/lca/29.webp" alt="Skew-Binary On-line LCA
+Naïve On-line LCA:
+     Build paths as lists of node IDs, using cons as you go.
+     To compute lca x y, first cut both lists to have the same length.
+     Then keep dropping elements until the IDs match.
+
+
+
+
+                         8            7
+
+                         6                         3
+
+                   5            4            2           1" loading="lazy" width="2048" height="1536"><figcaption>Slide 29 of 43 · <a href="#slide-28" aria-label="Previous slide">←</a> · <a href="#slide-30" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-30"><img src="../../../assets/slides/lca/30.webp" alt="Skew-Binary On-line LCA
+Naïve On-line LCA:
+     Build paths as lists of node IDs, using cons as you go.
+     To compute lca x y, first cut both lists to have the same length.
+     Then keep dropping elements until the IDs match.
+
+
+-- O(1)
+cons :: a -&gt; Path a -&gt; Path a
+cons a (Cons n w t (Cons _ w' t2 ts))
+  | w == w' = Cons (n + 1) (2 * w + 1) (Bin a t t2) ts
+cons a ts = Cons (length ts + 1) 1 (Tip a) ts" loading="lazy" width="2048" height="1536"><figcaption>Slide 30 of 43 · <a href="#slide-29" aria-label="Previous slide">←</a> · <a href="#slide-31" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-31"><img src="../../../assets/slides/lca/31.webp" alt="Skew-Binary On-line LCA
+Naïve On-line LCA:
+     Build paths as lists of node IDs, using cons as you go.
+     To compute lca x y, first cut both lists to have the same length.
+     Then keep dropping elements until the IDs match.
+
+lca :: Eq   a =&gt; Path a -&gt; Path a -&gt; Path a
+lca xs ys   = case compare nxs nys of
+    LT -&gt;   lca' xs (keep nxs ys)
+    EQ -&gt;   lca' xs ys
+    GT -&gt;   lca' (keep nys xs) ys
+  where
+    nxs =   length xs
+    nys =   length ys" loading="lazy" width="2048" height="1536"><figcaption>Slide 31 of 43 · <a href="#slide-30" aria-label="Previous slide">←</a> · <a href="#slide-32" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-32"><img src="../../../assets/slides/lca/32.webp" alt="Skew-Binary Keep
+O(log (h - k)) to keep the top k elements of path of height
+h
+            keep 2 (fromList [6,5,4,3,2,1])
+
+
+
+
+              6                                3
+
+      5               4               2                1" loading="lazy" width="2048" height="1536"><figcaption>Slide 32 of 43 · <a href="#slide-31" aria-label="Previous slide">←</a> · <a href="#slide-33" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-33"><img src="../../../assets/slides/lca/33.webp" alt="Skew-Binary Keep
+O(log (h - k)) to keep the top k elements of path of height
+h
+            keep 2 (fromList [6,5,4,3,2,1])
+                           =
+               keep 2 (fromList [3,2,1])
+
+
+
+
+              6                                3
+
+      5               4               2                1" loading="lazy" width="2048" height="1536"><figcaption>Slide 33 of 43 · <a href="#slide-32" aria-label="Previous slide">←</a> · <a href="#slide-34" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-34"><img src="../../../assets/slides/lca/34.webp" alt="Skew-Binary Keep
+O(log (h - k)) to keep the top k elements of path of height
+h
+            keep 2 (fromList [6,5,4,3,2,1])
+
+
+
+
+              6                                3
+
+      5               4               2                1" loading="lazy" width="2048" height="1536"><figcaption>Slide 34 of 43 · <a href="#slide-33" aria-label="Previous slide">←</a> · <a href="#slide-35" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-35"><img src="../../../assets/slides/lca/35.webp" alt="Skew-Binary Keep
+   O(log (h - k)) to keep the top k elements of path of height
+   h
+keep :: Int -&gt; Path a -&gt; Path a
+keep _ Nil = Nil
+keep k xs@(Cons n w t ts)
+  | k &gt;= n    = xs
+  | otherwise = case compare k (n - w) of
+    GT -&gt; keepT (k - n + w) w t ts
+    EQ -&gt; ts
+    LT -&gt; keep k ts
+
+consT :: Int -&gt; Tree a -&gt; Path a -&gt; Path a
+consT w t ts = Cons (w + length ts) w t ts
+
+keepT :: Int -&gt; Int -&gt; Tree a -&gt; Path a -&gt; Path a
+keepT n w (Bin _ l r) ts = case compare n w2 of
+  LT              -&gt; keepT n w2 r ts
+  EQ              -&gt; consT w2 r ts
+  GT | n == w - 1 -&gt; consT w2 l (consT w2 r ts)
+     | otherwise -&gt; keepT (n - w2) w2 l (consT w2 r ts)
+  where w2 = div w 2
+keepT _ _ _ ts = ts" loading="lazy" width="2048" height="1536"><figcaption>Slide 35 of 43 · <a href="#slide-34" aria-label="Previous slide">←</a> · <a href="#slide-36" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-36"><img src="../../../assets/slides/lca/36.webp" alt="Skew-Binary On-line LCA
+Naïve On-line LCA:
+     Build paths as lists of node IDs, using cons as you go.
+     To compute lca x y, first cut both lists to have the same length.
+     Then keep dropping elements until the IDs match.
+
+lca :: Eq   a =&gt; Path a -&gt; Path a -&gt; Path a
+lca xs ys   = case compare nxs nys of
+    LT -&gt;   lca' xs (keep nxs ys)
+    EQ -&gt;   lca' xs ys
+    GT -&gt;   lca' (keep nys xs) ys
+  where
+    nxs =   length xs
+    nys =   length ys" loading="lazy" width="2048" height="1536"><figcaption>Slide 36 of 43 · <a href="#slide-35" aria-label="Previous slide">←</a> · <a href="#slide-37" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-37"><img src="../../../assets/slides/lca/37.webp" alt="Comparing Node IDs
+ We can check to see if two paths have the same head or
+ are both empty in O(1).
+
+infix 4 ~=
+(~=) :: Eq a =&gt; Path a -&gt; Path a -&gt; Bool
+Nil ~= Nil = True
+Cons _ _ s _ ~= Cons _ _ t _ = sameT s t
+_ ~= _ = False
+
+sameT :: Eq a =&gt; Tree a -&gt; Tree a -&gt; Bool
+sameT xs ys = root xs == root ys
+
+root :: Tree a -&gt; a
+root (Tip a)     = a
+root (Bin a _ _) = a" loading="lazy" width="2048" height="1536"><figcaption>Slide 37 of 43 · <a href="#slide-36" aria-label="Previous slide">←</a> · <a href="#slide-38" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-38"><img src="../../../assets/slides/lca/38.webp" alt="Monotonicity
+We can modify the algorithm
+for keep into an algorithm that
+takes any monotone predicate
+that only transitions from False
+to True once during the walk
+up the path and yields a result
+in O(log h)
+
+We have exactly one shape for a given number of elements,
+so we can walk the spine of the two random access lists at
+the same time in lock-step. This lets us, modify this algorithm
+to work with a pair of paths, because the shapes agree.
+
+(~=) is monotone given using globally unique IDs." loading="lazy" width="2048" height="1536"><figcaption>Slide 38 of 43 · <a href="#slide-37" aria-label="Previous slide">←</a> · <a href="#slide-39" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-39"><img src="../../../assets/slides/lca/39.webp" alt="Finding the Match
+   lca’ requires the invariant that both paths have the same
+   length. This is provided by the fact that lca, shown earlier,
+   trims the lists first.
+
+lca' :: Eq a =&gt; Path a -&gt; Path a -&gt; Path a
+lca' h@(Cons _ w x xs) (Cons _ _ y ys)
+  | sameT x y = h
+  | xs ~= ys = lcaT w x y xs
+  | otherwise = lca' xs ys
+lca' _ _ = Nil
+
+lcaT :: Eq a =&gt; Int -&gt; Tree a -&gt; Tree a -&gt; Path a -&gt; Path a
+lcaT w (Bin _ la ra) (Bin _ lb rb) ts
+  | sameT la lb = consT w2 la (consT w2 ra ts)
+  | sameT ra rb = lcaT w2 la lb (consT w ra ts)
+  | otherwise   = lcaT w2 ra rb ts
+  where w2 = div w 2
+lcaT _ _ _ ts = ts" loading="lazy" width="2048" height="1536"><figcaption>Slide 39 of 43 · <a href="#slide-38" aria-label="Previous slide">←</a> · <a href="#slide-40" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-40"><img src="../../../assets/slides/lca/40.webp" alt="Skew-Binary On-line LCA
+Naïve On-line LCA:
+     Build paths as lists of node IDs, using cons as you go. O(1)
+     To compute lca x y, first cut both lists to have the same length. O(h)
+     Then keep dropping elements until the IDs match. O(h)
+
+
+
+Skew-Binary On-line LCA:
+     Build paths as lists of node IDs, using cons as you go. O(1)
+     To compute lca x y, first cut both lists to have the same length. O(log
+     h)
+     Then keep dropping elements until the IDs match. O(log h)" loading="lazy" width="2048" height="1536"><figcaption>Slide 40 of 43 · <a href="#slide-39" aria-label="Previous slide">←</a> · <a href="#slide-41" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-41"><img src="../../../assets/slides/lca/41.webp" alt="Skew-Binary On-line LCA
+No preprocessing step.
+
+O(log h) LCA query time where h is the length of the path.
+
+O(1) to extend a path.
+
+No need to store the entire tree, just the paths you are currently
+using. This helps with distribution and parallelization when
+working on large trees.
+
+As an on-line algorithm, the tree can grow without requiring
+costly recalculations.
+
+Preserves all of the benefits of the naïve algorithm, while
+drastically reducing the costs." loading="lazy" width="2048" height="1536"><figcaption>Slide 41 of 43 · <a href="#slide-40" aria-label="Previous slide">←</a> · <a href="#slide-42" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-42"><img src="../../../assets/slides/lca/42.webp" alt="Now What?
+We found that skew-binary random access lists can be used to
+accelerate the naïve online LCA algorithm while retaining the
+desirable properties.
+
+You can install a working version of this algorithm from hackage
+
+                     cabal install lca
+
+Next time I’ll talk about the applications of this algorithm to a
+“revision control” monad which can be used for parallel and
+incremental computation in Haskell.
+
+I am working with Daniel Peebles on a proof of correctness and
+asymptotic performance in Agda." loading="lazy" width="2048" height="1536"><figcaption>Slide 42 of 43 · <a href="#slide-41" aria-label="Previous slide">←</a> · <a href="#slide-43" aria-label="Next slide">→</a></figcaption></figure><figure id="slide-43"><img src="../../../assets/slides/lca/43.webp" alt="Any Questions?" loading="lazy" width="2048" height="1536"><figcaption>Slide 43 of 43 · <a href="#slide-42" aria-label="Previous slide">←</a></figcaption></figure></section></div><aside class="package-links" aria-label="Related Hackage packages"><span>Related on Hackage</span> <a href="https://hackage.haskell.org/package/lca"><code>lca</code></a> <a class="package-index-link" href="../../../reader/packages/">Browse by package →</a></aside><aside class="edition-note"><details><summary>About this edition</summary><p>Ordered by slide publication date, 31 May 2012, from SlideShare metadata. A reproduced deck reports the presentation as 30 May 2012; that date is less certain.</p><p>All publicly displayed slide images and their supplied text are preserved locally.</p><p><a href="https://www.slideshare.net/slideshow/skewbinary-online-lowest-common-ancestor-search/13144385">Source record</a> · <a href="../../../source/articles/external-preservation.json">Preservation manifest</a></p></details></aside><nav class="post-navigation" aria-label="Chronological navigation"><a rel="prev" href="../../../reader/2012/catamorphism-knol/"><span>← Previous · older</span>Catamorphism Knol</a><a class="all-entries" href="../../../reader/">Archive</a><a rel="next" href="../../../reader/2012/wheres-waldo/"><span>Next · newer →</span>Where’s Waldo?</a></nav></main></div><script src="../../../reader-sidebar.js"></script></body></html>

@@ -13,5 +13,7 @@
     "m"
   ],
   "diagonal": "h",
-  "originalTex": "\\bfig \\square/>>`>`>` >\\to/[A`B`C`D;e`f`g`m] \\morphism(500,500)|m|/.>/< -500,-500>[B`C;h] \\efig "
+  "originalTex": "\\bfig \\square/>>`>`>` >->/[A`B`C`D;e`f`g`m] \\morphism(500,500)|m|/.>/< -500,-500>[B`C;h] \\efig ",
+  "renderer": "TikZ-cd via Tectonic 0.17.0; PDF converted to SVG with PyMuPDF 1.28.2",
+  "source": "lifting-square.tex"
 }
