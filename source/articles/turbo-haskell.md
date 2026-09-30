@@ -65,3 +65,5 @@ Development is proceeding on `irc.libera.chat` in the [##thc channel](https://we
 Come join us.
 
 —Edward Kmett
+
+[Discuss on Reddit](https://www.reddit.com/r/haskell/comments/1wu24oe/turbo_haskell/).
