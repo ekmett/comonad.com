@@ -13,6 +13,19 @@ let totalBlocks = 0;
 for (const post of posts) {
   const file = 'dist/' + post.path + 'index.html';
   const doc = document(file);
+  const headings = [...doc.querySelectorAll('.prose h2,.prose h3,.prose h4,.prose h5,.prose h6')];
+  const contents = doc.querySelector('.contents');
+  assert.equal(Boolean(contents), Boolean(headings.length), `${post.slug}: contents only for sectioned articles`);
+  if (contents) {
+    assert.ok(contents.hasAttribute('open'), `${post.slug}: section links visible initially`);
+    const links = [...contents.querySelectorAll('nav[aria-label="Article sections"] a')];
+    assert.equal(links.length, headings.length, `${post.slug}: every section is reachable`);
+    links.forEach((link, i) => {
+      const id = decodeURIComponent(link.getAttribute('href').slice(1));
+      assert.equal(doc.getElementById(id), headings[i], `${post.slug}: section link lands on its heading`);
+      assert.equal(link.textContent, headings[i].textContent);
+    });
+  }
   const blocks = [...doc.querySelectorAll('.prose pre code')];
   const source = read(`content/articles/${post.slug}.md`);
   const allFences = md.parse(source, {}).filter(t => t.type === 'fence');
@@ -49,7 +62,7 @@ for (const post of posts) {
     assert.equal(oldBlocks.length,blocks.length);
     oldBlocks.forEach((b,i)=>assert.equal(compact(b.textContent),compact(blocks[i].textContent),post.slug+': unchanged code tokens'));
   }
-  if(post.source==='Comonad.Reader') {
+  if(post.source==='Comonad.Reader' && post.rawHTML) {
     const original=document(post.rawHTML), oldProse=original.querySelector('.post-content');
     const restored=JSON.parse(read('content/code-formatting.json')).some(e=>e.article===post.slug&&e.blocks);
     const candidates=[...oldProse.querySelectorAll('pre,code,p')].filter(n=>n.tagName==='PRE'||(restored&&!n.closest('pre')&&n.querySelector('br')&&(n.tagName==='CODE'||(!n.querySelector('code,pre,a,img')&&/^(?:class |instance |newtype |data |type |-- |\w+ ::)/.test(n.textContent.trim())))));

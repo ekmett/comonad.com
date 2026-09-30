@@ -19,7 +19,7 @@ for(const repo of repos){
   const link=links.find(a=>a.getAttribute('href')===repo.html_url);
   assert.equal(link.textContent,repo.name);
   assert.equal(link.getAttribute('title'),repo.description||null,'GitHub description is the hover text');
-  assert.equal(link.closest('ul').previousElementSibling.textContent,repo.created_at.slice(0,4),'Group by creation year');
+  assert.equal(link.closest('ul').previousElementSibling.textContent,(repo.archiveDate||repo.created_at).slice(0,4),'Group by effective repository year');
 }
 function filter(query,type='') {search.value=query;kind.value=type;vm.runInContext('filter()',context);}
 const visibleRepos=()=>links.filter(a=>!a.parentElement.hidden&&!a.closest('ul').hidden).map(a=>a.textContent);
@@ -36,7 +36,12 @@ filter('haskell','Repository');
 assert.ok(visibleRepos().includes('lens'),'Languages are searchable');
 filter('2026','Repository');
 assert.deepEqual(visibleYears(),['2026'],'Repository-only years are retained');
-assert.equal(visibleRepos().length,repos.filter(r=>r.created_at.startsWith('2026')).length);
+assert.equal(visibleRepos().length,repos.filter(r=>(r.archiveDate||r.created_at).startsWith('2026')).length);
+assert.ok(visibleRepos().includes('thc'),'The new THC belongs to 2026');
+filter('2015','Repository');
+assert.ok(!visibleRepos().includes('thc'),'The reused repository date does not date the new THC');
+filter('turbo haskell','Repository');
+assert.deepEqual(visibleRepos(),['thc'],'THC is searchable by its current description');
 filter('lens','Article');
 assert.equal(visibleRepos().length,0,'Content type filters remain independent');
 assert.ok(document.querySelectorAll('.archive-entry:not([hidden])').length>0);
@@ -49,5 +54,5 @@ assert.equal(document.querySelector('#archive-empty').hidden,false);
 assert.deepEqual(visibleYears(),[]);
 filter('');
 assert.equal(visibleRepos().length,repos.length,'Clearing the search restores all repositories');
-assert.equal(document.querySelectorAll('.archive-entry:not([hidden])').length,207);
+assert.equal(document.querySelectorAll('.archive-entry:not([hidden])').length,document.querySelectorAll('.archive-entry').length,'Clearing search restores all articles and recordings');
 console.log(`Archive search passed: ${repos.length} repository descriptions, creation years, type filters, and no-match handling.`);

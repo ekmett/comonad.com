@@ -2811,12 +2811,22 @@
     {
       "archived": false,
       "created_at": "2015-09-11T08:04:43Z",
-      "description": "An experimental \"Turbo\" Haskell Runtime - Nothing really to see here yet",
+      "archiveDate": "2026",
+      "archiveDateNote": "Complete replacement in 2026; reuses the repository name, not the old code.",
+      "description": "The Turbo Haskell Compiler",
       "fork": false,
       "html_url": "https://github.com/ekmett/thc",
-      "language": "C++",
+      "language": "Java",
       "name": "thc",
-      "topics": []
+      "topics": [
+        "compiler",
+        "graalvm",
+        "haskell",
+        "java",
+        "jit",
+        "kotlin",
+        "truffle-framework"
+      ]
     },
     {
       "archived": false,

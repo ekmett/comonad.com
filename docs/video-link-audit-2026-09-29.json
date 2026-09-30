@@ -1,0 +1,1721 @@
+{
+  "checkedAt": "2026-09-29T11:38:00.004647+00:00",
+  "method": "Public YouTube oEmbed and watch-page player metadata; compare recording titles, uploader descriptions and catalog attribution. No full-duration playback or multi-region testing.",
+  "summary": {
+    "initialUniqueVideoIds": 105,
+    "initialUnavailable": 3,
+    "initialPrivate": 1,
+    "primaryRecordingsNow": 86,
+    "primaryRecordingsPlayableAndEmbeddable": 86,
+    "currentVideoIds": 103,
+    "currentUnavailable": [
+      "jgxL-PwmY7s"
+    ],
+    "malformedLinks": 1
+  },
+  "videos": [
+    {
+      "videoId": "Rjdo-RWQVIY",
+      "url": "https://www.youtube.com/watch?v=Rjdo-RWQVIY",
+      "title": "Eckmann-Hilton 1",
+      "uploader": "TheCatsters",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "2008/just-fokkinga-abide/index.html"
+      ],
+      "catalogEntries": []
+    },
+    {
+      "videoId": "8StG4fFWHqg",
+      "url": "https://www.youtube.com/watch?v=8StG4fFWHqg",
+      "title": "Stealers Wheels - Stuck In The Middle With You - Offical Video + Lyics",
+      "uploader": "doubleSentertainment",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "2013/conquering-folds/index.html"
+      ],
+      "catalogEntries": []
+    },
+    {
+      "videoId": "2q4JDpDSXMw",
+      "url": "https://www.youtube.com/watch?v=2q4JDpDSXMw",
+      "title": "Craftmatic Bed Commercial",
+      "uploader": "Internet Lurker",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "2013/editorial-procrustean-mathematics/index.html"
+      ],
+      "catalogEntries": []
+    },
+    {
+      "videoId": "cefnmjtAolY",
+      "url": "https://www.youtube.com/watch?v=cefnmjtAolY",
+      "title": "Lenses, Folds, and Traversals",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "2013/japanese-workshop-1/index.html",
+        "talks/kmett-2012-lenses-nyc/index.html"
+      ],
+      "catalogEntries": [
+        "kmett-2012-lenses-nyc"
+      ]
+    },
+    {
+      "videoId": "8fC2V9HX_m8",
+      "url": "https://www.youtube.com/watch?v=8fC2V9HX_m8",
+      "title": "Advanced Stream Processing in Scala",
+      "uploader": "InfoQ",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "2013/japanese-workshop-1/index.html"
+      ],
+      "catalogEntries": []
+    },
+    {
+      "videoId": "P3pLDpbzqCw",
+      "url": "https://www.youtube.com/watch?v=P3pLDpbzqCw",
+      "title": "Cache-Oblivious Maps",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "2013/oblivious-deamortized-st/index.html",
+        "talks/kmett-2013-cache-oblivious-maps/index.html"
+      ],
+      "catalogEntries": [
+        "kmett-2013-cache-oblivious-maps"
+      ]
+    },
+    {
+      "videoId": "OMOGaugKpzs",
+      "url": "https://www.youtube.com/watch?v=OMOGaugKpzs",
+      "title": "The Police - Every Breath You Take (Official Music Video)",
+      "uploader": "ThePoliceVEVO",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "2013/oblivious-deamortized-st/index.html"
+      ],
+      "catalogEntries": []
+    },
+    {
+      "videoId": "jyaLZHiJJnE",
+      "url": "https://www.youtube.com/watch?v=jyaLZHiJJnE",
+      "title": "Cross the streams",
+      "uploader": "doctoroctos",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "2013/phoas/index.html"
+      ],
+      "catalogEntries": []
+    },
+    {
+      "videoId": "KQ6zr6kCPj8",
+      "url": "https://www.youtube.com/watch?v=KQ6zr6kCPj8",
+      "title": "LMFAO - Party Rock Anthem ft. Lauren Bennett, GoonRock",
+      "uploader": "LMFAOVEVO",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "2013/revisiting-matrix-multiplication-part-1/index.html"
+      ],
+      "catalogEntries": []
+    },
+    {
+      "videoId": "uOoXwxqeVzg",
+      "url": "https://www.youtube.com/watch?v=uOoXwxqeVzg",
+      "title": "A Strange Game.  The Only Winning Move is Not to Play.",
+      "uploader": "SelfAwarePedant",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "2013/revisiting-matrix-multiplication-part-1/index.html"
+      ],
+      "catalogEntries": []
+    },
+    {
+      "videoId": "FClGhto1vIg",
+      "url": "https://www.youtube.com/watch?v=FClGhto1vIg",
+      "title": "Sesame Street -  One of these things - Circles",
+      "uploader": "LittleJerryFan92 *RETIRED CHANNEL*",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "2013/revisiting-matrix-multiplication-part-6/index.html"
+      ],
+      "catalogEntries": []
+    },
+    {
+      "videoId": "IDhz_mVcVCQ",
+      "url": "https://www.youtube.com/watch?v=IDhz_mVcVCQ",
+      "title": "Simon & Simon theme",
+      "uploader": "spudtv",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "2015/bound/index.html"
+      ],
+      "catalogEntries": []
+    },
+    {
+      "videoId": "jgxL-PwmY7s",
+      "url": "https://www.youtube.com/watch?v=jgxL-PwmY7s",
+      "title": null,
+      "uploader": null,
+      "status": "ERROR",
+      "reason": "This video is unavailable",
+      "embeddable": false,
+      "linkedNow": true,
+      "pages": [
+        "2015/unlifted-structures/index.html"
+      ],
+      "catalogEntries": []
+    },
+    {
+      "videoId": "Txf7swrcLYs",
+      "url": "https://www.youtube.com/watch?v=Txf7swrcLYs",
+      "title": "Monoidal Parsing—Edward Kmett",
+      "uploader": "Scala World",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "2018/the-state-comonad/index.html"
+      ],
+      "catalogEntries": []
+    },
+    {
+      "videoId": "xdUgkGqKjS8",
+      "url": "https://www.youtube.com/watch?v=xdUgkGqKjS8",
+      "title": null,
+      "uploader": null,
+      "status": "LOGIN_REQUIRED",
+      "reason": "Private video",
+      "embeddable": false,
+      "linkedNow": false,
+      "pages": [],
+      "catalogEntries": []
+    },
+    {
+      "videoId": "D7rlJWc3474",
+      "url": "https://www.youtube.com/watch?v=D7rlJWc3474",
+      "title": "Edward Kmett - Guanxi - Logic Programming in Haskell 1/4",
+      "uploader": "Monadic Warsaw",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/2019-monadic-party-guanxi-1/index.html"
+      ],
+      "catalogEntries": [
+        "2019-monadic-party-guanxi-1"
+      ]
+    },
+    {
+      "videoId": "s5OnhepyL7w",
+      "url": "https://www.youtube.com/watch?v=s5OnhepyL7w",
+      "title": "Edward Kmett - Guanxi - Logic Programming in Haskell 2/4",
+      "uploader": "Monadic Warsaw",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/2019-monadic-party-guanxi-2/index.html"
+      ],
+      "catalogEntries": [
+        "2019-monadic-party-guanxi-2"
+      ]
+    },
+    {
+      "videoId": "c3UE41eYXHA",
+      "url": "https://www.youtube.com/watch?v=c3UE41eYXHA",
+      "title": "Edward Kmett - Logic Programming in Haskell 3/4",
+      "uploader": "Monadic Warsaw",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/2019-monadic-party-guanxi-3/index.html"
+      ],
+      "catalogEntries": [
+        "2019-monadic-party-guanxi-3"
+      ]
+    },
+    {
+      "videoId": "TnohBRvoUJk",
+      "url": "https://www.youtube.com/watch?v=TnohBRvoUJk",
+      "title": "Edward Kmett - Logic Programming in Haskell 4/4",
+      "uploader": "Monadic Warsaw",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/2019-monadic-party-guanxi-4/index.html"
+      ],
+      "catalogEntries": [
+        "2019-monadic-party-guanxi-4"
+      ]
+    },
+    {
+      "videoId": "25RmUl88jSw",
+      "url": "https://www.youtube.com/watch?v=25RmUl88jSw",
+      "title": null,
+      "uploader": null,
+      "status": "ERROR",
+      "reason": "This video is unavailable",
+      "embeddable": false,
+      "linkedNow": false,
+      "pages": [],
+      "catalogEntries": [
+        "cadenza-yow-2020"
+      ]
+    },
+    {
+      "videoId": "GirDSC6BnCo",
+      "url": "https://www.youtube.com/watch?v=GirDSC6BnCo",
+      "title": "Combinators Revisited • Edward Kmett • YOW! 2018",
+      "uploader": "GOTO Conferences",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/combinators-yow-2018/index.html"
+      ],
+      "catalogEntries": [
+        "combinators-yow-2018"
+      ]
+    },
+    {
+      "videoId": "PA1Fc7DNKtA",
+      "url": "https://www.youtube.com/watch?v=PA1Fc7DNKtA",
+      "title": "Revisiting Combinators by Edward Kmett",
+      "uploader": "OST – Ostschweizer Fachhochschule",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/combinators-zurihac-2018/index.html"
+      ],
+      "catalogEntries": [
+        "combinators-zurihac-2018"
+      ]
+    },
+    {
+      "videoId": "cB8DapKQz-I",
+      "url": "https://www.youtube.com/watch?v=cB8DapKQz-I",
+      "title": "ZuriHac 2015 - Discrimination is Wrong: Improving Productivity",
+      "uploader": "Google TechTalks",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/discrimination-zurihac-2015/index.html"
+      ],
+      "catalogEntries": [
+        "discrimination-zurihac-2015"
+      ]
+    },
+    {
+      "videoId": "KzqNQMpRbac",
+      "url": "https://www.youtube.com/watch?v=KzqNQMpRbac",
+      "title": "Efficiently coding for modern CPUs by Edward Kmett",
+      "uploader": "OST – Ostschweizer Fachhochschule",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/efficient-modern-cpus-zurihac-2017/index.html"
+      ],
+      "catalogEntries": [
+        "efficient-modern-cpus-zurihac-2017"
+      ]
+    },
+    {
+      "videoId": "efv0SQNde5Q",
+      "url": "https://www.youtube.com/watch?v=efv0SQNde5Q",
+      "title": "Lenses: A Functional Imperative [1/5]",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/kmett-2011-lenses-functional-imperative/index.html"
+      ],
+      "catalogEntries": [
+        "kmett-2011-lenses-functional-imperative"
+      ]
+    },
+    {
+      "videoId": "XVmhK8WbRLY",
+      "url": "https://www.youtube.com/watch?v=XVmhK8WbRLY",
+      "title": "Lenses: A Functional Imperative [2/5]",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/kmett-2011-lenses-functional-imperative/index.html"
+      ],
+      "catalogEntries": []
+    },
+    {
+      "videoId": "QjatJWIJBTM",
+      "url": "https://www.youtube.com/watch?v=QjatJWIJBTM",
+      "title": "Lenses: A Functional Imperative [3/5]",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/kmett-2011-lenses-functional-imperative/index.html"
+      ],
+      "catalogEntries": []
+    },
+    {
+      "videoId": "CXH1V4xS2W0",
+      "url": "https://www.youtube.com/watch?v=CXH1V4xS2W0",
+      "title": "Lenses: A Functional Imperative [4/5]",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/kmett-2011-lenses-functional-imperative/index.html"
+      ],
+      "catalogEntries": []
+    },
+    {
+      "videoId": "YiFcvqRM6AA",
+      "url": "https://www.youtube.com/watch?v=YiFcvqRM6AA",
+      "title": "Lenses: A Functional Imperative [5/5]",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/kmett-2011-lenses-functional-imperative/index.html"
+      ],
+      "catalogEntries": []
+    },
+    {
+      "videoId": "QCvXlOCBe5A",
+      "url": "https://www.youtube.com/watch?v=QCvXlOCBe5A",
+      "title": "The Ermine programming language",
+      "uploader": "Runar Bjarnason",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/kmett-2013-ermine-boston/index.html"
+      ],
+      "catalogEntries": [
+        "kmett-2013-ermine-boston"
+      ]
+    },
+    {
+      "videoId": "o3m2NkusI9k",
+      "url": "https://www.youtube.com/watch?v=o3m2NkusI9k",
+      "title": "CUFP 2013: Edward Kmett: Functional Reporting",
+      "uploader": "CUFP 2013",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/kmett-2013-functional-reporting/index.html"
+      ],
+      "catalogEntries": [
+        "kmett-2013-functional-reporting"
+      ]
+    },
+    {
+      "videoId": "6GNDzrgFhGM",
+      "url": "https://www.youtube.com/watch?v=6GNDzrgFhGM",
+      "title": "The Haskell Cast #1 - Edward Kmett on Lenses",
+      "uploader": "haskellcast",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/kmett-2013-haskellcast-lenses/index.html"
+      ],
+      "catalogEntries": [
+        "kmett-2013-haskellcast-lenses"
+      ]
+    },
+    {
+      "videoId": "Klwkt9oJwg0",
+      "url": "https://www.youtube.com/watch?v=Klwkt9oJwg0",
+      "title": "Edward Kmett on Hask",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/kmett-2014-on-hask/index.html"
+      ],
+      "catalogEntries": [
+        "kmett-2014-on-hask"
+      ]
+    },
+    {
+      "videoId": "j0XmixCsWjs",
+      "url": "https://www.youtube.com/watch?v=j0XmixCsWjs",
+      "title": "Stop Treading Water:  Learning to Learn by Edward Kmett",
+      "uploader": "Adam Piper",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/kmett-2014-stop-treading-water/index.html"
+      ],
+      "catalogEntries": [
+        "kmett-2014-stop-treading-water"
+      ]
+    },
+    {
+      "videoId": "Z8KcCU-p8QA",
+      "url": "https://www.youtube.com/watch?v=Z8KcCU-p8QA",
+      "title": null,
+      "uploader": null,
+      "status": "ERROR",
+      "reason": "This video is unavailable",
+      "embeddable": false,
+      "linkedNow": false,
+      "pages": [],
+      "catalogEntries": []
+    },
+    {
+      "videoId": "jZrCVp5ekbA",
+      "url": "https://www.youtube.com/watch?v=jZrCVp5ekbA",
+      "title": "Across the Kmettverse with Edward Kmett – Functional Futures",
+      "uploader": "Serokell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/kmett-2022-functional-futures/index.html"
+      ],
+      "catalogEntries": [
+        "kmett-2022-functional-futures"
+      ]
+    },
+    {
+      "videoId": "Nv5tf8pvgrY",
+      "url": "https://www.youtube.com/watch?v=Nv5tf8pvgrY",
+      "title": "Haskell Live-Coding, Session 1, Commutativity",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-1/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-1"
+      ]
+    },
+    {
+      "videoId": "pm-4WV67T_Q",
+      "url": "https://www.youtube.com/watch?v=pm-4WV67T_Q",
+      "title": "Haskell Live Coding, Session 10, Succinct Serialization, Part 2",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-10/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-10"
+      ]
+    },
+    {
+      "videoId": "AfCCNACoDZc",
+      "url": "https://www.youtube.com/watch?v=AfCCNACoDZc",
+      "title": "Haskell Live-Coding, Session 11, Succinct Serialization, Part 3",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-11/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-11"
+      ]
+    },
+    {
+      "videoId": "OrY1U2qLnps",
+      "url": "https://www.youtube.com/watch?v=OrY1U2qLnps",
+      "title": "Haskell Live-Coding, Session 12, Succinct Serialization, Part 4",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-12/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-12"
+      ]
+    },
+    {
+      "videoId": "i1y3_72T1l4",
+      "url": "https://www.youtube.com/watch?v=i1y3_72T1l4",
+      "title": "Haskell Live-Coding, Session 13, Succinct Serialization, Part 5",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-13/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-13"
+      ]
+    },
+    {
+      "videoId": "bfooJoXCKpk",
+      "url": "https://www.youtube.com/watch?v=bfooJoXCKpk",
+      "title": "Haskell Live-Coding, Session 14.1, Succinct Serialization, Part 6",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-14-1/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-14-1"
+      ]
+    },
+    {
+      "videoId": "GCPClbek0Rg",
+      "url": "https://www.youtube.com/watch?v=GCPClbek0Rg",
+      "title": "Haskell Live-Coding, Session 14.2, Succinct Serialization, Part 6",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-14-2/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-14-2"
+      ]
+    },
+    {
+      "videoId": "10Cj33G9G-M",
+      "url": "https://www.youtube.com/watch?v=10Cj33G9G-M",
+      "title": "Haskell Live-Coding, Session 14.3, Succinct Serialization, Part 6",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-14-3/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-14-3"
+      ]
+    },
+    {
+      "videoId": "JYWSqT1FIug",
+      "url": "https://www.youtube.com/watch?v=JYWSqT1FIug",
+      "title": "Haskell Live-Coding, Session 15, Back from ICFP",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-15/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-15"
+      ]
+    },
+    {
+      "videoId": "yTlTtmVX3vA",
+      "url": "https://www.youtube.com/watch?v=yTlTtmVX3vA",
+      "title": "Haskell Live-Coding, Session 16, Relational Programming, Part 2",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-16/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-16"
+      ]
+    },
+    {
+      "videoId": "wkHRM_5CV84",
+      "url": "https://www.youtube.com/watch?v=wkHRM_5CV84",
+      "title": "Haskell Live-Coding, Session 17, Relational Programming, Part 3",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-17/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-17"
+      ]
+    },
+    {
+      "videoId": "3Zreblm0Ux0",
+      "url": "https://www.youtube.com/watch?v=3Zreblm0Ux0",
+      "title": "Haskell Live-Coding, Session 18, Nominal Sets",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-18/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-18"
+      ]
+    },
+    {
+      "videoId": "P2Ak8sEolkI",
+      "url": "https://www.youtube.com/watch?v=P2Ak8sEolkI",
+      "title": "Haskell Live-Coding, Session 19, Relational Programming, Part 4 (Soul of a New Machine)",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-19/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-19"
+      ]
+    },
+    {
+      "videoId": "d1T9JhurjE0",
+      "url": "https://www.youtube.com/watch?v=d1T9JhurjE0",
+      "title": "Haskell Live-Coding, Session 2.1, Q&A",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-2-1/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-2-1"
+      ]
+    },
+    {
+      "videoId": "2_R6jvI5WdU",
+      "url": "https://www.youtube.com/watch?v=2_R6jvI5WdU",
+      "title": "Haskell Live-Coding, Session 2.2, Q&A",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-2-2/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-2-2"
+      ]
+    },
+    {
+      "videoId": "YUgZrsDhn4o",
+      "url": "https://www.youtube.com/watch?v=YUgZrsDhn4o",
+      "title": "Haskell Live-Coding, Session 20, Relational Programming, Part 5",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-20/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-20"
+      ]
+    },
+    {
+      "videoId": "UAcZUK7x6xw",
+      "url": "https://www.youtube.com/watch?v=UAcZUK7x6xw",
+      "title": "Haskell Live-Coding, Session 21, Relational Programming, Part 6",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-21/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-21"
+      ]
+    },
+    {
+      "videoId": "gxHE3uguDbg",
+      "url": "https://www.youtube.com/watch?v=gxHE3uguDbg",
+      "title": "C++ Live-Coding, Session 22, Dancing Links",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-22/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-22"
+      ]
+    },
+    {
+      "videoId": "IoXDNWhN0aw",
+      "url": "https://www.youtube.com/watch?v=IoXDNWhN0aw",
+      "title": "C++ Live Coding, Session 23, Dancing Links, Part 2",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-23/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-23"
+      ]
+    },
+    {
+      "videoId": "DTm_Fe7hdIY",
+      "url": "https://www.youtube.com/watch?v=DTm_Fe7hdIY",
+      "title": "Live-Coding, Session 24, Dancing with Decision Diagrams",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-24/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-24"
+      ]
+    },
+    {
+      "videoId": "ISNYPKiE0YU",
+      "url": "https://www.youtube.com/watch?v=ISNYPKiE0YU",
+      "title": "Haskell Live-Coding, Session 25, Guanxi Review",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-25/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-25"
+      ]
+    },
+    {
+      "videoId": "Pe8LPUK787c",
+      "url": "https://www.youtube.com/watch?v=Pe8LPUK787c",
+      "title": "Live Coding with Edward Kmett, Episode 26",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-26/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-26"
+      ]
+    },
+    {
+      "videoId": "StmmK1a1Bm0",
+      "url": "https://www.youtube.com/watch?v=StmmK1a1Bm0",
+      "title": "Haskell Live-Coding, Session 3, Authenticated Computation",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-3/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-3"
+      ]
+    },
+    {
+      "videoId": "d7JPz3Vq9YI",
+      "url": "https://www.youtube.com/watch?v=d7JPz3Vq9YI",
+      "title": "Haskell Live-Coding, Session 4.1, Regular and Inverse Semigroups",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-4-1/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-4-1"
+      ]
+    },
+    {
+      "videoId": "ylsNMfWMKYc",
+      "url": "https://www.youtube.com/watch?v=ylsNMfWMKYc",
+      "title": "Haskell Live-Coding, Session 4.2, Q&A",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-4-2/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-4-2"
+      ]
+    },
+    {
+      "videoId": "rAQoSjnBvtA",
+      "url": "https://www.youtube.com/watch?v=rAQoSjnBvtA",
+      "title": "Haskell Live-Coding, Session 5.1, Propagators",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-5-1/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-5-1"
+      ]
+    },
+    {
+      "videoId": "-DBsKQMh6n4",
+      "url": "https://www.youtube.com/watch?v=-DBsKQMh6n4",
+      "title": "Haskell Live-Coding, Session 5.2, Propagators",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-5-2/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-5-2"
+      ]
+    },
+    {
+      "videoId": "PwD7D7XUzec",
+      "url": "https://www.youtube.com/watch?v=PwD7D7XUzec",
+      "title": "Haskell Live-Coding, Session 6, CEK Machines",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-6/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-6"
+      ]
+    },
+    {
+      "videoId": "knqlWboqf_U",
+      "url": "https://www.youtube.com/watch?v=knqlWboqf_U",
+      "title": "The Unison Language and its Scala-based Runtime—Paul Chiusano",
+      "uploader": "Scala World",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-6/index.html"
+      ],
+      "catalogEntries": []
+    },
+    {
+      "videoId": "YYSWNXcKOWw",
+      "url": "https://www.youtube.com/watch?v=YYSWNXcKOWw",
+      "title": "Haskell Live-Coding, Session 7, More Machines",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-7/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-7"
+      ]
+    },
+    {
+      "videoId": "9MKEmNNJgFc",
+      "url": "https://www.youtube.com/watch?v=9MKEmNNJgFc",
+      "title": "Haskell Live-Coding, Session 8, Succinct Data Structures and Dynamization",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-8/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-8"
+      ]
+    },
+    {
+      "videoId": "rMCGmQhgv2I",
+      "url": "https://www.youtube.com/watch?v=rMCGmQhgv2I",
+      "title": "Haskell Live-Coding, Session 9, Succinct Serialization, Part 1",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/live-coding-9/index.html"
+      ],
+      "catalogEntries": [
+        "live-coding-9"
+      ]
+    },
+    {
+      "videoId": "YTaNkWjd-ac",
+      "url": "https://www.youtube.com/watch?v=YTaNkWjd-ac",
+      "title": "ZuriHac 2016: Monad Homomorphisms",
+      "uploader": "Google TechTalks",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/monad-homomorphisms-zurihac-2016/index.html"
+      ],
+      "catalogEntries": [
+        "monad-homomorphisms-zurihac-2016"
+      ]
+    },
+    {
+      "videoId": "Bxcz23GOJqc",
+      "url": "https://www.youtube.com/watch?v=Bxcz23GOJqc",
+      "title": "Edward Kmett - Monad Transformer Lenses",
+      "uploader": "Monadic Warsaw",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/monad-transformer-lenses-warsaw-2016/index.html"
+      ],
+      "catalogEntries": [
+        "monad-transformer-lenses-warsaw-2016"
+      ]
+    },
+    {
+      "videoId": "HGi5AxmQUwU",
+      "url": "https://www.youtube.com/watch?v=HGi5AxmQUwU",
+      "title": "Lambda World 2018 - Opening Keynote by Edward Kmett",
+      "uploader": "Lambda World",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/there-and-back-again-lambda-world-2018/index.html"
+      ],
+      "catalogEntries": [
+        "there-and-back-again-lambda-world-2018"
+      ]
+    },
+    {
+      "videoId": "pBjzyi3YVVA",
+      "url": "https://www.youtube.com/watch?v=pBjzyi3YVVA",
+      "title": "VR Test Framework Status 9/14/2016",
+      "uploader": "Edward Kmett",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/vr-test-framework-2016/index.html"
+      ],
+      "catalogEntries": [
+        "vr-test-framework-2016"
+      ]
+    },
+    {
+      "videoId": "-Kz7SYZNoUU",
+      "url": "https://www.youtube.com/watch?v=-Kz7SYZNoUU",
+      "title": "Dimensional - Douglas McClean - Boston Haskell",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube--Kz7SYZNoUU/index.html"
+      ],
+      "catalogEntries": [
+        "youtube--Kz7SYZNoUU"
+      ]
+    },
+    {
+      "videoId": "090hIEiUoE0",
+      "url": "https://www.youtube.com/watch?v=090hIEiUoE0",
+      "title": "Monoidal Parsing - Boston Haskell Meetup",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-090hIEiUoE0/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-090hIEiUoE0"
+      ]
+    },
+    {
+      "videoId": "0fyrf83pjMg",
+      "url": "https://www.youtube.com/watch?v=0fyrf83pjMg",
+      "title": "James Larisch - Haskell Code Review!",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-0fyrf83pjMg/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-0fyrf83pjMg"
+      ]
+    },
+    {
+      "videoId": "2rhrxkNtrM4",
+      "url": "https://www.youtube.com/watch?v=2rhrxkNtrM4",
+      "title": "Cody Roux - SMT for DSLs: a Tutorial",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-2rhrxkNtrM4/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-2rhrxkNtrM4"
+      ]
+    },
+    {
+      "videoId": "4BmvEInzoY0",
+      "url": "https://www.youtube.com/watch?v=4BmvEInzoY0",
+      "title": "A Walk-through of Computational Reflection in Coq  - Boston Haskell Meetup",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-4BmvEInzoY0/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-4BmvEInzoY0"
+      ]
+    },
+    {
+      "videoId": "8YUUuZMawdY",
+      "url": "https://www.youtube.com/watch?v=8YUUuZMawdY",
+      "title": "Alexey Radul - Probabilistic Programming Live-code",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-8YUUuZMawdY/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-8YUUuZMawdY"
+      ]
+    },
+    {
+      "videoId": "8n5ubDe9FAA",
+      "url": "https://www.youtube.com/watch?v=8n5ubDe9FAA",
+      "title": "Adam Chlipala - Ur/Web",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-8n5ubDe9FAA/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-8n5ubDe9FAA"
+      ]
+    },
+    {
+      "videoId": "8r1lji4Pzsg",
+      "url": "https://www.youtube.com/watch?v=8r1lji4Pzsg",
+      "title": "Kenneth Foner - Getting a Quick Fix of Comonads",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-8r1lji4Pzsg/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-8r1lji4Pzsg"
+      ]
+    },
+    {
+      "videoId": "9-u2n4GgcVw",
+      "url": "https://www.youtube.com/watch?v=9-u2n4GgcVw",
+      "title": "Rishiyur S. Nikhil - Enigmatic Haskell, Haskellish Enigma",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-9-u2n4GgcVw/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-9-u2n4GgcVw"
+      ]
+    },
+    {
+      "videoId": "AweAVW4Pig8",
+      "url": "https://www.youtube.com/watch?v=AweAVW4Pig8",
+      "title": "The current state of the Haskell Foundation",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-AweAVW4Pig8/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-AweAVW4Pig8"
+      ]
+    },
+    {
+      "videoId": "BiH_A36zKwI",
+      "url": "https://www.youtube.com/watch?v=BiH_A36zKwI",
+      "title": "Programming with Tactics",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-BiH_A36zKwI/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-BiH_A36zKwI"
+      ]
+    },
+    {
+      "videoId": "DyPzPeOPgUE",
+      "url": "https://www.youtube.com/watch?v=DyPzPeOPgUE",
+      "title": "Edward Kmett - Propagators - Boston Haskell",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-DyPzPeOPgUE/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-DyPzPeOPgUE"
+      ]
+    },
+    {
+      "videoId": "IAYNk951_xk",
+      "url": "https://www.youtube.com/watch?v=IAYNk951_xk",
+      "title": "Tim Braje - A Quick Introduction To Haskell",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-IAYNk951_xk/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-IAYNk951_xk"
+      ]
+    },
+    {
+      "videoId": "Jmw6LLNQQfs",
+      "url": "https://www.youtube.com/watch?v=Jmw6LLNQQfs",
+      "title": "Composing (Music) in Haskell - Stuart Popejoy",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-Jmw6LLNQQfs/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-Jmw6LLNQQfs"
+      ]
+    },
+    {
+      "videoId": "JzShJfikr4g",
+      "url": "https://www.youtube.com/watch?v=JzShJfikr4g",
+      "title": "Algebraic Databases - Boston Haskell Meetup",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-JzShJfikr4g/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-JzShJfikr4g"
+      ]
+    },
+    {
+      "videoId": "MfXxuy_CJSk",
+      "url": "https://www.youtube.com/watch?v=MfXxuy_CJSk",
+      "title": "On Reflex - Boston Haskell - Greg Hale",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-MfXxuy_CJSk/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-MfXxuy_CJSk"
+      ]
+    },
+    {
+      "videoId": "Mj2cXQXgyWE",
+      "url": "https://www.youtube.com/watch?v=Mj2cXQXgyWE",
+      "title": "Austin Seipp - binary-serialize-cbor",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-Mj2cXQXgyWE/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-Mj2cXQXgyWE"
+      ]
+    },
+    {
+      "videoId": "O0oBXcwGZQY",
+      "url": "https://www.youtube.com/watch?v=O0oBXcwGZQY",
+      "title": "Paul Chiusano on csound-expression",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-O0oBXcwGZQY/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-O0oBXcwGZQY"
+      ]
+    },
+    {
+      "videoId": "Q0m8baqBrk4",
+      "url": "https://www.youtube.com/watch?v=Q0m8baqBrk4",
+      "title": "Ryan Wisnesky - A Functorial Query Language",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-Q0m8baqBrk4/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-Q0m8baqBrk4"
+      ]
+    },
+    {
+      "videoId": "R4nLSxCKkNw",
+      "url": "https://www.youtube.com/watch?v=R4nLSxCKkNw",
+      "title": "Haskell, Startups, and Domain Specific Languages",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-R4nLSxCKkNw/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-R4nLSxCKkNw"
+      ]
+    },
+    {
+      "videoId": "SmBpQ3V9Yqo",
+      "url": "https://www.youtube.com/watch?v=SmBpQ3V9Yqo",
+      "title": "James Koppel - Cracking Multi-Language Transformations",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-SmBpQ3V9Yqo/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-SmBpQ3V9Yqo"
+      ]
+    },
+    {
+      "videoId": "ZGqKsalJi4s",
+      "url": "https://www.youtube.com/watch?v=ZGqKsalJi4s",
+      "title": "Cody Roux - Pure Type Systems",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-ZGqKsalJi4s/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-ZGqKsalJi4s"
+      ]
+    },
+    {
+      "videoId": "ZL9ehIJhk98",
+      "url": "https://www.youtube.com/watch?v=ZL9ehIJhk98",
+      "title": "Edward Kmett - Undecidable Superclasses",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-ZL9ehIJhk98/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-ZL9ehIJhk98"
+      ]
+    },
+    {
+      "videoId": "_2jrmgO_Gq0",
+      "url": "https://www.youtube.com/watch?v=_2jrmgO_Gq0",
+      "title": "Chris Casinghino - Making Dependent Types Practical",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-_2jrmgO_Gq0/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-_2jrmgO_Gq0"
+      ]
+    },
+    {
+      "videoId": "_KioQRICpmo",
+      "url": "https://www.youtube.com/watch?v=_KioQRICpmo",
+      "title": "Anthony Cowley - Framing the Discussion with EDSLs",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-_KioQRICpmo/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-_KioQRICpmo"
+      ]
+    },
+    {
+      "videoId": "dOy7zIk3IUI",
+      "url": "https://www.youtube.com/watch?v=dOy7zIk3IUI",
+      "title": "Ryan Trinkle - Reflex: Practical Functional Reactive Programming",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-dOy7zIk3IUI/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-dOy7zIk3IUI"
+      ]
+    },
+    {
+      "videoId": "gZwMp8YXIXg",
+      "url": "https://www.youtube.com/watch?v=gZwMp8YXIXg",
+      "title": "Alec Heller - Skete: Exploring Distributed Package Management",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-gZwMp8YXIXg/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-gZwMp8YXIXg"
+      ]
+    },
+    {
+      "videoId": "hIZxTQP1ifo",
+      "url": "https://www.youtube.com/watch?v=hIZxTQP1ifo",
+      "title": "Edward Kmett - Type Classes vs. the World",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-hIZxTQP1ifo/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-hIZxTQP1ifo"
+      ]
+    },
+    {
+      "videoId": "heU8NyX5Hus",
+      "url": "https://www.youtube.com/watch?v=heU8NyX5Hus",
+      "title": "Faré Rideau - First-class implementations",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-heU8NyX5Hus/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-heU8NyX5Hus"
+      ]
+    },
+    {
+      "videoId": "rsv96JK4Vx4",
+      "url": "https://www.youtube.com/watch?v=rsv96JK4Vx4",
+      "title": "Julian Arni - Servant - Boston Haskell",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-rsv96JK4Vx4/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-rsv96JK4Vx4"
+      ]
+    },
+    {
+      "videoId": "vYh27zz9530",
+      "url": "https://www.youtube.com/watch?v=vYh27zz9530",
+      "title": "Ranjit Jhala - Liquid Haskell",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-vYh27zz9530/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-vYh27zz9530"
+      ]
+    },
+    {
+      "videoId": "wjyiOXRuUdo",
+      "url": "https://www.youtube.com/watch?v=wjyiOXRuUdo",
+      "title": "Thomas Dietert - Introduction to Cryptocurrencies in Haskell",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-wjyiOXRuUdo/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-wjyiOXRuUdo"
+      ]
+    },
+    {
+      "videoId": "yFXzuCFeRGM",
+      "url": "https://www.youtube.com/watch?v=yFXzuCFeRGM",
+      "title": "Boston Haskell Lightning talks - Dec. 2014",
+      "uploader": "Boston Haskell",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/youtube-yFXzuCFeRGM/index.html"
+      ],
+      "catalogEntries": [
+        "youtube-yFXzuCFeRGM"
+      ]
+    },
+    {
+      "videoId": "gbmURWs_SaU",
+      "url": "https://www.youtube.com/watch?v=gbmURWs_SaU",
+      "title": "Cadenza: Building Fast Functional Languages Fast • Edward Kmett • YOW! 2020",
+      "uploader": "GOTO Conferences",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": true,
+      "pages": [
+        "talks/cadenza-yow-2020/index.html"
+      ],
+      "catalogEntries": []
+    },
+    {
+      "videoId": "pEig1D4sJdI",
+      "url": "https://www.youtube.com/watch?v=pEig1D4sJdI",
+      "title": "Dorf On Golf 1 of 3",
+      "uploader": "nwa122",
+      "status": "OK",
+      "reason": null,
+      "embeddable": true,
+      "linkedNow": false,
+      "pages": [],
+      "catalogEntries": []
+    }
+  ],
+  "malformedLinks": [
+    {
+      "page": "2012/wadlers-law-revisited/index.html",
+      "url": "http://www.youtube.com/watch?v=pEig1D4sJdI%3C/a%3E,%20%20%3C/a%3E%3Ca%20href=",
+      "label": "Agda-derived Records (ADR)"
+    }
+  ],
+  "changes": [
+    {
+      "entry": "cadenza-yow-2020",
+      "from": "25RmUl88jSw",
+      "to": "gbmURWs_SaU",
+      "note": "Replacement GOTO upload verified; original event date retained; thumbnail updated."
+    },
+    {
+      "entry": "kmett-2014-stop-treading-water",
+      "from": "Z8KcCU-p8QA",
+      "note": "Removed dead supplemental recording from visible materials; main j0XmixCsWjs mirror works; original retained in historicalMaterials."
+    },
+    {
+      "entry": "internalized-guarded-recursion-for-equational-reasoning",
+      "from": "xdUgkGqKjS8",
+      "note": "Private recording link replaced by official Haskell 2022 presentation page; paper link retained."
+    }
+  ],
+  "unresolved": [
+    {
+      "id": "jgxL-PwmY7s",
+      "note": "Maru clip unavailable; no verified replacement; unchanged."
+    },
+    {
+      "id": "pEig1D4sJdI",
+      "note": "Broken ADR link HTML also contains GHC Records/NameSpacing URL. Recovered YouTube ID is playable Dorf On Golf 1 of 3; intended destination awaiting author clarification."
+    }
+  ],
+  "attributionNotes": [
+    "Faré Rideau is François-René Rideau; Kenny Foner is Kenneth Foner.",
+    "Ermine title and Boston Haskell July 2013 description match; YouTube metadata credits uploader Runar Bjarnason and does not independently name the speaker. Existing Edward Kmett attribution was retained."
+  ]
+}

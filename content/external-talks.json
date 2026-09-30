@@ -692,12 +692,6 @@
       "description": "Stop Treading Water: Learning to Learn — YOW!2014.",
       "materials": [
         {
-          "kind": "video",
-          "url": "https://www.youtube.com/watch?v=Z8KcCU-p8QA",
-          "access": "Linked by later author interview; parent retrieving metadata.",
-          "availability": "unavailable on 2026-09-21 via direct watch-page metadata"
-        },
-        {
           "kind": "video_historical",
           "url": "https://yow.eventer.com/yow-2014-1222/stop-treading-water-learning-to-learn-by-edward-kmett-1750",
           "access": "Original organizer recording URL, currently unresolved."
@@ -733,7 +727,15 @@
       "workFamily": null,
       "inclusion": "recommended",
       "archiveType": "talk",
-      "editorialNote": "YOW! 2014. This surviving recording is an unofficial mirror uploaded by Adam Piper in 2017; the original organizer-linked video is unavailable."
+      "editorialNote": "YOW! 2014. This surviving recording is an unofficial mirror uploaded by Adam Piper in 2017; the original organizer-linked video is unavailable.",
+      "historicalMaterials": [
+        {
+          "kind": "video",
+          "url": "https://www.youtube.com/watch?v=Z8KcCU-p8QA",
+          "access": "Linked by later author interview; parent retrieving metadata.",
+          "availability": "unavailable on 2026-09-21 via direct watch-page metadata"
+        }
+      ]
     },
     {
       "id": "combinators-yow-2018",
@@ -1159,21 +1161,21 @@
     },
     {
       "id": "cadenza-yow-2020",
-      "videoId": "25RmUl88jSw",
+      "videoId": "gbmURWs_SaU",
       "title": "Cadenza: Building Fast Functional Languages Fast",
       "speakers": [
         "Edward Kmett"
       ],
       "event": "YOW! Lambda Jam 2020, online",
       "publisher": "YOW! Lambda Jam 2020, online",
-      "videoUrl": "https://www.youtube.com/watch?v=25RmUl88jSw",
+      "videoUrl": "https://www.youtube.com/watch?v=gbmURWs_SaU",
       "date": "2020-07-24",
       "dateBasis": "presentation",
       "dateConfidence": "high",
       "eventDate": "2020-07-24",
       "eventDateValue": "2020-07-24",
       "eventYear": "2020",
-      "uploadDate": null,
+      "uploadDate": "2023-05-28",
       "dateValue": "2020-07-24",
       "datePrecision": "day",
       "dateEvidence": [
@@ -1188,8 +1190,8 @@
       "materials": [
         {
           "kind": "video",
-          "url": "https://www.youtube.com/watch?v=25RmUl88jSw",
-          "verification": "linked_by_primary_source"
+          "url": "https://www.youtube.com/watch?v=gbmURWs_SaU",
+          "verification": "Public GOTO Conferences recording, matching title, Edward Kmett credit, YOW! 2020 description, and Core/Graal/Truffle topic; playback and embedding available on 2026-09-29."
         }
       ],
       "uncertainty": [
@@ -1206,7 +1208,12 @@
       ],
       "workFamily": "cadenza",
       "inclusion": "recommended",
-      "archiveType": "talk"
+      "archiveType": "talk",
+      "historicalVideoUrls": [
+        "https://www.youtube.com/watch?v=25RmUl88jSw"
+      ],
+      "durationSeconds": 2409,
+      "recordingPublisher": "GOTO Conferences"
     },
     {
       "id": "kmett-2022-functional-futures",

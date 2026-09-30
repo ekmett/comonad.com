@@ -307,9 +307,11 @@
     "sha256": "a1d1d1b33d05e81f5430d773ef54e19200414a479619d58f408b71b03f04a9ed",
     "retrieved": "2026-09-22"
   },
-  "zhj_tUMwTe0": {
-    "url": "https://i.ytimg.com/vi/zhj_tUMwTe0/mqdefault.jpg",
-    "error": "HTTP 404",
+  "GirDSC6BnCo": {
+    "path": "assets/talk-thumbnails/GirDSC6BnCo.jpg",
+    "url": "https://i.ytimg.com/vi/GirDSC6BnCo/mqdefault.jpg",
+    "bytes": 14556,
+    "sha256": "35a31f5395eb3faeddc9dd356eaa29db34135fdbb682c36fcb31e13c30d1b110",
     "retrieved": "2026-09-22"
   },
   "PA1Fc7DNKtA": {
@@ -347,10 +349,12 @@
     "sha256": "bc0ce2425cd074beee30730b14d40322c28a1fa67dcc0dbb3a6a6324b45e40e6",
     "retrieved": "2026-09-22"
   },
-  "25RmUl88jSw": {
-    "url": "https://i.ytimg.com/vi/25RmUl88jSw/mqdefault.jpg",
-    "error": "HTTP 404",
-    "retrieved": "2026-09-22"
+  "gbmURWs_SaU": {
+    "path": "assets/talk-thumbnails/gbmURWs_SaU.jpg",
+    "url": "https://i.ytimg.com/vi/gbmURWs_SaU/mqdefault.jpg",
+    "bytes": 15219,
+    "sha256": "9a514cb5262c883b666dad1882a546a768d2fa0cd6706fb4c325b7e64b840585",
+    "retrieved": "2026-09-29"
   },
   "jZrCVp5ekbA": {
     "path": "assets/talk-thumbnails/jZrCVp5ekbA.jpg",
@@ -595,13 +599,6 @@
     "url": "https://i.ytimg.com/vi/pBjzyi3YVVA/mqdefault.jpg",
     "bytes": 6075,
     "sha256": "35036533a7acf7f7718a5caa6e3945ff9b0bd59badb6fe739c949e1a6b7ee069",
-    "retrieved": "2026-09-22"
-  },
-  "GirDSC6BnCo": {
-    "path": "assets/talk-thumbnails/GirDSC6BnCo.jpg",
-    "url": "https://i.ytimg.com/vi/GirDSC6BnCo/mqdefault.jpg",
-    "bytes": 14556,
-    "sha256": "35a31f5395eb3faeddc9dd356eaa29db34135fdbb682c36fcb31e13c30d1b110",
     "retrieved": "2026-09-22"
   }
 }

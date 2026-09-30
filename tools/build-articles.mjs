@@ -15,6 +15,7 @@ import katex from 'katex';
 import { parseHTML } from 'linkedom';
 import { buildQuine } from './build-quine.mjs';
 import { readerNavigation } from './reader-navigation.mjs';
+import { articleContents } from './article-contents.mjs';
 import { createSite } from './site-metadata.mjs';
 import { crcMath } from './article-math.mjs';
 import { packageNames, linkPackageMentions } from './package-links.mjs';
@@ -30,6 +31,7 @@ const articles = JSON.parse(fs.readFileSync('content/articles.json', 'utf8'));
 const originalReaderArchive = new Map(JSON.parse(fs.readFileSync('content/original-reader-archive.json', 'utf8')).articles.filter(a => a.status === 'present').map(a => [a.slug, a.archiveUrl]));
 const repositoryCatalog = JSON.parse(fs.readFileSync('content/github-repositories.json', 'utf8'));
 const repositories = repositoryCatalog.repositories.filter(repo=>!repo.fork || repositoryCatalog.alwaysInclude.includes(repo.name));
+const repositoryDate = repo => repo.archiveDate || repo.created_at;
 const newestFirst=(a,b)=>b.date.localeCompare(a.date)||((a.series&&a.series===b.series)?(b.seriesOrder||0)-(a.seriesOrder||0):0)||a.title.localeCompare(b.title);
 articles.sort(newestFirst);
 const collections = JSON.parse(fs.readFileSync('content/collections.json','utf8'));
@@ -83,7 +85,6 @@ const baseStyleHash=crypto.createHash('sha256').update(read('dist/style.css')).d
 const appearanceHash=crypto.createHash('sha256').update(read('dist/appearance.css')+read('dist/appearance.js')).digest('hex').slice(0,12);
 const articleStyleHash=crypto.createHash('sha256').update(read('dist/article.css')).digest('hex').slice(0,12);
 const highlight = code => hljs.highlight(code, {language:'haskell'}).value;
-const slugify = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const md = new MarkdownIt({html:true, linkify:true, highlight:(code, lang) => lang === 'haskell' ? highlight(code) : esc(code)});
 md.linkify.set({fuzzyLink:false,fuzzyEmail:false});
 // Recording descriptions contain Markdown and explicit URLs, but no trusted HTML.
@@ -202,13 +203,7 @@ function renderArticle(article, route = article.path) {
   let body = md.render(source);
   const document = parseHTML(`<article class="prose">${body}</article>`).document;
   const prose = document.querySelector('article');
-  const headings = [...prose.querySelectorAll('h2,h3,h4')];
-  const used = new Set();
-  for (const heading of headings) {
-    let id = heading.id || slugify(heading.textContent), suffix = 2;
-    while (used.has(id)) id = slugify(heading.textContent) + '-' + suffix++;
-    used.add(id); heading.id = id;
-  }
+  const toc = articleContents(prose);
   // Preserve old inbound jump links; new links to imported posts stay on-site.
   if (article.legacyId && !prose.querySelector(`[id="more-${article.legacyId}"]`)) prose.insertAdjacentHTML('afterbegin', `<span id="more-${article.legacyId}"></span>`);
   function localLinks(container) {
@@ -240,7 +235,6 @@ function renderArticle(article, route = article.path) {
   }
   linkPackageMentions(prose, packageNames(packageCatalog,article.slug), packageCatalog);
   body = prose.outerHTML;
-  const toc = `<details class="contents"><summary>On this page</summary><ol>${headings.map(h => `<li><a href="#${h.id}">${esc(h.textContent)}</a></li>`).join('')}</ol></details>`;
   let comments = '';
   const commentPath = `content/comments/${article.slug}.json`;
   if (fs.existsSync(commentPath)) {
@@ -259,7 +253,7 @@ ${navigation.neighbors(article,root)}
 <footer><span>The Comonad.Reader</span><p>${article.rightsNote?esc(article.rightsNote):`Writing and code © ${esc(article.author || 'Edward Kmett')}.`}</p></footer>`;
   const series=collections.find(c=>c.slug===article.series);
   const seriesNav=series ? `<nav class="series-navigation" aria-label="Article series"><p>In <a href="${root+series.path}">${esc(series.title)}</a></p><ol>${series.links.map(link=>articles.find(a=>sourceKey(a.origin)===sourceKey(link.origin))).filter(Boolean).map(a=>`<li><a href="${root+a.path}"${a.slug===article.slug?' aria-current="page"':''}>${esc(a.seriesTitle||a.originalTitle||a.title)}</a></li>`).join('')}</ol></nav>` : '';
-  const main = `<header class="article-header"><div class="article-meta"><span>${esc(article.categories)}</span><span>${esc(article.author || 'Edward Kmett')} · <time datetime="${article.date}">${article.dateLabel}</time></span></div><h1>${esc(article.title)}</h1></header>${seriesNav}${headings.length?toc:''}${body}${packageLine(packageNames(packageCatalog,article.slug),root)}${companions}${comments}${footer}`;
+  const main = `<header class="article-header"><div class="article-meta"><span>${esc(article.categories)}</span><span>${esc(article.author || 'Edward Kmett')} · <time datetime="${article.date}">${article.dateLabel}</time></span></div><h1>${esc(article.title)}</h1></header>${seriesNav}${toc}${body}${packageLine(packageNames(packageCatalog,article.slug),root)}${companions}${comments}${footer}`;
   const script = hasQuineDemo ? `<script type="module" src="${root}quine-demo.js"></script>` : hasPNGDemo ? `<script type="module" src="${root}png-demos.js"></script>` : hasInlineDemo ? `<script type="module" src="${root}article-demos.js"></script>` : article.slug === 'parallel-crc' ? `<script type="module" src="${root}app.js"></script>` : article.slug==='cellular-automata-part-1' ? `<script type="module" src="${root}automaton.js"></script>` : '';
   write('dist/' + route + 'index.html', shell({title:article.title, base:root, main, script, date:article.date,route,entry:article}));
 }
@@ -330,13 +324,13 @@ function seriesCards(base,period){
 function archivePage(route, period, seriesOnly=false) {
   const base=(path.posix.relative(route||'.','.')||'.')+'/';
   const selected=timeline.filter(item=>!period || item.date.startsWith(period));
-  const selectedRepos=repositories.filter(repo=>!period || repo.created_at.startsWith(period));
+  const selectedRepos=repositories.filter(repo=>!period || repositoryDate(repo).startsWith(period));
   const seenDates=new Set();
   const title=seriesOnly?'Series':period ? period.length===7 ? navigation.monthLabel(period) : period : 'Writing & talks';
-  const years=[...new Set([...selected.map(a=>a.date.slice(0,4)),...selectedRepos.map(r=>r.created_at.slice(0,4))])].sort().reverse();
+  const years=[...new Set([...selected.map(a=>a.date.slice(0,4)),...selectedRepos.map(r=>repositoryDate(r).slice(0,4))])].sort().reverse();
   const entries=years.map(year=>{
-    const repos=selectedRepos.filter(r=>r.created_at.startsWith(year));
-    const tags=repos.length?`<ul class="archive-repositories" aria-label="GitHub repositories created in ${year}">${repos.map(repo=>`<li data-search="${esc([repo.name,repo.description,repo.language,...repo.topics,year,'github repository',repo.fork?'fork':''].join(' ').toLowerCase())}"><a href="${esc(repo.html_url)}"${repo.description?` title="${esc(repo.description)}"`:''}>${esc(repo.name)}</a></li>`).join(' ')}</ul>`:'';
+    const repos=selectedRepos.filter(r=>repositoryDate(r).startsWith(year));
+    const tags=repos.length?`<ul class="archive-repositories" aria-label="GitHub repositories in ${year}">${repos.map(repo=>`<li data-search="${esc([repo.name,repo.description,repo.language,...repo.topics,year,'github repository',repo.fork?'fork':''].join(' ').toLowerCase())}"><a href="${esc(repo.html_url)}"${repo.description?` title="${esc(repo.description)}"`:''}>${esc(repo.name)}</a></li>`).join(' ')}</ul>`:'';
     return `<h2 class="archive-year" id="year-${year}">${year}</h2>`+tags+selected.filter(a=>a.date.startsWith(year)).map(a=>{
     const dayId=seenDates.has(a.date)?'':` id="day-${a.date}"`;seenDates.add(a.date);
     const thumbnail=talkThumbnails[a.videoId]?.path?talkThumbnails[a.videoId]:null;

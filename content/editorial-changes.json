@@ -334,5 +334,12 @@
     "after": "CUFP 2014",
     "reason": "Restore the explicit Markdown link that was published as literal text; keep its original destination.",
     "status": "applied"
+  },
+  {
+    "article": "internalized-guarded-recursion-for-equational-reasoning",
+    "before": "https://www.youtube.com/watch?v=xdUgkGqKjS8",
+    "after": "https://icfp22.sigplan.org/details/haskellsymp-2022/1/A-Totally-Predictable-Outcome-An-Investigation-of-Traversals-of-Infinite-Structures",
+    "reason": "The recording is now private. Link the presentation reference to the official Haskell Symposium 2022 event page; the separately linked paper remains available. Checked 2026-09-29.",
+    "status": "applied"
   }
 ]
