@@ -1,5 +1,21 @@
 [
   {
+    "slug": "turbo-haskell",
+    "title": "Turbo Haskell",
+    "date": "2026-09-30",
+    "dateLabel": "30 September 2026",
+    "path": "reader/2026/turbo-haskell/",
+    "categories": "Haskell · Compilers · JVM",
+    "origin": "https://comonad.com/reader/2026/turbo-haskell/",
+    "author": "Edward Kmett",
+    "source": "Comonad.Reader",
+    "rawSource": "content/articles/turbo-haskell.md",
+    "rawFormat": "md",
+    "retrieved": "2026-09-30",
+    "sha256": "2140645e96ed668c1f84eebb12dd85bcbe30a2ade265d15a57f49097ff66e304",
+    "archive": "source/articles/turbo-haskell.original.md"
+  },
+  {
     "slug": "internalized-guarded-recursion-for-equational-reasoning",
     "title": "Internalized Guarded Recursion for Equational Reasoning",
     "date": "2022-10-21",
