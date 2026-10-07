@@ -1,7 +1,7 @@
 {
   "owner": "ekmett",
   "source": "https://api.github.com/users/ekmett/repos",
-  "retrievedAt": "2026-09-22",
+  "retrievedAt": "2026-10-06",
   "alwaysInclude": [
     "starkify",
     "nightfall",
@@ -140,12 +140,22 @@
     },
     {
       "archived": false,
+      "created_at": "2026-10-03T13:55:33Z",
+      "description": "c++26 authenticated data structures",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/auth",
+      "language": "C++",
+      "name": "auth",
+      "topics": []
+    },
+    {
+      "archived": false,
       "created_at": "2018-07-01T16:53:59Z",
       "description": null,
       "fork": false,
-      "html_url": "https://github.com/ekmett/auth",
+      "html_url": "https://github.com/ekmett/auth-hs",
       "language": "Haskell",
-      "name": "auth",
+      "name": "auth-hs",
       "topics": [
         "authenticated",
         "data-structures",
@@ -766,7 +776,7 @@
       "description": "haddocks",
       "fork": false,
       "html_url": "https://github.com/ekmett/ekmett.github.com",
-      "language": "Haskell",
+      "language": "HTML",
       "name": "ekmett.github.com",
       "topics": []
     },
@@ -1214,6 +1224,28 @@
     },
     {
       "archived": false,
+      "created_at": "2026-10-01T05:03:30Z",
+      "description": "The Turbo Haskell IDE",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/hide",
+      "language": "Haskell",
+      "name": "hide",
+      "topics": [
+        "ai-agents",
+        "ai-coding",
+        "cabal",
+        "cabal-install",
+        "cabal-package",
+        "debugger",
+        "editor",
+        "ghc",
+        "haskell",
+        "turbo",
+        "version-control"
+      ]
+    },
+    {
+      "archived": false,
       "created_at": "2011-05-27T22:08:24Z",
       "description": "Functional absurdity in C#",
       "fork": false,
@@ -1434,11 +1466,48 @@
     },
     {
       "archived": false,
+      "created_at": "2026-10-05T12:19:32Z",
+      "description": "an opinionated mark-compact c++26 garbage collected arena",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/jam",
+      "language": "C++",
+      "name": "jam",
+      "topics": [
+        "cpp26",
+        "cpp26-library",
+        "garbage-collection",
+        "garbage-collector",
+        "high-performance",
+        "modules",
+        "simd",
+        "threadlocal"
+      ]
+    },
+    {
+      "archived": false,
+      "created_at": "2026-10-06T20:09:13Z",
+      "description": "A custom JDK garbage collector capable of supporting System.Mem.Weak finalizers for Turbo Haskell.",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/jam-vm",
+      "language": "Python",
+      "name": "jam-vm",
+      "topics": [
+        "finalizers",
+        "garbage-collector",
+        "ghc",
+        "graalvm",
+        "haskell",
+        "jdk",
+        "turbo-haskell"
+      ]
+    },
+    {
+      "archived": false,
       "created_at": "2010-06-26T01:40:36Z",
       "description": "a tracing jit for c++ based on tracing and compiling from x86-64 assembly to x86-64 assembly",
       "fork": false,
       "html_url": "https://github.com/ekmett/jitplusplus",
-      "language": "C",
+      "language": "C++",
       "name": "jitplusplus",
       "topics": []
     },
@@ -1902,17 +1971,20 @@
     {
       "archived": false,
       "created_at": "2024-10-21T04:25:38Z",
-      "description": "simd toy",
+      "description": "c++26 simd and native instructions",
       "fork": false,
       "html_url": "https://github.com/ekmett/native",
       "language": "C++",
       "name": "native",
       "topics": [
+        "assembly-arm",
+        "assembly-x86",
         "builtin-functions",
         "clang",
         "cmake",
         "cplusplus",
-        "cpp23",
+        "cpp26",
+        "cpp26-library",
         "intrinsics",
         "modules",
         "simd"
@@ -2811,8 +2883,6 @@
     {
       "archived": false,
       "created_at": "2015-09-11T08:04:43Z",
-      "archiveDate": "2026",
-      "archiveDateNote": "Complete replacement in 2026; reuses the repository name, not the old code.",
       "description": "The Turbo Haskell Compiler",
       "fork": false,
       "html_url": "https://github.com/ekmett/thc",
@@ -2826,7 +2896,9 @@
         "jit",
         "kotlin",
         "truffle-framework"
-      ]
+      ],
+      "archiveDate": "2026",
+      "archiveDateNote": "Complete replacement in 2026; reuses the repository name, not the old code."
     },
     {
       "archived": false,
