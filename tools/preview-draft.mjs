@@ -16,7 +16,7 @@ title.remove();
 const toc = articleContents(content.querySelector('article'));
 
 const {document} = parseHTML(fs.readFileSync('dist/reader/index.html', 'utf8'));
-document.title = `${titleText} · Draft · The Comonad.Reader`;
+document.title = `${titleText} · Draft · The Comonad Reader`;
 for (const node of document.querySelectorAll('link[rel="canonical"],link[rel="alternate"],meta[name="description"],meta[property],script[type="application/ld+json"],script[src*="archive.js"]')) node.remove();
 document.head.insertAdjacentHTML('beforeend', '<meta name="robots" content="noindex, nofollow">');
 // Resolve the existing shell's links against its original location.

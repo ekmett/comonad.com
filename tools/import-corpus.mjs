@@ -40,7 +40,7 @@ for (const item of [...catalog.blog,...catalog.school]) {
   }
   const existing=articles.find(a=>identity(a.origin)===identity(item.origin));
   const record=existing || {slug,title:item.title,date:item.date,dateLabel:dateLabel(item.date),path:`reader/${item.date.slice(0,4)}/${slug}/`,categories:item.categories||'Haskell',origin:item.origin};
-  record.author=item.author;record.source=isBlog?'Comonad.Reader':'School of Haskell';record.rawHTML=item.raw;
+  record.author=item.author;record.source=isBlog?'The Comonad Reader':'School of Haskell';record.rawHTML=item.raw;
   record.rawSource=item.markdown||item.raw;record.rawFormat=item.markdown?'md':'html';
   if(isBlog) record.legacyId=doc.querySelector('[name="comment_post_ID"]')?.getAttribute('value') || doc.querySelector('[id^="more-"]')?.id.replace('more-','');
   else {record.rawURL=item.rawURL;record.dateBasis='Date displayed by School of Haskell; may reflect a later revision.';}

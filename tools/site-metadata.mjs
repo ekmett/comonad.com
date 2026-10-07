@@ -12,7 +12,7 @@ export function createSite(config) {
     const pageUrl=url(route||config.readerPath);
     const people=(entry?.authors||entry?.speakers||(entry?.author?[entry.author]:[])).map(name=>({'@type':'Person',name}));
     const type=entry?.videoId?'VideoObject':entry?.kind==='Paper'?'ScholarlyArticle':entry?.slug?'BlogPosting':entry?'PresentationDigitalDocument':'CollectionPage';
-    const data={'@context':'https://schema.org','@type':type,'@id':pageUrl+'#content',url:pageUrl,name:title,inLanguage:'en',description,isPartOf:{'@type':'WebSite','@id':readerUrl+'#website',name:'The Comonad.Reader',url:readerUrl}};
+    const data={'@context':'https://schema.org','@type':type,'@id':pageUrl+'#content',url:pageUrl,name:title,inLanguage:'en',description,isPartOf:{'@type':'WebSite','@id':readerUrl+'#website',name:'The Comonad Reader',url:readerUrl}};
     if(entry){
       data.mainEntityOfPage={'@type':'WebPage','@id':pageUrl};
       if(people.length)data.author=people;

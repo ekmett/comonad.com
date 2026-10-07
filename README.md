@@ -1,10 +1,10 @@
-# The Comonad.Reader
+# The Comonad Reader
 
 A static home for the original blog and Edward Kmett’s School of Haskell writing, with a shared chronology of talks. The approved green lambda masthead, local mathematics and diagrams, and readable Haskell remain central to the design.
 
 ## Contents
 
-- 85 Comonad.Reader posts, 25 School of Haskell articles, four Harmless Algorithms columns, and the recovered Bloodshed wavelet paper (circa 1995), plus nineteen article series and collections, the live-coding series, and the Guanxi workshop series.
+- 85 posts from The Comonad Reader, 25 School of Haskell articles, four Harmless Algorithms columns, and the recovered Bloodshed wavelet paper (circa 1995), plus nineteen article series and collections, the live-coding series, and the Guanxi workshop series.
 - 58 talk pages and 31 live-coding stream pages: four locally preserved slide decks and 85 recordings. The recordings include the Boston Haskell channel, Monad Transformer Lenses, There and Back Again, and sessions 1–26 from Edward’s Twitch stream (including split sessions).
 - 187 selected historical comments; all 12,370 original comment records remain in source snapshots.
 - 1,014 linked Haskell archive resources, preserved with checksums. Parent directory links do not expand the crawl.

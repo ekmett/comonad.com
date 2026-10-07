@@ -9,7 +9,7 @@ const formatting=JSON.parse(fs.readFileSync('content/comment-formatting.json'));
 const td=new TurndownService({codeBlockStyle:'fenced'});
 td.addRule('code',{filter:'pre',replacement:(_,node)=>'\n\n```haskell\n'+node.textContent.trimEnd()+'\n```\n\n'});
 let included=0,total=0;
-for(const post of posts.filter(p=>p.source==='Comonad.Reader')) {
+for(const post of posts.filter(p=>p.source==='The Comonad Reader')) {
   const doc=parseHTML(fs.readFileSync(post.rawHTML||`content/original/${post.slug}.html`,'utf8')).document;
   const comments=[],decisions=[];
   for(const node of doc.querySelectorAll('li[id^="comment-"]')) {

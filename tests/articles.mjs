@@ -62,7 +62,7 @@ for (const post of posts) {
     assert.equal(oldBlocks.length,blocks.length);
     oldBlocks.forEach((b,i)=>assert.equal(compact(b.textContent),compact(blocks[i].textContent),post.slug+': unchanged code tokens'));
   }
-  if(post.source==='Comonad.Reader' && post.rawHTML) {
+  if(post.source==='The Comonad Reader' && post.rawHTML) {
     const original=document(post.rawHTML), oldProse=original.querySelector('.post-content');
     const restored=JSON.parse(read('content/code-formatting.json')).some(e=>e.article===post.slug&&e.blocks);
     const candidates=[...oldProse.querySelectorAll('pre,code,p')].filter(n=>n.tagName==='PRE'||(restored&&!n.closest('pre')&&n.querySelector('br')&&(n.tagName==='CODE'||(!n.querySelector('code,pre,a,img')&&/^(?:class |instance |newtype |data |type |-- |\w+ ::)/.test(n.textContent.trim())))));
