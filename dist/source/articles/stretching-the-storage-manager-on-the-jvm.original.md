@@ -22,7 +22,7 @@ I am somewhat amused by the contrast with the decades of pain around [Java final
 
 That doesn’t make finalizers prompt, or make Java’s security and lifecycle problems disappear. But allowing a finalizer to resurrect its key is hardly an insurmountable obstacle. We have had a design for that for 27 years.
 
-I’m finishing up porting this over to SubstrateVM, so Native Image can use it too. With jam’s baseline functionality already so closely aligned, wiring up THC’s finalizers is mostly an exercise in crossing the t’s. Getting that in place will remove my biggest blocker to full GHC language-feature support on GraalVM.
+I’m finishing up porting this over to SubstrateVM, so Native Image can use it too. With jam’s baseline functionality already so closely aligned, wiring up THC’s finalizers is mostly an exercise in crossing the *t*’s. Getting that in place will remove my biggest blocker to full GHC language-feature support on GraalVM.
 
 There are limitations. Right now the collector only supports [Compressed Ordinary Object Pointer](https://docs.oracle.com/en/java/javase/25/vm/java-hotspot-virtual-machine-performance-enhancements.html#GUID-932AD393-1C8C-4E50-8074-F81AD6FB2444) mode, so the heap is limited to 32 GB: 16 GB for the young generation and 16 GB for the old generation, even on a 64-bit platform. In exchange, pointers shrink from 64 bits to 32, so we can fit twice as many of them into L1 cache. For pointer-heavy structures, that can mean substantially more useful data in cache; the exact gain depends on the object layout.
 
