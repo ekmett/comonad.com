@@ -10,9 +10,11 @@ Object.defineProperty(kind,'value',{value:'',writable:true});
 const context=vm.createContext({document});
 vm.runInContext(fs.readFileSync('dist/archive.js','utf8'),context);
 const catalog=JSON.parse(fs.readFileSync('content/github-repositories.json'));
-const repos=catalog.repositories.filter(repo=>!repo.fork || catalog.alwaysInclude.includes(repo.name));
+const repos=catalog.repositories.filter(repo=>!catalog.exclude?.includes(repo.name) && (!repo.fork || catalog.alwaysInclude.includes(repo.name)));
 const links=[...document.querySelectorAll('.archive-repositories a')];
 assert.equal(links.length,repos.length);
+assert.ok(!links.some(a=>a.textContent==='jam-vm'),'The merged JVM integration is listed under jam only');
+assert.ok(links.some(a=>a.textContent==='jam'),'Keep the consolidated jam repository');
 assert.ok(!links.some(a=>a.textContent==='narya'),'Exclude clones of other people’s repositories');
 for(const name of ['starkify','nightfall','bitcoin-verifier-wasm'])assert.ok(links.some(a=>a.textContent===name),'Keep Edward’s projects: '+name);
 for(const repo of repos){

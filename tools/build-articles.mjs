@@ -30,7 +30,7 @@ for (const [name, grammar] of Object.entries({c,cpp,ocaml,scheme,prolog})) hljs.
 const articles = JSON.parse(fs.readFileSync('content/articles.json', 'utf8'));
 const originalReaderArchive = new Map(JSON.parse(fs.readFileSync('content/original-reader-archive.json', 'utf8')).articles.filter(a => a.status === 'present').map(a => [a.slug, a.archiveUrl]));
 const repositoryCatalog = JSON.parse(fs.readFileSync('content/github-repositories.json', 'utf8'));
-const repositories = repositoryCatalog.repositories.filter(repo=>!repo.fork || repositoryCatalog.alwaysInclude.includes(repo.name));
+const repositories = repositoryCatalog.repositories.filter(repo=>!repositoryCatalog.exclude?.includes(repo.name) && (!repo.fork || repositoryCatalog.alwaysInclude.includes(repo.name)));
 const repositoryDate = repo => repo.archiveDate || repo.created_at;
 const newestFirst=(a,b)=>b.date.localeCompare(a.date)||((a.series&&a.series===b.series)?(b.seriesOrder||0)-(a.seriesOrder||0):0)||a.title.localeCompare(b.title);
 articles.sort(newestFirst);
