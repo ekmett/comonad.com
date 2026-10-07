@@ -31,3 +31,5 @@ Future work should include forwarding field accessors applied to evaluated thunk
 The code is in [jam](https://github.com/ekmett/jam) and [jam-vm](https://github.com/ekmett/jam-vm), with [collector documentation](https://ekmett.github.io/jam/) and [JVM integration documentation](https://ekmett.github.io/jam-vm/).
 
 —Edward Kmett
+
+[Discuss on Reddit](https://www.reddit.com/r/haskell/comments/1wzlk2e/comonad_reader_stretching_the_storage_manager_on/).
