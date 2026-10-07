@@ -10,7 +10,7 @@ On a lark, I tried putting Tab A into Slot B and just outright replacing the JVM
 
 And it… just worked.
 
-The result is [jam-vm](https://github.com/ekmett/jam-vm). Jam is now running as the garbage collector in patched builds of both OpenJDK and GraalVM. It collects the actual Java objects in the host heap, so Haskell closures can share that heap with everything else.
+The result lives in [jam’s `vm` directory](https://github.com/ekmett/jam/tree/main/vm). Jam is now running as the garbage collector in patched builds of both OpenJDK and GraalVM. It collects the actual Java objects in the host heap, so Haskell closures can share that heap with everything else.
 
 I do wish you could plug a collector in over JNI, rather than have to rebuild the JDK itself. Extensibility sort of falls down there. The interface makes it possible to add a collector to HotSpot; it doesn’t let a stock JVM load one as a library.
 
@@ -28,7 +28,7 @@ There are limitations. Right now the collector only supports [Compressed Ordinar
 
 Future work should include forwarding field accessors applied to evaluated thunks, and the in-place removal of thunk forwarding pointers. Owning the entire garbage collector makes possible a whole class of previously near-impossible feats.
 
-The code is in [jam](https://github.com/ekmett/jam) and [jam-vm](https://github.com/ekmett/jam-vm), with [collector documentation](https://ekmett.github.io/jam/) and [JVM integration documentation](https://ekmett.github.io/jam-vm/).
+The code is in [jam](https://github.com/ekmett/jam), with [collector documentation](https://ekmett.github.io/jam/) and [JVM integration documentation](https://github.com/ekmett/jam/blob/main/vm/README.md).
 
 —Edward Kmett
 
