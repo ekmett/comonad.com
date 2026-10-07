@@ -42,6 +42,20 @@ filter('2015','Repository');
 assert.ok(!visibleRepos().includes('thc'),'The reused repository date does not date the new THC');
 filter('turbo haskell','Repository');
 assert.ok(visibleRepos().includes('thc'),'THC is searchable by its current description');
+filter('turbo haskell','Article');
+const topicPath='reader/topics/turbo-haskell/';
+const topic=parseHTML(fs.readFileSync('dist/'+topicPath+'index.html','utf8')).document;
+assert.equal(topic.querySelector('h1').textContent,'Turbo Haskell');
+const topicArticles=JSON.parse(fs.readFileSync('content/articles.json')).filter(a=>a.topics?.includes('Turbo Haskell')).sort((a,b)=>b.date.localeCompare(a.date));
+assert.deepEqual([...topic.querySelectorAll('.package-section li a')].map(a=>new URL(a.getAttribute('href'),'https://comonad.com/'+topicPath).pathname),topicArticles.map(a=>'/'+a.path),'Topic lists its articles newest first');
+for(const article of topicArticles){
+  assert.ok([...document.querySelectorAll('.archive-entry:not([hidden]) h3')].some(h=>h.textContent===article.title),'Topic text is searchable');
+  const page=parseHTML(fs.readFileSync('dist/'+article.path+'index.html','utf8')).document;
+  const tag=page.querySelector('a[rel="tag"]');
+  assert.equal(tag.textContent,'Turbo Haskell');
+  for(const base of ['https://comonad.com/','https://ekmett.github.io/comonad.com/'])assert.equal(new URL(tag.getAttribute('href'),base+article.path).href,base+topicPath,'Topic links work under both hosting roots');
+}
+assert.ok(fs.readFileSync('dist/sitemap.xml','utf8').includes('/'+topicPath),'Topic is discoverable in the sitemap');
 filter('lens','Article');
 assert.equal(visibleRepos().length,0,'Content type filters remain independent');
 assert.ok(document.querySelectorAll('.archive-entry:not([hidden])').length>0);

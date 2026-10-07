@@ -11,7 +11,10 @@
     "source": "Comonad.Reader",
     "rawSource": "content/articles/stretching-the-storage-manager-on-the-jvm.md",
     "rawFormat": "md",
-    "retrieved": "2026-10-06"
+    "retrieved": "2026-10-06",
+    "topics": [
+      "Turbo Haskell"
+    ]
   },
   {
     "slug": "turbo-haskell",
@@ -25,7 +28,10 @@
     "source": "Comonad.Reader",
     "rawSource": "content/articles/turbo-haskell.md",
     "rawFormat": "md",
-    "retrieved": "2026-09-30"
+    "retrieved": "2026-09-30",
+    "topics": [
+      "Turbo Haskell"
+    ]
   },
   {
     "slug": "internalized-guarded-recursion-for-equational-reasoning",
