@@ -1,5 +1,21 @@
 [
   {
+    "slug": "stretching-the-storage-manager-on-the-jvm",
+    "title": "Stretching the Storage Manager on the JVM",
+    "date": "2026-10-06",
+    "dateLabel": "6 October 2026",
+    "path": "reader/2026/stretching-the-storage-manager-on-the-jvm/",
+    "categories": "Haskell · Garbage Collection · JVM · C++",
+    "origin": "https://comonad.com/reader/2026/stretching-the-storage-manager-on-the-jvm/",
+    "author": "Edward Kmett",
+    "source": "Comonad.Reader",
+    "rawSource": "content/articles/stretching-the-storage-manager-on-the-jvm.md",
+    "rawFormat": "md",
+    "retrieved": "2026-10-06",
+    "sha256": "566311fd6e9314ed1e6c9507e2f55f3a91c5ccc81984bcbcd29d425b04a6d098",
+    "archive": "source/articles/stretching-the-storage-manager-on-the-jvm.original.md"
+  },
+  {
     "slug": "turbo-haskell",
     "title": "Turbo Haskell",
     "date": "2026-09-30",
