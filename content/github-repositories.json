@@ -1,8 +1,10 @@
 {
   "owner": "ekmett",
   "source": "https://api.github.com/users/ekmett/repos",
-  "retrievedAt": "2026-10-06",
-  "exclude": ["jam-vm"],
+  "retrievedAt": "2026-10-08",
+  "exclude": [
+    "jam-vm"
+  ],
   "alwaysInclude": [
     "starkify",
     "nightfall",
@@ -145,7 +147,7 @@
       "description": "c++26 authenticated data structures",
       "fork": false,
       "html_url": "https://github.com/ekmett/auth",
-      "language": "C++",
+      "language": "Lean",
       "name": "auth",
       "topics": []
     },
@@ -1257,6 +1259,16 @@
     },
     {
       "archived": false,
+      "created_at": "2026-10-08T04:09:48Z",
+      "description": "portable c++ named attributes",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/hint",
+      "language": "C++",
+      "name": "hint",
+      "topics": []
+    },
+    {
+      "archived": false,
       "created_at": "2021-04-09T20:50:28Z",
       "description": "higher-kinded data",
       "fork": false,
@@ -1468,29 +1480,33 @@
     {
       "archived": false,
       "created_at": "2026-10-05T12:19:32Z",
-      "description": "an opinionated mark-compact c++26 garbage collected arena",
+      "description": "we be jammin'",
       "fork": false,
       "html_url": "https://github.com/ekmett/jam",
-      "language": "C++",
+      "language": "Java",
       "name": "jam",
       "topics": [
         "cpp26",
         "cpp26-library",
         "garbage-collection",
         "garbage-collector",
+        "graalvm",
+        "graalvm-native-image",
         "high-performance",
+        "java",
         "modules",
         "simd",
+        "substratevm",
         "threadlocal"
       ]
     },
     {
-      "archived": false,
+      "archived": true,
       "created_at": "2026-10-06T20:09:13Z",
-      "description": "A custom JDK garbage collector capable of supporting System.Mem.Weak finalizers for Turbo Haskell.",
+      "description": "Merged into ekmett/jam. Final independent sources are on final-independent-release.",
       "fork": false,
       "html_url": "https://github.com/ekmett/jam-vm",
-      "language": "Python",
+      "language": null,
       "name": "jam-vm",
       "topics": [
         "finalizers",
@@ -3174,6 +3190,16 @@
       "html_url": "https://github.com/ekmett/wl-pprint-terminfo",
       "language": "Haskell",
       "name": "wl-pprint-terminfo",
+      "topics": []
+    },
+    {
+      "archived": false,
+      "created_at": "2026-10-08T04:54:05Z",
+      "description": "a light weight work pushing library for c++",
+      "fork": false,
+      "html_url": "https://github.com/ekmett/work",
+      "language": "C++",
+      "name": "work",
       "topics": []
     },
     {
